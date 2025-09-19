@@ -1,0 +1,162 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 12-26-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_StockAgingController"
+  description="Stock Aging">
+
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="pageMap" type="Object" />
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  
+
+
+  <div class="total-wrap">
+    <article class="slds-card">
+        <!-- Card 02 : 검색 결과 테이블 -->
+        <!-- <div class="card-02 top-card"> -->
+          <div class="slds-scrollable">
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="12%" />
+                <col width="25%" />
+                <col width="6%" />
+                <col width="7%" />
+                <col width="7%" />
+                <col width="8%" />
+                <col width="7%" />
+                <col width="8%" />
+                <col width="7%" />
+                <col width="13%" />
+              </colgroup>
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th scope="col">
+                    <div class="slds-truncate" title="">품목</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">품명</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">Stock</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">Pur. Price</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">Sales Price</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">Last GI Date</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">GI yr</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">Last GR Date</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">GR yr</div>
+                  </th>
+                  <th scope="col">
+                    <div class="slds-truncate" title="">Total Value</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.recordList}" var="et" indexVar="e">
+                  <tr class="slds-hint-parent">
+                    <td data-label="품목">
+                      <div class="slds-truncate" title="품목">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.MATNR}" readonly="true" /> -->
+                        {!et.partName}
+                      </div>
+                    </td>
+                    <td data-label="품명">
+                      <div class="slds-truncate" title="품명">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.MAKTX}" readonly="true" /> -->
+                        {!et.partDesc}
+                      </div>
+                    </td>
+                    <td data-label="Stock" class="right">
+                      <div class="slds-truncate" title="Stock">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.STOCK}" readonly="true" /> -->
+                      
+                        <lightning:formattedNumber value="{!et.stocQty}" />
+                      </div>
+                    </td>
+                    <td data-label="Pur. Price" class="right">
+                      <div class="slds-truncate" title="Pur. Price">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.PURAMT}" readonly="true" /> -->
+                        <lightning:formattedNumber value="{!et.purPrice}" />
+                      </div>
+                    </td>
+                    <td data-label="Sales Price" class="right">
+                      <div class="slds-truncate" title="Sales Price">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.PRICE}" readonly="true" /> -->
+                        <lightning:formattedNumber value="{!et.salesPrice}" />
+                      </div>
+                    </td>
+                    <td data-label="Last GI Date" class="center">
+                      <div class="slds-truncate" title="Last GI Date">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.GIDAT}" readonly="true" /> -->
+                        {!et.lastGIDate}
+                      </div>
+                    </td>
+                    <td data-label="GI yr" class="center">
+                      <div class="slds-truncate" title="GI yr">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.GIYEAR}" readonly="true" /> -->
+                        <lightning:formattedNumber value="{!et.giyr}" />
+                      </div>
+                    </td>
+                    <td data-label="Last GR Date" class="center">
+                      <div class="slds-truncate" title="Last GR Date">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.GRDAT}" readonly="true" /> -->
+                        {!et.lastGRDate}
+                      </div>
+                    </td>
+                    <td data-label="GR yr" class="center">
+                      <div class="slds-truncate" title="GR yr">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.GRYEAR}" readonly="true" /> -->
+                        <lightning:formattedNumber value="{!et.gryr}" />
+                      </div>
+                    </td>
+                    <td data-label="Total Value" class="right">
+                      <div class="slds-truncate" title="Total Value">
+                        <!-- <lightning:input type="text" variant="label-hidden" value="{!et.TVALUE}" readonly="true" /> -->
+                        <lightning:formattedNumber value="{!et.totalValue}" />
+                      </div>
+                    </td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        <!-- </div> -->
+    </article>
+  </div>
+</aura:component>

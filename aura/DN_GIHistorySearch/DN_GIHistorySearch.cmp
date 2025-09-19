@@ -1,0 +1,107 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 07-17-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-10   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+	implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+	description="출하 이력 조회"
+	controller="DN_GIHistorySearchController"
+	extends="c:DN_Helper">
+
+  <!-- LMS  -->
+  	<lightning:messageChannel type="DealerPortalLMC__c"
+   		onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+	<!-- Attribute -->
+	<aura:attribute name="uuid" type="String" />
+	<aura:attribute name="openUrl" type="String"/>
+	<aura:attribute name="headerParams" type="Object" description=""/>
+	<aura:attribute name="requiredParams" type="List" description="출하 이력 조회"/>
+	<aura:attribute name="distributor" type="String" />
+
+	<aura:attribute name="isLoading" type="Boolean" default="false" />
+	<aura:attribute name="giList" type="List" default="[]" />
+	<!--<aura:attribute name="soldToParty" type="String" default="" />
+	 <aura:attribute name="shippingDate1" type="date"/>
+	<aura:attribute name="shippingDate2" type="date"/> -->
+	<!-- ltng -->
+	<ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+	
+	<!-- Handler -->
+	<!-- <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" /> -->
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+	<div class="total-wrap">
+
+		<aura:if isTrue="{! v.isLoading}">
+			<lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+		</aura:if>
+		<!-- Card 02 -->
+		
+			<div class="table-wrap">
+				<table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+					<colgroup>
+						<col width="24%" />
+						<col width="12%" />
+						<col width="15%" />
+						<col width="15%" />
+						<col width="15%" />
+						<col width="15%" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th>
+								<div>출하처</div>
+							</th>
+							<th>
+								<div>출하일자</div>
+							</th>
+							<th>
+								<div>기종</div>
+							</th>
+							<th>
+								<div>호기</div>
+							</th>
+							<th>
+								<div>Type</div>
+							</th>
+							<th>
+								<div>NC Type</div>
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<aura:iteration items="{!v.giList}" var="gi">
+							<tr>
+								<td>
+									<div>{!gi.shipToName}</div>
+								</td>
+								<td class="center">
+									<div>{!gi.soloToDate}</div>
+								</td>
+								<td>
+									<div>{!gi.mashinName}</div>
+								</td>
+								<td>
+									<div>{!gi.serialNumber}</div>
+								</td>
+								<td>
+									<div>{!gi.materialName}</div>
+								</td>
+								<td>
+									<div>{!gi.ncType}</div>
+								</td>
+							</tr>
+						</aura:iteration>
+					</tbody>
+				</table>
+			</div>
+
+
+	</div>
+</aura:component>

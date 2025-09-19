@@ -1,0 +1,13 @@
+.THIS .slds-accordion__content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.THIS .slds-form__col {
+    display: inline-block;
+    width: 50%;
+}
+
+.THIS section .slds-accordion__summary-action {
+    padding-left: 1rem !important;
+}

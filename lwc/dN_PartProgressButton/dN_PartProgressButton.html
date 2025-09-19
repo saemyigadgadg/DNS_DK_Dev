@@ -1,0 +1,270 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 05-08-2025
+  @last modified by  : suheon.ha@UserSettingsUnder.SFDoc
+-->
+<template>
+    <template if:true={isLoading}>
+      <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    
+    <div class="total-wrap">
+      <!-- 🍙 1. 청구부품 목록 화면 -->
+      
+  
+  
+      <!-- 🍙 2. 부품추가 화면 -->
+      <template if:true={isAddPartView}>
+        <div class="page-02">
+  
+          <!-- Result -->
+          <div class="result-wrap">
+            <template if:true={partList.length}>
+              <!-- Valid Result -->
+              <template for:each={partList} for:item="part">
+                <div key={part.MATNR} class="valid-result">
+                <!-- <div key={part.MATNR} class="valid-result" onclick={handleProductSelect}> -->
+                  <div class="info-wrap">
+                    <p>{cLabel.DNS_FSL_ProductNumber}: {part.MATNR}</p> <!--품번-->
+                    <p>{cLabel.DNS_FSL_ProductName}: {part.MAKTX}</p> <!--품명-->
+                    <p>{cLabel.DNS_FSL_State}: {part.MATNR_TXT}</p> <!--상태-->
+                    <p>{cLabel.DNS_C_DateOfReceipt}: {part.RECV_DT}</p> <!--접수일-->
+                    <p>{cLabel.DNS_FSL_PerformanceDueDate}: {part.PRETD3}</p> <!--평균실적납기일-->
+                    <p>{cLabel.DNS_FSL_ChangedSupplyDate}: {part.PRETD}</p> <!--변경공급예정일-->
+                    <p>{cLabel.DNS_FSL_Quantity}: {part.KWMENG}</p> <!--수량-->
+                    <p>{cLabel.DNS_FSL_SubmitDate}: {part.QDATU}</p> <!--불출일-->
+                    <p>{cLabel.DNS_C_ProductRequestReturnStatus}: {part.RETURN_YN}</p> <!--반납여부-->
+                  </div>
+                  <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:chevronright' alternative-text='chevronright' size='x-small'
+                      title='chevronright'></lightning-icon>
+                  </div>
+                </div>
+              </template>
+            </template>
+            <!-- No Result -->
+            <template if:false={partList.length}>
+              <p class="no-result">{cLabel.DNS_FSL_ThereAreNoLookupResults}</p>
+            </template>
+          </div>
+        </div>
+      </template>
+  
+      <!-- 🍙 3. 부품상세 화면 -->
+    <template if:true={isPartDetailsView}>
+      <div class="page-03">
+        <!-- Back Button -->
+        <div class="header">
+          <div class="button-wrap">
+            <lightning-button label={cLabel.DNS_FSL_Back} icon-name="utility:chevronleft" onclick={handleBack}></lightning-button>
+          </div>
+          <!-- <div class="button-wrap stock">
+            <lightning-button variant="brand" label={cLabel.DNS_FSL_InventoryCheck} class="slds-m-left_x-small"></lightning-button>
+          </div> -->
+          <div class="error-msg slds-text-color_err">
+            *{cLabel.DNS_FSL_PleaseEnterTheQuantity}
+          </div>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="field-wrap">
+
+          <template if:true={dealerInventoryList.length}>
+            <template for:each={dealerInventoryList} for:item="inven" >
+              <div key={inven.Id} data-id={inven.Id}>
+                <div class="input-container box">
+                  <!-- 품번 -->
+                  <div class="input-wrap">
+                    <p>{cLabel.DNS_FSL_ProductNumber}</p>
+                    <lightning-input type="text" value={productDetails.ProductCode} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                  <!-- 품명 -->
+                  <div class="input-wrap">
+                    <p>{cLabel.DNS_FSL_ProductName}</p>
+                    <div class="name">{productDetails.Name}</div>
+                    <!-- <lightning-input type="text" value={productDetails.Name} readonly variant="label-hidden"></lightning-input> -->
+                  </div>
+                  <!-- 규격 -->
+                  <div class="input-wrap">
+                    <p>{cLabel.DNS_FSL_Standard}</p>
+                    <lightning-input type="text" value={productDetails.ProductSpec__c} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                  <!-- 단위 -->
+                  <div class="input-wrap">
+                    <p>{cLabel.DNS_FSL_Unit}</p>
+                    <lightning-input type="text" value={inven.MEINS} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                  <!-- 대체전 판매가 인터페이스 -->
+                  <div class="input-wrap">
+                    <p>대체전 판매가</p>
+                    <lightning-input type="text" value={productDetails.Alternate__c} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                  <!-- 대체품 인터페이스 -->
+                  <div class="input-wrap">
+                    <p>{cLabel.DNS_FSL_Replacement}</p>
+                    <lightning-input type="text" value={inven.REPNR} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                  <!-- 대체품 판매가 인터페이스 -->
+                  <div class="input-wrap">
+                    <p>대체품 판매가</p>
+                    <lightning-input type="text" value={inven.NETPR} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                  <!-- 본사재고(대체품) 인터페이스 -->
+                  <div class="input-wrap">
+                    <p>재고 수량</p>
+                    <lightning-input type="text" value={inven.LABST} readonly
+                      variant="label-hidden"></lightning-input>
+                  </div>
+                </div>
+                <!-- == 대리점재고 == -->
+                <div class="divider">
+                  <p>-------------------------------------- 대리점 재고 --------------------------------------</p>
+                  <!-- <lightning-input type="text" value={productDetails.Alternate__c} readonly
+                    variant="label-hidden"></lightning-input> -->
+                </div>
+              </div>
+            </template>
+            <template if:false={dealerInventoryList.length}>
+              <p class="message">재고가 없습니다.</p>
+            </template>
+          </template>
+          
+          <!-- 나중에 대리점재고 오브젝트 생기면 여기에 품번 or 품명으로 조회해서 나타내기 -->
+          <template if:true={dealerStocksList.length}>
+            <template for:each={dealerStocksList} for:item="inven">
+                <div key={inven.Id} class="box" data-id={inven.Id}>
+                    <div class="info-wrap">
+                        <!-- No -->
+                        <div class="input-wrap">
+                          <p>No</p>
+                          <lightning-input type="text" value={inven.Name} readonly variant="label-hidden"></lightning-input>
+                        </div>
+                        <!-- Dealer -->
+                        <div class="input-wrap">
+                          <p>Dealer</p>
+                          <lightning-input type="text" value={inven.Dealer__r.Name} readonly variant="label-hidden"></lightning-input>
+                        </div>
+                        <!-- 현재고 -->
+                        <div class="input-wrap">
+                          <p>현재고</p>
+                          <lightning-input type="text" value={inven.CurrentStockQuantity__c} readonly variant="label-hidden"></lightning-input>
+                        </div>
+                        <!-- 가용재고 -->
+                        <div class="input-wrap">
+                          <p>가용재고</p>
+                          <lightning-input type="text" value={inven.AvailableQuantity__c} readonly variant="label-hidden"></lightning-input>
+                        </div>
+                        <!-- 주문예약재고 -->
+                        <div class="input-wrap">
+                          <p>주문예약재고</p>
+                          <lightning-input type="text" value={inven.OrderRequiredQuantity__c} readonly variant="label-hidden"></lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </template>
+        <template if:false={dealerStocksList.length}>
+            <p class="message">재고가 없습니다.</p>
+        </template>
+        
+
+        </div>
+        <!-- Add Button -->
+        <!-- 기존 추가버튼 누르면 바로 추가 -->
+        <!-- <div class="add-button">
+          <lightning-button variant="brand" label="추가" onclick={handleAddPart}></lightning-button>
+        </div> -->
+        <!-- 추가버튼 누르면 재확인 모달 표시 -->
+        <!-- <div class="add-button">
+          <lightning-button variant="brand" label={cLabel.DNS_FSL_Add} onclick={openAddConfirmation}></lightning-button>
+        </div> -->
+      </div>
+    </template>
+  
+      <!-- 🍙 4. 알림 화면 모달 -->
+      <template if:true={isNotificationVisible}>
+        <section role="alertdialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <header class="slds-modal__header">
+              <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                onclick={handleNotificationClose}>
+                <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                <span class="slds-assistive-text">{cLabel.DNS_FSL_Close}</span>
+              </button>
+              <h2 class="slds-text-heading_medium">{cLabel.DNS_FSL_Alarm}</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium">
+              <p>{cLabel.DNS_FSL_ThePartRequestHasBeenCompleted}</p>
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleNotificationClose}></lightning-button>
+            </footer>
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+      </template>
+  
+      <!-- 🍙 5. 확인 모달 -->
+      <template if:true={isConfirmationVisible}>
+        <div class="confirm-wrap">
+          <section role="alertdialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{cLabel.DNS_FSL_ConfirmationOfPartAddition}</h2>
+              </header>
+              <div class="slds-modal__content slds-p-around_medium">
+                <div class="icon-wrap">
+                  <lightning-icon icon-name='utility:check' alternative-text='check' size='medium' title='check'></lightning-icon>
+                </div>
+                <p style="font-size: 16px;">{cLabel.DNS_FSL_PleaseCheckQuantity}</p>
+                <div class="quantity-wrap">
+                  <span>{cLabel.DNS_FSL_Quantity}</span>
+                  <span class="quantity">{quantity}</span>
+                  <span>{cLabel.DNS_FSL_Dot}</span>
+                </div>
+              </div>
+              <footer class="slds-modal__footer">
+                <lightning-button variant="neutral" label={cLabel.DNS_FSL_Cancel} onclick={closeConfirmation}></lightning-button>
+                <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleAddPart}></lightning-button>
+              </footer>
+            </div>
+          </section>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+      </template>
+  
+      <!-- 6. 취소 확인 모달 -->
+      <template if:true={isModalOpen}>
+        <div class="confirm-wrap">
+          <section role="alertdialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{cLabel.DNS_FSL_ConfirmRequestCancellation}</h2>
+              </header>
+              <div class="slds-modal__content slds-p-around_medium">
+                <div class="icon-wrap">
+                  <lightning-icon icon-name='utility:check' alternative-text='check' size='medium' title='check'></lightning-icon>
+                </div>
+                <p style="font-size: 16px;">{cLabel.DNS_FSL_Check}</p>
+              </div>
+              <footer class="slds-modal__footer">
+                <lightning-button variant="neutral" label={cLabel.DNS_FSL_Cancel} onclick={closeModal}></lightning-button>
+                <lightning-button variant="brand" label={cLabel.DNS_FSL_CancelRequest} onclick={confirmCancelPart}></lightning-button>
+              </footer>
+            </div>
+          </section>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+      </template>
+  
+  
+  
+    </div>
+  </template>

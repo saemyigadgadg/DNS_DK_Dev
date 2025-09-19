@@ -1,0 +1,196 @@
+<!--
+  @description       : (포탈) 판매가 > 진행상태조회 > 상세 > 프린트
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-17-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   02-19-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<apex:page showHeader="false" standardStylesheets="false" sidebar="false" renderAs="pdf" applyHtmlTag="false" 
+  controller="DN_priceEscalationStatusPrintController"
+  contentType="text/html;charset=UTF-8">
+  
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+    <style type="text / css">
+      @page {
+				padding: 0;
+				margin: 16px; 
+				@bottom-center {
+					content: counter(page);
+					font-family: Arial Unicode MS, Helvetica, sans-serif;
+				} 
+			}
+				body,html { } 
+			.page-break {
+				page-break-after:always;
+			}
+			body {
+				font-family: Arial Unicode MS, Helvetica, sans-serif;
+				font-weight: 400;
+				font-size: 12px;
+				line-height: normal;
+			}
+      table { 
+        width: 100%; 
+        border: 1px solid #444444; 
+        border-collapse: collapse; 
+        border-spacing: 0;
+      }
+      th, td { 
+        border: 1px solid #444444; 
+        border-collapse: collapse; 
+        padding: 5px;
+      }
+			h1,h2,h3,h4,h5,h6,a,p,span,b,strong{}
+
+      /* Begin Custom Grid System */
+      .clearfix {
+        clear: both;
+      }
+      .row {
+          display: block;
+      }
+      .col {
+          float: left;
+      }
+      .size-1-of-2 {
+          width: 48%;
+      }
+      .size-1-of-3 {
+          width: 33.33%;
+      }
+      .size-1-of-4 {
+          width: 25%;
+      }
+      .size-1-of-5 {
+          width: 20%;
+      } 
+      /* End Custom Grid System */
+
+      /* Style CSS */
+      .header h2 {
+        text-align: center;
+        font-size: 18px;
+        font-family: sans-serif;    
+        font-weight: bold;
+      }
+
+      .body .info-table {
+        padding: 25px 75px 50px;
+      }
+
+      .body .info-table table {
+        border: none;
+      }
+
+      .body .info-table table th {
+        border: none;
+        text-align: right;
+      }
+
+      .body .info-table table td {
+        border: none;
+        text-align: left;
+      }
+
+      .body .records-table p {
+        font-size: 16px;
+        font-family: sans-serif;    
+        font-weight: bold;
+      }
+
+      .body .records-table table {
+        text-align: center;
+      }
+
+      .body .records-table table th {
+        background: #ced4da; 
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <h2>Price Escalation Status</h2>
+      </div>
+      <div class="body">
+        <div class="info-table table-wrap">
+          <div id="pdfContent"></div>
+          <table>
+            <colgroup>
+              <col width="20%" />
+              <col width="30%" />
+              <col width="20%" />
+              <col width="30%" />
+            </colgroup>
+            <apex:outputPanel rendered="{!showMessage}">
+              <tr>
+                <th>생성일 : </th>
+                  <td> {!srt[0].creationDate}</td>
+                <th>Inquiry PO No : </th>
+                <td>{!srt[0].poNo}</td>
+              </tr>
+              <tr>
+                <th>PE Inquiry No : </th>
+                <td>{!srt[0].peNo}</td>
+                <th>상태 : </th>
+                <td> {!statusValue}</td>
+              </tr>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!NOT(showMessage)}">
+              <tr>
+                <th>생성일 : </th>
+                  <td> {!prs.startDate} ~ {!prs.endDate}</td>
+                <th>Inquiry PO No : </th>
+                <td>{!prs.poNo}</td>
+              </tr>
+              <tr>
+                <th>PE Inquiry No : </th>
+                <td>{!prs.peNo}</td>
+                <th>상태 : </th>
+                <td> {!statusValue}</td>
+              </tr>
+            </apex:outputPanel>
+          </table>
+        </div>
+        <div class="records-table table-wrap">
+          <p>Records found : <span>{!listSize}</span></p>
+          <table>
+            <tr>
+              <th>No</th>
+              <th>상태</th>
+              <th>Remark</th>
+              <th>거절 사유</th>
+              <th>Inquiry PO No</th>
+              <th>PE Inquiry No</th>
+              <th>생성일</th>
+              <th>기종</th>
+              <th>장비번호</th>
+            </tr>
+            <apex:variable var="index" value="{!0}" /> 
+            <apex:repeat value="{!srt}" var="item">
+              <tr>
+                <td>{!index+1}</td>
+                <td>{!item.workStatus}</td>
+                <td>{!item.remark}</td>
+                <td>{!item.rejectReason}</td>
+                <td>{!item.poNo}</td>
+                <td>{!item.peNo}</td>
+                <td>{!item.creationDate}</td>
+                <td>{!item.equipmentName}</td>
+                <td>{!item.equipmentNo}</td>
+              </tr>
+              <apex:variable var="index" value="{!index + 1}" /> 
+            </apex:repeat>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</apex:page>

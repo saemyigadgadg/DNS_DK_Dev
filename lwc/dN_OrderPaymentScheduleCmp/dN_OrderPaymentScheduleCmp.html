@@ -1,0 +1,398 @@
+<!--
+  @class             : DN_OrderPaymentScheduleController
+  @description       : Order에서 Payment Schedule 등록
+  @author            : yeongju.yun
+  @last modified on  : 01-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2024-11-27   yeongju.yun   Initial Version
+-->
+<template>
+
+    <div class="payment_wrapper">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <template if:true={fieldOpen}>
+            <div class="header_info">
+                <lightning-layout multiple-rows="true">
+                    <div class="card-header">
+                        <template if:false={preventEdit}>
+                            <lightning-layout-item>
+                                <div class="save_info_message">{cLabel.DNS_M_CompleteDraftAndConfirm}</div>
+                            </lightning-layout-item>
+                        </template>
+                        <lightning-layout-item>
+                            <div class="title_section slds-p-around_xx-small slds-section__title slds-theme_shade slds-truncate">
+                                <template if:true={planNo}>
+                                   <div class="plan-wrap">
+                                        <lightning-icon icon-name='standard:number_input' alternative-text='number_input' size='small' title='number_input'></lightning-icon>
+                                        <h1>
+                                            <span class="slds-page-header__title slds-truncate" title={planNo}>{planNo}</span>
+                                        </h1>
+                                   </div>
+                                </template>
+                                <template if:false={preventEdit}>
+                                    <div>
+                                        <lightning-button label={cLabel.DNS_B_SaveAsDraft} onclick={handleSave}></lightning-button>
+                                        <lightning-button label={cLabel.DNS_B_SendToERP} onclick={sendToERP} variant="brand"></lightning-button>
+                                    </div>
+                                </template>
+                            </div>
+                        </lightning-layout-item>
+                    </div>
+                    <div class="card-body">
+                        <div class="field-wrap">
+                            <p>{fields.DocumentDate__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="date"
+                                        data-name={fields.DocumentDate__c.apiName} 
+                                        variant="label-hidden"
+                                        onchange={handleDocDate}
+                                        value={headerData.docuDate}
+                                        disabled={preventEdit}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{fields.ReqDeliveryDate__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="date"
+                                        data-name={fields.ReqDeliveryDate__c.apiName} 
+                                        variant="label-hidden"
+                                        disabled="true"
+                                        value={headerData.reqDDate}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{fields.DraftNo__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-combobox 
+                                        options={draftOption}
+                                        onchange={handleDraftChange} 
+                                        data-name={fields.DraftNo__c.apiName}
+                                        data-wrapname="draftPick"
+                                        variant="label-hidden"
+                                        value={headerData.draftPick}
+                                        disabled={draftBtnDisabled}
+                                    ></lightning-combobox>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap draft-field">
+                            <p>{fields.DraftNoText__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-layout multiple-rows="true">
+                                        <lightning-layout-item>
+                                            <lightning-input
+                                                onchange={handleDraftChange} 
+                                                data-name={fields.DraftNoText__c.apiName} 
+                                                data-wrapname="draftText"
+                                                variant="label-hidden"
+                                                value={headerData.draftText}
+                                                disabled={draftDisabled}
+                                            ></lightning-input>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item>
+                                            <lightning-button-icon icon-name="utility:check" class={draftStatus} onclick={handleDraftCheck} disabled={draftBtnDisabled}></lightning-button-icon>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </lightning-layout-item>
+                            </div>  
+                        </div>
+                    </div>
+                </lightning-layout>
+
+                <lightning-layout multiple-rows="true" class="amount_section">
+                    <div class="card-body">
+                        <div class="field-wrap">
+                            <p>{fields.Subtotal__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="number"
+                                        data-name={fields.Subtotal__c.apiName} 
+                                        variant="label-hidden"
+                                        disabled="true"
+                                        value={headerData.subTotal}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{cLabel.DNS_F_Currency}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input
+                                        data-name={fields.CurrencyIsoCode.apiName} 
+                                        variant="label-hidden"
+                                        disabled="true"
+                                        value={headerData.curr}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{fields.Tax__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="number"
+                                        data-name={fields.Tax__c.apiName} 
+                                        variant="label-hidden"
+                                        disabled="true"
+                                        value={headerData.tax}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{cLabel.DNS_F_InputAmount}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="number" 
+                                        data-name="InputAmount"
+                                        variant="label-hidden" 
+                                        disabled="true"
+                                        value={headerData.inputAmt}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{fields.TotalAmount__c.label}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="number"
+                                        data-name={fields.TotalAmount__c.apiName} 
+                                        variant="label-hidden"
+                                        disabled="true"
+                                        value={headerData.totalAmt}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{cLabel.DNS_F_Balance}</p>
+                            <div class="input-wrap">
+                                <lightning-layout-item>
+                                    <lightning-input 
+                                        type="number" 
+                                        data-name="Balance"
+                                        variant="label-hidden" 
+                                        disabled="true"
+                                        value={headerData.balance}
+                                    ></lightning-input>
+                                </lightning-layout-item>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-layout>
+            </div>
+
+            <div class="table_info">
+                <template if:false={preventEdit}>
+                    <div class="title_section slds-p-around_xx-small slds-section__title slds-theme_shade slds-truncate">
+                        <lightning-button-group>
+                            <lightning-button label={cLabel.DNS_B_SplitAmt} onclick={handleSplit} disabled={checkBtn}></lightning-button>
+                            <lightning-button label={cLabel.DNS_B_AddRow} onclick={handleAddRow}></lightning-button>
+                            <lightning-button label={cLabel.DNS_B_DeleteRow} onclick={handleDeleteRow} disabled={checkBtn}></lightning-button>
+                        </lightning-button-group>
+                    </div>
+                </template>
+                <div class="table_container">
+                    <div class="scrollbar_section" onscroll={syncScroll}>
+                        <div class="scroll_content"></div>
+                    </div>
+                    <div class="table_section" onscroll={syncScroll}>
+                        <table class="slds-table slds-table_bordered slds-table_col-bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="Select All">
+                                            <lightning-input type="checkbox" value="all" data-name="allCheckbox" onchange={handleCheckbox} variant="label-hidden" disabled={preventEdit}></lightning-input>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={fields.Type__c.label}>{fields.Type__c.label}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={cLabel.DNS_C_Number}>{cLabel.DNS_C_Number}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={fields.ScheduledDate__c.label}>{fields.ScheduledDate__c.label}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={fields.PaymentTerms__c.label}>{fields.PaymentTerms__c.label}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={fields.Days__c.label}>{fields.Days__c.label}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={fields.CapitalCompany__c.label}>{fields.CapitalCompany__c.label}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={cLabel.DNS_F_InputAmount}>{cLabel.DNS_F_InputAmount}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title={fields.InstallmentPrincipal__c.label}>{fields.InstallmentPrincipal__c.label}</div>
+                                    </th>
+                                    <template if:true={preventEdit}>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title={fields.ReceivedAmount__c.label}>{fields.ReceivedAmount__c.label}</div>
+                                        </th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={tableData} for:item="row">
+                                    <tr key={row.num}>
+                                        <td>
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                value={row.num} 
+                                                variant="label-hidden" 
+                                                onchange={handleCheckbox}
+                                                checked={row.isChecked}
+                                                disabled={preventEdit}
+                                            ></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-combobox 
+                                                value={row.type} 
+                                                options={fields.Type__c.options} 
+                                                onchange={handleTypeChange} 
+                                                data-name={fields.Type__c.apiName} 
+                                                data-wrapname="type"
+                                                data-num={row.num}
+                                                variant="label-hidden" 
+                                                disabled={preventEdit}
+                                            ></lightning-combobox>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{row.num}</div>
+                                        </td>
+                                        <td>
+                                            <lightning-input 
+                                                type="date" 
+                                                value={row.scheduleDate} 
+                                                data-name={fields.ScheduledDate__c.apiName} 
+                                                data-wrapname="scheduleDate"
+                                                data-num={row.num}
+                                                variant="label-hidden"
+                                                onchange={handleSchduleChange}
+                                                disabled={preventEdit}
+                                            ></lightning-input>
+                                        </td>
+                                        <td class="combo_wrap">
+                                            <lightning-combobox 
+                                                value={row.paymentTerms} 
+                                                options={fields.PaymentTerms__c.options} 
+                                                onchange={handlePaymentTerms} 
+                                                data-name={fields.PaymentTerms__c.apiName} 
+                                                data-wrapname="paymentTerms"
+                                                data-num={row.num}
+                                                variant="label-hidden"
+                                                disabled={preventEdit}
+                                            ></lightning-combobox>
+                                        </td>
+                                        <td>
+                                            <lightning-input 
+                                                value={row.days} 
+                                                data-name={fields.Days__c.apiName} 
+                                                data-wrapname="days"
+                                                data-num={row.num}
+                                                variant="label-hidden" 
+                                                disabled="true"
+                                            ></lightning-input>
+                                        </td>
+                                        <template if:true={preventEdit}>
+
+                                            <td class="combo_wrap">
+                                                <lightning-combobox 
+                                                    value={row.capitalCom} 
+                                                    options={fields.CapitalCompany__c.options} 
+                                                    data-name={fields.CapitalCompany__c.apiName} 
+                                                    data-wrapname="capitalCom"
+                                                    data-num={row.num}
+                                                    variant="label-hidden" 
+                                                    disabled={preventEdit}
+                                                    onchange={handleInputChange}
+                                                ></lightning-combobox>
+                                            </td>
+                                        </template>
+                                        <template if:false={preventEdit}>
+                                            <td class="combo_wrap">
+                                                <lightning-combobox 
+                                                    value={row.capitalCom} 
+                                                    options={fields.CapitalCompany__c.options} 
+                                                    data-name={fields.CapitalCompany__c.apiName} 
+                                                    data-wrapname="capitalCom"
+                                                    data-num={row.num}
+                                                    variant="label-hidden" 
+                                                    disabled={row.capitalDisabled}
+                                                    onchange={handleInputChange}
+                                                ></lightning-combobox>
+                                            </td>
+                                        </template>
+                                        <td>
+                                            <lightning-input 
+                                                type="number" 
+                                                value={row.inputAmt} 
+                                                data-name="inputAmt"
+                                                data-wrapname="inputAmt"
+                                                data-num={row.num}
+                                                onblur={handleBlurAmt} 
+                                                onkeydown={handleAmtEnter}
+                                                variant="label-hidden"
+                                                disabled={preventEdit}
+                                            ></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-input 
+                                                type="number" 
+                                                value={row.principal} 
+                                                data-name={fields.InstallmentPrincipal__c.apiName} 
+                                                data-wrapname="principal"
+                                                data-num={row.num}
+                                                variant="label-hidden" 
+                                                disabled="true"
+                                            ></lightning-input>
+                                        </td>
+                                        <template if:true={preventEdit}>
+                                            <td>
+                                                <lightning-input 
+                                                    type="number" 
+                                                    value={row.receivedAmt} 
+                                                    data-name={fields.ReceivedAmount__c.apiName} 
+                                                    data-wrapname="receivedAmt"
+                                                    data-num={row.num}
+                                                    variant="label-hidden" 
+                                                    disabled="true"
+                                                ></lightning-input>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+    
+</template>

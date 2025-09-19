@@ -1,0 +1,272 @@
+.THIS .slds-modal__container {
+  max-width: 80%;
+  width: 80%;
+  position: relative;
+  top: 50%;
+  bottom: 50%;
+  transform: translateY(-50%);
+  height: fit-content;
+  padding: 0;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+  opacity: 0.75;
+}
+
+/* Modal Body */
+
+.THIS .slds-p-around_large,
+.THIS .slds-p-around_medium {
+  padding: 0;
+}
+
+.THIS .modal-body {
+  background-color: #F3F3F3;
+}
+
+.THIS .modal-body .top-card {
+  padding: 1rem 1.25rem;
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+}
+
+.THIS .card-01 .filter-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+@media screen and (max-width:767px) {
+  .THIS .card-01 {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .THIS .card-01 .field-wrap {
+    width: 100%;
+    gap: 0.5rem;
+  }
+  
+}
+
+.THIS .card-01 .field-wrap p {
+  font-weight: 600;
+  width: 5rem;
+  margin-bottom: .25rem;
+  text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+  width: 100%;
+}
+
+.THIS .card-01 .to {
+  margin: 0 0.5rem;
+}
+
+/* Table Design */
+.THIS .table-wrap {
+  overflow: hidden;
+  overflow-x: scroll;
+  height: fit-content !important;
+}
+
+.THIS .modal-body table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-top: 1px solid #D9D9D9;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .modal-body table td {
+  background-color: #fff;
+  padding: .5rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body table th+th,
+.THIS .modal-body table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+
+.THIS .modal-body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+  display: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+  text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+  text-align: right !important;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .modal-body table .slds-input[readonly] {
+  border: none;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+  border: 1px solid #C9C9C9;
+  /* min-width: 12rem; */
+}
+
+.THIS .slds-button_icon-border {
+  border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+  border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+  line-height: 100% !important;
+  padding: .25rem 0.5rem !important;
+}
+
+/* Pagination */
+
+.THIS .pagination-wrap {
+  margin: 1rem;
+  margin-top: 0;
+  position: relative;
+}
+
+.THIS .pagination-wrap .total {
+  padding: 0.25rem 0;
+  text-align: right;
+  margin-bottom: 0.25rem;
+}
+
+.THIS .pagination-wrap .pagination {
+  display: flex;
+  border: 1px solid #C9C9C9;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  width: fit-content;
+  margin: auto;
+  width: fit-content;
+}
+
+.THIS .pagination-wrap .pagination a {
+  text-decoration: none;
+}
+
+.THIS .pagination-wrap .pagination li+li {
+  border-left: 1px solid #C9C9C9;
+}
+
+.THIS .pagination-wrap .pagination li:not(.pages) a {
+  padding: 0.5rem 0.75rem;
+  background-color: #fff;
+  color: #706E6B;
+  display: inline-block;
+  cursor: pointer;
+  line-height: 1rem;
+  height: 100%;
+}
+
+.THIS .pagination-wrap .pagination li a:hover {
+  background-color: #F3F3F3;
+}
+
+.THIS .pagination-wrap .pagination .pages a {
+  min-width: 2.25rem;
+  text-align: center;
+  display: inline-block;
+  padding: 0.5rem;
+  border-left: 1px solid #c9c9c9;
+}
+
+.THIS .pagination-wrap .pagination .pages span:first-child a {
+  border-left: none;
+}
+
+.THIS .pagination-wrap .pagination .pages {
+  background-color: #fff;
+}
+
+.THIS .pagination-wrap .pagination .pages .here {
+  display: inline-block;
+  text-align: center;
+  min-width: 2.25rem;
+  padding: 0.5rem;
+  background-color: #0176D3;
+  color: #fff;
+  cursor: unset;
+}
+
+.THIS .pagination-wrap .slds-icon_container {
+  pointer-events: none;
+}
+
+.THIS .pagination-wrap .listviewoption{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}

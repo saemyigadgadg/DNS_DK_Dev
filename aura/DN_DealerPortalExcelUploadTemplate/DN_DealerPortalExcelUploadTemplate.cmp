@@ -1,0 +1,16 @@
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_DealerPortalExcelUploadController"
+    description="대리점 재고관리 액셀 업로드 템플릿 버튼"
+>
+<ltng:require scripts="{!join(',', $Resource.ExcelJS + '/unpkg/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}" afterScriptsLoaded="{! c.handleScriptsLoaded }" />
+<aura:attribute name="isExcelJsLoading" type="Boolean" default="false" />
+
+<aura:attribute name="buttonLabel" type="String" default="템플릿 다운로드"/>
+<aura:attribute name="uploadName" type="String" default="StorageBinTemplate"/>
+<aura:attribute name="uploadTemplate" type="Object"/>
+<!--init -->
+<aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <lightning:button variant="neutral" label="{!v.buttonLabel}" title="{!v.buttonLabel}"
+        onclick="{!c.handleTemplate}" />
+</aura:component>

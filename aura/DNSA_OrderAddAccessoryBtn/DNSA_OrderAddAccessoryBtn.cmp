@@ -1,0 +1,148 @@
+<!--
+  @class             : DNSA_OrderAddAccessoryController
+  @description       : 주문 Option Only Order에서 Accessory를 추가하는 버튼
+  @author            : yeongju.yun
+  @last modified on  : 01-17-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2025-01-09   yeongju.yun   Initial Version
+-->
+<aura:component
+    controller="DNSA_OrderAddAccessoryController" 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    access="global">
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:attribute name="category" type="String" description="Category (combobox) value" />
+    <aura:attribute name="categoryOption" type="List" default="[]" description="Category (combobox) option" />
+
+    <aura:attribute name="tableColumns" type="List" default="[]" description="Table Columns" />
+    <aura:attribute name="tableData" type="List" default="[]" description="Table Data" />
+    <aura:attribute name="tableDataRemove" type="List" default="[]" description="Table Data" />
+
+    <aura:attribute name="selTableColumns" type="List" default="[]" description="Selected Table Columns" />
+    <aura:attribute name="selTableData" type="List" default="[]" description="Selected Table Data" />
+
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="selectedItems" type="List" default="[]" description="Selected Quote Lineitem" />
+    <aura:attribute name="targetShipToIds" type="List" default="[]" description="target ids for ship to" />
+    <aura:attribute name="dnsaRecordType" type="String" description="dnsa record type for account" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+    <aura:html tag="style">
+
+        .slds-modal__container:has(.order_accessory_wrap) {
+            width:100%;
+            max-width: 45rem;
+        }
+        .slds-modal__content:has(.order_accessory_wrap) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.order_accessory_wrap) {
+            padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.order_accessory_wrap){
+            overflow: hidden;
+        }
+        *:has(.cDNSA_OrderAddAccessoryBtn .slds-dropdown_left) {
+            overflow: visible !important;
+        }
+    </aura:html>
+
+    <div class="order_accessory_wrap">
+        <aura:if isTrue="{!v.isLoading}">
+            <div class="SpinnerDiv">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__content slds-p-around_small">
+                <!-- Section 01 -->
+                <div class="catecory_section">
+                    <div class="category_combobox">
+                        <lightning:combobox 
+                            label="Category" 
+                            variant="label-inline" 
+                            options="{!v.categoryOption}"
+                            value="{!v.category}" 
+                            onchange="{!c.handleCategoryChange}"/>
+                    </div>
+                    <div>
+                        <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleClose}" />
+                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{!c.handleSave}" />
+                    </div>
+                </div>
+
+                <!-- Section 02 -->
+                <div class="{!v.tableData.length > 13 ? 'accessory_table_section temp_table_height' : 'accessory_table_section'}">
+                    <lightning:datatable 
+                        keyField="key" 
+                        columns="{!v.tableColumns}" 
+                        data="{!v.tableData}"
+                        hideCheckboxColumn="true" 
+                        onrowaction="{!c.handleAddAction}"/>
+                </div>
+
+                <!-- Section 03 -->
+                <div class="down_icon_section">
+                    <lightning:icon iconName="utility:down" title="selected" size="small" />
+                </div>
+
+                <!-- Section 04 -->
+                <div class="selected_table_section">
+                    <div class="section-header">
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='standard:multi_select_checkbox' size='x-small' title="{!$Label.c.DNS_S_SelectedList}" />
+                        </div>
+                        <h1 class="slds-page-header__name-title" title="{!$Label.c.DNS_S_SelectedList}">{!$Label.c.DNS_S_SelectedList}</h1>
+                    </div>
+                    <div class="selected_table">
+                        <c:customDatatable 
+                            keyField="key" 
+                            columns="{!v.selTableColumns}"
+                            data="{!v.selTableData}"
+                            hideCheckboxColumn="true"
+                            showRowNumberColumn="false"
+                            suppressBottomBar="true"
+                            onrowaction="{!c.handleRowAction}"
+                            oncellchange="{!c.handleCellChange}"
+                            draftValues="{!v.draftValues}"
+                            />
+                            
+                        <!-- <lightning:datatable 
+                            keyField="key" 
+                            columns="{!v.selTableColumns}" 
+                            data="{!v.selTableData}"
+                            hideCheckboxColumn="true" 
+                            showRowNumberColumn="false"
+                            draftValues="{! v.draftValues }"
+                            onrowaction="{!c.handleRemoveAction}"
+                            oncellchange="{!c.handleCellChange}"
+                            suppressBottomBar="true"/> -->
+                            
+                        <!-- <lightning:datatable 
+                            keyField="key" 
+                            columns="{!v.selTableColumns}" 
+                            data="{!v.selTableData}"
+                            hideCheckboxColumn="true" 
+                            showRowNumberColumn="false"
+                            onrowaction="{!c.handleRowAction}"
+                            draftValues="{! v.draftValues }"
+                            oncellchange="{!c.handleCellChange}"
+                            class="custom_datatable"
+                            suppressBottomBar="true"/> -->
+                            <!-- onrowselection="{!c.handleSelRowSelection}"  -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,310 @@
+<!--
+  @author            : youjin-shim
+  @description       : 
+  @last modified on  : 2025-09-19
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-30   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_PortalServiceReportController" description="서비스">
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean" default="false" /> <!-- Spinner -->
+    <aura:attribute name="isSearched"           type="Boolean" default="false" /> <!--검색 상태-->
+    <aura:attribute name="baseUrl"              type="String" /> <!-- Sandbox & Production url 구분 -->
+    <aura:attribute name="recordId"             type="String"  default=""/> <!-- 검색된 WorkOrder 레코드 ID -->
+    <aura:attribute name="orderNumber"          type="String"  default=""/> <!-- 주문번호 -->
+    <aura:attribute name="templateNumber"       type="String"  default=""/> <!-- 조회된 타입에 따라 호출될 하위 컴포넌트 타입 -->
+    <aura:attribute name="loginUserInfo"        type="Object"/> <!-- 로그인된 유저 정보 -->
+    <aura:attribute name="isBranch"             type="Boolean" default="false" /> <!-- 지사 or 대리점 구분 -->
+    <aura:attribute name="isReportBranch"       type="Boolean" default="false" /> <!-- 직영 or 대리점 구분 -->
+    <aura:attribute name="isConfirmed"          type="Boolean" default="false" /> <!-- 확정 유무 -->
+    <aura:attribute name="confirmedDate"        type="String"   default=""/> <!--확정 처리 일시-->
+    <aura:attribute name="isDisabled"           type="Boolean" default="false" /> <!-- 확정 유무 -->
+    <aura:attribute name="isPortalEnabled"      type="Boolean" default="true" /> <!-- 내부/포탈 사용자 구분 (실제 필드 값과 매칭) -->
+    <aura:attribute name="isNoStandardWork"     type="Boolean" default="false" /> <!--표준공수 없음 여부-->
+    <aura:attribute name="isCRMSearch"          type="Boolean" default="false" /> <!--내부에서 조회 여부-->
+    <aura:attribute name="isDNSA"               type="Boolean" default="false" /> <!--DNSA 유저 여부-->
+    <aura:attribute name="serviceData"          type="Object"  default="{}"/> <!-- 조회된 Service 데이터 -->
+    <aura:attribute name="workOrderResultData"  type="Object"/> <!-- WorkOrderResult 값 중 단일 값 Wrapper -->
+    <aura:attribute name="installationFinish"   type="Date"     default=""/> <!--설치 시운전 완료일-->
+    <aura:attribute name="isHECare"             type="Boolean"  default="false"/> <!--HE Care 체크 가능 여부-->
+    <aura:attribute name="isHECareByAsset"      type="Boolean"  default="false" /> <!--HE Care 체크 여부 -->
+    <aura:attribute name="isCustomerChecked"    type="Boolean"  default="false"/> <!--현장 책임자 동일-->
+    <aura:attribute name="siteManager"          type="String"   default=""/> <!--현장 책임자-->
+    <aura:attribute name="siteManagerPhone"     type="String"   default=""/> <!--현장 책임자 휴대폰-->
+    <aura:attribute name="isSiteManagerChecked" type="Boolean"  default="false"/> <!--주 작업자 동일-->
+    <aura:attribute name="mainWorker"           type="String"   default=""/> <!--주 작업자-->
+    <aura:attribute name="mainWorkerPhone"      type="String"   default=""/> <!--주 작업자 휴대폰-->
+    <aura:attribute name="multiPicklistValues"  type="List"     default="['ZELEC']" /> <!-- 설치시운전 Multi PickList 값 -->
+    <aura:attribute name="workList"             type="List"     default="[]"/> <!-- 작업내역 리스트 -->
+    <aura:attribute name="defectList"           type="List"     default="[]"/> <!-- 초기하자 리스트 -->
+    <aura:attribute name="standardWorkList"     type="List"     default="[]"/> <!-- 표준공수 리스트 -->
+    <aura:attribute name="usageList"            type="List"     default="[]"/> <!-- 부품사용내역 리스트 -->
+    <aura:attribute name="failureAreaList"      type="List"     default="[]"/> <!-- 고장부위 리스트 -->
+    <aura:attribute name="productRequests"      type="ProductRequest[]" /> <!--부품 사용 내역 리스트-->
+    <aura:attribute name="commonParts"          type="ProductRequest[]" /> <!--부품 사용 내역 리스트(기획/순회서비스)-->
+    <aura:attribute name="isTypeCheck"          type="Boolean"  default="false" /> <!--true:조치결과입력/ false:프리콜-->
+    <aura:attribute name="repairActionGroupCode"    type="String"   default="" /> <!--조치사항 그룹 코드 하드코딩 데이터-->
+    <aura:attribute name="showRequiredReason1"  type="Boolean"  default="false"/> <!--(서비스 리포트) reason1에 특정 조건일 경우 * 넣기-->
+
+    <!-- ㅇㅅㅇ -->
+    <aura:attribute name="selectAllWorkList"  type="Boolean"  default="false"/> <!--  -->
+    <aura:attribute name="selectAllDefectList"  type="Boolean"  default="false"/> <!--  -->
+    <aura:attribute name="selectAllStandardWorkList"  type="Boolean"  default="false"/> <!--  -->
+    <!-- ㅇㅅㅇ -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- 상위 컴포넌트에서 ID 설정 -->
+    <!-- <aura:attribute name="parent" type="c:DN_serviceWrapper"/> -->
+
+    <!-- Handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <!-- Body -->
+    <article class="slds-card">
+
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        
+        <aura:if isTrue="{!v.isSearched}">
+            <div class="body searched">
+                <div class="card-main top-card">
+                    <div class="main-container">
+                        <div class="main-container-title">{!$Label.c.DNS_PORTAL_SERVICE_ORDER_NUMBER}</div>
+                        <div class="field-wrap" onkeyup="{!c.handleKeyPress}">
+                            <lightning:input aura:id="inputOrderNumber" data-aura-id="inputOrderNumber" label="오더번호"
+                                value="{!v.orderNumber}" variant="label-hidden" />
+                        </div>
+                        <div class="button-wrap">
+                            <lightning:button variant="brand" label="{!$Label.c.service_btn_search}" onclick="{!c.handleSearch}" />
+                        </div>
+                    </div>
+                    <div class="readOnly">
+                        <aura:if isTrue="{! OR( v.isDNSA, NOT(v.isPortalEnabled) ) }">
+                            <!-- DNSA의 경우 확정 기능이 없어 확정 처리일시 출력하지 않음 && 내부 사용자의 경우도 포함 -->
+                            <aura:set attribute="else">
+                                <lightning:button class="equipspec-btn" label="출하지시서" title="출하지시서" variant="brand" onclick="{!c.openEquipment}" />
+                            </aura:set>
+                        </aura:if>
+                        <p>
+                            <span style="font-weight: 600;">Work Center : </span>
+                            <span>{!v.serviceData.serviceReportInfo.workCenter}</span>
+                        </p>
+
+                        <p>
+                            <span style="font-weight: 600;">{!$Label.c.DNS_PORTAL_CONFIRMED_DATE} : </span>
+                            <span>
+                                {!v.confirmedDate}
+                            </span>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div class="body" style="border-bottom: 0;">
+                    <div class="card-main top-card">
+                        <div class="main-container">
+                            <div class="main-container-title">{!$Label.c.DNS_PORTAL_SERVICE_ORDER_NUMBER}</div>
+                            <div class="field-wrap" onkeyup="{!c.handleKeyPress}">
+                                <lightning:input aura:id="inputOrderNumber" data-aura-id="inputOrderNumber" label="오더번호"
+                                    value="{!v.orderNumber}" variant="label-hidden" />
+                            </div>
+                            <div class="button-wrap">
+                                <lightning:button variant="brand" label="{!$Label.c.service_btn_search}" onclick="{!c.handleSearch}" />
+                            </div>
+                        </div>
+                        <div class="readOnly">
+                            <p>
+                                <span style="font-weight: 600;">Work Center : </span>
+                                <span>{!v.loginUserInfo.Service_Territory__r.Name}</span>
+                            </p>
+                            <p>
+                                <span style="font-weight: 600;">{!$Label.c.DNS_PORTAL_CONFIRMED_DATE} : </span>
+                                <span>
+                                    {!v.confirmedDate}
+                                </span>
+                            </p>
+                                
+                        </div>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.templateNumber == 'RT03'}">
+            <c:DN_newDeliveryInspection 
+                recordId="{!v.recordId}"
+                isConfirmed="{!v.isConfirmed}"
+                loginUserInfo="{!v.loginUserInfo}" 
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}" 
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}" />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT02'}">
+            <c:DN_installTesting  
+                aura:id="parent"
+                recordId="{!v.recordId}"    
+                isConfirmed="{!v.isConfirmed}"      
+                loginUserInfo="{!v.loginUserInfo}" 
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                defectList="{!v.defectList}"
+                preparationValues="{!v.multiPicklistValues}"
+                installationFinish="{!v.installationFinish}" 
+                isHECare="{!v.isHECare}" 
+                isHECareByAsset="{!v.isHECareByAsset}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}"
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}" />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT01'}">
+            <c:DN_newTouringService    
+                recordId="{!v.recordId}" 
+                isConfirmed="{!v.isConfirmed}"      
+                loginUserInfo="{!v.loginUserInfo}" 
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                usageHistory="{!v.commonParts}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}" 
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}"                
+                />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT06'}">
+            <c:DN_postDeliveryTraining  
+                recordId="{!v.recordId}"    
+                isConfirmed="{!v.isConfirmed}"      
+                loginUserInfo="{!v.loginUserInfo}" 
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}" 
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}"
+                isReportBranch="{!v.isReportBranch}" />
+        </aura:if>  
+
+        <aura:if isTrue="{!v.templateNumber == 'RT07'}">
+            <c:DN_serviceResultEntry
+                recordId="{!v.recordId}"    
+                isConfirmed="{!v.isConfirmed}"      
+                loginUserInfo="{!v.loginUserInfo}" 
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}" 
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}" />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT04'}">
+            <c:DN_serviceReport 
+                recordId="{!v.recordId}"
+                isConfirmed="{!v.isConfirmed}"
+                isPortalEnabled="{!v.isPortalEnabled}" 
+                isDisabled="{!v.isDisabled}"       
+                isNoStandardWork="{!v.isNoStandardWork}"
+                isTypeCheck ="{!v.isTypeCheck}" 
+                loginUserInfo="{!v.loginUserInfo}" 
+                isBranch="{!v.isBranch}"
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                standardWorkList="{!v.standardWorkList}"
+                productRequests="{!v.productRequests}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}" 
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}"
+                repairActionGroupCode="{!v.repairActionGroupCode}" 
+                faultAreaOptions="{!v.failureAreaList}"
+                />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT05'}">
+            <c:DN_serviceReport 
+                recordId="{!v.recordId}"    
+                isConfirmed="{!v.isConfirmed}" 
+                isPortalEnabled="{!v.isPortalEnabled}" 
+                isDisabled="{!v.isDisabled}"    
+                isNoStandardWork="{!v.isNoStandardWork}"
+                isTypeCheck ="{!v.isTypeCheck}" 
+                loginUserInfo="{!v.loginUserInfo}" 
+                isBranch="{!v.isBranch}"
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                standardWorkList="{!v.standardWorkList}"
+                productRequests="{!v.productRequests}"
+                siteManager="{!v.siteManager}" 
+                siteManagerPhone="{!v.siteManagerPhone}" 
+                mainWorker="{!v.mainWorker}" 
+                mainWorkerPhone="{!v.mainWorkerPhone}" 
+                isCustomerChecked="{!v.isCustomerChecked}" 
+                isSiteManagerChecked="{!v.isSiteManagerChecked}" 
+                repairActionGroupCode="{!v.repairActionGroupCode}" 
+                faultAreaOptions="{!v.failureAreaList}"
+                />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT08'}">
+            <c:DN_paidServiceReportForServiceWrapper
+                recordId="{!v.recordId}"
+                isConfirmed="{!v.isConfirmed}"    
+                isDisabled="{!v.isDisabled}"  
+                loginUserInfo="{!v.loginUserInfo}" 
+                serviceData="{!v.serviceData}" 
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                usageList="{!v.usageList}"
+                repairActionGroupCode="{!v.repairActionGroupCode}" />
+        </aura:if>
+
+        <aura:if isTrue="{!v.templateNumber == 'RT09'}">
+            <c:DN_serviceReportEntry 
+                recordId="{!v.recordId}"
+                isConfirmed="{!v.isConfirmed}"
+                isDisabled="{!v.isDisabled}"
+                isPortalEnabled="{!v.isPortalEnabled}"
+                loginUserInfo="{!v.loginUserInfo}"
+                serviceData="{!v.serviceData}"
+                workOrderResultData="{!v.workOrderResultData}"
+                workList="{!v.workList}"
+                usageList="{!v.usageList}"
+                repairActionGroupCode="{!v.repairActionGroupCode}" />
+        </aura:if>
+    </article>
+</aura:component>

@@ -1,0 +1,96 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 07-02-2024
+  @last modified by  : Hyerin Ro 
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-02-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_WarrantyHistorySearchController"
+  description="무상 이력 조회">
+
+
+  <!--Attribute-->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="warrantyList" type="List" />
+  <aura:attribute name="modelValue" type="String" />
+  <!-- attribute -->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+
+  <!--Handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+            onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!-- <article class="slds-card"> -->
+    <!-- 기종 검색 Modal -->
+    <div aura:id="ModelSearchModal"></div>
+
+    <!-- Body -->
+    <!-- <div class="body"> -->
+      <!-- Card 02 : 조회 테이블-->
+      <!-- <div class="card-02 top-card"> -->
+        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+          <colgroup>
+            <col width="20%" />
+            <col width="20%" />
+            <col width="10%" />
+            <col width="20%" />
+            <col width="20%" />
+          </colgroup>
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th class="" scope="col">
+                <div class="slds-truncate" title="">장비번호</div>
+              </th>
+              <th class="" scope="col">
+                <div class="slds-truncate" title="">고객명</div>
+              </th>
+              <th class="" scope="col">
+                <div class="slds-truncate" title="">서비스 생성일자</div>
+              </th>
+              <th class="" scope="col">
+                <div class="slds-truncate" title="">부품번호</div>
+              </th>
+              <th class="" scope="col">
+                <div class="slds-truncate" title="">부품명</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <aura:iteration items="{!v.warrantyList}" var="warrantyList" indexVar="j">
+              <tr class="slds-hint-parent">
+                <td scope="row">
+                  <div>{!warrantyList.serialNumber}</div>
+                </td>
+                <td scope="row">
+                  <div>{!warrantyList.accountName}</div>
+                </td>
+                <td scope="row" class="center">
+                  <div>{!warrantyList.createdDate}</div>
+                </td>
+                <td scope="row">
+                  <div>{!warrantyList.partName}</div>
+                </td>
+                <td scope="row">
+                  <div>{!warrantyList.partNumber}</div>
+                </td>
+              </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+      <!-- </div> -->
+    <!-- </div> -->
+  <!-- </article> -->
+
+</aura:component>

@@ -1,0 +1,309 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 2025-05-20
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   10-20-2024   Hyerin Ro   Initial Version
+-->
+<aura:component 
+    controller="DN_Order_CreateController" 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    access="global">
+
+    <aura:attribute type="Boolean" name="isUser" description="true - sales, false - dealer"/>
+    <aura:attribute type="Boolean" name="isGlobal"/>
+    <aura:attribute type="Boolean" name="isLoading" default="true"/>
+
+    <!-- address -->
+    <aura:attribute type="String" name="soldToState"/>
+    <aura:attribute type="String" name="soldToCity"/>
+    <aura:attribute type="String" name="soldToStreet"/>
+    <aura:attribute type="String" name="soldToPostalCode"/>
+    <aura:attribute type="String" name="soldToCountry"/>
+    <aura:attribute type="String" name="shippingState"/>
+    <aura:attribute type="String" name="shippingCity"/>
+    <aura:attribute type="String" name="shippingStreet"/>
+    <aura:attribute type="String" name="shippingPostalCode"/>
+    <aura:attribute type="String" name="shippingCountry"/>
+
+    <!-- order segmentation -->
+    <aura:attribute type="Boolean" name="disabledSeg" default="false"/>
+    <aura:attribute type="List"    name="optionsForSeg"/>
+    <aura:attribute type="String"  name="orderSegmentation"/>
+
+    <aura:attribute type="Map"     name="defaultValues"/>
+    <aura:attribute type="String"  name="salesChannel"/>
+    <aura:attribute type="String"  name="country"/>
+    <aura:attribute type="List"    name="selectedItems"/>
+    <aura:attribute type="String"  name="recordId"/>
+    <aura:attribute type="List"    name="quoteLineItemInfo"/>
+    <aura:attribute type="Boolean" name="hasCommission" default="false"/>
+    <aura:attribute type="Boolean" name="isExport" default="false"/>
+    
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_Order_Create .modal-02){
+            width: 70%;
+            max-width: calc(100vw - 8rem);
+            min-width: 480px;
+        }
+        .slds-modal__content:has(.cDN_Order_Create) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+            border-radius: 0.25rem;
+        }
+        .slds-modal__container:has(.cDN_Order_Create),
+        .slds-modal__content:has(.cDN_Order_Create),
+        .quick-actions-panel:has(.cDN_Order_Create){
+            overflow: visible !important;
+        }
+        @media all and (max-width:767px) {
+            .slds-modal__container:has(.cDN_Order_Create .modal-02) {
+              width: 100%;
+              max-width: unset;
+              min-width: unset;
+              margin: 0;
+              padding: 0;
+              height: calc(100vh - 7.5rem);
+              border-radius: 0;
+            }
+            .slds-modal__content:has(.cDN_Order_Create .modal-02) {
+                height: auto !important;
+                max-height: unset !important;
+                padding: 0 !important;
+                overflow-y: clip;
+            }
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_Order_Create) {
+            padding:0;
+        }
+    </aura:html>
+    
+    <div class="slds-modal__container">
+        <aura:if isTrue="{! v.isLoading }">
+          <lightning:spinner size="medium" alternativeText="Loading" />
+        </aura:if>
+
+        <lightning:recordEditForm 
+            aura:id="orderEditForm"
+            objectApiName="Order" 
+            onsubmit="{!c.handleSubmit}"
+            onerror="{!c.handleError}">
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.DNS_S_NewOrder}</h2>
+            </header>
+
+            <div class="slds-modal__content modal_body_wrap">
+                <lightning:layout>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_OrderInformation}</label>
+                        </div>
+                    </lightning:layoutItem>
+                    <span class="modal-02"></span>
+                </lightning:layout>
+
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6" class="display_none">
+                        <lightning:inputField fieldName="SalesChannelType__c" value="{!v.salesChannel}" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6" class="display_none">
+                        <lightning:inputField fieldName="Country__c" value="{!v.country}"/>
+                    </lightning:layoutItem>
+                    <!-- <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="EffectiveDate" required="true"/>
+                    </lightning:layoutItem> -->
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="ReqDeliveryDate__c" aura:id="ReqDeliveryDate__c" required="true" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="AccountId" aura:id="AccountId" required="true" disabled="{!not(v.isUser)}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="OrderType__c" value="ZPO" disabled="true"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="PurchaseType__c" required="true" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:combobox aura:id="OrderSegmentation__c" label="{!$Label.c.DNS_F_OrderSegmentation}" options="{!v.optionsForSeg}" onchange="{!c.changeOrderSeg}" value="{!v.orderSegmentation}" disabled="{!v.disabledSeg}" required="{!not(v.isGlobal)}" variant="label-inline"/>
+                        <!-- <lightning:inputField fieldName="OrderSegmentation__c" aura:id="OrderSegmentation__c" disabled="{!v.disabledSeg}" required="{!not(v.isGlobal)}" onchange="{!c.changeOrderSeg}" /> -->
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="CustomerOrderNo__c" required="{!not(v.isUser)}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="Incoterms__c" aura:id="Incoterms__c" required="true"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="PaymentTerms__c" aura:id="PaymentTerms__c" required="true"/>
+                    </lightning:layoutItem>
+                    <!-- <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="HasSpecialDC__c" aura:id="HasSpecialDC__c"/>
+                    </lightning:layoutItem> -->
+                    
+                    <!-- <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="PriceList__c"/>
+                    </lightning:layoutItem> -->
+                </lightning:layout>
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="SalesRep__c" aura:id="SalesRep__c" disabled="true"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="ServiceDealer__c" aura:id="ServiceDealer__c" disabled="true"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="CreditDealer__c" aura:id="CreditDealer__c" disabled="true"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="RelatedDealer__c" aura:id="RelatedDealer__c" disabled="true"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="IsExport__c" required="true" onchange="{!c.handleExport}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="ExportTo__c" required="{!v.isExport}"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                
+                <aura:if isTrue="{!v.isGlobal}">
+                    <lightning:layout>
+                        <lightning:layoutItem flexibility="auto" padding="around-small">
+                            <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                                <label>{!$Label.c.DNS_S_Commission}</label>
+                            </div>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <lightning:layout>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:inputField fieldName="DealerCommission__c" onchange="{!c.handleCommission}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:inputField fieldName="Vendor__c" required="{!v.hasCommission}"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </aura:if>
+
+                <lightning:layout>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_CustomerInformation}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="Contractor__c" required="true" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="EndUser__c" required="true" />
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_AddressInformation}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="BillTo__c" aura:id="BillTo__c" required="true" disabled="{!not(v.isGlobal)}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="Payer__c" aura:id="Payer__c" required="true" disabled="{!not(v.isGlobal)}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="SoldTo__c" aura:id="SoldTo__c" required="true" disabled="{!not(v.isGlobal)}" onchange="{!c.handleAddress}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="ShipTo__c" aura:id="ShipTo__c" required="true" onchange="{!c.handleAddress}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputAddress
+                            addressLabel="{!$Label.c.DNS_C_SoldToAddress}"
+                            provinceLabel="{!$Label.c.DNS_C_SoldToState}"
+                            cityLabel="{!$Label.c.DNS_C_SoldToCity}"
+                            streetLabel="{!$Label.c.DNS_C_SoldToStreet}"
+                            postalCodeLabel="{!$Label.c.DNS_C_SoldToPostalCode}"
+                            countryLabel="{!$Label.c.DNS_C_SoldToCountry}"
+                            province="{!v.soldToState}"
+                            city="{!v.soldToCity}"
+                            street="{!v.soldToStreet}"
+                            postalCode="{!v.soldToPostalCode}"
+                            country="{!v.soldToCountry}"
+                            disabled="true"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputAddress
+                            addressLabel="{!$Label.c.DNS_C_ShippingAddress}"
+                            provinceLabel="{!$Label.c.DNS_C_ShippingState}"
+                            cityLabel="{!$Label.c.DNS_C_ShippingCity}"
+                            streetLabel="{!$Label.c.DNS_C_ShippingStreet}"
+                            postalCodeLabel="{!$Label.c.DNS_C_ShippingPostalCode}"
+                            countryLabel="{!$Label.c.DNS_C_ShippingCountry}"
+                            province="{!v.shippingState}"
+                            city="{!v.shippingCity}"
+                            street="{!v.shippingStreet}"
+                            postalCode="{!v.shippingPostalCode}"
+                            country="{!v.shippingCountry}"
+                            disabled="true"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_IndustryClassification}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="MainCategory__c" aura:id="MainCategory__c"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="SubCategory__c" aura:id="SubCategory__c"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small" size="6">
+                        <lightning:inputField fieldName="IsTooling__c" aura:id="IsTooling__c"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_Description}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+
+                <lightning:layout multipleRows="true">
+                    <lightning:layoutItem padding="around-small" size="12">
+                        <lightning:inputField fieldName="Description"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+
+            <footer class="slds-modal__footer">
+                <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.closeClick}"/>
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" type="submit"/>
+            </footer>
+        </lightning:recordEditForm>
+    </div>
+</aura:component>

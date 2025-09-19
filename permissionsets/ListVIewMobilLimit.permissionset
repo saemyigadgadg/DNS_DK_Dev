@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Community 사용자에게 내부사용자용 ListView를 공유하지 않도록 권한 할당</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>ListVIew 제한</label>
+</PermissionSet>

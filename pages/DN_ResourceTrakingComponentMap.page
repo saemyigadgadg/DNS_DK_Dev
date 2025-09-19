@@ -1,0 +1,143 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2024-11-28
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-07-24   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<apex:page controller="DN_ResourceTrackingController">
+
+    <style>
+        #map > div:last-of-type > div:first-child {
+            display: flex;
+            gap: 2px;
+            width: unset !important;
+            height: unset !important;
+        }
+    </style>
+
+    <body>
+        <div id="map" style="width:100%; height:100vh;"></div>
+        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=3cbc063a3b1a489a4095e59cdbc98a8d&libraries=services"></script>
+        <script>
+            var urlParams = new URLSearchParams(window.location.search);
+            var jsonString = decodeURIComponent(urlParams.get('paramObject'));
+            var mapInfo = JSON.parse(jsonString);
+
+            // Map Center좌표
+            var latitude = parseFloat(mapInfo.centerLat);
+            var longitude = parseFloat(mapInfo.centerLng);
+            
+            // equipment
+            var equipment = mapInfo.equipment;
+            var equipImg = equipment.equipImg;
+            var equipLat = parseFloat(equipment.lat);
+            var equipLng = parseFloat(equipment.lng);
+
+            // 출동 요원
+            var technician = mapInfo.technician;
+            var technicianImg = technician.imageSrc;
+            var technicianLat = parseFloat(technician.lat);
+            var technicianLng = parseFloat(technician.lng);
+
+            // 현재 로직 타입
+            var type = mapInfo.type;
+            
+            // 장비 원반경
+            var distance = parseFloat(mapInfo.distance);
+
+            var container = document.getElementById('map');
+            var options = {
+                center: new kakao.maps.LatLng(latitude, longitude),
+                level: 10
+            };
+
+            var map = new kakao.maps.Map(container, options);
+
+            // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+            var mapTypeControl = new kakao.maps.MapTypeControl();
+ 
+            // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+            // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+            map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+            
+            // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+            var zoomControl = new kakao.maps.ZoomControl();
+            map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+            // 장비 마커
+            var epuipmentLatLng = new kakao.maps.LatLng(equipLat, equipLng);
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            var equipImageSrc = equipImg; // 마커이미지의 주소입니다    
+            var equipImageSize = new kakao.maps.Size(64, 69); // 마커이미지의 크기입니다
+            var equipImageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+            
+            // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+            var equipMarkerImage = new kakao.maps.MarkerImage(equipImageSrc, equipImageSize, equipImageOption);
+            
+            var equipMarker = new kakao.maps.Marker({
+                map: map,
+                position: epuipmentLatLng,
+                image: equipMarkerImage
+            });
+
+            var circle = new kakao.maps.Circle({ 
+                center : epuipmentLatLng, // 원의 중심좌표입니다
+                radius: distance * 1000, // 원의 반지름입니다 m 단위 이며 선 객체를 이용해서 얻어옵니다
+                strokeWeight: 0.6, // 선의 두께입니다
+                strokeColor: '#0078E7', // 선의 색깔입니다
+                strokeOpacity: 1, // 선의 불투명도입니다 0에서 1 사이값이며 0에 가까울수록 투명합니다
+                strokeStyle: 'solid', // 선의 스타일입니다
+                fillColor: '#00A0E9', // 채우기 색깔입니다
+                fillOpacity: 0.1  // 채우기 불투명도입니다 
+            });
+            
+            circle.setMap(map);
+
+            
+            // 장비의 인포윈도우
+            var equipInfowindow = new kakao.maps.InfoWindow({
+                // content: '<div><table border="1"><tr><td>현재 고객 위치</td></tr><tr><td>' + equipment.selectAddress + '</td></tr></table></div>'
+                content: '<div style="padding: 0.5rem 0.75rem"><p style="display: flex; gap: 3px; align-items: center; margin: 0;"><svg width="16" height="16" fill="#0176D3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.906 1.994a8.002 8.002 0 0 1 8.09 8.421 7.996 7.996 0 0 1-1.297 3.957.996.996 0 0 1-.133.204l-.108.129c-.178.243-.37.477-.573.699l-5.112 6.224a1 1 0 0 1-1.545 0L5.982 15.26l-.002-.002a18.146 18.146 0 0 1-.309-.38l-.133-.163a.999.999 0 0 1-.13-.202 7.995 7.995 0 0 1 6.498-12.518ZM15 9.997a3 3 0 1 1-5.999 0 3 3 0 0 1 5.999 0Z" clip-rule="evenodd"/></svg><span style="color: #939393;">현재 고객 위치</span><p style="color: #181818; margin-top: 3px; margin-bottom: 0;">' + equipment.selectAddress + '</p></div>'
+            });
+            equipInfowindow.open(map, equipMarker);
+            
+            // 요원 마커
+            if (type == 'technicianClick') {
+
+                var technitionLatLng = new kakao.maps.LatLng(technicianLat, technicianLng);
+                // 결과값으로 받은 위치를 마커로 표시합니다
+                var technitionImageSrc = technicianImg; // 마커이미지의 주소입니다
+                var technitionImageSize = new kakao.maps.Size(64, 69); // 마커이미지의 크기입니다
+                var technitionImageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+                
+                // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+                var technitionMarkerImage = new kakao.maps.MarkerImage(technitionImageSrc, technitionImageSize, technitionImageOption);
+                
+                var technicianMarker = new kakao.maps.Marker({
+                    map: map,
+                    position: technitionLatLng,
+                    image: technitionMarkerImage
+                });
+
+                // 요원의 인포윈도우 & 맵의 센터이동
+                // var infoString = technician.name + ' (' + technician.sapId + ') ' + technician.status
+                var techName = technician.name;
+                var techId = technician.sapId;
+                var techStatus = technician.status == '' ? '' : technician.status;
+
+                var technitionInfowindow = new kakao.maps.InfoWindow({
+                    // content: '<div>' + infoString + '</div>'
+                    content: '<div style="padding: 0.25rem 0.5rem; display: flex; justify-content: center; align-items: center; width: 100%;"><span style="color: #181818; font-weight: bold;">' + techStatus + '</span><span style="display: inline-block; width: 1px; height: 15px; background-color: #C9C9C9; margin: 0 6px;"></span><span style="display:inline-block;">' + techName + '</span><span style="color: #939393; margin-left: 3px; margin-top: 2px;">' + techId +'</span></div>'
+                });
+                technitionInfowindow.open(map, technicianMarker);
+
+            }
+            var resetCenter = new kakao.maps.LatLng(latitude, longitude);
+            map.setCenter(resetCenter);
+
+        </script>
+    </body>
+</apex:page>

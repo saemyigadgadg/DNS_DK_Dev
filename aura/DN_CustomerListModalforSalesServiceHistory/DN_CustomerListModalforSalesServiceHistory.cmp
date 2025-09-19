@@ -1,0 +1,284 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 03-04-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-12   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PortalModalController"
+  description="고객 리스트 모달 for 서비스 이력 조회 ">
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="customerList" type="List" default="[]" />
+  <!-- <aura:attribute name="customerTypes" type="List" default="[]" />
+  <aura:attribute name="customerType" type="String" default="전체" /> -->
+  <aura:attribute name="customerCode" type="String" default="" />
+  <aura:attribute name="companyName" type="String" default="" />
+  <aura:attribute name="representative" type="String" default="" />
+  <aura:attribute name="addressName" type="String" default="" />
+
+  <!-- Paging -->
+  <aura:attribute name="listViewOptions" type="List" default="[]" />
+  <aura:attribute name="listViewOption" type="String" default="5" />
+  <aura:attribute name="allResultCount" type="Integer" default="0" />
+  <aura:attribute name="totalPage" type="Decimal" default="1" />
+  <aura:attribute name="pageAllCountList" type="List" />
+  <aura:attribute name="pageCountListIndex" type="Decimal" default="0" />
+  <aura:attribute name="pageCountList" type="List" default="[0]" />
+  <aura:attribute name="currentPage" type="Decimal" default="1" />
+  <aura:attribute name="pageList" type="List" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <div class="customerListModal">
+    <div aura:id="customerListModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <!-- Loading -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">{!$Label.c.service_ttl_account_check}</h2>
+
+          <!-- close btn -->
+          <button class="slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.closeModal}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content">
+
+          <!-- Card 01 -->
+          <div class="card-01 top-card">
+            <!-- <div class="field-wrap">
+              <p>고객구분</p>
+              <div class="input-wrap">
+                <lightning:combobox name="customerType" value="{!v.customerType}" options="{!v.customerTypes}"
+                  variant="label-hidden" />
+              </div>
+            </div> -->
+            <div class="field-wrap">
+              <p>{!$Label.c.service_lbl_account}</p>
+              <div class="input-wrap">
+                <lightning:input value="{!v.companyName}" variant="label-hidden" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>{!$Label.c.service_fld_representative_name}</p>
+              <div class="input-wrap">
+                <lightning:input value="{!v.representative}" variant="label-hidden" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>{!$Label.c.service_fld_address}</p>
+              <div class="input-wrap">
+                <lightning:input value="{!v.addressName}" variant="label-hidden" />
+              </div>
+            </div>
+            <div class="button-wrap">
+              <lightning:buttonGroup>
+                <!-- 검색(필터링) 기능 추가 필요 -->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" onclick="{!c.doSearch}" />
+              </lightning:buttonGroup>
+            </div>
+          </div>
+
+          <!-- Card 02 -->
+          <div class="card-02 top-card">
+            <div class="table-wrap">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <!-- <th class="" scope="col">
+                      <div class="slds-truncate" title="">고객구분</div>
+                    </th> -->
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_fld_account_code}</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_lbl_account}</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_fld_representative_name}</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_fld_address}</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_fld_tel}</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_fld_country}</div>
+                    </th>
+                    <!-- <th class="" scope="col">
+                      <div class="slds-truncate" title="">딜러</div>
+                    </th> -->
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_fld_registrationdate}</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- 값이 있을 때 -->
+                  <aura:if isTrue="{!v.customerList.length > 0}">
+  
+                    <!-- sendCustomerInfo - component.find("customer").get("v.value")을 위해 index 부여 -->
+                    <aura:iteration items="{!v.customerList}" var="customer" indexVar="index">
+                      <tr class="slds-hint-parent" onclick="{!c.sendCustomerInfo}" data-index="{!index}">
+                        <!-- <td data-label="고객구분">
+                          <div class="slds-truncate" title="고객구분">
+                            <lightning:input type="text" name="customerType" variant="label-hidden"
+                              value="{!customer.customerType}" readonly="true" aura:id="customerType" />
+                          </div>
+                        </td> -->
+                        <td data-label="고객코드">
+                          <!-- <div class="slds-truncate" title="고객코드">
+                            <lightning:input type="text" name="customerCode" variant="label-hidden"
+                              value="{!customer.CustomerCode__c}" readonly="true" aura:id="customerCode" />
+                          </div> -->
+                          {!customer.CustomerCode__c}
+                        </td>
+                        <td data-label="고객명">
+                          <!-- <div class="slds-truncate" title="고객명">
+                            <lightning:input type="text" name="customerName" variant="label-hidden"
+                              value="{!customer.Name}" readonly="true" aura:id="customerName" />
+                          </div> -->
+                          {!customer.Name}
+                        </td>
+                        <td data-label="대표자명">
+                          <!-- <div class="slds-truncate" title="대표자명">
+                            <lightning:input type="text" name="representative" variant="label-hidden"
+                              value="{!customer.Representative__c}" readonly="true" aura:id="representative" />
+                          </div> -->
+                          {!customer.Representative__c}
+                        </td>
+                        <td data-label="주소">
+                          <!-- <div class="slds-truncate" title="주소">
+                            <lightning:input type="text" name="address" variant="label-hidden" value="{!customer.FM_Address__c}"
+                              readonly="true" aura:id="address" />
+                          </div> -->
+                          {!customer.FM_Address__c}
+                        </td>
+                        <td data-label="전화번호">
+                          <!-- <div class="slds-truncate" title="전화번호">
+                            <lightning:input type="text" name="phone" variant="label-hidden" value="{!customer.Phone}"
+                              readonly="true" aura:id="phone" />
+                          </div> -->
+                          {!customer.Phone}
+                        </td>
+                        <td data-label="국가">
+                          <!-- <div class="slds-truncate" title="국가">
+                            <lightning:input type="text" name="country" variant="label-hidden" value="{!customer.Country__c}"
+                              readonly="true" aura:id="country" />
+                          </div> -->
+                          {!customer.Country__c}
+                        </td>
+                        <!-- <td data-label="딜러">
+                          <div class="slds-truncate" title="딜러">
+                            <lightning:input type="text" name="dealer" variant="label-hidden" value="{!customer.dealer}"
+                              readonly="true" aura:id="dealer" />
+                          </div>
+                        </td> -->
+                        <td data-label="등록일">
+                          <!-- <div class="slds-truncate" title="등록일">
+                            <lightning:input type="Date" name="registeredDate" variant="label-hidden"
+                              value="{!customer.CreatedDate}" readonly="true" aura:id="registeredDate" />
+                          </div> -->
+                          <ui:outputDate value="{!customer.CreatedDate}"/>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+  
+                    <!-- 값이 없을 때 -->
+                    <aura:set attribute="else">
+                      <tr>
+                        <td colspan="9" style="text-align: center;">No Data</td>
+                      </tr>
+                    </aura:set>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+           
+          </div>
+
+          <!-- 페이지 -->
+          <div class="pagination-wrap">
+
+            <div class="total">
+              <p>{!$Label.c.service_fld_total} : <span style="font-weight: bold;">{!v.allResultCount}</span>
+                ({!v.currentPage}/{!v.totalPage})</p>
+            </div>
+
+            <ul class="pagination">
+              <li class="first">
+                <a onclick="{!c.handleChangePage}" name="first" value="1">
+                  <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small'
+                    title='jump_to_left'></lightning:icon>
+                </a>
+              </li>
+              <li class="prev">
+                <a onclick="{!c.handleChangePage}" name="previous" value="{!v.currentPage - 1}">
+                  <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small'
+                    title='chevronleft'></lightning:icon>
+                </a>
+              </li>
+              <li class="pages">
+                <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                  <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                    <span class="here"> {!pageNumber + 1} </span>
+                    <aura:set attribute="else">
+                      <span>
+                        <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber +
+                          1}</a>
+                      </span>
+                    </aura:set>
+                  </aura:if>
+                </aura:iteration>
+              </li>
+              <li class="next">
+                <a onclick="{!c.handleChangePage}" name="next" value="{!v.currentPage + 1}">
+                  <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small'
+                    title='chevronright'></lightning:icon>
+                </a>
+              </li>
+              <li class="last">
+                <a onclick="{!c.handleChangePage}" name="last" value="{!v.pageList.length}">
+                  <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small'
+                    title='jump_to_right'></lightning:icon>
+                </a>
+              </li>
+            </ul>
+
+            <span class="listviewoption">
+              <lightning:combobox name="listViewOption" value="{!v.listViewOption}" options="{!v.listViewOptions}"
+                variant="label-hidden" />
+            </span>
+          </div>
+
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.closeModal}" />
+        </footer>
+      </div>
+    </div>
+
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+</aura:component>

@@ -1,0 +1,555 @@
+<!--
+  @description       : 
+  @author            : Sejin Kwon
+  @group             : 
+  @last modified on  : 2025-04-29
+  Modifications Log
+  Ver   Date         Author                      Modification
+  2.0   16-12-2024   Sejin Kwon                  Initial Version
+-->
+<aura:component controller="DN_SelectOptionsController"
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global">
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+    <aura:attribute name="recordIds" type="List" default="[]" />
+    <aura:attribute name="options" type="List" default="[]" />
+    <aura:attribute name="initData" type="List" default="[]" />
+    <aura:attribute name="isInconvalue" type="Boolean" default="false" />
+    <aura:attribute name="isCVvalue" type="Boolean" default="true" />
+    <aura:attribute name="tInconValue" type="List" default="[]" />
+    <aura:attribute name="defcvData" type="List" default="[]" />
+    <aura:attribute name="upRecord" type="List" default="[]" />
+    <aura:attribute name="tselData" type="List" default="[]" />
+    <aura:attribute name="tresetselData" type="List" default="[]" /> <!-- reset버튼 눌렀을 때 teselData가 초기화가 되지만 저장하지않고 cancel눌렀을때 따시 tselData에 값을 넣어주기 위한 변수-->
+    <aura:attribute name="dataLoad" type="Boolean" default="false" />
+    <aura:attribute name="lineItemList" type="List" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="status" type="String" />
+    <aura:attribute name="errormessage" type="String" />
+    <aura:attribute name="color" type="Boolean" default="false" />
+    <aura:attribute name="essentialReset" type="Boolean" default="false" />
+
+    <aura:attribute name="factoryData" type="List" default="[]" />
+    <aura:attribute name="previeousCVList" type="List" default="[]" />
+    <aura:attribute name="isDNSA" type="Boolean" default="false" />
+    <aura:attribute name="isPrevious" type="Boolean" default="false" />
+    <aura:attribute name="isTabSwitch" type="Boolean" default="true" />
+    <aura:attribute name="isConfirmReset" type="Boolean" default="false" />
+    <aura:attribute name="isOn" type="Boolean" default="true" />
+    
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.isCVvalue}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <!-- DNSA Side Panel -->
+                <aura:if isTrue="{!v.isDNSA}">
+                    <div class="sidebar-panel isDNSA">
+                        <div class="panel-header">
+                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Selected Option</h1>
+                        </div>
+                        <div class="tab-wrap">
+                            <div class="{! (v.isTabSwitch ? 'tab on' : 'tab') }" onclick="{!c.handlePanelLeftTabs}">CV</div>
+                            <div class="{! (v.isTabSwitch ? 'tab' : 'tab on') }" onclick="{!c.handlePanelRightTabs}">Factory Option</div>
+                        </div>
+
+                        <aura:if isTrue="{!v.isTabSwitch}">
+                            <div class="panel-body">
+                                <aura:iteration items="{!v.previeousCVList}" var="item" indexVar="idx">
+                                        <div class="card">
+                                            <div class="field">
+                                                <span class="label">OPTION GROUP</span>
+                                                <!-- <p>{!item.ATBEZ}</p> -->
+                                                <p>{!item.ATBEZ}</p>
+                                            </div>
+                                            <span class="line"></span>
+                                            <div class="field">
+                                                <span class="label">SELECTED OPTION</span>
+                                                <!-- <p>{!item.ATWTB}</p> -->
+                                                <p>{!item.ATWTB}</p>
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+                            </div>
+
+                            <aura:set attribute="else">
+                                <div class="panel-body">
+                                    <aura:iteration items="{!v.factoryData}" var="item" indexVar="idx">
+                                    <div class="card">
+                                        <div class="row">
+                                            <div class="field">
+                                                <span class="label">OPTION GROUP</span>
+                                                <!-- <p>{!item.ATBEZ}</p> -->
+                                                <p>{!item.ATBEZ}</p>
+                                            </div>
+                                            <div class="field">
+                                                <span class="label">SELECTED OPTION</span>
+                                                <!-- <p>{!item.ATWTB}</p> -->
+                                                <p>{!item.ATWTB}</p>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <p class="double">
+                                                <span class="label">DESCRIPTION</span>
+                                                <span class="label">Price : 
+                                                    <span style="color: #181818; font-weight: 600;">{!item.Price}</span>
+                                                </span>
+                                            </p>
+                                            <p>{!item.ZCVDESC}</p>
+                                        </div>
+                                    </div>
+                                </aura:iteration>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </aura:if>
+                 
+                <!-- DNS Sales -->
+                <aura:if isTrue="{!v.isPrevious}">
+                    <div class="sidebar-panel">
+                        <div class="panel-header">
+                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!$Label.c.DNS_T_CVSUBTITLE}</h1>
+                        </div>
+                        <div class="panel-body">
+                            <aura:iteration items="{!v.previeousCVList}" var="item" indexVar="idx">
+                                <div class="card">
+                                    <div class="field">
+                                        <span class="label">{!$Label.c.DNS_T_OptionGroup}</span>
+                                        <!-- <p>{!item.ATBEZ}</p> -->
+                                        <p>{!item.ATBEZ}</p>
+                                    </div>
+                                    <span class="line"></span>
+                                    <div class="field">
+                                        <span class="label">{!$Label.c.DNS_SelectedOption}</span>
+                                        <!-- <p>{!item.ATWTB}</p> -->
+                                        <p>{!item.ATWTB}</p>
+                                    </div>
+                                </div>
+                            </aura:iteration>
+                        </div>
+                    </div>
+                </aura:if>
+
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_T_CVTITLE}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!not(v.dataLoad)}">
+                        <div class="exampleHolder">
+                            <lightning:spinner alternativeText="Loading" size="large" />
+                        </div>
+                    </aura:if>
+                   
+                    <aura:if isTrue="{!v.essentialReset}">
+                        <div class="slds-form blocked">
+                            <!-- <aura:iteration items="{!v.recordIds}" var="recordId" indexVar="idx">
+                                <div> {!v.recordId}</div>
+                            </aura:iteration> -->
+    
+                            <aura:if isTrue="{!v.status == 'NOCV'}">
+                                <div class="process-wrap">
+                                    <div class="signal-wrap">
+                                        <div class="signal-steps">
+                                            <p class="signal on"></p>
+                                            <p class="signal"></p>
+                                            <p class="signal"></p>
+                                        </div>
+                                        <p class="message">{!v.errormessage}</p>
+                                    </div>
+                                    <div class="button-container">
+                                        <div class="button-wrap">
+                                            <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                        </div>
+                                        <div class="button-group">
+                                            <lightning:buttonGroup>
+                                                <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                            </lightning:buttonGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+    
+                            <aura:if isTrue="{!v.status == 'INCOMPLETE'}">
+                                <div class="process-wrap">
+                                    <div class="signal-wrap">
+                                        <div class="signal-steps">
+                                            <p class="signal on"></p>
+                                            <p class="signal"></p>
+                                            <p class="signal"></p>
+                                        </div>
+                                        <p class="message">{!v.errormessage}</p>
+                                    </div>
+                                    <div class="button-container">
+                                        <div class="button-wrap">
+                                            <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                        </div>
+                                        <div class="button-group">
+                                            <lightning:buttonGroup>
+                                                <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                            </lightning:buttonGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+    
+                            <aura:if isTrue="{!v.status == 'INCONSISTANCE'}">
+                                <div class="process-wrap">
+                                    <div class="signal-wrap">
+                                        <div class="signal-steps">
+                                            <p class="signal"></p>
+                                            <p class="signal on"></p>
+                                            <p class="signal"></p>
+                                        </div>
+                                        <p class="message">{!v.errormessage}</p>
+                                    </div>
+                                    <div class="button-container">
+                                        <div class="button-wrap">
+                                            <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                        </div>
+                                        <div class="button-group">
+                                            <lightning:buttonGroup>
+                                                <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                            </lightning:buttonGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+    
+                            <aura:if isTrue="{!v.status == 'SUCCESS'}">
+                                <div class="process-wrap">
+                                    <div class="signal-wrap">
+                                        <div class="signal-steps">
+                                            <p class="signal"></p>
+                                            <p class="signal"></p>
+                                            <p class="signal on"></p>
+                                        </div>
+                                        <p class="message">{!v.errormessage}</p>
+                                    </div>
+                                    <div class="button-container">
+                                        <div class="button-wrap">
+                                            <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                        </div>
+                                        <div class="button-group">
+                                            <lightning:buttonGroup>
+                                                <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                            </lightning:buttonGroup>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+
+                            <div class="layout-wrap">
+                                <div class="toast">
+                                    <div class="icon-wrap">
+                                        <lightning:icon iconName='utility:error' alternativeText='error' size='small' title='error'></lightning:icon>
+                                    </div>                                    
+                                    <div class="text-wrap">
+                                        <p class="description">
+                                            {!$Label.c.DNS_M_COMPLEXCV}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <lightning:layout multipleRows="true">
+                                    
+                                    <lightning:layoutItem padding="around-small" size="6" class="slds-text-align_center">
+                                        <lightning:input value="{!$Label.c.DNS_T_OptionGroup}" readonly="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6" class="slds-text-align_center">
+                                        <lightning:input value="{!$Label.c.DNS_SelectedOption}" readonly="true" />
+                                    </lightning:layoutItem>
+                                    <aura:iteration items="{!v.options}" var="option" indexVar="index">
+                                        <aura:if isTrue="{!option.mCheck}"> <!-- M_로 시작하는 값만 화면에 보여줘야함-->
+                                            <lightning:layoutItem padding="around-small" size="6">
+                                                <!-- <lightning:select name="colorId" value="{!v.selectedValue}">
+                                                    <option text="{!option.c}" value="{!option.c}" />
+                                                </lightning:select> -->
+                                                <aura:if isTrue="{!not(option.color)}">
+                                                    <lightning:input name="{!index}" value="{!option.c_value}" disabled="true"
+                                                        class="default">
+                                                    </lightning:input>
+        
+                                                </aura:if>
+                                                <aura:if isTrue="{!option.color}">
+                                                    <lightning:input name="{!index}" value="{!option.c_value}" disabled="true"
+                                                        class="highlight">
+                                                    </lightning:input>
+        
+                                                </aura:if>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem padding="around-small" size="6">
+                                                <lightning:select name="{!index}" value="{!option.selectedValue}"
+                                                    onchange="{!c.handleChange}">
+                                                    <aura:iteration items="{!option.v}" var="optionV" indexVar="vindex">
+                                                        <option text="{!optionV}" value="{!vindex}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </lightning:layoutItem>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </lightning:layout>
+                            </div>
+    
+    
+                        </div>
+
+                        <aura:set attribute="else">
+                            <div class="slds-form">
+                                <!-- <aura:iteration items="{!v.recordIds}" var="recordId" indexVar="idx">
+                                    <div> {!v.recordId}</div>
+                                </aura:iteration> -->
+        
+                                <aura:if isTrue="{!v.status == 'NOCV'}">
+                                    <div class="process-wrap">
+                                        <div class="signal-wrap">
+                                            <div class="signal-steps">
+                                                <p class="signal on"></p>
+                                                <p class="signal"></p>
+                                                <p class="signal"></p>
+                                            </div>
+                                            <p class="message">{!v.errormessage}</p>
+                                        </div>
+                                        <div class="button-container">
+                                            <div class="button-wrap">
+                                                <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                            </div>
+                                            <div class="button-group">
+                                                <lightning:buttonGroup>
+                                                    <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                    <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                                </lightning:buttonGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:if>
+        
+                                <aura:if isTrue="{!v.status == 'INCOMPLETE'}">
+                                    <div class="process-wrap">
+                                        <div class="signal-wrap">
+                                            <div class="signal-steps">
+                                                <p class="signal on"></p>
+                                                <p class="signal"></p>
+                                                <p class="signal"></p>
+                                            </div>
+                                            <p class="message">{!v.errormessage}</p>
+                                        </div>
+                                        <div class="button-container">
+                                            <div class="button-wrap">
+                                                <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                            </div>
+                                            <div class="button-group">
+                                                <lightning:buttonGroup>
+                                                    <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                    <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                                </lightning:buttonGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:if>
+        
+                                <aura:if isTrue="{!v.status == 'INCONSISTANCE'}">
+                                    <div class="process-wrap">
+                                        <div class="signal-wrap">
+                                            <div class="signal-steps">
+                                                <p class="signal"></p>
+                                                <p class="signal on"></p>
+                                                <p class="signal"></p>
+                                            </div>
+                                            <p class="message">{!v.errormessage}</p>
+                                        </div>
+                                        <div class="button-container">
+                                            <div class="button-wrap">
+                                                <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                            </div>
+                                            <div class="button-group">
+                                                <lightning:buttonGroup>
+                                                    <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                    <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                                </lightning:buttonGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:if>
+        
+                                <aura:if isTrue="{!v.status == 'SUCCESS'}">
+                                    <div class="process-wrap">
+                                        <div class="signal-wrap">
+                                            <div class="signal-steps">
+                                                <p class="signal"></p>
+                                                <p class="signal"></p>
+                                                <p class="signal on"></p>
+                                            </div>
+                                            <p class="message">{!v.errormessage}</p>
+                                        </div>
+                                        <div class="button-container">
+                                            <div class="button-wrap">
+                                                <lightning:button label="{!$Label.c.DNS_T_CVResetBtn}" title="Neutral action" onclick="{! c.openResetModal}"/>
+                                            </div>
+                                            <div class="button-group">
+                                                <lightning:buttonGroup>
+                                                    <lightning:button label="On" onclick="{!c.toggleOn}" class="{! if(v.isOn, 'active', '') }" />
+                                                    <lightning:button label="Off" onclick="{!c.toggleOff}" class="{! if(not(v.isOn), 'active', '') }" />
+                                                </lightning:buttonGroup>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:if>
+        
+                                <lightning:layout multipleRows="true">
+                                    <lightning:layoutItem padding="around-small" size="6" class="slds-text-align_center">
+                                        <lightning:input value="{!$Label.c.DNS_T_OptionGroup}" readonly="true" />
+                                    </lightning:layoutItem>
+                                    <lightning:layoutItem padding="around-small" size="6" class="slds-text-align_center">
+                                        <lightning:input value="{!$Label.c.DNS_SelectedOption}" readonly="true" />
+                                    </lightning:layoutItem>
+                                    <aura:iteration items="{!v.options}" var="option" indexVar="index">
+                                        <aura:if isTrue="{!option.mCheck}"> <!-- M_로 시작하는 값만 화면에 보여줘야함-->
+                                            <lightning:layoutItem padding="around-small" size="6">
+                                                <!-- <lightning:select name="colorId" value="{!v.selectedValue}">
+                                                    <option text="{!option.c}" value="{!option.c}" />
+                                                </lightning:select> -->
+                                                <aura:if isTrue="{!not(option.color)}">
+                                                    <lightning:input name="{!index}" value="{!option.c_value}" disabled="true"
+                                                        class="default">
+                                                    </lightning:input>
+        
+                                                </aura:if>
+                                                <aura:if isTrue="{!option.color}">
+                                                    <lightning:input name="{!index}" value="{!option.c_value}" disabled="true"
+                                                        class="highlight">
+                                                    </lightning:input>
+        
+                                                </aura:if>
+                                            </lightning:layoutItem>
+                                            <lightning:layoutItem padding="around-small" size="6">
+                                                <lightning:select name="{!index}" value="{!option.selectedValue}"
+                                                    onchange="{!c.handleChange}">
+                                                    <aura:iteration items="{!option.v}" var="optionV" indexVar="vindex">
+                                                        <option text="{!optionV}" value="{!vindex}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </lightning:layoutItem>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </lightning:layout>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+
+                    <div class="slds-modal__footer">
+                        <!-- <button class="slds-button slds-button_success" onclick="{!c.handleReset}">Reset</button> -->
+                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                            onclick="{! c.handleClose }">{!$Label.c.DNS_B_Cancel}</button>
+                        <aura:if isTrue="{!not(v.essentialReset)}">
+                            <button class="slds-button slds-button_brand" onclick="{!c.handleSave}">{!$Label.c.DNS_B_Save}</button>
+                        </aura:if>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isInconvalue}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_T_Inconsistent}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!not(v.dataLoad)}">
+                        <div class="exampleHolder">
+                            <lightning:spinner alternativeText="Loading" size="large" />
+                        </div>
+                        </aura:if>
+                    <div class="slds-form">
+                        <!-- <aura:iteration items="{!v.recordIds}" var="recordId" indexVar="idx">
+                            <div> {!v.recordId}</div>
+                        </aura:iteration> -->
+                        
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem padding="around-small" size="6" class="slds-text-align_center">
+                                <lightning:input value="{!$Label.c.DNS_T_OptionGroup}" readonly="true" />
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="around-small" size="6" class="slds-text-align_center">
+                                <lightning:input value="{!$Label.c.DNS_SelectedOption}" readonly="true" />
+                            </lightning:layoutItem>
+                            <aura:iteration items="{!v.tInconValue}" var="incon" indexVar="index">
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <!-- <lightning:select name="colorId" value="{!v.selectedValue}">
+                                        <option text="{!option.c}" value="{!option.c}" />
+                                    </lightning:select> -->
+                                    <aura:if isTrue="{!not(incon.color)}">
+                                        <lightning:input name="{!index}" value="{!incon.c_value}" disabled="true"
+                                            class="default">
+                                        </lightning:input>
+
+                                    </aura:if>
+                                    <aura:if isTrue="{!incon.color}">
+                                        <lightning:input name="{!index}" value="{!incon.c_value}" disabled="true"
+                                            class="highlight">
+                                        </lightning:input>
+
+                                    </aura:if>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <lightning:select name="{!index}" value="{!incon.selectedValue}"
+                                        onchange="{!c.handleChangeIncon}">
+                                        <aura:iteration items="{!incon.v}" var="inconV" indexVar="vindex">
+                                            <option text="{!inconV}" value="{!vindex}" />
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </lightning:layoutItem>
+                            </aura:iteration>
+                        </lightning:layout>
+                    </div>
+
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                            onclick="{! c.handleCloseIncon }">{!$Label.c.DNS_B_Cancel}</button>
+                        <button class="slds-button slds-button_brand" onclick="{!c.handleSubminIncon}">{!$Label.c.DNS_B_Save}</button>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+    </aura:if>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+
+    <!-- Confirm Modal   -->
+    <aura:if isTrue="{!v.isConfirmReset}">
+        <div class="slds-modal slds-fade-in-open confirm-modal">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{!$Label.c.DNS_T_ResetTitle}</h1>
+                </div>
+                <div class="content-wrap">
+                    <aura:if isTrue="{!not(v.dataLoad)}">
+                        <div class="exampleHolder">
+                            <lightning:spinner alternativeText="Loading" size="small" />
+                        </div>
+                    </aura:if>
+                    <div class="slds-modal__content">
+                       
+                        <p>{!$Label.c.DNS_T_CVReset}</p>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                                onclick="{! c.closeConfirmModal }">{!$Label.c.DNS_B_Cancel}</button>
+                        <button class="slds-button slds-button_brand" aria-label="Confirm" onclick="{!c.handleResetConfirm}"
+                                >{!$Label.c.DNS_M_Confirm}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open confirm-modal" role="presentation"></div>
+    </aura:if>
+</aura:component>

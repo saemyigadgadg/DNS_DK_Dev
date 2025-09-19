@@ -1,0 +1,133 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 02-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-12-08   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_ImportDealerSalesGoalController" description="Excel Import for Dealer Sales Goal">
+
+    <!-- Excel JS & Sheet JS -->
+    <ltng:require
+        scripts="{!join(',', $Resource.ExcelTest1 + '/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}" />
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading" type="boolean" default="false" />
+    <aura:attribute name="district" type="String" default="Korea" />
+    <aura:attribute name="districtOptions" type="List" />
+    <aura:attribute name="year" type="String" />
+    <aura:attribute name="templateType" type="String" />
+    <aura:attribute name="accept" type="String" default=".xls, .xlsx" />
+    <aura:attribute name="isFileUpload" type="Boolean" default="false" />
+    <aura:attribute name="fileName" type="String" default="fileName.xlsx" />
+    <aura:attribute name="excelData" type="Object[]" />
+    <aura:attribute name="expectedHeaders" type="List" />
+    <aura:attribute name="userInfo" type="String" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- Toast Notification -->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+
+    <div class="total-wrap">
+        <div class="slds-modal__container">
+    
+            <!-- 📌 Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_DealerSalesGoalExcelImport}</h2>
+                <!-- <h2 class="slds-text-heading_medium">Dealer Sales Goal Excel Import</h2> -->
+            </header>
+    
+            <!-- 📌 Body -->
+            <div class="slds-modal__content modal-body">
+    
+                <!-- ⏳ Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading}">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+    
+                <div class="card-wrap">
+                    <!-- 1. Sales District -->
+                    <div class="slds-form__item top-card" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <!-- Label -->
+                            <label class="slds-form-element__label" for="horizontal-form-element-id-01">{!$Label.c.DNS_T_SalesDistrtict}</label>
+                            <!-- <label class="slds-form-element__label" for="horizontal-form-element-id-01">Sales District</label> -->
+                            <!-- Input -->
+                            <div class="slds-form-element__control">
+                                <lightning:radioGroup name="salesDistrict" variant="label-hidden"
+                                    options="{! v.districtOptions }" value="{! v.district }" type="radio"
+                                    disabled="{! v.isFileUpload}" />
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- 2. Year -->
+                    <div class="slds-form__item top-card" role="listitem">
+                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                            <!-- Label -->
+                            <label class="slds-form-element__label" for="horizontal-combobox-id-01"
+                                id="combobox-label-id-17"><abbr class="slds-required" title="required">*</abbr>{!$Label.FSL.Year}</label>
+                            <!-- <label class="slds-form-element__label" for="horizontal-combobox-id-01"
+                                id="combobox-label-id-17"><abbr class="slds-required" title="required">*</abbr>Year</label> -->
+                            <!-- Input -->
+                            <div class="slds-form-element__control">
+                                <lightning:input type="text" name="year" variant="label-hidden" value="{!v.year}"
+                                    required="true" pattern="[1-9][0-9]{3}" maxlength="4"
+                                    messageWhenPatternMismatch="{!$Label.c.DNS_M_ValidYear}" />
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Upload Files -->
+                    <div class="slds-form__row card-03 top-card">
+                        <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <label class="slds-form-element__label" for="horizontal-form-element-id-14">{!$Label.c.DNS_C_FileUpload}</label>
+                                <!-- <label class="slds-form-element__label" for="horizontal-form-element-id-14">Upload</label> -->
+                                <div class="slds-form-element__control">
+                                    <aura:if isTrue="{!not(v.isFileUpload)}">
+                                        <lightning:input aura:id="excelBtn" type="file" variant="label-hidden"
+                                            accept="{!v.accept}" multiple="false" onchange="{!c.handleUpload}" />
+                                        <aura:set attribute="else">
+                                            <div class="uploaded">
+                                                <div class="icon-wrap">
+                                                    <lightning:icon iconName='doctype:excel' alternativeText='Excel'
+                                                        size='Small' title='Excel'>
+                                                    </lightning:icon>
+                                                </div>
+                                                <p class="file-name">{!v.fileName}</p>
+                                                <!-- 취소 아이콘 추가 -->
+                                                <div class="icon-wrap">
+                                                    <lightning:icon iconName="utility:close" alternativeText="Cancel"
+                                                        size="x-small" title="Cancel" onclick="{!c.doCancel}" />
+                                                </div>
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+    
+                <!-- 📌 Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Close" onclick="{!c.doClose}" />
+                    <lightning:button variant="brand" label="Import" onclick="{!c.doImport}" />
+                </footer>
+            </div>
+        </div>
+    
+        <!-- Modal Background -->
+        <div id="modal-bg"></div>
+    </div>
+
+</aura:component>

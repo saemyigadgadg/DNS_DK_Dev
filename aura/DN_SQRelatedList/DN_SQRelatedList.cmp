@@ -1,0 +1,915 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 05-08-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-01-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes"
+                controller="DN_SQController" 
+                description="SQ Related List">
+
+    <!-- Attributes -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="salesUser"            type="Boolean"  default="false" />
+    <aura:attribute name="isEditSQ"             type="Boolean"  default="false" />
+    <aura:attribute name="checkProfile"         type="String"   default="" />
+    <aura:attribute name="isWorker"             type="Boolean"  default="false" />
+    <aura:attribute name="isDNSA"               type="Boolean"  default="false" />
+    <aura:attribute name="checkDNSAProfile"     type="Boolean"  default="false" />
+    <aura:attribute name="checkJisajang"        type="Boolean"  default="false" />
+    <aura:attribute name="userFilter"           type="String"   default="" />
+    <aura:attribute name="recordId"             type="String" />
+    <aura:attribute name="rowId"                type="String" />
+    <aura:attribute name="size"                 type="String"   default="" />
+    <aura:attribute name="currentStage"         type="String"   default="" />
+    <aura:attribute name="doOpenDescription"    type="Boolean"  default="false" />
+    <aura:attribute name="seeMore"              type="Map"      default="{}"/>
+    <aura:attribute name="dataRows"             type="List"     default="[]"/>
+
+    <aura:attribute name="isRichLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="backgroundColor"      type="String"   default="background: #F9F9F9;"/>
+    <aura:attribute name="isEditable"           type="Boolean"  default="false" />
+    <aura:attribute name="richTextContent"      type="String" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:navigation aura:id="navService" />
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <lightning:empApi aura:id="empApi" />
+
+    <aura:if isTrue="{! !v.isWorker }">
+        <aura:if isTrue="{! IF(v.currentStage != 'Final Confirm', v.userFilter == 'Dealer') }">
+
+        </aura:if>
+
+        <aura:if isTrue="{! v.userFilter != 'Dealer' }">
+
+            <div class="slds-card slds-card_boundary slds-card_related-list-fix">
+                <!-- 🚩 Header -->
+                <div class="slds-page-header slds-page-header_record-home">
+                    <div class="header">
+                        <!-- Header Title -->
+                        <div class="title-wrap">
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='custom:custom92' alternativeText='SQ' size='small' title='SQ'></lightning:icon>
+                            </div>
+                            <h1>{!$Label.c.DNS_SQ_T_SQ}</h1>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- 🚩 Body -->
+                <div class="body">
+                    <!-- 🚩 Body -->
+                    <div class="table-wrap">
+                        <!-- 🚩Loading Spinner -->
+                        <aura:if isTrue="{! v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+        
+                        <div class="table-wrap">
+                            <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+            
+                                <colgroup>
+                                    <col width="3%" />
+                                    <col width="11%" /> <!-- 20 -->
+                                    <col width="5%" />
+                                    <col width="23%" /> <!-- 30 -->
+                                    <col width="21%" /> <!-- 24 --> 
+
+                                    <col width="6%" />
+                                    <col width="6%" />
+                                    <col width="6%" />
+                                    <col width="6%" />
+
+                                    <aura:if isTrue="{! v.userFilter != '직영' }">
+                                        <col width="9%" />
+                                        <col width="9%" />
+                                        <col width="9%" />
+                                    </aura:if>
+                                    <aura:if isTrue="{! v.isDNSA }">
+                                        <col width="7%" />
+                                        <col width="7%" />
+
+                                        <aura:set attribute="else">
+                                            <col width="10%" />
+                                        </aura:set>
+                                    </aura:if>
+
+                                    <!-- <aura:if isTrue="{! !v.isDNSA }">
+                                            <col width="10%" />
+                                    </aura:if> -->
+                                    <!-- <col width="7%" />
+                                    <col width="7%" /> -->
+                                    <!-- <col width="10%" /> -->
+                                    <col width="5%" />
+                                </colgroup>
+        
+                                <!-- Table Head -->
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+            
+                                        <!-- Row Numbering -->
+                                        <th class="slds-text-align_center" scope="col" style="width: 3.25rem">
+                                            <div class="slds-th__action slds-th__action_form"></div>
+                                        </th>
+            
+                                        <!-- Requested SQ Title -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="SQ Title">{!$Label.c.DNS_SQR_C_TITLE}</div>
+                                        </th>
+            
+                                        <!-- Description -->
+                                        <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="Description">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                                        </th> -->
+        
+                                        <!-- Type -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SQTYPE}">{!$Label.c.DNS_SQR_C_SQTYPE}</div>
+                                        </th>
+            
+                                        <!-- 영업 담당자 -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQ_C_SALESCOMMENT}">{!$Label.c.DNS_SQ_C_SALESCOMMENT}</div>
+                                        </th>
+    
+                                        <!-- SQ Comments -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQ_C_SQCOMMENT}">{!$Label.c.DNS_SQ_C_SQCOMMENT}</div>
+                                        </th>
+
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_Initial + ' ' + $Label.c.DNS_REVIEW_C_Initial2}">{!$Label.c.DNS_REVIEW_C_Initial}<br />{!$Label.c.DNS_REVIEW_C_Initial2}</div>
+                                        </th>
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_PRESHIPMENT + ' ' + $Label.c.DNS_REVIEW_C_ISREVIEW}">{!$Label.c.DNS_REVIEW_C_PRESHIPMENT}<br />{!$Label.c.DNS_REVIEW_C_ISREVIEW}</div>
+                                        </th>
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED + ' ' + $Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}">{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED}<br />{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}</div>
+                                        </th>
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH + ' ' + $Label.c.DNS_REVIEW_C_DELIVERYMONTH2}">{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH}<br />{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH2}</div>
+                                        </th>
+            
+                                        <!-- 판매가 -->
+                                         
+                                        <aura:if isTrue="{! v.userFilter != '직영' }">
+                                            <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_MATERIAL}">{!$Label.c.DNS_REVIEW_C_MATERIAL}</div>
+                                            </th>
+                                        </aura:if>
+
+                                        <aura:if isTrue="{! v.userFilter != '직영' }">
+                                            <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_ASSEMBLY}">{!$Label.c.DNS_REVIEW_C_ASSEMBLY}</div>
+                                            </th>
+                                        </aura:if>
+
+                                        <aura:if isTrue="{! v.userFilter != '직영' }">
+                                            <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_WONPRICE}">{!$Label.c.DNS_REVIEW_C_WONPRICE}</div>
+                                            </th>
+                                        </aura:if>
+            
+                                        <aura:if isTrue="{! v.isDNSA }">
+                                            <!-- DNS Price -->
+                                            <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                <div class="slds-truncate" title="DNS Price">DNS Price</div>
+                                            </th>
+                                            <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                            </th>
+
+                                            <aura:set attribute="else">
+                                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                                </th>
+                                            </aura:set>
+                                        </aura:if>
+
+                                        <!-- <aura:if isTrue="{! !v.isDNSA }">
+                                            <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                            </th>
+                                        </aura:if> -->
+                                                
+        
+                                        <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_ISDELETE}">{!$Label.c.DNS_SQR_C_ISDELETE}</div>
+                                        </th> -->
+            
+                                        <!-- Actions -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width:3.25rem">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_T_ACTION}">{!$Label.c.DNS_SQR_T_ACTION}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+            
+                                <!-- Table Body -->
+                                <tbody>
+                                    <aura:iteration items="{!v.dataRows}" var="row" indexVar="index">
+            
+                                        <aura:if isTrue="{! !row.delete }">
+                                            
+                                            <tr aria-selected="false" class="slds-hint-parent">
+                    
+                                                <!-- Open Button -->
+                                                <td class="slds-text-align_center" role="gridcell">
+                                                    <div class="slds-truncate" title="Row Numbering">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <lightning:buttonIcon iconName="utility:chevrondown" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" />
+                                                        <aura:set attribute="else">
+                                                            <lightning:buttonIcon iconName="utility:chevronright" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    </div>
+                                                </td>
+                    
+                                                <!-- Requested SQ Title -->
+                                                <td scope="row" tabindex="0">
+                                                    <div class="slds-truncate" title="Requested SQ Title">
+                                                        <lightning:formattedUrl value="{!'/' + row.Id}" tooltip="{!row.Name}" label="{!row.Name}" target="_blank" />
+                                                    </div>
+                                                </td>
+                    
+                                                <!-- Description -->
+                                                <!-- <td class="desc" role="gridcell">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="Description">
+                                                                {! row.Description }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="Description">
+                                                                {! row.Description }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td> -->
+            
+                                                <!-- SQ Type -->
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.Type }">
+                                                            {! row.Type }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.Type }">
+                                                                {! row.Type }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+            
+                                                <!-- 영업 담당자 -->
+                                                <td>
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="영업 담당자">
+                                                            <lightning:formattedRichText value="{! row.SalesComments }"/>
+                                                                <!-- {! row.SalesComments } -->
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="영업 담당자">
+                                                                <lightning:formattedRichText value="{! row.SalesComments }"/>
+                                                                <!-- {! row.SalesComments } -->
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+    
+                                                <!-- SQ Comments -->
+                                                <td>
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open">
+                                                            <lightning:formattedRichText value="{! row.SQComments }"/>
+                                                                <!-- {! row.SQComments } -->
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate">
+                                                                <lightning:formattedRichText value="{! row.SQComments }"/>
+                                                                <!-- {! row.SQComments } -->
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.isFirst }">
+                                                            {! row.isFirst ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.isFirst }">
+                                                                {! row.isFirst ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.designReviewRequired }">
+                                                            {! row.designReviewRequired ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.designReviewRequired }">
+                                                                {! row.designReviewRequired ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.preShipmentReview }">
+                                                            {! row.preShipmentReview ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.preShipmentReview }">
+                                                                {! row.preShipmentReview ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.deliMonth }">
+                                                            {! row.deliMonth != null ? row.deliMonth : 0 }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.deliMonth }">
+                                                                {! row.deliMonth != null ? row.deliMonth : 0 }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                
+                                                <!-- 원가 -->
+                                                <aura:if isTrue="{! v.userFilter != '직영' }">
+                                                    
+                                                    <td scope="row" tabindex="0">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <div class="slds-truncate click-open" title="Material">
+                                                                    {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.MaterialCost) }
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="slds-truncate" title="Material">
+                                                                    {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.MaterialCost) }
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+
+                                                    <td scope="row" tabindex="0">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <div class="slds-truncate click-open" title="Assembly">
+                                                                    {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.AssemblyCost) }
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="slds-truncate" title="Assembly">
+                                                                    {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.AssemblyCost) }
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+
+                                                    <td scope="row" tabindex="0">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <div class="slds-truncate click-open" title="Cost">
+                                                                    {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.Cost)}
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="slds-truncate" title="Cost">
+                                                                    {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.Cost) }
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+
+                                                </aura:if>
+            
+                                                <aura:if isTrue="{! v.isDNSA }">
+                                                    <!-- 판매가 -->
+                                                    <td scope="row" tabindex="0">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <div class="slds-truncate click-open" title="DNS Price">
+                                                                {! row.dnsPrice }
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="slds-truncate" title="DNS Price">
+                                                                    {! row.dnsPrice }
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+
+                                                    <td scope="row" tabindex="0">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <div class="slds-truncate click-open" title="Price">
+                                                                {! row.Price }
+                                                            </div>
+                                                            <aura:set attribute="else">
+                                                                <div class="slds-truncate" title="Price">
+                                                                    {! row.Price }
+                                                                </div>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </td>
+
+                                                    <aura:set attribute="else">
+
+                                                        <!-- 판매가 -->
+                                                        <td scope="row" tabindex="0">
+                                                            <aura:if isTrue="{!row.isExpanded}">
+                                                                <div class="slds-truncate click-open" title="Price">
+                                                                    {! row.Price }
+                                                                </div>
+                                                                <aura:set attribute="else">
+                                                                    <div class="slds-truncate" title="Price">
+                                                                        {! row.Price }
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if>
+                                                        </td>
+                                                    </aura:set>
+                                                </aura:if>
+            
+                                                <!-- 삭제 여부 -->
+                                                <!-- <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.delete ? 'Y' : 'N' }">
+                                                            {! row.delete ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.delete ? 'Y' : 'N' }">
+                                                                {! row.delete ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td> -->
+                    
+                                                <!-- Actions -->
+                                                <td role="gridcell">
+                                                    <div class="slds-p-around_medium lgc-bg">
+                                                        <aura:if isTrue="{! !v.checkJisajang }">
+                                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                                <!-- <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Confirm', v.checkProfile ) }"> -->
+                                                                <aura:if isTrue="{! OR(v.checkProfile == 'dns', v.checkProfile == 'dnsa')}">
+                                                                    <aura:if isTrue="{! AND(v.currentStage != 'Drop', AND(v.currentStage != 'Sales Approval', v.currentStage != 'Final Confirm')) }">
+                                                                        <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                            <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                            <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                                        </lightning:buttonMenu>
+                                                                    </aura:if>
+                                                                </aura:if>
+                                                            </aura:if>
+                
+                                                            <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:if>
+                                                        </aura:if>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:if>
+                                    </aura:iteration>
+            
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- 🚩 Footer -->
+                <!-- <div class="footer">
+                    <lightning:button variant="base" label="View All" title="View All" onclick="{! c.handleClickViewAll }"/>
+                </div> -->
+        
+                <!-- 🚩Rich Text Area -->
+                <div class="richtext-wrap" style="{!v.backgroundColor}">
+        
+                    <!-- Richtext Input -->
+                    <div class="slds-p-around_medium input-wrap">
+                        <!-- 🚩Loading Spinner -->
+                        <aura:if isTrue="{! v.isRichLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+                
+                        <lightning:inputRichText    value="{! v.richTextContent }" 
+                                                    placeholder="Enter your text here..." 
+                                                    disabled="{! !v.isEditable }" />
+                    </div>
+        
+                    <!-- Save & New Button -->
+                    <div class="slds-m-top_medium button-wrap">
+                        <aura:if isTrue="{! !v.checkJisajang }">
+                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                <aura:if isTrue="{! AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm') }">
+                                    <aura:if isTrue="{!v.isEditable}">
+                                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickTextSave }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! !v.isEditable}">
+                                        <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickTextEdit }"/>
+                                    </aura:if>
+                                </aura:if>
+                            </aura:if>
+            
+                            <aura:if isTrue="{! AND(v.userFilter == 'admin', AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm')) }">
+                                <aura:if isTrue="{!v.isEditable}">
+                                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickTextSave }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! !v.isEditable}">
+                                    <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickTextEdit }"/>
+                                </aura:if>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                    
+                </div>
+            </div>
+        </aura:if>
+
+
+        <aura:if isTrue="{! IF(v.currentStage == 'Final Confirm', v.userFilter == 'Dealer') }">
+            <div class="slds-card slds-card_boundary slds-card_related-list-fix">
+                <!-- 🚩 Header -->
+                <div class="slds-page-header slds-page-header_record-home">
+                    <div class="header">
+                        <!-- Header Title -->
+                        <div class="title-wrap">
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='custom:custom92' alternativeText='SQ' size='small' title='SQ'></lightning:icon>
+                            </div>
+                            <h1>{!$Label.c.DNS_SQ_T_SQ}</h1>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- 🚩 Body -->
+                <div class="body">
+                    <!-- 🚩 Body -->
+                    <div class="table-wrap">
+                        <!-- 🚩Loading Spinner -->
+                        <aura:if isTrue="{! v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+        
+                        <div class="table-wrap">
+                            <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+            
+                                <colgroup>
+                                    <col width="3%" />
+                                    <col width="20%" />
+                                    <col width="10%" />
+                                    <col width="30%" />
+
+                                    <col width="6%" />
+                                    <col width="6%" />
+                                    <col width="6%" />
+                                    <col width="6%" />
+
+                                    <!-- <col width="10%" /> -->
+                                    <col width="10%" />
+                                    <col width="3%" />
+                                </colgroup>
+        
+                                <!-- Table Head -->
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+            
+                                        <!-- Row Numbering -->
+                                        <th class="slds-text-align_center" scope="col" style="width: 3.25rem">
+                                            <div class="slds-th__action slds-th__action_form"></div>
+                                        </th>
+            
+                                        <!-- Requested SQ Title -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="SQ Title">{!$Label.c.DNS_SQR_C_TITLE}</div>
+                                        </th>
+            
+                                        <!-- Description -->
+                                        <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="Description">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                                        </th> -->
+        
+                                        <!-- Type -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SQTYPE}">{!$Label.c.DNS_SQR_C_SQTYPE}</div>
+                                        </th>
+            
+                                        <!-- 영업 담당자 -->
+                                        <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQ_C_SALESCOMMENT}">{!$Label.c.DNS_SQ_C_SALESCOMMENT}</div>
+                                        </th> -->
+
+                                        <!-- SQ Comments -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQ_C_SQCOMMENT}">{!$Label.c.DNS_SQ_C_SQCOMMENT}</div>
+                                        </th>
+
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_Initial + ' ' + $Label.c.DNS_REVIEW_C_Initial2}">{!$Label.c.DNS_REVIEW_C_Initial}<br />{!$Label.c.DNS_REVIEW_C_Initial2}</div>
+                                        </th>
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_PRESHIPMENT + ' ' + $Label.c.DNS_REVIEW_C_ISREVIEW}">{!$Label.c.DNS_REVIEW_C_PRESHIPMENT}<br />{!$Label.c.DNS_REVIEW_C_ISREVIEW}</div>
+                                        </th>
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED + ' ' + $Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}">{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED}<br />{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}</div>
+                                        </th>
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH + ' ' + $Label.c.DNS_REVIEW_C_DELIVERYMONTH2}">{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH}<br />{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH2}</div>
+                                        </th>
+            
+                                        <!-- 판매가 -->
+                                        <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_WONPRICE}">{!$Label.c.DNS_REVIEW_C_WONPRICE}</div>
+                                        </th> -->
+            
+                                        <!-- Price -->
+                                        <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                        </th>
+        
+                                        <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_ISDELETE}">{!$Label.c.DNS_SQR_C_ISDELETE}</div>
+                                        </th> -->
+            
+                                        <!-- Actions -->
+                                        <th class="" scope="col" style="width:3.25rem">
+                                            <div class="slds-truncate slds-assistive-text" title="Actions">Actions</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+            
+                                <!-- Table Body -->
+                                <tbody>
+                                    <aura:iteration items="{!v.dataRows}" var="row" indexVar="index">
+            
+                                        <aura:if isTrue="{! !row.delete }">
+                                            
+                                            <tr aria-selected="false" class="slds-hint-parent">
+                    
+                                                <!-- Open Button -->
+                                                <td class="slds-text-align_center" role="gridcell">
+                                                    <div class="slds-truncate" title="Row Numbering">
+                                                        <aura:if isTrue="{!row.isExpanded}">
+                                                            <lightning:buttonIcon iconName="utility:chevrondown" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" />
+                                                        <aura:set attribute="else">
+                                                            <lightning:buttonIcon iconName="utility:chevronright" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                    </div>
+                                                </td>
+                    
+                                                <!-- Requested SQ Title -->
+                                                <td scope="row" tabindex="0">
+                                                    <div class="slds-truncate" title="Requested SQ Title">
+                                                        <lightning:formattedUrl value="{!'/' + row.Id}" tooltip="{!row.Name}" label="{!row.Name}" target="_blank" />
+                                                    </div>
+                                                </td>
+                    
+                                                <!-- Description -->
+                                                <!-- <td class="desc" role="gridcell">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="Description">
+                                                                {! row.Description }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="Description">
+                                                                {! row.Description }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td> -->
+            
+                                                <!-- SQ Type -->
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.Type }">
+                                                            {! row.Type }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.Type }">
+                                                                {! row.Type }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+            
+                                                <!-- 영업 담당자 -->
+                                                <!-- <td>
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="영업 담당자">
+                                                                {! row.SalesComments }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="영업 담당자">
+                                                                {! row.SalesComments }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td> -->
+
+                                                <!-- SQ Comments -->
+                                                <td>
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open">
+                                                                {! row.SQComments }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate">
+                                                                {! row.SQComments }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.isFirst }">
+                                                            {! row.isFirst ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.isFirst }">
+                                                                {! row.isFirst ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.designReviewRequired }">
+                                                            {! row.designReviewRequired ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.designReviewRequired }">
+                                                                {! row.designReviewRequired ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.preShipmentReview }">
+                                                            {! row.preShipmentReview ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.preShipmentReview }">
+                                                                {! row.preShipmentReview ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.deliMonth }">
+                                                            {! row.deliMonth != null ? row.deliMonth : 0 }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.deliMonth }">
+                                                                {! row.deliMonth != null ? row.deliMonth : 0 }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+                
+                                                <!-- 원가 -->
+                                                <!-- <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="Cost">
+                                                                {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.Cost) }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="Cost">
+                                                                {! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : row.Cost) }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td> -->
+            
+                                                <!-- 판매가 -->
+                                                <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="Price">
+                                                            {! row.Price }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="Price">
+                                                                {! row.Price }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td>
+            
+                                                <!-- 삭제 여부 -->
+                                                <!-- <td scope="row" tabindex="0">
+                                                    <aura:if isTrue="{!row.isExpanded}">
+                                                        <div class="slds-truncate click-open" title="{! row.delete ? 'Y' : 'N' }">
+                                                            {! row.delete ? 'Y' : 'N' }
+                                                        </div>
+                                                        <aura:set attribute="else">
+                                                            <div class="slds-truncate" title="{! row.delete ? 'Y' : 'N' }">
+                                                                {! row.delete ? 'Y' : 'N' }
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </td> -->
+                    
+                                                <!-- Actions -->
+                                                <td role="gridcell">
+                                                    <div class="slds-p-around_medium lgc-bg">
+                                                        <aura:if isTrue="{! !v.checkJisajang }">
+                                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                                <!-- <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Confirm', v.checkProfile ) }"> -->
+                                                                <aura:if isTrue="{! OR(v.checkProfile == 'dns', v.checkProfile == 'dnsa')}">
+                                                                    <aura:if isTrue="{! v.currentStage != 'Drop' }">
+                                                                        <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                            <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                            <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                                        </lightning:buttonMenu>
+                                                                    </aura:if>
+                                                                </aura:if>
+                                                            </aura:if>
+                
+                                                            <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:if>
+                                                        </aura:if>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:if>
+                                    </aura:iteration>
+            
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- 🚩 Footer -->
+                <!-- <div class="footer">
+                    <lightning:button variant="base" label="View All" title="View All" onclick="{! c.handleClickViewAll }"/>
+                </div> -->
+        
+                <!-- 🚩Rich Text Area -->
+                <div class="richtext-wrap" style="{!v.backgroundColor}">
+        
+                    <!-- Richtext Input -->
+                    <div class="slds-p-around_medium input-wrap">
+                        <!-- 🚩Loading Spinner -->
+                        <aura:if isTrue="{! v.isRichLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+                
+                        <lightning:inputRichText    value="{! v.richTextContent }" 
+                                                    placeholder="Enter your text here..." 
+                                                    disabled="{! !v.isEditable }" />
+                    </div>
+        
+                    <!-- Save & New Button -->
+                    <div class="slds-m-top_medium button-wrap">
+                        <aura:if isTrue="{! !v.checkJisajang }">
+                            <aura:if isTrue="{! OR(v.checkProfile == 'dns', v.checkProfile == 'dnsa')}">
+                                <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                    <aura:if isTrue="{! AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm') }">
+                                        <aura:if isTrue="{!v.isEditable}">
+                                            <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickTextSave }"/>
+                                        </aura:if>
+                                        <aura:if isTrue="{! !v.isEditable}">
+                                            <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickTextEdit }"/>
+                                        </aura:if>
+                                    </aura:if>
+                                </aura:if>
+                            </aura:if>
+            
+                            <aura:if isTrue="{! AND(v.userFilter == 'admin', AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm')) }">
+                                <aura:if isTrue="{!v.isEditable}">
+                                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickTextSave }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! !v.isEditable}">
+                                    <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickTextEdit }"/>
+                                </aura:if>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                    
+                </div>
+            </div>
+        </aura:if>
+
+    </aura:if>
+
+    <aura:if isTrue="{!v.isEditSQ}">
+        <c:DN_EditSQModal rowId="{!v.rowId}" isDNSA="{!v.isDNSA}" checkProfile="{!v.checkProfile}" />
+    </aura:if>
+</aura:component>

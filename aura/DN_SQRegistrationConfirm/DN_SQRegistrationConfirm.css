@@ -1,0 +1,31 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    height: 12rem;
+    max-height: calc(100vh - 20rem);
+}
+
+.THIS .slds-modal__content {
+    max-height: calc(100vh - 13rem);
+    height: 46rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.THIS .modal-body .text {
+    font-size: 15px;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border: none;
+}

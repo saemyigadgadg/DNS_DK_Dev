@@ -1,0 +1,145 @@
+<!--
+  @description       : 
+  @author            : Sejin Kwon
+  @group             : 
+  @last modified on  : 12-09-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-09-2024   Sejin Kwon   Initial Version
+-->
+<aura:component controller="DN_RFQ_RevisionController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute type="String" name="value" default="" />
+    <aura:attribute type="String" name="title" default="" />
+    <aura:attribute type="String" name="confirm" default="" />
+    <aura:attribute type="String" name="cancel" default="" />
+    <aura:attribute type="Boolean" name="status" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />     
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_RFQ_Revision) {
+            width:100%;
+            max-width: 36rem;
+        }
+        .slds-modal__content:has(.cDN_RFQ_Revision) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_RFQ_Revision) {
+            padding:0;
+            
+            .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_RFQ_Revision){
+                overflow: hidden;
+            }
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.status}">
+        <div class="slds-modal__container">
+            <!-- 모달 헤더 -->
+            <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                <h2 class="slds-text-heading_medium slds-hyphenate">
+                    {!v.title}
+                </h2>
+                <div class="slds-modal__content">
+                    <aura:if isTrue="{!v.isLoading}">
+                        <lightning:spinner alternativeText="Loading" variant="brand" />
+                    </aura:if>
+                    <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="PS__c"
+                        onsubmit="{! c.versionUP }">
+                    <div class="body">
+                        <lightning:messages />
+                        <lightning:inputField fieldName="Id" class="hidden-field" />
+                        <div style="padding-bottom: 1rem;">
+                            <div class="header">
+                                <h3>Required Delivery Date</h3>
+                             </div>
+                             <div class="input-container">
+                                <lightning:inputField fieldName="RequiredDelivryDate__c" />
+                             </div>
+
+                            <div class="header">
+                                <h3>Parts for Machining</h3>
+                             </div>
+                             <div class="input-container">
+                                <lightning:inputField fieldName="PartsforMachining__c" required="true"/>
+                                <lightning:inputField fieldName="MaterialHardness__c" />
+                                <lightning:inputField fieldName="Type__c" />
+                                <lightning:inputField fieldName="ProcessesBeforeMachining__c" />
+                             </div>
+
+                             <div class="header">
+                                <h3>Requirements for Cycle Time</h3>
+                             </div>
+                             <div class="input-container">
+                                <lightning:inputField fieldName="ProductionVolumeYearly__c" required="true" />
+                                <lightning:inputField fieldName="OperationRate__c" required="true" />
+                                <lightning:inputField fieldName="WorkingHoursDaily__c" required="true" />
+                                <lightning:inputField fieldName="CycleTimeRequired__c" />
+                                <lightning:inputField fieldName="WorkingDaysMonthly__c" required="true" />
+                             </div>
+
+                             <div class="header">
+                                <h3>Preferred Machine Model</h3>
+                             </div>
+                             <div class="input-container">
+                                <lightning:inputField fieldName="MachineType__c" />
+                                <lightning:inputField fieldName="Quantity__c" />
+                                <lightning:inputField fieldName="Model__c" />
+                                <!-- <lightning:inputField fieldName="PSModel__c" /> -->
+                             </div>
+
+                             <div class="header">
+                                <h3>Fixture/Tooling</h3>
+                             </div>
+                             <div class="input-container">
+                                <lightning:inputField fieldName="ChuckType__c" />
+                                <lightning:inputField fieldName="RecommendedToolMaker__c" />
+                                <lightning:inputField fieldName="FixtureClamp__c" />
+                             </div>
+
+                             <div class="header">
+                                <h3>Automation</h3>
+                             </div>
+                             <div class="input-container">
+                                <lightning:inputField fieldName="AutomationType__c" />
+                                <lightning:inputField fieldName="LoadCapacity__c" />
+                             </div>
+
+                             <div class="header">
+                                <h3>Description Information</h3>
+                             </div>
+                             <div class="input-container">
+                                <!-- <lightning:inputField fieldName="CustomerRequirement__c" /> -->
+                                <lightning:inputField fieldName="CustomerDesc__c" required="true" />
+                             </div>
+                        </div>
+                    </div>
+                    <!-- 모달 푸터 -->
+                    <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                        <!-- 취소 버튼 -->
+                        <lightning:button title="취소" onclick="{! c.handleClickClose }" label="{!v.cancel}" variant="neutral" />
+                        <!-- 확인 버튼 -->
+                        <lightning:button title="확인" label="{!v.confirm}" variant="brand" type="submit"/>
+                    </div>
+                    </lightning:recordEditForm>
+                </div>
+
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="닫기"
+                    onclick="{! c.handleClickClose }">
+                    <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+                </button>
+            </div>
+    
+            
+        </div>
+    </aura:if>
+</aura:component>

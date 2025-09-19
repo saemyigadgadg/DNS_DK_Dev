@@ -1,0 +1,52 @@
+<!--
+  @description       : 
+  @author            : geonsang.park@sobetec.com
+  @group             : 
+  @last modified on  : 04-03-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<template>
+  <template if:true={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+  </template>
+
+  <lightning-card>
+    <div class="slds-p-around_medium wrapper">
+      <div class="wrap">
+        <div class="field-wrap">
+          <h3>Engineer Name</h3>
+          <div class="input-wrap">
+            <lightning-input type="text" value={engineerName} onchange={handleEngieerNameChange}></lightning-input>
+          </div>
+        </div>
+        <div class="field-wrap">
+          <h3>Engineer Signature</h3>
+          <div class="input-wrap">
+            <canvas data-id="engiSign"></canvas>
+            <lightning-button variant="neutral" label="reset" class="slds-m-left_small"
+              onclick={clearEngiSignature}></lightning-button>
+          </div>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="field-wrap">
+          <h3>Customer Name</h3>
+          <div class="input-wrap">
+            <lightning-input type="text" value={customerName} onchange={handleCustomerNameChange}></lightning-input>
+          </div>
+        </div>
+        <div class="field-wrap">
+          <h3>Customer Signature</h3>
+          <div class="input-wrap">
+            <canvas data-id="custSign"></canvas>
+            <lightning-button variant="neutral" label="reset" class="slds-m-left_small"
+              onclick={clearCustSignature}></lightning-button>
+          </div>
+        </div>
+      </div>
+      <div class="btn-wrap">
+        <lightning-button variant="brand" label="Signature Save" onclick={handleSave} disabled={isSaving} ></lightning-button>
+      </div>
+    </div>
+  </lightning-card>
+</template>

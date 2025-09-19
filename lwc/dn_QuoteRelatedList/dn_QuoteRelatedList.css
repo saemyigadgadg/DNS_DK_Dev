@@ -1,0 +1,21 @@
+.related_wrapper{
+    position: relative;
+}
+
+.datatable_wrapper{
+    height: 200px;
+}
+
+.custom_tile{
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+.slds-card__body {
+    margin-top: 0 !important;
+}
+
+.slds-card__header {
+    margin-bottom: 0 !important;
+}

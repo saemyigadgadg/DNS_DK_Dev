@@ -1,0 +1,358 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 05-07-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-24   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_PortalManageServiceController" description="비용정산">
+
+    <!-- Handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="isInit" type="Boolean" default="false" />
+    <aura:attribute name="isSearched" type="Boolean" default="false" />
+    <aura:attribute name="isRepresentative" type="Boolean" default="false" />
+    <aura:attribute name="baseUrl" type="String" /> <!-- Sandbox & Production url 구분 -->
+    <aura:attribute name="dateFrom" type="Date" />
+    <aura:attribute name="dateTo" type="Date" />
+    <aura:attribute name="WorkCenterName" type="String" default="" />
+    <aura:attribute name="WorkCenterCode" type="String" /> <!-- 워크센터 코드 -->
+    <aura:attribute name="orderNum" type="String" default="" />
+    <aura:attribute name="orderTypeValue" type="String" default="A" />
+    <aura:attribute name="excelName" type="String" default="labor_cost_report" />
+    <aura:attribute name="excelData" type="List" default="[]" />
+    <aura:attribute name="headExcelData" type="List" default="[]" />
+    <aura:attribute name="orderTypeOptions" type="List" default="[
+        {'label':'전체', 'value' : 'A'},
+        {'label':'무상서비스', 'value' : 'S'},
+        {'label':'설치시운전', 'value' : 'I'},
+        {'label':'납품후 교육', 'value' : 'E'},
+        {'label':'업무대행', 'value' : 'C'}
+    ]" />
+    <aura:attribute name="selectAllItemList" type="Boolean" default="false" /> <!--Item리스트 모두 선택-->
+    <aura:attribute name="selectItemList" type="List" default="[]" /> <!--Item리스트 모두 선택-->
+    <aura:attribute name="searchHeaderList" type="List" default="[]" /> <!--InterfaceList-->
+    <aura:attribute name="searchItemList" type="List" default="[]" /> <!--InterfaceList-->
+
+    <!-- Body -->
+    <article class="slds-card">
+
+        <!-- modal -->
+        <div aura:id="dealerModal" /> <!--딜러 모달-->
+
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <aura:if isTrue="{! v.isInit}">
+            <aura:if isTrue="{!v.isRepresentative}">
+                <!-- Header -->
+                <div class="header">
+                    <div class="title">
+                        <lightning:icon iconName="custom:custom17" size="small" />
+                        <h2>비용정산</h2>
+                    </div>
+
+                    <div class="button-wrap">
+                        <!-- 검색 필터 및 기능 추가 필요 -->
+                        <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left"
+                            onclick="{!c.handleSearch}" />
+                        <lightning:button name="search" label="저장" iconName="utility:save" iconPosition="left"
+                            onclick="{!c.handleSave}" />
+                        <c:DN_DealerPortalExcelUtilButton headerData="{!v.headExcelData}"
+                            excelData="{! v.excelData }" excelName="{! v.excelName }" />
+                    </div>
+                </div>
+
+                <!-- body -->
+                <div class="body">
+                    <!--  card-01 -->
+                    <div class="card-01 top-card">
+                        <div class="field-wrap">
+                            <p>정산월<abbr class="slds-required" title="required">*</abbr></p>
+                            <div class="input-wrap">
+                                <lightning:input type="date" name="" value="{!v.dateFrom}" aura:id="startDate"
+                                    onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+                                <span>~</span>
+                                <lightning:input type="date" name="" value="{!v.dateTo}" aura:id="endDate"
+                                    onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>Work Center<abbr class="slds-required" title="required">*</abbr></p>
+                            <div class="input-wrap">
+                                <lightning:input type="text" name="WorkCenterName" value="{!v.WorkCenterName}"
+                                    variant="label-hidden" readonly="true" disabled="true"
+                                    aura:id="WorkCenterName" />
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>오더 타입<abbr class="slds-required" title="required">*</abbr></p>
+                            <div class="input-wrap">
+                                <lightning:combobox name="orderTypeOptions" arua:id="orderType"
+                                    value="{!v.orderTypeValue}" variant="label-hidden"
+                                    options="{!v.orderTypeOptions}" />
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>오더 번호</p>
+                            <div class="input-wrap">
+                                <lightning:input type="text" name="" value="{!v.orderNum}" arua:id="orderNum"
+                                    variant="label-hidden" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- card-02 -->
+                    <div class="card-02 top-card">
+                        <div class="card-header">
+                            <h2>Header</h2>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>정산월</th>
+                                        <th>무상서비스</th>
+                                        <th>설치시운전</th>
+                                        <th>납품후교육</th>
+                                        <th>업무대행</th>
+                                        <th>합계</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!v.isSearched}">
+                                        <aura:iteration items="{!v.searchHeaderList}" var="arHeader">
+                                            <tr>
+                                                <td class="center">
+                                                    <ui:outputDate value="{!arHeader.SPMON}" />
+                                                </td>
+                                                <td class="center">
+                                                    <ui:outputCurrency value="{!arHeader.TLCST}" />
+                                                </td>
+                                                <td class="center">
+                                                    <ui:outputCurrency value="{!arHeader.INCST}" />
+                                                </td>
+                                                <td class="center">
+                                                    <ui:outputCurrency value="{!arHeader.EDCST}" />
+                                                </td>
+                                                <td class="center">
+                                                    <ui:outputCurrency value="{!arHeader.COCST}" />
+                                                </td>
+                                                <td class="center">
+                                                    <ui:outputCurrency value="{!arHeader.TTCST}" />
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </aura:if>
+                                    <aura:if isTrue="{!not(v.isSearched)}">
+                                        <tr>
+                                            <td colspan="14" class="center">No Data</td>
+                                        </tr>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Card 03 -->
+                    <div class="card-03 top-card">
+                        <div class="card-header">
+                            <h2>Item</h2>
+                        </div>
+
+                        <div class="table-wrap">
+                            <!-- Fixed : Left -->
+                            <div class="table-01 table-left" aura:id="leftTableDiv">
+                                <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="1%" />
+                                        <col width="49%" />
+                                        <col width="50%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="input-wrap">
+                                                    <lightning:input type="checkbox"
+                                                        onchange="{!c.toggleAllItem}" />
+                                                </div>
+                                            </th>
+                                            <th>오더유형</th>
+                                            <th>오더번호</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <aura:if isTrue="{!v.isSearched}">
+                                            <aura:iteration items="{!v.searchItemList}" var="arItem" indexVar="j">
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-field">
+                                                            <lightning:input aura:id="checkboxAll" type="checkbox"
+                                                                checked="{!arItem.WEB_CHK}" name="{!j}"
+                                                                onchange="{!c.selectItem}" variant="label-hidden" />
+                                                        </div>
+                                                    </td>
+                                                    <td class="center">{!arItem.ILATX}</td>
+                                                    <td class="center">
+                                                        <div class="order-num" onclick="{!c.openOrderWrapper}"
+                                                            data-order-number="{!arItem.AUFNR}">
+                                                            {!arItem.AUFNR}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </aura:if>
+                                        <aura:if isTrue="{!not(v.isSearched)}">
+                                            <tr>
+                                                <td colspan="3" class="center">No Data</td>
+                                            </tr>
+                                        </aura:if>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Scrollable : Right -->
+                            <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                                <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="10%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                        <col width="6%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>고객사</th>
+                                            <th>기종</th>
+                                            <th>장비번호</th>
+                                            <th>접수일</th>
+                                            <th>확정일</th>
+                                            <th>Work Center</th>
+                                            <th>작업자</th>
+                                            <th>작업내용</th>
+                                            <th>시작일</th>
+                                            <th>시작시간</th>
+                                            <th>종료일</th>
+                                            <th>종료시간</th>
+                                            <th>작업유형</th>
+                                            <th>메인</th>
+                                            <th>가설치</th>
+                                            <th>옵션</th>
+                                            <th>기타</th>
+                                            <th>합계시간</th>
+                                            <th>할증여부</th>
+                                            <th>작업합계</th>
+                                            <th>표준공수</th>
+                                            <th>지급공수</th>
+                                            <th>금액</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <aura:if isTrue="{!v.isSearched}">
+                                            <aura:iteration items="{!v.searchItemList}" var="arItem">
+                                                <tr>
+                                                    <td class="center">{!arItem.NAME1}</td>
+                                                    <td class="center">{!arItem.TYPBZ}</td>
+                                                    <td class="center">{!arItem.SERNR}</td>
+                                                    <td class="center">
+                                                        <ui:outputDate value="{!arItem.ERDAT}" />
+                                                    </td>
+                                                    <td class="center">
+                                                        <ui:outputDate value="{!arItem.ERSDA}" />
+                                                    </td>
+                                                    <td class="center">{!arItem.KTEXT}</td>
+                                                    <td class="center">{!arItem.SVCMAN_NAME}</td>
+                                                    <td class="left">
+                                                        <div class="work-detail">
+                                                            {!arItem.LTXA1}
+                                                        </div>
+                                                    </td>
+                                                    <td class="center">
+                                                        <ui:outputDate value="{!arItem.ISDD}" />
+                                                    </td>
+                                                    <td class="center">{!arItem.ISDZ}</td>
+                                                    <td class="center">
+                                                        <ui:outputDate value="{!arItem.AUSBS}" />
+                                                    </td>
+                                                    <td class="center">{!arItem.AUZTB}</td>
+                                                    <td class="center">{!arItem.WORKCD_NM}</td>
+                                                    <td class="center">{!arItem.MAINHR}</td>
+                                                    <td class="center">{!arItem.TEMPHR}</td>
+                                                    <td class="center">{!arItem.OPTNHR}</td>
+                                                    <td class="center">{!arItem.ETC_HR}</td>
+                                                    <td class="center">{!arItem.ISMNW}</td>
+                                                    <td class="center">{!arItem.EXFLG}</td>
+                                                    <td class="center">{!arItem.WORK_SUM}</td>
+                                                    <td class="center">{!arItem.STD_MH}</td>
+                                                    <td class="center">{!arItem.PAY_MH}</td>
+                                                    <td class="center">
+                                                        <ui:outputCurrency value="{!arItem.TLCST}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </aura:if>
+                                        <aura:if isTrue="{!not(v.isSearched)}">
+                                            <tr>
+                                                <td colspan="23" class="center">No Data</td>
+                                            </tr>
+                                        </aura:if>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!not(v.isRepresentative)}">
+                <div class="header">
+                    <div class="title">
+                        <lightning:icon iconName="custom:custom17" size="small" />
+                        <h2>비용정산</h2>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="wrap">
+                        <div class="no-entry"></div>
+                        <div class="no-entry-txt">
+                            <h2>접근이 제한된 페이지입니다.</h2>
+                            <h3>이 페이지에 접근할 수 있는 권한이 없습니다.</h3>
+                        </div>
+                    </div>
+                
+                </div>
+            </aura:if>
+        </aura:if>
+    </article>
+
+</aura:component>

@@ -1,0 +1,29 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    padding: 2rem 1rem;
+    text-align: center;
+    position: relative;
+}
+
+.THIS .slds-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.THIS .slds-modal__content .slds-m-right_small {
+    margin: 0;
+}
+
+.THIS .slds-modal__content .slds-m-right_small.error .slds-icon{
+    /* fill: #FF538A !important; */
+}
+
+.THIS .slds-modal__content .message p {
+    margin-top: 1rem;
+}

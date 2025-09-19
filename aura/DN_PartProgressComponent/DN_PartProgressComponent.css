@@ -1,0 +1,391 @@
+.THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+.THIS .header .title {
+    align-items: center;
+}
+
+
+/* Body */
+
+.THIS .body,
+.THIS .modal-body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body>div,
+.THIS .modal-body>div {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 Grid */
+
+/* .THIS .body .card-01 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 1.75rem;
+    row-gap: 1rem;
+} */
+
+.THIS .card-01 {
+    /* padding: 1rem 1.25rem; */
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-column-gap: 1.75rem;
+    grid-row-gap: 1rem;
+}
+
+
+/* Card 01 Details */
+
+.THIS .slds-card .card-01 .field-wrap p {
+    text-wrap: nowrap;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .slds-card .card-01 .input-wrap {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element,
+.THIS .card-01 .field-wrap .input-wrap .slds-combobox_container {
+    width: 100%;
+}
+
+.THIS .card-01 .input-wrap .button-wrap .slds-button {
+    text-wrap: nowrap;
+    padding: 0 1rem;
+}
+
+.THIS .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0 !important;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element__control {
+    display: flex;
+}
+
+.THIS .card-01 .label {
+    font-weight: 600;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+/* Card 2 */
+
+.THIS .card-02 {
+    padding: 1rem;
+}
+
+.THIS .card-02 .table-wrap {
+    height: calc(100vh - 32.75rem);
+    overflow-y: auto;
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.THIS .card-02 table {
+    border-collapse: separate;
+}
+
+.THIS .card-02 table thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.THIS .card-02 .title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+}
+
+.THIS .card-02 .title h2 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 100%;
+}
+
+/* Table Design */
+
+.THIS table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS table th+th,
+.THIS table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS table .slds-input[readonly] {
+    border: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+    text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+
+/* Tfoot : 합계정보 */
+
+.THIS .card-02 .table-wrap table tfoot {
+    width: 100%;
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+
+.THIS .card-02 .table-wrap table tfoot th {
+    background-color: #EEF4FF;
+    border-top: 2px solid #90a0ca;
+}
+
+.THIS .card-02 tfoot th {
+    background-color: #EEF4FF;
+    font-weight: bold;
+    border-top: 1px solid #d9d9d9;
+    border-bottom: 0 !important;
+}
+
+/* Table Design */
+
+.THIS .card-02 table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .card-02 table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .card-02 table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+/* .THIS .card-02 table tr:last-of-type td {
+    border-bottom: 0 !important;
+} */
+
+.THIS .card-02 table th+th,
+.THIS .card-02 table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .card-02 table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .card-02 table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Table Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+
+/* 🚗 Modal */
+
+.THIS .modal-body .card-01 {
+    display: flex;
+}
+
+.THIS .modal-body .card-01 .field-wrap {
+    width: 100%;
+}
+
+.THIS .modal-body .card-01 .field-wrap p {
+    margin: 0;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .modal-body .card-01 .input-wrap {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.THIS .modal-body .field-wrap .input-wrap .slds-form-element {
+    flex: auto;
+}
+
+.THIS .modal-body .card-02 {
+    padding: 1rem;
+}
+
+.THIS .modal-body .card-02 .table-wrap {
+    height: 26rem;
+    max-height: calc(100vh - 29rem);
+}
+
+.THIS .modal-body .card-02 .title {
+    padding: 0.25rem 0 0.75rem 0;
+}
+
+.THIS .modal-body .card-02 table td .checkbox {
+    text-align: center;
+}
+
+
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (min-width:480px) and (max-width:767px) {
+    .THIS .slds-card .card-01 .field-container:last-of-type .field-wrap:nth-of-type(2) {
+        flex: 2 !important;
+    }
+
+    .THIS .card-01 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .THIS .card-01 .field-wrap:last-of-type {
+        grid-column: span 2;
+    }
+}
+
+/* 모바일 세로 (해상도 ~ 479px)*/
+@media all and (max-width:479px) {
+    .THIS .header {
+        gap: 1rem;
+    }
+
+    .THIS .card-01 .field-container {
+        flex-direction: column;
+        align-items: normal;
+    }
+
+    .THIS .card-01 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .THIS .card-01 .field-wrap:last-of-type {
+        grid-column: span 1;
+    }
+}
+
+/* 2025-04-02 Hyerin Ro */
+
+.THIS .body .card-02 .title:has(.logo-title) {
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+}
+
+.THIS .body .card-02 .title .logo-title {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}

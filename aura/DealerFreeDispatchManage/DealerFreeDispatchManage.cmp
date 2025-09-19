@@ -1,0 +1,388 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-06-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-31-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_DealerFreeDispatchManageController" extends="c:DN_Helper" description="대리점 무상부품 관리">
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="isOpen"    type="Boolean" default="false" />
+    <aura:attribute name="isQty"    type="Boolean" default="false" />
+    <aura:attribute name="partsList" type="List" description="대리점 무상부품 리스트"/>
+    <aura:attribute name="selectList" type="List" />
+    <aura:attribute name="partition1" type="Decimal" default="0"/>
+    <aura:attribute name="partition2" type="Decimal" default="0"/>
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+	<aura:attribute name="uuid" type="String"/>
+    <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+    <aura:attribute name="whereConditionInfinite" type="Object" default="{}" /> <!-- whereCondition-->
+    <aura:attribute name="headerType" type="String" default="대리점 무상부품 관리"/> <!-- whereCondition-->
+    <aura:attribute name="serviceOrder" type="List" />
+    <aura:attribute name="notification" type="List" />
+    <aura:attribute name="domesticClaim" type="List" />
+    <aura:attribute name="afterSave" type="List" />
+    <aura:attribute name="_lastScrollCall" type="Integer"  default="0" access="private"/>
+    <aura:attribute name="_prevScrollY" type="Integer" />
+    <aura:attribute name="pageInfo" type="Object" default="{}"/>
+    <!-- LMS  -->
+    <lightning:messageChannel type="DealerPortalLMC__c"
+    onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+              <div class="slds-media__body">
+                <h3 class="slds-card__header-title">
+                    {!v.headerType}
+                </h3>
+              </div>
+              <div class="slds-no-flex">
+                <lightning:buttonGroup>
+                    <lightning:button name="detail" 
+                        label="{!v.isOpen ? 'Detail Close' : 'Detail'}" 
+                        onclick="{!c.toggleDetail}" />
+                    <aura:if isTrue="{!v.whereCondition.ReadDeleteHistory == true}">
+                        <aura:set attribute="else">
+                            <lightning:button name="return" label="Return" onclick="{!c.handleReturn}" />
+                            <lightning:button name="partition" label="Partition" onclick="{!c.handlePartition}" />
+                        </aura:set>
+                    </aura:if>    
+                </lightning:buttonGroup>
+              </div>
+            </header>
+          </div>
+
+        <!-- <div>
+            <div class="title">
+                <h3>{!v.headerType}</h3>
+            </div>
+            <lightning:buttonGroup>
+                <lightning:button name="detail" 
+                    label="{!v.isOpen ? 'Detail Close' : 'Detail'}" 
+                    onclick="{!c.toggleDetail}" />
+                <aura:if isTrue="{!v.whereCondition.ReadDeleteHistory == true}">
+                    <aura:set attribute="else">
+                        <lightning:button name="return" label="Return" onclick="{!c.handleReturn}" />
+                        <lightning:button name="partition" label="Partition" onclick="{!c.handlePartition}" />
+                    </aura:set>
+                </aura:if>
+                
+            </lightning:buttonGroup>
+        </div> -->
+
+        <div class="body">
+            <div class="card-01 top-table">
+                <div class="table-wrap">
+                    <!-- Fixed : Left -->
+                    <div class="table-01 table-left" aura:id="leftTableDiv">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 1%;"></th>
+                                    <th>Order</th>
+                                    <th>Item</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.partsList}" var="parts" indexVar="index">
+                                    <tr aura:id="table-row">
+                                        <td>
+                                            <div class="input-wrap center">
+                                                <!-- <lightning:input type="checkbox" aura:id="checkbox" name="{!index}" onchange="{!c.handleSelect}" /> -->
+                                                <lightning:buttonIcon iconName="utility:record" size="x-small" name="{!index}" onclick="{!c.handleSelect}" aura:id="selectButton"/>
+                                                <!--  utility:check-->
+                                            </div>
+                                        </td>
+                                        <td>{!parts.order}</td>
+                                        <td>{!parts.item}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Scrollable : Right -->
+                    <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    
+                                    <th>Status</th>
+                                    <th>Stat.Desc</th>
+                                    <th>Dealer Code</th>
+                                    <th>Delaer Name</th>
+                                    <th>Notif.date</th>
+                                    <th>Material</th>
+                                    <th>Material Desc.</th>
+                                    <th>Req.Qty</th>
+                                    <th>GI Qty</th>
+                                    <th>UOM</th>
+                                    <th>Amount</th>
+                                    <th>Currency</th>
+                                    <th>Ship.Typ.</th>
+                                    <th>Ship.Typ.Desc.</th>
+                                    <th>Planed GI Date/Time</th>
+                                    <!-- <th>Planed GI Time</th> -->
+                                    <th>Entered on</th>
+                                    <th>Invoice</th>
+                                    <th>Created on</th>
+                                    <!-- <th>Time</th> -->
+                                    <th>Created by</th>
+                                    <th>Change on</th>
+                                    <th>Change by</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.partsList}" var="parts" indexVar="index">
+                                    <tr aura:id="rightTableRow">
+                                        <td>{!parts.status}</td>
+                                        <td>{!parts.statDesc}</td>
+                                        <td>{!parts.dealerCode}</td>
+                                        <td>{!parts.dealerName}</td>
+                                        <td>{!parts.notifDate}</td>
+                                        <td>{!parts.productCode}</td>
+                                        <td>{!parts.productSpec}</td>
+                                        <td>{!parts.reqQty}</td>
+                                        <td>{!parts.giQTY}</td>
+                                        <td>{!parts.uom}</td>
+                                        <td>{!parts.amount}</td>
+                                        <td>{!parts.currencyCode}</td>
+                                        <td>{!parts.ShipType}</td>
+                                        <td>{!parts.ShipTypeDesc}</td>
+                                        <td>
+                                            <lightning:formattedDateTime value="{!parts.plannedGiDate}" year="numeric" month="2-digit" day="2-digit" hour="2-digit" minute="2-digit" />
+                                            
+                                        </td>
+                                        <td></td>
+                                        <td>{!parts.invoice}</td>
+                                        <td>
+                                            <lightning:formattedDateTime value="{!parts.createdOn}" year="numeric" month="2-digit" day="2-digit" hour="2-digit" minute="2-digit" />
+                                        </td>
+                                        <td>{!parts.createdBy}</td>
+                                        <td>
+                                            <lightning:formattedDateTime value="{!parts.changedOn}" year="numeric" month="2-digit" day="2-digit" hour="2-digit" minute="2-digit" />
+                                        </td>
+                                        <td>{!parts.changedBy}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <aura:if isTrue="{!v.isOpen}">
+                <div class="bottom-table">
+                    <div class="card-02 top-card">
+                        <div class="card-header">
+                            <h3>Service Order Component</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 1%;">Check</th>
+                                            <th>Order</th>
+                                            <th>Item</th>
+                                            <th>Reserv.No</th>
+                                            <th>Reserv.Itm</th>
+                                            <th>Material</th>
+                                            <th>Material Description</th>
+                                            <th>Plant</th>
+                                            <th>Item Cat.</th>
+                                            <th>Req Qty.</th>
+                                            <th>UOM</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.serviceOrder}" var="service" indexVar="index">
+                                            <tr>
+                                                <td>
+                                                    <div class="input-wrap center">
+                                                        <lightning:input aura:id="ServiceOrder" type="checkbox" checked="{!service.isSelected}" />
+                                                    </div>
+                                                </td>
+                                                <td>{!service.order}</td>
+                                                <td>{!service.item}</td>
+                                                <td>{!service.reservation}</td>
+                                                <td>{!service.reserveItem}</td>
+                                                <td>{!service.productCode}</td>
+                                                <td>{!service.productSpec}</td>
+                                                <td>{!service.plant}</td>
+                                                <td>{!service.itemCategory}</td>
+                                                <td>{!service.reqQty}</td>
+                                                <td>{!service.uom}</td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-03 top-card">
+                        <div class="card-header">
+                            <h3>Notification Parts Info.</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 1%;">Check</th>
+                                            <th>Notification</th>
+                                            <th>Item</th>
+                                            <th>Material</th>
+                                            <th>Material Description</th>
+                                            <th>Req.Qty</th>
+                                            <th>UOM</th>
+                                            <th>Supply</th>
+                                            <th>Dealer Code</th>
+                                            <th>Dealer Name</th>
+                                            <th>Return Y/N</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.notification}" var="noti" indexVar="index">
+                                            <tr>
+                                                <td>
+                                                    <div class="input-wrap center">
+                                                        <lightning:input type="checkbox" aura:id="Notification" checked="{!noti.isSelected}" />
+                                                    </div>
+                                                </td>
+                                                <td>{!noti.notification}</td>
+                                                <td>{!noti.item}</td>
+                                                <td>{!noti.productCode}</td>
+                                                <td>{!noti.productSpec}</td>
+                                                <td>{!noti.reqQty}</td>
+                                                <td>{!noti.uom}</td>
+                                                <td>{!noti.supply}</td>
+                                                <td>{!noti.dealerCode}</td>
+                                                <td>{!noti.dealerName}</td>
+                                                <td>{!noti.returnYN}</td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-04 top-card">
+                        <div class="card-header">
+                            <h3>Domestic Claim Parts Use History</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 1%;">Check</th>
+                                            <th>Order</th>
+                                            <th>Item</th>
+                                            <th>Material</th>
+                                            <th>Material Description</th>
+                                            <th>Req.Qty</th>
+                                            <th>GI Qty</th>
+                                            <th>UoM</th>
+                                            <th>Item Cat.</th>
+                                            <th>Return Y/N</th>
+                                            <th>Return Type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.domesticClaim}" var="claim" indexVar="index">
+                                            <tr>
+                                                <td>
+                                                    <div class="input-wrap center">
+                                                        <lightning:input type="checkbox" aura:id="DomesticClaim" checked="{!claim.isSelected}" />
+                                                    </div>
+                                                </td>
+                                                <td>{!claim.order}</td>
+                                                <td>{!claim.item}</td> <!-- {!claim.nItem} -->
+                                                <td>{!claim.productCode}</td>
+                                                <td>{!claim.productSpec}</td>
+                                                <td>{!claim.reqQty}</td>
+                                                <td>{!claim.giQTY}</td>
+                                                <td>{!claim.uom}</td>
+                                                <td>{!claim.itemCategory}</td>
+                                                <td>{!claim.returnYN}</td>
+                                                <td>{!claim.returnType}</td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    <!-- 수량 분할 화면-->    
+    <aura:if isTrue="{!v.isQty}">
+        <div class="storageBinModal">
+            <div aura:id="storageBinModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_large">
+                <aura:if isTrue="{!v.isLoading}">
+                    <div class="">
+                        <lightning:spinner alternativeText="Loading" size="medium" />
+                    </div>
+                </aura:if>
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">수량분할</h2>
+                <!-- Close Button -->
+                <button class="close_button_template slds-modal__close">
+                    <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                    title='close' name="closeModal" onclick="{!c.qtyModalCancel}" />
+                </button>
+                </header>
+                <!-- Modal Content -->
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                <div class="card-01 top-card">
+                    
+                    <div class="field-wrap">
+                    <p>Required Qty</p>
+                    <div class="input-wrap">
+                        <lightning:input class="readonly-input" value="{!v.selectList[0].reqQty}" readonly="true"
+                            variant="label-hidden" />
+                    </div>
+                    </div>
+                    <div class="field-wrap">
+
+                    <p>Partition 1</p>
+                    <div class="input-wrap">
+                        <lightning:input class="readonly-input" value="{!v.partition1}" onchange="{!c.handleChage}"  variant="label-hidden" />
+                    </div>
+                    </div>
+                    <div class="field-wrap">
+                    <p>Partition 2</p>
+                        <div class="input-wrap">
+                        <lightning:input class="readonly-input" value="{!v.partition2}" 
+                            variant="label-hidden" disabled="true" />
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                    onclick="{!c.qtyModalCancel}" />
+                    <lightning:button variant="brand" label="Save" title="Brand action"
+                    onclick="{!c.partitionInsert}" />
+                </footer>
+            </div>
+            </div>
+            <!-- 배경 -->
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+    </article>
+</aura:component>

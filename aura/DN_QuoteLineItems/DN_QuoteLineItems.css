@@ -1,0 +1,137 @@
+.THIS>.slds-card {
+    border: var(--lwc-borderWidthThin, 1px) solid var(--lwc-cardColorBorder, rgb(221, 219, 218)) !important;
+}
+
+.THIS .slds-card .slds-card__header .slds-text-heading_small {
+    font-size: var(--lwc-varFontSize5, 1rem);
+    line-height: var(--lwc-lineHeightHeading, 1.25);
+    font-weight: 700;
+}
+
+.THIS .slds-card .slds-card__header {
+    background: rgb(243, 242, 242);
+    margin-bottom: 0;
+    padding: 0.75rem 1rem !important;
+    border-bottom: 1px solid rgb(221, 219, 218);
+}
+
+.THIS .slds-card .slds-card__body {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.THIS .slds-card .slds-card__footer {
+    margin-top: 0;
+    border: 0;
+}
+
+/* .THIS .slds-card__footer{
+    background: rgb(243, 242, 242);
+} */
+.THIS .slds-card .slds-table {
+    border-top: 0;
+}
+
+.THIS.mobile .slds-card {
+    border-radius: 0;
+    border-right: 0;
+    border-left: 0;
+}
+
+.THIS.mobile .slds-card .slds-card__header {
+    background: white;
+}
+
+.THIS:not(.mobile) .slds-card .slds-table tbody tr td {
+    /* max-width: 10rem; */
+}
+
+.THIS .refresh-btn {
+    background-color: white;
+}
+
+.THIS .outerScroller {
+    max-height: 15rem;
+    overflow-x: auto;
+}
+
+.THIS .setHeight {
+    height: 15rem;
+}
+
+/*
+.THIS .outerScroller.iosMobile {
+    overflow-x: hidden;
+    overflow-y: auto;
+}*/
+
+.THIS .outerScroller table th:first-child {
+    /* background-color: red !important; */
+}
+
+
+/* you jin custom */
+.THIS.slds-card {
+    border: 1px solid rgb(201, 201, 201) !important;
+    border-radius: 0.25rem;
+}
+
+.THIS .table-title {
+    position: sticky;
+    top: 0;
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    /* margin-bottom: 0.5rem; */
+    border: 0;
+    border-bottom: 1px solid rgb(201, 201, 201);
+    background-color: rgb(243, 243, 243);
+    box-shadow: none;
+    border-radius: 0.25rem 0.25rem 0 0;
+    z-index: 2;
+}
+
+/* .THIS .table-title h2 {
+    font-size: 1rem;
+    font-weight: 700;
+  } */
+.THIS .slds-card__header {
+    margin: 0;
+}
+
+.THIS .slds-card__body:has(.table-title) {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.THIS header.slds-media {
+    position: relative;
+}
+
+.THIS header.slds-media .slds-no-flex {
+    position: absolute;
+    z-index: 3;
+    top: 4px;
+    right: 7px;
+}
+
+.THIS .slds-card__header {
+    padding-top: 0;
+}
+
+.THIS .highlight-row {
+    background-color: #FEE6E1 !important;
+    color: black;
+}
+.THIS .highlight-row td {
+    background-color: #FEE6E1 !important;
+    color: black;
+}
+.THIS .highlight-row tr {
+    background-color: #FEE6E1 !important;
+    color: black;
+}
+.THIS .example {
+    position: relative;
+    overflow: hidden;
+  }

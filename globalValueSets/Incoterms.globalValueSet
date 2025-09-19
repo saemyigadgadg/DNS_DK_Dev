@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>CFR</fullName>
+        <default>false</default>
+        <label>CFR (Costs and freight)</label>
+    </customValue>
+    <customValue>
+        <fullName>CIF</fullName>
+        <default>false</default>
+        <label>CIF (Costs, insurance &amp; freight)</label>
+    </customValue>
+    <customValue>
+        <fullName>CIP</fullName>
+        <default>false</default>
+        <label>CIP (Carriage and insurance paid to)</label>
+    </customValue>
+    <customValue>
+        <fullName>CPT</fullName>
+        <default>false</default>
+        <label>CPT (Carriage paid to)</label>
+    </customValue>
+    <customValue>
+        <fullName>DAF</fullName>
+        <default>false</default>
+        <label>DAF (Delivered at frontier)</label>
+    </customValue>
+    <customValue>
+        <fullName>DAP</fullName>
+        <default>false</default>
+        <label>DAP (Delivered at place)</label>
+    </customValue>
+    <customValue>
+        <fullName>DAT</fullName>
+        <default>false</default>
+        <label>DAT (Delivered at terminal)</label>
+    </customValue>
+    <customValue>
+        <fullName>DDP</fullName>
+        <default>false</default>
+        <label>DDP (Delivered Duty Paid)</label>
+    </customValue>
+    <customValue>
+        <fullName>DDU</fullName>
+        <default>false</default>
+        <label>DDU (Delivered Duty Unpaid)</label>
+    </customValue>
+    <customValue>
+        <fullName>DEQ</fullName>
+        <default>false</default>
+        <label>DEQ (Delivered ex quay (duty paid))</label>
+    </customValue>
+    <customValue>
+        <fullName>DES</fullName>
+        <default>false</default>
+        <label>DES (Delivered ex ship)</label>
+    </customValue>
+    <customValue>
+        <fullName>DPU</fullName>
+        <default>false</default>
+        <label>DPU (Delivered at Place Unloaded)</label>
+    </customValue>
+    <customValue>
+        <fullName>EXG</fullName>
+        <default>false</default>
+        <label>EXG (Ex-Go)</label>
+    </customValue>
+    <customValue>
+        <fullName>EXW</fullName>
+        <default>false</default>
+        <label>EXW (Ex Works)</label>
+    </customValue>
+    <customValue>
+        <fullName>FAS</fullName>
+        <default>false</default>
+        <label>FAS (Free Alongside Ship)</label>
+    </customValue>
+    <customValue>
+        <fullName>FCA</fullName>
+        <default>false</default>
+        <label>FCA (Free Carrier)</label>
+    </customValue>
+    <customValue>
+        <fullName>FH</fullName>
+        <default>false</default>
+        <label>FH (Free house)</label>
+    </customValue>
+    <customValue>
+        <fullName>FOB</fullName>
+        <default>false</default>
+        <label>FOB (Free on board)</label>
+    </customValue>
+    <customValue>
+        <fullName>UN</fullName>
+        <default>false</default>
+        <label>UN (Not Free)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y01</fullName>
+        <default>false</default>
+        <label>Y01 (Delivered at Customer Site)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y02</fullName>
+        <default>false</default>
+        <label>Y02 (Free on Truck)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y03</fullName>
+        <default>false</default>
+        <label>Y03 (Inspected at Customer Site)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y04</fullName>
+        <default>false</default>
+        <label>Y04 (Installation &amp; commissioning)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y05</fullName>
+        <default>false</default>
+        <label>Y05 (Unloaded at Customer Site)</label>
+    </customValue>
+    <customValue>
+        <fullName>YAN</fullName>
+        <default>false</default>
+        <label>YAN (Yanggi)</label>
+    </customValue>
+    <customValue>
+        <fullName>Unloaded at Customer Site</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Unloaded at Customer Site</label>
+    </customValue>
+    <customValue>
+        <fullName>Installation &amp; Commissioning</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Installation &amp; Commissioning</label>
+    </customValue>
+    <customValue>
+        <fullName>Inspected at Customer Site</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Inspected at Customer Site</label>
+    </customValue>
+    <customValue>
+        <fullName>Free on Truck</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Free on Truck</label>
+    </customValue>
+    <customValue>
+        <fullName>Delivered at Customer Site</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Delivered at Customer Site</label>
+    </customValue>
+    <masterLabel>Incoterms</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

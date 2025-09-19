@@ -1,0 +1,104 @@
+({
+    apexCall : function( component, event, helper, methodName, params ) {
+        var self = this;
+        return new Promise($A.getCallback(function(resolve, reject) {
+            let action = component.get('c.' + methodName);
+
+            if(typeof action !== 'undefined') {
+                action.setParams(params);
+
+                action.setCallback(helper, function(response) {
+                    if (response.getState() === 'SUCCESS') {
+                        resolve({'c':component, 'h':helper, 'r':response.getReturnValue(), 'state' : response.getState()});
+                    } else {
+                        let errors = response.getError();
+                        console.log(methodName, errors);
+                    }
+                });
+                $A.enqueueAction(action);
+            }
+        }));
+    },
+
+    toast: function (type, mmg) {
+        let toastEvent = $A.get("e.force:showToast");
+        toastEvent.setParams({
+            type: type,
+            message: mmg
+        });
+        toastEvent.fire();
+    },
+
+    searchSQ : function(component, event, helper) {
+        var self = this;
+        try {
+            let keyword = component.get('v.keyword');
+            let model = component.get('v.productModel');
+            if(keyword == '' && model == '') {
+                self.toast('ERROR', $A.get("$Label.c.DNS_SQR_T_FILLKEYWORD"));
+                return;
+            }
+            component.set('v.isLoading', true);
+            // Apex Call
+            self.apexCall(component, event, helper, 'searchSQ', {
+                keyword : keyword,
+                modelName : model,
+                recordId : component.get('v.recordId'),
+                productCode : component.get('v.productCode')
+            })
+            .then($A.getCallback(function(result) {
+                let r = result.r;
+                console.log('r', r);
+
+                var dataRow = r;
+
+                dataRow.forEach(row => {
+                    if (row.descriptionHtml) {
+                        row.descriptionHtml = row.descriptionHtml.replace(/<\/p>/g, '\n');
+                        row.descriptionHtml = row.descriptionHtml.replace(/<.*?>/g, '');
+                    }
+                });
+                const formattedData = self.processSearchData(dataRow);
+                
+                component.set('v.searchDataList', formattedData);
+                component.set('v.dataRow', dataRow);
+
+                let searchHistory = component.get('v.searchHistory') || [];
+                searchHistory.push({ keyword: keyword, model: model });
+
+                component.set('v.searchHistory', searchHistory);
+                component.set('v.isLoading', false);
+            }))
+            .catch(function(error) {
+                console.log('# initSearchModal error : ' + error.message);
+            });
+        } catch (error) {
+            console.log('handleClickSearch Error : ' + error);
+        }
+    },
+
+    processSearchData: function(data) {
+        const processedData = [];
+        data.forEach(row => {
+            const formattedRow = Object.assign({}, row);
+            if (formattedRow.price !== undefined) {
+                formattedRow.price = this.formatCurrency(formattedRow.price);
+            }
+            if (formattedRow.listPrice !== undefined) {
+                formattedRow.listPrice = this.formatCurrency(formattedRow.listPrice);
+            }
+            processedData.push(formattedRow);
+        });
+        return processedData;
+    },
+
+    formatCurrency: function(value) {
+        if (value === undefined || value === null) {
+            return '';
+        }
+        return new Intl.NumberFormat('en-US', { 
+            style: 'decimal', 
+            minimumFractionDigits: 0 
+        }).format(value);
+    },
+})

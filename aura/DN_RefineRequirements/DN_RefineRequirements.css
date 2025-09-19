@@ -1,0 +1,43 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    height: 12rem;
+    max-height: calc(100vh - 20rem);
+}
+
+.THIS .slds-modal__content {
+    position: relative;
+    height: auto;
+    max-height: calc(100vh - 8rem);
+    padding: 1.5rem 2.5rem 2.25rem;
+}
+
+.THIS .modal-body {
+    width: 100%;
+}
+
+.THIS .modal-body .text {
+    font-size: 15px;
+}
+
+.THIS .modal-body .slds-textarea {
+    height: 10rem;
+}
+
+.THIS .modal-body .slds-form-element__label {
+    font-size: 13px;
+    margin-bottom: 0.5rem;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border: none;
+}

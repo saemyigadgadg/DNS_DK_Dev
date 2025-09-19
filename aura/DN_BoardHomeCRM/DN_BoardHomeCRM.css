@@ -1,0 +1,37 @@
+.THIS.slds-card{
+    padding: 1rem;
+}
+
+.THIS .highlight {
+    color: red; /* 특정 글자만 색상 변경 */
+    cursor: pointer;
+}
+
+.THIS .header h2{
+    font-size: 1rem;
+    line-height: 1.25rem;
+    padding-bottom: 1rem;
+}
+
+.THIS .body .info_wrap{
+    padding: 7px 0;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.THIS .body .record_info,
+.THIS .body .category_info{
+    color: #5a5a5a;
+}
+
+.THIS .body .record_info span:after{
+    content: '\00a0\2219\00a0';
+    color: #5a5a5a;
+}
+
+.THIS .body .record_info span:last-of-type:after{
+    display: none;
+}
+
+.THIS .footer{
+    padding-top: 1rem;
+}

@@ -1,0 +1,94 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    max-height: calc(100vh - 15rem);
+    height: fit-content;
+    padding: 1rem;
+}
+
+.THIS .modal-body .slds-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.5rem;
+}
+
+.THIS .modal-body .first-wrap {
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.THIS .modal-body .input-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.5rem;
+}
+
+.THIS .modal-body .slds-form .slds-form-element {
+    position: relative;
+    min-width: 0;
+    padding: 0 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+.THIS .modal-body .slds-form .slds-form__item {
+    flex: 1 1 0%;
+    min-width: 280px;
+}
+
+.THIS .modal-body .text {
+    font-size: 15px;
+}
+
+.THIS .total-price {
+    padding: 1rem;
+    background: #f3f3f3;
+    font-weight: 500;
+    color: #444;
+    font-size: 15px;
+    text-align: right;
+    border-radius: 0.25rem;
+}
+
+.THIS .modal-body .uiMessage.error {
+    position: fixed;
+    z-index: 999;
+    width: 18rem;
+    left: 50%;
+    top: 1rem;
+    transform: translateX(-50%);
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border: none;
+}
+
+@media all and (max-width:767px) {
+    .THIS .modal-body .slds-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 2025-04-10 Hyerin Ro */
+
+.THIS .modal-body .input-container {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.THIS .modal-body .input-container .extra-input-wrap {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}

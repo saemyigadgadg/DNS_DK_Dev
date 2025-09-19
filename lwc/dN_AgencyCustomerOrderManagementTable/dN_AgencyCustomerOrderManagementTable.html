@@ -1,0 +1,134 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-26-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-18-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    
+    <div class="">
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+          </template>
+        <table class="">
+            <!-- slds-table slds-table_cell-buffer slds-table_col-bordered IP-table select -->
+            <colgroup>
+                <col width="8%" />
+                <col width="16%" />
+                <col width="12%" />
+                <col width="8%" />
+                <col width="6%" />
+                <col width="8%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="7%" />
+                <col width="4%" />
+                <col width="8%" />
+                <!-- <col width="8%" /> -->
+            </colgroup>
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">주문번호</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">고객사명</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">고객주문번호</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">주문일</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">품목수</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">주문금액</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">통화</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">상태</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">긴급도</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">반품</div>
+                    </th>
+                    <th class="" scope="col">
+                    <div class="slds-truncate" title="">대리점간 거래 번호</div>
+                    </th>
+                    <!-- <th class="" scope="col">
+                    <div class="slds-truncate" title="">납입지연</div>
+                    </th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={dataList} for:item="customerOrderList" for:index="i">
+                    <tr key={customerOrderList.id} class="">
+                        <!-- slds-hint-parent -->
+                        <td scope="row"  class="center" >
+                            <a accesskey={i} onclick={navigateToDetail}>{customerOrderList.seq}</a>    
+                        </td>
+                        <td scope="row">
+                            <div>{customerOrderList.customerName}</div>
+                        </td>
+                        <td scope="row">
+                            <div>{customerOrderList.customerOrerNumber}</div>
+                        </td>
+                        <td scope="row" class="center">
+                            <div>{customerOrderList.orderDate}</div>
+                        </td>
+                        <td scope="row" class="right">
+                            <div>
+                                <lightning-formatted-number value={customerOrderList.totalItemCount}></lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td scope="row" class="right">
+                            <div>
+                                <lightning-formatted-number value={customerOrderList.totalItemAmount}></lightning-formatted-number>
+                            </div>
+                        </td>
+                        <td scope="row" class="center">
+                            <div>{customerOrderList.currencyCode}</div>
+                        </td>
+                        <td scope="row" class="center">
+                            <a accesskey={i} onclick={openOrderStatusModal}>{customerOrderList.statusLabel}</a>
+                        </td>
+                        <td scope="row" class="center">
+                            <div>{customerOrderList.priority}</div>
+                        </td>
+                        <td scope="row" class="center">
+                            <a accesskey={i}  onclick={openReturnOrderItemModal}>{customerOrderList.returnOrder}</a>
+                        </td>
+                        <td scope="row">
+                            <div>{customerOrderList.dealerPoNo}</div>
+                        </td>
+                        <!-- <td scope="row">
+                             납입지연 필드 인도 법인용 *SAP 개발담당자랑 확인
+                        
+                            <div></div>
+                        </td> -->
+                    </tr>
+                </template>
+            </tbody>
+            <tfoot>
+                <tr class="slds-hint-parent">
+                  <td colspan="4" class="right">합계</td>
+                  <td colspan="1" class="right"><div><lightning-formatted-number value={totalItemCount} ></lightning-formatted-number></div></td>
+                  <td colspan="1" class="right"><div><lightning-formatted-number value={totalItemAmount} ></lightning-formatted-number></div></td>
+                  <td colspan="1" class="center">KRW</td>
+                  <td colspan="5"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+</template>

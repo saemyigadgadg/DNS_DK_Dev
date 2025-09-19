@@ -1,0 +1,3 @@
+<design:component>
+    <design:attribute name="isFromRecordPage" label="Record Page에서 호출 여부" description="Record Page에서 true로 설정" />
+</design:component>

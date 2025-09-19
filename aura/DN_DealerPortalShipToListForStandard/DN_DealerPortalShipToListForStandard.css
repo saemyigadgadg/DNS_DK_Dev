@@ -1,0 +1,29 @@
+.THIS.slds-card {
+  margin: 1rem 1.5rem;
+  background-color: #fff !important;
+}
+
+/* card-header */
+.THIS .card-header {
+  margin-bottom: 0 !important;
+  padding: 1rem;
+  padding-bottom: 0.75rem;
+  background-color: #f3f3f3;
+}
+
+.THIS .card-header .header-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.THIS .card-header .header-wrap h2 {
+  color: #000 !important;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* table */
+.THIS table {
+  border-top: 1px solid #c9c9c9 !important;
+}

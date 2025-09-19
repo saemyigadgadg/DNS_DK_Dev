@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>영업사원 태도</fullName>
+        <default>false</default>
+        <label>영업사원 태도</label>
+    </customValue>
+    <customValue>
+        <fullName>영업사원 약속 불이행</fullName>
+        <default>false</default>
+        <label>영업사원 약속 불이행</label>
+    </customValue>
+    <customValue>
+        <fullName>영업사원 불친절</fullName>
+        <default>false</default>
+        <label>영업사원 불친절</label>
+    </customValue>
+    <customValue>
+        <fullName>영업사원 연락두절</fullName>
+        <default>false</default>
+        <label>영업사원 연락두절</label>
+    </customValue>
+    <customValue>
+        <fullName>지역별 장비 구매 가격 상이</fullName>
+        <default>false</default>
+        <label>지역별 장비 구매 가격 상이</label>
+    </customValue>
+    <customValue>
+        <fullName>영업 지원 사항 부족</fullName>
+        <default>false</default>
+        <label>영업 지원 사항 부족</label>
+    </customValue>
+    <customValue>
+        <fullName>중고장비 처리 지연</fullName>
+        <default>false</default>
+        <label>중고장비 처리 지연</label>
+    </customValue>
+    <customValue>
+        <fullName>우수고객 혜택 미흡</fullName>
+        <default>false</default>
+        <label>우수고객 혜택 미흡</label>
+    </customValue>
+    <customValue>
+        <fullName>계약서 미전달/전달지연</fullName>
+        <default>false</default>
+        <label>계약서 미전달/전달지연</label>
+    </customValue>
+    <customValue>
+        <fullName>기타 영업 불만</fullName>
+        <default>false</default>
+        <label>기타 영업 불만</label>
+    </customValue>
+    <customValue>
+        <fullName>칭찬접수</fullName>
+        <default>false</default>
+        <label>칭찬접수</label>
+    </customValue>
+    <customValue>
+        <fullName>개선접수</fullName>
+        <default>false</default>
+        <label>개선접수</label>
+    </customValue>
+    <masterLabel>VOC 접수 사유</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

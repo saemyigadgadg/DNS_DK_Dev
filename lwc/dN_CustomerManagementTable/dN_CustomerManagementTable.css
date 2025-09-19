@@ -1,0 +1,5 @@
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+  max-width: 1% !important;
+}

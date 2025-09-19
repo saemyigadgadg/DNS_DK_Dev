@@ -1,0 +1,139 @@
+/* =========== Template Starts =========== */
+
+/* Total Layout */
+
+.THIS .total-wrap {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Common */
+
+.THIS header .button-wrap{
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.THIS .body {
+    position: relative;
+    height: 100vh;
+    max-height: calc(100vh - 21rem);
+    overflow: auto;
+}
+
+/* Container 01  */
+
+.THIS .container-01 {
+    flex: 5;
+}
+
+.THIS .container-01 header {
+    position: relative;
+    padding: 1rem;
+    border-bottom: 2px solid #e5e5e5;
+    background-color: #fff;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.THIS .container-01 header h2 {
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+    text-align: center;
+}
+
+.THIS .c_searchFilterCombobox .input-wrap {
+    margin-top: 0.75rem;
+}
+
+/* Container 02 */
+
+.THIS .container-02 {
+    margin: 0;
+    padding-bottom: 0.5rem;
+    flex: 2;
+}
+
+.THIS .container-02 header {
+    padding: 0.25rem 0 0.75rem 0;
+}
+
+.THIS .container-02 header h2 {
+    font-size: 1rem;
+}
+
+/* Body */
+
+.THIS .body .card-01{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 0.5rem;
+    padding: 1rem;
+}
+
+.THIS .body .card-01 .slds-form-element .slds-dropdown-trigger_click.slds-is-open .slds-dropdown {
+    overflow: auto;
+    max-height: 11rem;
+    top: 32px !important;
+}
+
+
+/* error msg */
+.THIS .card-01 .soldTo lightning-input-field {
+    margin-bottom: 0;
+}
+
+.THIS .card-01 .soldTo .error-msg {
+    margin-left: 33%;
+    color: #ba0517;
+    font-size: 0.75rem;
+    margin-top: 0.125rem;
+}
+/* dN_SerchFilterCombobox */
+
+/* .THIS .c_searchFilterCombobox .input-wrap .selected-wrap .slds-dropdown {
+    bottom: 100%;
+} */
+
+
+/* Footer */
+
+.THIS footer{
+    border-top: 2px solid #e5e5e5;
+    background-color: #F9F9F9;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0 0 0.25rem 0.25rem;
+
+}
+
+.THIS footer .slds-m-top_medium{
+    margin-top: 0 !important;
+}
+
+/* SLDS Custom */
+
+/* .THIS .c_searchFilterCombobox .input-field-wrap > .slds-form-element_horizontal{
+    margin-bottom: 1rem !important;
+} */
+
+@media all and (max-width:1000px) {
+    .THIS .total-wrap {
+        flex-direction: column;
+        padding-bottom: 3.5rem;
+    }
+    .THIS .container-01,
+    .THIS .container-02 {
+        flex: none;
+    }
+}
+
+@media all and (max-height: 920px) {
+    .THIS .c_searchFilterCombobox .input-wrap .selected-wrap .slds-dropdown {
+        bottom: 100%;
+    }
+}

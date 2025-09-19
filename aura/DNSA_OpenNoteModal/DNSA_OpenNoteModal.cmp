@@ -1,0 +1,46 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 02-07-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   02-07-2025   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,force.hasSObjectName"
+                access="global">
+
+    <aura:attribute name="isLoading"    type="Boolean"  default="false" />
+    <aura:attribute name="noteText"     type="String"   default="" />
+    <aura:attribute name="textList"     type="List"     default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.noteInit}"/>
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+
+    <div class="descriptionModal">
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        
+        <div class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 class="slds-modal__title slds-hyphenate">Open Note</h1>
+                </div>
+
+                <div class="slds-modal__content modal-body">
+                    <ul class="text-wrap">
+                        <aura:iteration items="{!v.textList}" var="text">
+                            <li class="row">{!text}</li>
+                        </aura:iteration>
+                    </ul>
+                </div>
+
+                <div class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button_neutral" label="Close" onclick="{! c.handleClickClose }" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

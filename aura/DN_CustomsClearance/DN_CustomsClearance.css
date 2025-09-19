@@ -1,0 +1,369 @@
+.THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card Header */
+
+.THIS .card-header {
+    margin-bottom: 1rem;
+}
+
+.THIS .card-header h2 {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0176D3;
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+
+/* Card 02 */
+.THIS .card-02 .table-wrap {
+    overflow: auto;
+}
+
+/* Table Design */
+
+.THIS .body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .5rem 0.75rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table td {
+    background-color: #fff;
+    padding: .5rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .body table .slds-input[readonly] {
+    border: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input{
+    text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input,
+.THIS .right > div {
+    text-align: right !important;
+}
+
+/* 📌 Sticky Tables */
+
+/* 상단헤더고정 + Sticky Tables + 세로 스크롤 동기화 */
+
+.THIS .body .card-02 .table-wrap {
+    /* height: calc(100vh - 34rem); */
+    overflow-y: auto;
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+}
+
+.THIS .body .card-02 .table-wrap table{
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.THIS .body .card-02 .table-wrap table thead {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+}
+
+/* Sticky Tables : Table 01 */
+
+.THIS .body .card-02 .table-01 {
+    flex: 2;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .body .card-02 .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+.THIS .body .card-02 .table-01 table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux{
+    border-color: #a1a1a1;
+}
+
+/* Sticky Tables : Table 02 */
+
+.THIS .body .card-02 .table-02 {
+    flex: 4;
+    overflow: scroll;
+    table-layout: fixed;
+}
+
+/* SLDS Table datepicker */
+
+.THIS .body .slds-datepicker__month td {
+    border: none;
+    background-color: #fff;
+    padding: .25rem;
+    font-size: .75rem;
+}
+.THIS .body .slds-datepicker__month th {
+    padding: .5rem;
+    font-weight: 400;
+    background-color: #fff;
+    border: none;
+}
+.THIS .body .slds-datepicker__month tr{
+    border-bottom: none;
+}
+
+.THIS .body .card-02 table th .slds-truncate{
+    height: 1.25rem;
+    line-height: 1.25rem;
+}
+
+.THIS .body .card-02 table td > div{
+    height: 1.175rem;
+    line-height: 1.175rem;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9 !important;
+    /* min-width: 12rem; */
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element__control{
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* Pagination */
+
+.THIS .pagination-wrap{
+    margin: 1rem;
+    margin-top: 0;
+}
+.THIS .pagination-wrap .total{
+    padding: 0.25rem 0;
+    text-align: right;
+    margin-bottom: 0.25rem;
+}
+.THIS .pagination-wrap .pagination{
+    display: flex;
+    border: 1px solid #C9C9C9;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    width: fit-content;
+    margin: auto;
+    width: fit-content;
+}
+.THIS .pagination-wrap .pagination a{
+    text-decoration: none;
+}
+.THIS .pagination-wrap .pagination li+li{
+    border-left: 1px solid #C9C9C9;
+}
+.THIS .pagination-wrap .pagination li:not(.pages) a{
+    padding: 0.5rem 0.75rem;
+    background-color: #fff;
+    color: #706E6B;
+    display: inline-block;
+    cursor: pointer;
+    line-height: 1rem;
+    height: 100%;
+}
+.THIS .pagination-wrap .pagination li a:hover{
+    background-color: #F3F3F3;
+}
+.THIS .pagination-wrap .pagination .pages a{
+    min-width: 2.25rem;
+    text-align: center;
+    display: inline-block;
+    padding: 0.5rem;
+    border-left: 1px solid #c9c9c9;
+}
+.THIS .pagination-wrap .pagination .pages span:first-child a{
+    border-left: none;
+}
+.THIS .pagination-wrap .pagination .pages{
+    background-color: #fff;
+}
+.THIS .pagination-wrap .pagination .pages .here{
+    display: inline-block;
+    text-align: center;
+    min-width: 2.25rem;
+    padding: 0.5rem;
+    background-color: #0176D3;
+    color: #fff;
+    cursor: unset;
+}
+.THIS .pagination-wrap .slds-icon_container{
+    pointer-events: none;
+}
+
+.THIS .uploadBtn .slds-file-selector__text {
+    display: none!important;
+}
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (min-width:480px) and (max-width:767px) {
+    .THIS .card-01{
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 1rem;
+    }
+}
+
+/* 모바일 세로 (해상도 ~ 479px)*/
+@media all and (max-width:479px) {
+    .THIS .header{
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .THIS .card-01{
+        grid-template-columns: 1fr;
+        row-gap: 0.5rem;
+    }
+}

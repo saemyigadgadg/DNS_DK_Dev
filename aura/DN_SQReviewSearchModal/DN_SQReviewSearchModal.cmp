@@ -1,0 +1,174 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-06-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-11-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="Edit SQ Review Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="isDealer"         type="Boolean"  default="false" />
+    <aura:attribute name="lineItemList"     type="List" />
+    <aura:attribute name="searchDataList"   type="List" />
+    <aura:attribute name="selectedRows"     type="List"     default="[]" />
+    <aura:attribute name="productModel"     type="String"   default=""/>
+    <aura:attribute name="keyword"          type="String"   default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.searchInit}" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <div class="SQSearchModal">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_REVIEW_T_SEARCHTITLE}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+
+                    <div class="modal-body">
+                        <div class="topcard card-01" onkeyup="{! c.handleEnterSearch }">
+                            <!-- <lightning:input name="input5" class="model-input" value="{!v.searchCategory}" variant ="label-hidden" placeholder="Category.." /> -->
+                            <lightning:input aura:id="inputKeyword" name="inline-search-input" type="search" variant ="label-hidden" value="{! v.keyword }" placeholder="Keyword.." />
+                            <lightning:button label="Search" title="Search" onclick="{! c.handleClickSearch }" />
+                        </div>
+
+                        <div class="topcard card-02">
+                            <div class="table-wrap">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <aura:if isTrue="{! v.isDealer }">
+                                        <colgroup>
+                                            <col width="10%" />
+                                            <col width="15%" />
+                                            <col width="15%" />
+                                            <col width="30%" />
+                                            <col width="6%" />
+                                            <col width="7%" />
+                                            <col width="7%" />
+                                            <col width="10%" />
+                                            <!-- <col width="10%" /> -->
+                                        </colgroup>
+
+                                        <aura:set attribute="else">
+                                            <colgroup>
+                                                <col width="8%" />
+                                                <col width="15%" />
+                                                <col width="15%" />
+                                                <col width="30%" />
+                                                <col width="5%" />
+                                                <col width="5%" />
+                                                <col width="5%" />
+                                                <col width="7%" />
+                                                <!-- <col width="8%" /> -->
+                                                <col width="10%" />
+                                            </colgroup>
+                                        </aura:set>
+                                    </aura:if>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="slds-truncate">Model</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_REVIEWNAME}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_TEAM}<br />{!$Label.c.DNS_REVIEW_C_REPRNAME}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_SQR_C_COMMENT}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="초도여부">{!$Label.c.DNS_REVIEW_C_Initial}{!$Label.c.DNS_REVIEW_C_Initial2}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="출하 전 검토여부">{!$Label.c.DNS_REVIEW_C_PRESHIPMENT}<br />{!$Label.c.DNS_REVIEW_C_ISREVIEW}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="설계검토 필요">{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED}<br />{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="납기(개월)(수주계약 확정 후)">
+                                                    {!$Label.c.DNS_REVIEW_C_DELIVERYMONTH}<br />{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH2}
+                                                </div>
+                                            </th>
+                                            <!-- <th>
+                                                <div class="slds-truncate" title="검토 완료 날짜">{!$Label.c.DNS_REVIEW_C_SUCCESSDATE}</div>
+                                            </th> -->
+                                            <aura:if isTrue="{! !v.isDealer }">
+                                                <th>
+                                                    <div class="slds-truncate" title="원가">{!$Label.c.DNS_REVIEW_C_WONPRICE}</div>
+                                                </th>
+                                            </aura:if>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.searchDataList}" var="row" indexVar="k">
+                                            <tr>
+                                                <td>
+                                                    <div class="slds-truncate" title="{! row.modelName }">{! row.modelName }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate" title="{! row.sqTitle }">{! row.sqTitle }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">
+                                                        <span>{! row.team }</span><br />
+                                                        <span>{! row.repr }</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate desc" title="{! row.commentsHtml }">{! row.comments }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">{! IF(row.isFirst, 'Y', 'N') }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">{! IF(row.preShipmentReview, 'Y', 'N') }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">{! IF(row.designReview, 'Y', 'N') }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate">{! row.deliveryDate }</div>
+                                                </td>
+                                                <!-- <td>
+                                                    <div class="slds-truncate">{! row.reviewDate }</div>
+                                                </td> -->
+                                                <aura:if isTrue="{! !v.isDealer }">
+                                                    <td>
+                                                        <div class="slds-truncate">{! row.krwCost }</div>
+                                                    </td>
+                                                </aura:if>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button title="Cancel" onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_B_Close}" />
+                    <!-- <lightning:button title="Apply" onclick="{! c.handleClickApply }" label="Apply"  variant="Brand" /> -->
+                </div>
+            </div>
+
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+
+</aura:component>

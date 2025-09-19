@@ -1,0 +1,96 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2024-07-03
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-17   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="거래은행 리스트 모달">
+
+  <!-- Attribute -->
+  <aura:attribute name="houseBankList" type="List" default="[]" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <div class="houseBankListModal">
+    <div aura:id="houseBankListModal" class="slds-modal slds-fade-in-open">
+
+      <div class="slds-modal__container slds-modal_large">
+
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">거래은행 리스트</h2>
+
+          <!-- Close -->
+          <button class="slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.closeModal}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content">
+          <div class="card-01 top-card">
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">House Bk</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">은행명</div>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <!-- 값이 있을 때 -->
+                <aura:if isTrue="{!v.houseBankList.length > 0}">
+                  <!-- sendHouseBankInfo - component.find("houseBank").get("v.value")을 위해 index 부여 -->
+                  <aura:iteration items="{!v.houseBankList}" var="houseBank" indexVar="index">
+                    <tr class="slds-hint-parent" onclick="{!c.sendHouseBankInfo}" data-index="{!index}">
+                      <td data-label="House Bk">
+                        <div class="slds-truncate" title="House Bk">
+                          <lightning:input type="text" name="houseBank" variant="label-hidden"
+                            value="{!houseBank.bankCode}" readonly="true" aura:id="houseBank" />
+                        </div>
+                      </td>
+                      <td data-label="은행명">
+                        <div class="slds-truncate" title="은행명">
+                          <lightning:input type="text" name="nameofBank" variant="label-hidden"
+                            value="{!houseBank.nameofBank}" readonly="true" aura:id="nameofBank" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+
+                  <!-- 값이 없을 때 -->
+                  <aura:set attribute="else">
+                    <tr>
+                      <td colspan="2" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:set>
+                </aura:if>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.closeModal}" />
+        </footer>
+      </div>
+    </div>
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+</aura:component>

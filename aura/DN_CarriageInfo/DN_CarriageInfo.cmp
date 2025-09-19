@@ -1,0 +1,149 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2025-05-13
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-07-02   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  controller="DN_CarriageInfoController" 
+  implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId"
+  description="DO - 운송현황 정보(출하의뢰 상세조회)">
+
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="carriageInfoList" type="List" default="[]" />
+
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+  <article class="slds-card">
+    <aura:if isTrue="{! v.isLoading}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+
+    <div class="header">
+      <div class="title">
+        <h2>{!$Label.c.DNS_S_CarriageInfo}</h2> <!-- 운송현황 정보 -->
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="card-01 top-card">
+        <div class="table-wrap">
+          <!-- Fixed : Left -->
+          <div class="table-01 table-left" aura:id="leftTableDiv">
+            <table>
+              <thead>
+                <tr>
+                  <th>{!$Label.c.DNS_C_CarLicense}</th> <!-- Car License -->
+                  <th>{!$Label.c.DNS_C_TransExpense}</th> <!-- Trans.Expense -->
+                  <th>{!$Label.c.DNS_C_TransAgent}</th> <!-- Trans.Agent -->
+                  <th>{!$Label.c.DNS_C_TransAgentName}</th> <!-- Trans.Agent Name -->
+                  <th>{!$Label.c.DNS_C_DOStatus}</th> <!-- Status-->
+                  <th>{!$Label.c.DNS_C_Driver}</th> <!-- Driver-->
+                  <th>{!$Label.c.DNS_C_DOMobilePhone}</th> <!-- Mobile Phone-->
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 값이 있을 때 -->
+                <aura:if isTrue="{!v.carriageInfoList.length > 0}">
+                  <aura:iteration items="{!v.carriageInfoList}" var="list">
+                    <tr>
+                      <td>
+                        <div>&nbsp;{!list.CARLC}</div>
+                      </td>
+                      <td>
+                        <div>{!list.TRANS_EXP}</div>
+                      </td>
+                      <td>
+                        <div>{!list.TRANAG}</div>
+                      </td>
+                      <td>
+                        <div class="width-fixed">{!list.TRANAG_T}</div>
+                      </td>
+                      <td>
+                        <div>{!list.ZZAPPROVAL}</div>
+                      </td>
+                      <td>
+                        <div>{!list.EXDRVR}</div>
+                      </td>
+                      <td>
+                        <div>{!list.HPNO}</div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+
+                  <!-- 값이 없을 때 -->
+                  <aura:set attribute="else">
+                    <tr>
+                      <td colspan="7" style="text-align: center;">{!$Label.c.DNS_M_NoData}</td>
+                    </tr>
+                  </aura:set>
+                </aura:if>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Scrollable : Right -->
+          <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+            <table>
+              <thead>
+                <tr>
+                  <th>{!$Label.c.DNS_C_PlanADt}</th> <!-- Plan.A.Dt -->
+                  <th>{!$Label.c.DNS_C_PlanATime}</th> <!-- Plan.A.Time -->
+                  <th>{!$Label.c.DNS_C_CarriageType}</th> <!-- Carriage Type -->
+                  <th>{!$Label.c.DNS_C_Tonnage}</th> <!-- Tonnage -->
+                  <th>{!$Label.c.DNS_C_IssueReqDt}</th> <!-- Issue Req. Dt. -->
+                  <th>{!$Label.c.DNS_C_CargoDetail}</th> <!-- Cargo Detail -->
+                  <th>{!$Label.c.DNS_C_InvoiceNo}</th> <!-- Invoice No. -->
+                  <th>{!$Label.c.DNS_C_IssueDate}</th> <!-- Issue Date -->
+                  <th>{!$Label.c.DNS_C_IssuerName}</th> <!-- Issuer Name -->
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 값이 있을 때 -->
+                <aura:if isTrue="{!v.carriageInfoList.length > 0}">
+                  <aura:iteration items="{!v.carriageInfoList}" var="list">
+                    <tr>
+                      <td class="center">
+                        <div>{!list.PARRDT}</div>
+                      </td>
+                      <td class="center">
+                        <div>{!list.PARRTM}</div>
+                      </td>
+                      <td>
+                        <div>{!list.ZFTRANSTP}</div>
+                      </td>
+                      <td>
+                        <div>{!list.ZFSETTLE}</div>
+                      </td>
+                      <td class="center">
+                        <div>{!list.WADAT}</div>
+                      </td>
+                      <td>
+                        <div>{!list.CARGO_DETAIL}</div>
+                      </td>
+                      <td>
+                        <div>{!list.ZINVNO}</div>
+                      </td>
+                      <td class="center">
+                        <div>{!list.ZZISSUEDT}</div>
+                      </td>
+                      <td>
+                        <div>{!list.EMP_NAME}</div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </aura:if>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </article>
+
+</aura:component>

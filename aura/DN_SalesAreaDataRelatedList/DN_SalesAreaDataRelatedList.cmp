@@ -1,0 +1,66 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 01-20-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   10-25-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,flexipage:availableForRecordHome,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+                controller="DN_AccountController" 
+                description="Sales Area Data Related List Componenet">
+
+    <!-- Attribute -->
+    <aura:attribute name="recordId"     type="String" /> 
+    <aura:attribute name="isLoaded"     type="Boolean"  default="false" />
+    <aura:attribute name="relatedList"  type="List" />
+    <aura:attribute name="tableColumns"  type="List" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:navigation aura:id="navService" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+
+    <!-- Body -->
+    <article class="slds-card">
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoaded}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:account' alternativeText='account' size='small' title='account'></lightning:icon>
+                </div>
+                <h2>{!$Label.c.Sales_Area_Data}</h2>
+            </div>
+            <div class="button-wrap">
+                <!-- <lightning:button label="New" title="Neutral action" onclick="{! c.handleClickNew }"/> -->
+            </div>
+        </div>
+
+        <div class="body">
+            <div class="main-content">
+
+                <lightning:datatable 
+                    data="{! v.relatedList }"
+                    columns="{! v.tableColumns }"
+                    keyField="Id"
+                    hideCheckboxColumn="true"
+                    column-widths-mode="auto"
+                    onrowaction="{! c.handleRowAction }"
+                    showRowNumberColumn="true"  
+                />
+            </div>
+        </div>
+
+        <div class="footer">
+            <lightning:button label="View All" title="View All" variant="base" onclick="{!c.handleClickViewAll}"/>
+        </div>
+    </article>
+</aura:component>

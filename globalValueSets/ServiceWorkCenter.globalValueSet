@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>두산공작기계서비스</fullName>
+        <default>false</default>
+        <label>두산공작기계서비스</label>
+    </customValue>
+    <customValue>
+        <fullName>세훈엠티</fullName>
+        <default>false</default>
+        <label>세훈엠티</label>
+    </customValue>
+    <customValue>
+        <fullName>대우씨엔씨</fullName>
+        <default>false</default>
+        <label>대우씨엔씨</label>
+    </customValue>
+    <customValue>
+        <fullName>우리종합기계</fullName>
+        <default>false</default>
+        <label>우리종합기계</label>
+    </customValue>
+    <masterLabel>서비스W/C</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

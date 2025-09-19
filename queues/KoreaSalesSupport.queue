@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Queue xmlns="http://soap.sforce.com/2006/04/metadata">
+    <doesSendEmailToMembers>true</doesSendEmailToMembers>
+    <email>yuhyun.park@dncompany.com</email>
+    <name>한국 영업지원</name>
+    <queueMembers>
+        <roles>
+            <role>SupportTeam</role>
+        </roles>
+        <users>
+            <user>yuhyun.park@dncompany.com</user>
+        </users>
+    </queueMembers>
+    <queueSobject>
+        <sobjectType>DNS_RequestToUseCustomer__c</sobjectType>
+    </queueSobject>
+</Queue>

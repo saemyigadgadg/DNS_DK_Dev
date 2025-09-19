@@ -1,0 +1,69 @@
+/* Pagination */
+
+.THIS .pagination-wrap .total {
+    padding: 0.25rem 0;
+    text-align: right;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .pagination-wrap .slds-icon_container{
+    pointer-events: none;
+}
+
+.THIS .pagination-wrap .pagination {
+    display: flex;
+    border: 1px solid #C9C9C9;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    width: fit-content;
+    margin: auto;
+    width: fit-content;
+}
+
+.THIS .pagination-wrap .pagination a {
+    text-decoration: none;
+}
+
+.THIS .pagination-wrap .pagination li+li {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS .pagination-wrap .pagination li:not(.pages) a {
+    padding: 0.5rem 0.75rem;
+    background-color: #fff;
+    color: #706E6B;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.THIS .pagination-wrap .pagination li a:hover {
+    background-color: #F3F3F3;
+}
+
+.THIS .pagination-wrap .pagination .pages a {
+    min-width: 2.25rem;
+    text-align: center;
+    display: inline-block;
+    padding: 0.5rem;
+    border-left: 1px solid #c9c9c9;
+}
+
+.THIS .pagination-wrap .pagination .pages span:first-child a {
+    border-left: none;
+}
+
+.THIS .pagination-wrap .pagination .pages .here {
+    display: inline-block;
+    text-align: center;
+    min-width: 2.25rem;
+    padding: 0.5rem;
+    background-color: #0176D3;
+    color: #fff;
+    cursor: unset;
+}
+.THIS .pagination-wrap .slds-icon_container{
+    pointer-events: none;
+}
+.hidden {
+    display: none;
+}

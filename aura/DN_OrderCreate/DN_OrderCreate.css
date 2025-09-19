@@ -1,0 +1,489 @@
+.THIS.slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+.THIS .body {
+    background-color: #F3F3F3;
+}
+.THIS .body .button-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.75rem;
+}
+
+
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card Header */
+.THIS .card-header {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+@media screen and (max-width:1240px) {
+    .THIS .card-03 .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+.THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Card 01 */
+.THIS .card-01 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 1rem;
+}
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+.THIS .card-01 .field-wrap:last-of-type{
+    grid-column: span 2;
+}
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+.THIS .card-01 .field-wrap .input-wrap.order-product-number td {
+    min-width: 5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+.THIS .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+.THIS .card-01 .input-wrap .slds-form-element__control{
+    display: flex;
+    gap: 0.5rem;
+}
+.THIS .input-wrap .slds-combobox_container{
+    width: 100%;
+}
+
+/* Card 02 */
+.THIS .card-02 .button-wrap {
+    margin: 0;
+}
+.THIS .card-02 .table-wrap table{
+    border-top: 1px solid #d9d9d9;
+}
+
+/* Card 03 */
+.THIS .card-03 .card-header .header-wrap {
+    display: flex;
+    gap: 0.5rem;
+}
+.THIS .card-03 .card-header .button-wrap {
+    display: flex;
+    margin: 0;
+}
+
+@media screen and (max-width:960px) {
+    .THIS .card-03 .card-header .button-wrap {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+}
+.THIS .card-03 .card-header .button-wrap>div {
+    position: relative;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+}
+.THIS .card-03 .card-header .button-wrap>div.errorReport {
+    margin-right: 0;
+}
+.THIS .card-03 .table-wrap {
+    overflow: auto;
+}
+.THIS .table-01 .delete .input-wrap{
+    display: block;
+    text-align: center;
+}
+.THIS .card-03 .table-02 th{
+    padding: 0.385rem 0.75rem;
+}
+.THIS .card-03 td {
+    height: 44px;
+}
+.THIS .card-03 .table-02 lightning-icon {
+    cursor: pointer;
+}
+.THIS .card-03 .table-02 .twp-icon {
+    --slds-c-icon-color-background: #1b96ff;
+}
+.THIS .card-03 .table-02 .bulletin-icon {
+    --slds-c-icon-color-background: #0176d3;
+}
+.THIS .card-03 .table-02 .note-icon {
+    --slds-c-icon-color-background: #014486;
+}
+.THIS .card-03 .table-wrap table td .input-wrap div{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+}
+.THIS .card-03 .table-wrap table td .input-wrap .clear-btn {
+    position: absolute;
+    border: none;
+    right: 36px;
+}
+.THIS .card-03 table td .slds-form-element{
+    width: 100%;
+}
+
+/* pop up modal */
+.THIS .pop-up-modal .slds-modal__container .slds-modal__header {
+    box-shadow: 1px -1px 3px 0 rgba(0, 0, 0, 0.16);
+}
+.THIS .pop-up-modal .slds-modal__container .slds-modal__header .slds-modal__close {
+    top: 10px;
+    right: 10px;
+    border: none;
+}
+.THIS .pop-up-modal .slds-modal__container .slds-modal__content {
+    overflow: unset;
+    box-shadow: 1px 0px 3px 0 rgba(0, 0, 0, 0.16);
+}
+.THIS .pop-up-modal .card-01 {
+    display: block;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+}
+
+/* 정보변경 modal */
+.THIS.slds-modal table {
+    border-top: 1px solid #c9c9c9;
+}
+.THIS.slds-modal .card-01 {
+    display: block;
+}
+.THIS.slds-modal .slds-modal__header .slds-modal__close {
+    border: none;
+    border-radius: 0.25rem;
+}
+
+/* GPES 모달 */
+.THIS.GPES-Modal .slds-modal__container {
+    width:  60vw;
+    max-width: none;
+    min-width: 960px;
+}
+.THIS.GPES-Modal .slds-modal__container .slds-modal__content {
+    height: 65vh;
+    min-height: 500px;
+}
+
+/* 엑셀 업로드 모달 */
+.THIS .excelModal {
+    position: absolute;
+    top: 120px;
+    left: -448px;
+}
+.THIS .excelModal .slds-modal__container {
+    width: 540px;
+    max-width: none;
+}
+.THIS .excelModal .slds-modal__container .slds-modal__content {
+    padding: 3rem;
+    text-align: center;
+    overflow: unset;
+}
+
+.THIS .excelModal .txt-box {
+    text-align: left;
+    margin-bottom: 1rem;
+  }
+
+/* 가격정보 modal */
+.THIS .cost-info-modal {
+    position: absolute;
+    top: 112px;
+    left: -736px;
+}
+.THIS .cost-info-modal .slds-modal__container {
+    width: 840px;
+    max-width: none;
+}
+.THIS .cost-info-modal table {
+    border-top: 1px solid #d9d9d9;
+}
+.THIS .cost-info-modal table td {
+    text-align: right;
+}
+
+/* 에러보고서 modal */
+.THIS .errorReportModal {
+    position: absolute;
+    top: 85px;
+    left: -898px;
+}
+.THIS .errorReportModal .slds-modal__container {
+    width: 1020px;
+    max-width: none;
+}
+.THIS .errorReportModal .card-01 .table-wrap {
+    height: fit-content !important;
+    overflow: hidden;
+    overflow-x: scroll;
+}
+
+/* Table Design */
+
+.THIS .body table tr, 
+.THIS.slds-modal table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+.THIS .body table th, 
+.THIS.slds-modal table th  {
+    height: 33px;
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+.THIS .body table td, 
+.THIS.slds-modal table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+.THIS .body table th+th,
+.THIS .body table td+td, 
+.THIS.slds-modal table th+th,
+.THIS.slds-modal table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Table Class */
+.THIS .center,
+.THIS .center .slds-input {
+    text-align: center !important;
+}
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+/* 📌 Sticky Tables */
+.THIS .body .card-03 .table-wrap {
+    height: calc(100vh - 41rem);
+    overflow-y: auto;
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+}
+@media screen and (max-width: 1800px) {
+    .THIS .body .card-03 .table-wrap {
+        height: calc(100vh - 22rem);
+    }
+}
+.THIS .body .card-03 .table-wrap table{
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.THIS .body .card-03 .table-wrap table thead {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+}
+
+/* Sticky Tables : Table 01 */
+.THIS .body .card-03 .table-01 {
+    flex: 1;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #D9D9D9;
+}
+@media screen and (max-width: 2000px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 2;
+    }
+}
+@media screen and (max-width: 1800px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 3;
+    }
+}
+@media screen and (max-width: 1600px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 4;
+    }
+}
+@media screen and (max-width: 1200px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 5;
+    }
+}
+@media screen and (max-width: 980px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 6;
+    }
+}
+@media screen and (max-width: 740px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 7;
+    }
+}
+.THIS .body .card-03 .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+.THIS .body .card-03 .table-01 table tr>td:last-child {
+    font-size: 13px;
+}
+.THIS .card-03 .table-01 .slds-input {
+    min-width: 9rem;
+}
+
+/* Sticky Tables : Table 02 */
+.THIS .body .card-03 .table-02 {
+    flex: 3;
+    overflow: scroll;
+    table-layout: fixed;
+}
+
+/* Main Button */
+.THIS .mainBtn {
+    background: #0176D3;
+    border-color: #0176D3 !important;
+    color: #fff;
+}
+
+/* SLDS Custom */
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+}
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+/* Card 01A : DNSA 전용*/
+.THIS .card-01A {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 1rem;
+}
+.THIS .card-01A .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+.THIS .card-01A .field-wrap:last-of-type{
+    grid-column: span 2;
+}
+.THIS .card-01A .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+.THIS .card-01A .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+.THIS .card-01A .field-wrap .input-wrap.order-product-number td {
+    min-width: 5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.THIS .card-01A .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+.THIS .card-01A .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+.THIS .card-01A .input-wrap .slds-form-element__control{
+    display: flex;
+    gap: 0.5rem;
+}

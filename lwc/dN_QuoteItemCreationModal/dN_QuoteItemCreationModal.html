@@ -1,0 +1,57 @@
+<!--
+  @class             : DN_QuoteItemCreationController
+  @description       : Quote에서 Quotelineitem 생성 Modal
+  @author            : yeongju.yun
+  @last modified on  : 2024-12-23
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2024-11-20   yeongju.yun   Initial Version
+-->
+<template>
+    <div class="quoteitem_modal_wrapper">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium slds-hyphenate">{cLabel.DNS_H_AddProducts}</h2>
+            <!-- <h3>{cLabel.DNS_H_StandardPriceBook} : {priceBook}</h3> -->
+        </header>
+
+        <div class="slds-modal__content">
+            <div class="search_input">
+                <lightning-input type="search" value={searchKey} variant="label-hidden" class="searchBox" onchange={handleInputChange} oncommit={handleInputSubmit}></lightning-input>
+                <div class="search_link_action">
+                    <div if:true={showViewAll}><a aria-live="polite" onclick={handleShowViewAll}>{cLabel.DNS_B_ViewAll}</a></div>
+                    <a aria-live="polite" if:false={showSelected} onclick={handleShowSelected}>{cLabel.DNS_B_ShowSelected} ({selectedCnt})</a>
+                    <a aria-live="polite" if:true={showSelected} onclick={handleShowSelected}>{cLabel.DNS_B_BackToResult}</a>
+                </div>
+            </div>
+            <div class="search_data">
+                <lightning-datatable
+                    key-field="entryId"
+                    columns={tableColumns}
+                    data={tableData}
+                    min-column-width="150"
+                    suppress-bottom-bar
+                    onrowselection={handleRowSelection}
+
+                    default-sort-direction={defaultSortDirection}
+                    sorted-direction={sortDirection}
+                    sorted-by={sortedBy}
+                    onsort={handleSort}
+                ></lightning-datatable>  
+            </div>
+        </div>
+
+        <footer class="slds-modal__footer" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div>{cLabel.DNS_MSG_NoProductContactHeadquarters}</div>
+            <!-- If the desired product is unavailable, please contact the DN Solutions. -->
+            <div>
+                <lightning-button label={cLabel.DNS_B_Cancel} onclick={handleClose}></lightning-button>
+                <lightning-button variant="brand" label={cLabel.DNS_B_Save} onclick={handleSave}></lightning-button>
+            </div>
+        </footer>
+    </div>
+</template>

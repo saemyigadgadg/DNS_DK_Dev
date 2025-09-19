@@ -1,0 +1,275 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 04-18-2025
+  @last modified by  : suheon.ha@UserSettingsUnder.SFDoc
+-->
+<apex:page standardController="Quote" extensions="DN_QuotationPDFController" showHeader="false" standardStylesheets="false"
+    sidebar="false" renderAs="pdf" applyHtmlTag="false" contentType="text/html;charset=UTF-8">
+
+    <!-- Static Resource -->
+    <apex:stylesheet value="{!URLFOR($Resource.DN_CI, 'DN_CI.zip')}" />
+
+    <head>
+        <meta charset="UTF-8" />
+        <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+
+        <style type="text / css">
+
+            @page{ size: A4; margin: 40px; padding-bottom: 8px; padding-top: 256px; box-sizing: border-box; @top-center { content: element(header);
+            } @bottom-center { content: counter(page); } } @page:first { padding-top: 0; @top-center {} } .page-break { page-break-after:
+            always; } div.header { margin-top: 16px; position: running(header); } .page-01{ width: 100%; height: 267mm; vertical-align:
+            top; } .page-02{ width: 100%; } body { font-family: Arial Unicode MS, sans-serif; font-weight: 400; font-size:
+            12px; line-height: normal; } h1,h2,h3,h4,h5,h6,a,p,span,b,strong{ margin: 0; padding: 0; } table{ width: 100%;
+            border-collapse: collapse; } table.border { border-bottom : 1px solid black; border-top: 2px solid black; } table.border
+            td { border-bottom: 1px solid black; border-top: 1px solid black; padding: 8px 4px; font-size: 12px; vertical-align:
+            top; } table.border td+td { border-left: 1px solid black; } .page-01 .table-01 td{ vertical-align: top; } .page-01
+            .table-02 td p { display: block; padding-left: 4px; line-height: 160%; } .page-01 .table-03 td { padding: 4px;
+            font-size: 12px; vertical-align: top; } .page-01 .table-03 tbody tr:first-child td { border-top: 2px solid black;
+            } .page-01 .table-03 tfoot tr:first-child td { border-top: 2px solid black; } .page-02 .table-02 td p { padding-left:
+            4px; line-height: 160%; } .page-02 .table-03 { border-top: 1px solid black; border-bottom: 1px solid black; }
+            .page-02 .table-03 th { border-bottom: 1px solid black; margin: 0; text-align: center; padding: 0; }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="wrap-01">
+                <table class="table-01">
+                    <tr>
+                        <td style="font-size: 18px;">
+                            DN Solutions Co., Ltd.
+                        </td>
+                        <td style="text-align: right;" rowspan="2">
+                            <img src="{!URLFOR($Resource.DN_CI, 'DN_CI_2.png')}" width="140" height="80" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="vertical-align: middle;">
+                            <!-- 전화번호. Fax. -->
+                            전화번호. {!result['Mobile']} Fax. {!result['Fax']}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="wrap-02">
+                <h1 style="font-size: 36px; text-align: left;">견적서</h1>
+                <table class="table-02 border" style="margin-top: 12px;">
+                    <caption style="text-align: right;"></caption>
+                    <!-- 페이지수: 2/3 -->
+                    <tr>
+                        <td rowspan="2" style="width: 50%;">
+                            <h3>고객명</h3>
+                            <p>{!result['AccountName']}</p>
+                            <p>Your Customer code is {!result['CustomerCode']}</p>
+                        </td>
+                        <td colspan="2">
+                            <h3>문서번호</h3>
+                            <p>{!result['QuoteNumber']}</p>
+                        </td>
+                        <td colspan="2">
+                            <h3>문서일자</h3>
+                            <p>{!result['CreatedDate']}</p>
+                        </td>
+                        <td colspan="2">
+                            <h3>거래통화</h3>
+                            <p>KRW</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <h3 style="display: inline-block; margin-right: 16px;">효력 시작일</h3>
+                            <span>{!result['CreatedDate']}</span>
+                        </td>
+                        <td colspan="3">
+                            <h3 style="display: inline-block; margin-right: 16px;">효력 만료일</h3>
+                            <span>{!result['ExpirationDate']}</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Page 01 -->
+        <div class="page-01" style="page-break-after: always;">
+
+            <div class="wrap-01" style="height: 10%;">
+                <table class="table-01">
+                    <tr>
+                        <td style="font-size: 18px;">
+                            DN Solutions Co., Ltd.
+                        </td>
+                        <td style="text-align: right;" rowspan="2">
+                            <img src="{!URLFOR($Resource.DN_CI, 'DN_CI_2.png')}" width="140" height="80" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="vertical-align: middle;">
+                            <!-- 전화번호. Fax. -->
+                            전화번호. {!result['Mobile']} Fax. {!result['Fax']}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="wrap-02" style="height: 60%;">
+                <h1 style="font-size: 36px; text-align: left;">견적서</h1>
+                <table class="table-02 border" style="margin-top: 12px;">
+                    <caption style="text-align: right;"></caption>
+                    <!-- 페이지수: 2/3 -->
+                    <tr>
+                        <td colspan="2">
+                            <h3>문서번호</h3>
+                            <p>{!result['QuoteNumber']}</p>
+                        </td>
+                        <td colspan="2">
+                            <h3>문서일자</h3>
+                            <p>{!result['CreatedDate']}</p>
+                        </td>
+                        <td colspan="2">
+                            <h3>거래통화</h3>
+                            <p>KRW</p>
+                        </td>
+                        <td rowspan="4">
+                            <h3>기타정보</h3>
+                            <p><apex:outputText value="{!result['Description']}" escape="false" /></p>
+                        </td>                        
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <h3 style="display: inline-block; margin-right: 16px;">효력 시작일</h3>
+                            <span>{!result['CreatedDate']}</span>
+                        </td>
+                        <td colspan="3">
+                            <h3 style="display: inline-block; margin-right: 16px;">효력 만료일</h3>
+                            <span>{!result['ExpirationDate']}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <h3>고객명</h3>
+                            <p>{!result['AccountName']}</p>
+                            <p>Your Customer code is {!result['CustomerCode']}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <h3>고객참조번호</h3>
+                            <p>{!result['BuyerReferenceNo']}</p>
+                        </td>
+                        <td colspan="4">
+                            <h3>수금조건</h3>
+                            <!-- <p>C007 Cash Payment</p> -->
+                            <p>{!result['TermsOfPayment']}</p>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin-top: 12px;">※ 하기 조건은 사전 고지 없이 변경될 수 있으며, 견적 세부 내역과 실제 청구 내역은 다를 수 있습니다.</p>
+            </div>
+
+            <div class="wrap-03" style="height: 20%;">
+                <table>
+                    <tr>
+                        <td style="width:40%; vertical-align: top; text-align: right; padding-right: 32px;">합계</td>
+                        <td style="width:60%; text-align: right;">
+                            <table class="table-03">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align: left;">정가</td>
+                                        <td>KRW</td>
+                                        <td>{!result['ListTotal']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;">단가</td>
+                                        <td>KRW</td>
+                                        <td>{!result['Subtotal']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;">할인</td>
+                                        <td>KRW</td>
+                                        <td>{!result['DiscountAmount']}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;">세금{!result['Tax']}</td>
+                                        <td>KRW</td>
+                                        <td>{!result['TaxPrice']}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td style="text-align: left;">합계금액</td>
+                                        <td>KRW</td>
+                                        <td>{!result['GrandTotal']}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="wrap-04" style="height: 10%;">
+                <p style="text-align: center;">上記와 같이 見積을 提出합니다.</p>
+                <h2 style="text-align: center; margin-top: 16px;">주식회사 디엔솔루션즈 代表理事 김 원 종</h2>
+            </div>
+
+        </div>
+
+        <!-- Page 02 -->
+        <div class="page-02" style="page-break-after: always; page-break-after: avoid;">
+            <table class="table-03" style="-Fs-table-paginate: paginate">
+                <thead>
+                    <tr>
+                        <th>순번</th>
+                        <th>공급품번</th>
+                        <th>품명</th>
+                        <th>수량</th>
+                        <th>단위</th>
+                        <th style="text-align: right;">정가</th>
+                        <th style="text-align: right;">할인가</th>
+                        <th style="text-align: right;">단가
+                            <br/>금액
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!result['LineItems']}" var="item">
+                        <tr>
+                            <td>{!item['index']}</td>
+                            <td>{!item['ProductCode']}</td>
+                            <td>{!item['ProductName']}</td>
+                            <td>{!item['Quantity']}</td>
+                            <td>EA</td>
+                            <td style="text-align: right;">{!item['ListPrice']}</td>
+                            <td style="text-align: right;">{!item['DiscountedPrice']}</td>
+                            <td>
+                                <p style="text-align: right;">{!item['UnitPrice']}</p>
+                                <p style="text-align: right;">{!item['TotalPrice']}</p>
+                            </td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+
+            <table class="table-03">
+                <tfoot>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td style="text-align: right;">
+                            부품 소계 (수량/금액)
+                        </td>
+                        <td colspan="3" style="text-align: right;">{!result['TotalQuantity']}</td>
+                        <td style="text-align: right;">{!result['TotalAmount']}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </body>
+
+
+</apex:page>

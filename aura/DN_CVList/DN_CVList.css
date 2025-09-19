@@ -1,0 +1,66 @@
+.THIS.total-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.25rem;
+}
+
+/* Accordion Header */
+
+.THIS .slds-accordion__summary-action {
+  background: #f3f3f3;
+  font-weight: 600;
+}
+.THIS .slds-accordion__summary-action:last-of-type {
+  margin-top: 
+}
+
+.THIS .column-label {
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+
+/* Form 2 Column */
+
+.THIS .slds-form__row {
+  row-gap: 0.5rem;
+}
+
+.THIS .slds-form__item {
+  width: 50%;
+  flex: unset !important;
+}
+
+.THIS .label-container {
+  display: flex!important;
+  gap: 10px!important;
+}
+
+/* 2025-03-04 Hyerin Ro */
+
+.THIS .slds-form-element_horizontal .slds-form-element__control {
+  padding-left: 42% !important;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__label {
+  max-width: calc(45% - 1.25rem) !important;
+}
+
+.THIS .slds-form .slds-form-element__label {
+  word-break: break-all;
+}
+
+.THIS .slds-form-element_horizontal:not(.slds-is-editing) {
+  padding-bottom: 0.25rem;
+}
+
+.THIS span.num {
+  display: inline-block;
+  width: 1.5rem;
+}
+
+.THIS .name {
+  max-width: 11rem;
+  width: 12rem;
+}

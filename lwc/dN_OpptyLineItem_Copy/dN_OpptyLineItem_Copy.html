@@ -1,0 +1,40 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 2024-12-13
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div class="slds-modal__container total-wrap">
+
+        <div class="slds-modal__header">
+            <h2 class="slds-text-heading_medium slds-hyphenate">Excel Paste to Opportunity Line Items</h2>
+        </div>
+        <div class="slds-modal__content">
+            <div class="slds-m-around_medium card-01">
+                <p class="label">Paste Product Codes</p>
+                <div class="input-container">
+                    <lightning-textarea name="excelData" variant="label-hidden"
+                        placeholder="Paste your Product Codes here..." value={excelData} onchange={handleInputChange}>
+                    </lightning-textarea>
+                    <lightning-button label="Load Data" variant="brand" onclick={handleLoadData}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <template if:true={lineItems.length}>
+                <div class="table-wrap">
+                    <lightning-datatable key-field="id" data={lineItems} columns={columns} hide-checkbox-column
+                        draft-values={draftValues} onsave={handleSave}>
+                    </lightning-datatable>
+                </div>
+            </template>
+        </div>
+        <div class="slds-modal__footer">
+        </div>
+
+    </div>
+</template>

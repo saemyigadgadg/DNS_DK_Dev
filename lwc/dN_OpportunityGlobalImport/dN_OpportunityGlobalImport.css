@@ -1,0 +1,4 @@
+.table-scroll { max-height: 320px; overflow: auto; }
+:host {
+  display: block;
+}

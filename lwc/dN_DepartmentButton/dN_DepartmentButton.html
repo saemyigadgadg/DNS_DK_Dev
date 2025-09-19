@@ -1,0 +1,44 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 03-04-2025
+  @last modified by  : suheon.ha@UserSettingsUnder.SFDoc
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+
+    <!-- Modal for confirmation -->
+    <template if:true={isModalOpen}>
+        <div class="total-wrap modal-01">
+            <div class="body">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:edit' alternative-text='edit' size='small' title='edit'></lightning-icon>
+                </div>
+                <h3 class="title">{cLabel.DNS_FSL_SetDepartureTime}</h3>
+                <div class="message">{cLabel.DNS_FSL_DoWantDepartureTime}</div>
+                <div class="button-wrap">
+                    <lightning-button variant="neutral" label={cLabel.DNS_FSL_Cancel} onclick={closeModal}></lightning-button>
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_Okay} onclick={handleConfirmClick}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Modal for completion message -->
+    <template if:true={isCompletionModalOpen}>
+        <div class="total-wrap modal-02">
+            <div class="body">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:check' alternative-text='check' size='small' title='check'></lightning-icon>
+                </div>
+                <h3 class="title">{cLabel.DNS_FSL_DepartureReportCompleted}</h3>
+                <div class="message">{cLabel.DNS_FSL_DepartureReportingComplete}</div>
+                <div class="button-wrap">
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_Okay} onclick={closeCompletionModal}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

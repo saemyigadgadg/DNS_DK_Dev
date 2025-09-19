@@ -1,0 +1,25 @@
+.THIS {
+}
+.THIS .main {
+    position: relative;
+    display: flex;
+}
+
+.THIS .conent-inner{
+    width: 100%;
+    height: 100%;
+    padding: 5rem;
+}
+
+.THIS .textA{
+    padding-top: 1rem;
+}
+
+.THIS .button{
+    float: right;
+    margin: 0.5rem;
+}
+
+.THIS .setRequest{
+    margin: 0.3rem;
+}

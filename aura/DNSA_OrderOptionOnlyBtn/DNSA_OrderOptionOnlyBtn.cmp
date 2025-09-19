@@ -1,0 +1,83 @@
+<!--
+  @class             : DNSA_OrderOptionOnlyController
+  @description       : DNSA에서 최근 6개월 주문 중 Accessory만 따로 구매하는 버튼
+  @author            : yeongju.yun
+  @last modified on  : 02-09-2025
+  @last modified by  : Joohyun Lee
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2025-01-08   yeongju.yun   Initial Version
+-->
+<aura:component
+    controller="DNSA_OrderOptionOnlyController" 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    access="global">
+
+    <aura:attribute type="Boolean" name="isLoading"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:navigation aura:id="navService" />
+
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.dnsa_option_only_modal) {
+            width:100%;
+            max-width: 45rem;
+        }
+        .slds-modal__content:has(.dnsa_option_only_modal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.dnsa_option_only_modal) {
+            padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.dnsa_option_only_modal){
+            overflow: hidden;
+        }
+        .modal-body:has(.dnsa_option_only_modal),
+        .slds-modal__container:has(.dnsa_option_only_modal),
+        .slds-modal__content:has(.dnsa_option_only_modal),
+        .quick-actions-panel:has(.dnsa_option_only_modal){    
+            overflow: visible !important;            
+		}
+    </aura:html>
+
+    <div class="dnsa_option_only_modal">
+
+        <div class="slds-modal__container">
+            <lightning:recordEditForm 
+                aura:id="orderEditForm"
+                objectApiName="Order"
+                onsubmit="{!c.handleSubmit}"
+                onerror="{!c.handleError}">
+            
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.DNS_H_CreateOptionOnly}</h2>
+                </header>
+
+                <div class="slds-modal__content modal_body_wrap">
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="medium" alternativeText="Loading" />
+                    </aura:if>
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem padding="around-small" size="6" class="input-wrap">
+                            <lightning:inputField fieldName="RequestedShipDate__c" variant="label-stacked" required="true" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6" class="input-wrap">
+                            <lightning:inputField fieldName="PurchaseOrderNo__c" variant="label-stacked" required="true" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <lightning:inputField fieldName="AccountId" aura:id="AccountId" variant="label-stacked" required="true"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleClose}"/>
+                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" type="submit"/>
+                </footer>
+            </lightning:recordEditForm>
+        </div>
+    </div>
+</aura:component>

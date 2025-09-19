@@ -1,0 +1,20 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-10-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   03-10-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+  <lightning-combobox 
+      name="categoryOption" 
+      label="Select Category"
+      value={searchCategory}
+      options={pickListValues} 
+      onchange={handleChange}
+      variant="label-hidden">
+  </lightning-combobox>
+</template>

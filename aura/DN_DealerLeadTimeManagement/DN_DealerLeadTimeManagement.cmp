@@ -1,0 +1,251 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 04-04-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   04-04-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper" controller="DN_DealerLeadTimeManagementController" description="ZSPR2240">
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="orderByField" type="String" />
+  <aura:attribute name="orderBy" type="String" />
+
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="excelUploadModal" type="Boolean" default="false" /> <!-- whereCondition-->
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="recordList2" type="List" />
+  <aura:attribute name="selectList" type="List" />
+  <aura:attribute name="isMass" type="Boolean" default="false" />
+  <aura:attribute name="pdtRate" type="Decimal" default="0" />
+
+  <aura:attribute name="uploadTable" type="List" default="[1,2,3,4,5,6]" />
+  <aura:attribute name="uploadTemplate" type="List" />
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c" onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <div class="button-wrap">
+    <lightning:button name="Mass Adjust" label="Mass Adjust" onclick="{!c.handleSearch}" />
+    <lightning:button iconName="utility:save" name="saveItems" label="저장" onclick="{!c.handleSave}" />
+    <!-- <lightning:icon iconName="utility:edit" alternativeText="Edit" title="Edit" />   -->
+    <!--"utility:edit"-->
+  </div>
+
+  <div class="table-wrap">
+    <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table slds-scrollable tablesetting">
+      <colgroup>
+        <col width="1%" />
+        <col width="1%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+        <col width="10%" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">
+            <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }"
+              variant="label-hidden" />
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Status</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Material</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Material Description</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Material Group</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">MRP Type</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Inventory Manager</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Plnd Dely</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">Dealer L/T</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">LastModifyDate</div>
+          </th>
+          <th scope="col">
+            <div class="slds-truncate" title="">LastModify</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <aura:iteration items="{!v.recordList}" var="record" indexVar="j">
+          <tr>
+            <td scope="col" style="text-align: center !important;">
+              <lightning:input type="checkbox" aura:id="checkbox" name="{!j}" disabled="{!!record.isPartCheck}"
+                onchange="{! c.handleCheckboxChange }" variant="label-hidden" />
+            </td>
+            <td scope="col" style="text-align: center !important;">
+              <aura:if isTrue="{!record.isStatus}">
+                <lightning:icon iconName="utility:edit" size="small" alternativeText="Edit" title="Edit" />
+              </aura:if>
+              <aura:if isTrue="{!!record.isPartCheck}">
+                <lightning:icon iconName="utility:close" size="small" alternativeText="close" title="close" />
+              </aura:if>
+              <!-- <aura:if isTrue="{!record.isPartCheck}">
+                <aura:if isTrue="{!record.isStatus}">
+                  <lightning:icon iconName="utility:edit" size="small" alternativeText="Edit" title="Edit" />  
+                  <aura:set attribute="else">
+                  </aura:set>  
+                </aura:if>
+                <aura:set attribute="else">
+                  <lightning:icon iconName="utility:close" size="small" alternativeText="close" title="close" />  
+                </aura:set>
+              </aura:if> -->
+
+              <!-- <div><lightning:button iconName="utility:edit" /></div> -->
+            </td>
+            <td scope="col">
+              <div>{!record.material}</div>
+            </td>
+            <td scope="col">
+              <div>{!record.materialDetails}</div>
+            </td>
+            <td scope="col">
+              <div>{!record.materialGroup}</div>
+            </td>
+            <td scope="col">
+              <div>{!record.mrptype}</div>
+            </td>
+            <td scope="col">
+              <div>{!record.inventoryManager}</div>
+            </td>
+            <td scope="col">
+              <div>{!record.plannedDeliveryDays}</div>
+            </td>
+            <td scope="col">
+              <div>
+                <lightning:input type="text" name="{!j}" onchange="{!c.handleValue}" variant="label-hidden"
+                  value="{!record.dealerLeadTime}" />
+              </div>
+            </td>
+            <td scope="col">
+              <div>
+                <lightning:formattedDateTime value="{!record.lastModifiedDate}" year="numeric" month="2-digit"
+                  day="2-digit" hour="2-digit" minute="2-digit" />
+              </div>
+            </td>
+            <td scope="col">
+              <div>{!record.lastModifiedBy}</div>
+            </td>
+          </tr>
+        </aura:iteration>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mass AdJust 모달-->
+  <aura:if isTrue="{!v.isMass}">
+    <div>
+      <div aura:id="storageBinModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">Mass Adjust</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.massModalCancel}" />
+            </button>
+          </header>
+
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+
+              <div class="field-wrap">
+                <p>PDT Rate (%)</p>
+                <div class="input-wrap">
+                  <lightning:input class="readonly-input" value="{!v.pdtRate}" variant="label-hidden"
+                    onchange="{!c.handlePDTValue}" />
+                </div>
+              </div>
+              <!-- <div class="field-wrap">
+                <p>설명</p>
+                <div class="input-wrap">
+                  <lightning:input class="readonly-input" value="{!v.selectedRow.description}" readonly="true" variant="label-hidden" />
+                </div>
+              </div> -->
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.massModalCancel}" />
+            <lightning:button variant="neutral" label="Save" title="Brand action" onclick="{!c.handlePDTRate}" />
+          </footer>
+        </div>
+      </div>
+
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+  <!-- 엑셀 업로드 -->
+  <aura:if isTrue="{!v.excelUploadModal}">
+    <div>
+      <div aura:id="storageBinModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">엑셀 업로드</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.excelModalClose}" />
+            </button>
+          </header>
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+              <c:DN_DealerPortalExcelUploadTemplate aura:id="excelTemplate" buttonLabel="업로드 양식 다운로드"
+                uploadName="ZSPR2240" />
+              <p>* Upload file form</p>
+              <p>- Use header information.</p>
+              <div class="file-input">
+                <lightning:input type="file" label="Upload Excel File" onchange="{!c.uploadExcel}"
+                  accept=".xlsx, .xls" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.excelModalClose}" />
+            <lightning:button variant="neutral" label="Save" title="Brand action" onclick="{!c.handlePDTRate}" />
+          </footer>
+        </div>
+      </div>
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+
+</aura:component>

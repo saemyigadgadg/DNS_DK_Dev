@@ -1,0 +1,216 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-05-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author       Modification
+  1.0   06-27-2024   Hyerin Ro    Initial Version
+  1.1   12-23-2024   Hyunwook Jin 조회 기능 추가
+  1.2   01-20-2025   kyongyun Jung 판매처 리스트 추가
+
+-->
+<aura:component
+  extends="c:DN_Helper"
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="고객사 리스트 모달"
+  controller="DN_AgencyCustomerListModalController" 
+  >
+
+  <!--Attribute-->
+  <aura:attribute name="type" type="String" default="customer" description="고객인지 대리점(Dealer), 판매처(Seller)"/>
+  <aura:attribute name="parentCmp" type="String" />
+  <aura:attribute name="targetObject" type="String" default="DealerCustomer__c" />
+  <aura:attribute name="customerCode" type="String" default="" />
+  <aura:attribute name="customerName" type="String" default="" />
+  <aura:attribute name="isSpinner" type="Boolean" default="false" />
+  <aura:attribute name="isGeneralSelected" type="Boolean" default="true" />
+  <aura:attribute name="customerList" type="List" default="[]" />
+  <aura:attribute name="customerShipToList" type="List" default="[]" />
+  
+ 
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <!-- modal -->
+  <!-- <lightning:overlayLibrary aura:id="overlayLib"/> -->
+
+  <div class="customerListModal">
+    <div aura:id="customerListModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <aura:if isTrue="{!v.isSpinner}">
+          <lightning:spinner alternativeText="Loading" size="medium" />
+        </aura:if>
+        <!-- 고객사 리스트  -->
+        <aura:if isTrue="{!v.type != 'seller'}">
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">고객사 리스트</h2>
+            <!-- close btn -->
+            <button class="slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.customerListCancel}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>고객코드</p>
+                <div class="input-wrap" onkeypress="{!c.handleEnterClick}">
+                  <lightning:input variant="label-hidden" value="{!v.customerCode}" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>고객사명</p>
+                <div class="input-wrap" onkeypress="{!c.handleEnterClick}">
+                  <lightning:input aura:id="firstCursor" variant="label-hidden" value="{!v.customerName}" />
+                </div>
+              </div>
+              <div class="button-wrap">
+                <aura:if isTrue="{!v.isGeneralSelected}">
+                  <!-- 일반고객 없이 조회하는 화면 존재하여 가시성 제어 -->
+                  <lightning:button name="general" label="일반고객선택" onclick="{!c.generalCustomer}" />
+                </aura:if>
+                <lightning:button name="search" label="Search" onclick="{!c.searchCustomer}" />
+              </div>
+            </div>
+
+            <div class="card-02 top-card">
+                <div class="table-wrap">
+                  <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">고객사 코드</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">고객사명)</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">대표자명</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">주소</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.customerList}" var="customerList" indexVar="j">
+                        <tr class="slds-hint-parent" onclick="{!c.sendCustomerInfo}" data-record="{!j}">
+                          <td data-label="고객사코드">
+                            <div class="slds-truncate" title="{!customerList.customerCode}">
+                              {!customerList.customerCode}
+                            </div>
+                          </td>
+                          <td data-label="고객사명)">
+                            <div class="slds-truncate" title="{!customerList.customerName}">
+                              {!customerList.customerName}
+                            </div>
+                          </td>
+                          <td data-label="대표자명">
+                            <div class="slds-truncate" title="{!customerList.representativeName}">
+                              {!customerList.representativeName}
+                            </div>
+                          </td>
+                          <td data-label="주소">
+                            <div class="slds-truncate" title="{!customerList.customerAddress}">
+                              {!customerList.customerAddress}
+                            </div>
+                          </td>
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+
+          </div>
+        </aura:if>
+        <!-- 판매처 리스트  -->
+        <aura:if isTrue="{!v.type == 'seller'}">
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">판매처 리스트</h2>
+            <!-- close btn -->
+            <button class="slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.customerListCancel}"></lightning:icon>
+            </button>
+          </header>
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>판매처 코드</p>
+                <div class="input-wrap" onkeyup="{!c.handleEnterClick}">
+                  <lightning:input variant="label-hidden" value="{!v.customerCode}" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>판매처 명</p>
+                <div class="input-wrap" onkeyup="{!c.handleEnterClick}">
+                  <lightning:input aura:id="firstCursor" variant="label-hidden" value="{!v.customerName}" />
+                </div>
+              </div>
+              <div class="button-wrap">
+                <lightning:button name="search" label="Search" onclick="{!c.searchCustomer}" />
+              </div>
+            </div>
+            <div class="card-02 top-card">
+              <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">판매처 코드</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">판매처 명</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">City</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:iteration items="{!v.customerList}" var="customerList" indexVar="j">
+                      <tr class="slds-hint-parent" onclick="{!c.sendCustomerInfo}" data-record="{!j}">
+                        <td data-label="판매처코드">
+                          <div class="slds-truncate slds-text-align_center"  title="{!customerList.customerCode}">
+                            {!customerList.customerCode}
+                          </div>
+                        </td>
+                        <td data-label="판매처명">
+                          <div class="slds-truncate" title="{!customerList.customerName}">
+                            {!customerList.customerName}
+                          </div>
+                        </td>
+                        <td data-label="City">
+                          <div class="slds-truncate" title="{!customerList.customerAddress}">
+                            {!customerList.customerAddress}
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+        <!-- Modal Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.customerListCancel}" />
+        </footer>
+      </div>
+    </div>
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+</aura:component>

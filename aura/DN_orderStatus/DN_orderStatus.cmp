@@ -1,0 +1,216 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-12
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  access="global" 
+  controller="DN_PortalPartsOrderStatusController" 
+  description="오더상태">
+  
+  <!-- Attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="isSearched" type="Boolean" default="false" />
+  <aura:attribute name="orderStatusDetailModal" type="Boolean" default="false" />
+  <aura:attribute name="isTest" type="Boolean" default="false" />
+  <aura:attribute name="isDNSA" type="Boolean" default="false" />
+
+  <aura:attribute name="dealerInfo" type="Object" /> <!--접속자 정보-->
+
+  <aura:attribute name="orderType" type="String" default="All" /> <!--주문 유형-->
+  <aura:attribute name="orderItems" type="List" default="[]" /> <!--오더조회 테이블-->
+
+  <aura:attribute name="partOrderNo" type="String" /> <!--주문번호-->
+  <aura:attribute name="customerOrderNo" type="String" /> <!--고객주문번호-->
+  <aura:attribute name="startDate" type="Date" /> <!--기간(시작)-->
+  <aura:attribute name="endDate" type="Date" /> <!--기간(종료)-->
+  <aura:attribute name="partNo" type="String" /> <!--부품번호-->
+  <aura:attribute name="shippingState" type="String" default="All" /> <!--배송완료-->
+
+  <aura:attribute name="selectPartOrderNo" type="String" />
+  <aura:attribute name="orderInfo" type="Object" />
+
+  <aura:attribute name="poiList" type="List" />
+  <aura:attribute name="orderTypeList" type="List" default="[
+                                                              {'label' : 'All', 'value' : 'All'},
+                                                              {'label' : 'ORDINARY ORDER', 'value' : 'YDOR'},
+                                                              {'label' : 'EMERGENCY ORDER', 'value' : 'YDEO'},
+                                                              {'label' : 'STOCK ORDER', 'value' : 'YDSO'},
+                                                            ]" /> <!--주문 유형 Picklist-->
+  <aura:attribute name="shippingStateList" type="List" default="[
+                                                        {'label': '전체','value': 'All'},
+                                                        {'label': '배송완료','value': 'Shipped'},
+                                                        {'label': '이월주문(미결오더)', 'value': 'Carryover'}
+                                                      ]" /> <!--배송완료 여부-->
+
+
+
+  <aura:attribute name="value" type="String" default="전체" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  
+
+  <!-- Excel -->
+  <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+
+  <!-- Body -->
+  <article class="slds-card">
+
+    <!-- 모달 -->
+    <div aura:id="orderStatusDetailModal"></div> <!--납기조회 모달--> 
+
+    <!-- Loading Spinner  -->
+    <aura:if isTrue="{!v.isLoading}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+
+    <!-- Header -->
+    <div class="header test">
+      <div class="title">
+        <lightning:icon iconName="standard:partner_fund_claim" size="small" />
+        <h2>{!$Label.c.POS_PartsOrderStatus} <!-- 오더상태 --></h2> 
+      </div>
+
+      <div class="button-wrap">
+        <!-- 검색 필터 및 기능 추가 필요 -->
+        <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left"
+          onclick="{!c.doSearch}" />
+        <lightning:button name="Excel" label="Excel" iconName="doctype:excel" iconPosition="left" onclick="{!c.downloadExcel}" />
+        <lightning:button name="download" label="{!$Label.c.POS_DownloadAll}" iconName="utility:download" iconPosition="left" onclick="{!c.allDownExcel}" />
+        <aura:if isTrue="{!v.isTest}">
+          <lightning:button name="save" label="테스트" variant="brand" iconName="utility:search" onclick="{!c.doTest}" />
+        </aura:if>
+      </div>
+    </div>
+
+
+    <div class="body">
+      <!-- Card 01 -->
+      <div class="card-01 top-card">
+        <div class="field-wrap">
+          <p>{!$Label.c.BPI_UserId} <!-- 유저아이디 --><abbr class="slds-required" title="required">*</abbr></p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="userName" value="{!v.dealerInfo.dealerName}" variant="label-hidden"
+              readonly="true" disabled="true" aura:id="" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>{!$Label.c.DNS_C_OrderNum} <!-- 주문번호 --></p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="partOrderNo" value="{!v.partOrderNo}" variant="label-hidden" aura:id=""
+              onchange="{!c.handleChange}" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>{!$Label.c.POS_OrderType} <!-- 주문유형 --></p>
+          <div class="input-wrap">
+            <lightning:combobox name="orderType" value="{!v.orderType}" variant="label-hidden"
+              options="{!v.orderTypeList}" required="true" onchange="{!c.handleChange}" disabled="{!v.isDNSA}"/>
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>{!$Label.c.RC_CustomerOrderNumber} <!-- 고객주문번호 --></p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="customerOrderNo" value="{!v.customerOrderNo}" variant="label-hidden"
+              aura:id="" onchange="{!c.handleChange}" />
+          </div>
+        </div>
+        <div class="field-wrap date">
+          <p>{!$Label.c.ORI_Period} <!-- 기간 --></p>
+          <div class="input-wrap">
+            <lightning:input name="startDate" type="Date" variant="label-hidden" value="{!v.startDate}"
+              onchange="{!c.handleChange}" />
+            <span class="to">~</span>
+            <lightning:input name="endDate" type="Date" variant="label-hidden" value="{!v.endDate}"
+              onchange="{!c.handleChange}" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>{!$Label.c.service_lbl_part_no} <!-- 부품번호 --></p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="partNo" value="{!v.partNo}" variant="label-hidden" aura:id="partNoId"
+              onchange="{!c.handleChange}" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>{!$Label.c.POS_DeliveryCompleted} <!-- 배송완료 --></p>
+          <div class="input-wrap">
+            <lightning:radioGroup variant="label-hidden" aura:id="shippingStateId" options="{! v.shippingStateList }"
+              value="{! v.shippingState }" onchange="{!c.handleChange}" />
+          </div>
+        </div>
+      </div>
+
+      <!-- card-02 -->
+      <div class="card-02 top-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">{!$Label.c.RC_CustomerOrderNumber} <!-- 고객주문번호 --></th>
+                <th rowspan="2">{!$Label.c.DNS_C_OrderNum} <!-- 주문번호 --></th>
+                <th rowspan="2">{!$Label.c.ORI_Quantity} <!-- 품목수량 --></th>
+                <th rowspan="2">{!$Label.c.POS_OrderType} <!-- 주문유형 --></th>
+                <th rowspan="2">{!$Label.c.POS_DeliveryInquiry} <!-- 납기조회 --></th>
+                <th rowspan="2" style="border-right: 1px solid #d9d9d9;">BLOCK</th>
+                <th colspan="5">{!$Label.c.DNS_C_Quantity} <!-- 수량 --></th>
+                <th rowspan="2">{!$Label.c.ORC_ShippingTerms} <!-- 선적조건 --></th>
+                <th rowspan="2">{!$Label.c.DNS_C_Currency} <!-- 통화 --></th>
+              </tr>
+              <tr>
+                <th>{!$Label.c.Order} <!-- 주문 --></th>
+                <th>{!$Label.c.DNS_SQR_B_CONFIRM} <!-- 확정 --></th>
+                <th>{!$Label.c.POS_PackingCompleted} <!-- 포장완료 --></th>
+                <th>{!$Label.c.POS_DeliveryCompleted} <!-- 배송완료 --></th>
+                <th>{!$Label.c.POS_Backorder} <!-- 이월주문(미결오더) --></th>
+              </tr>
+            </thead>
+            <tbody>
+              <aura:if isTrue="{!v.isSearched}">
+                <aura:iteration items="{!v.orderItems}" var="item" indexVar="j">
+                  <tr>
+                    <td class="center customerOrderNo" title="{!item.CustomerOrderNo__c}">
+                      <div>{!item.CustomerOrderNo__c}</div>
+                    </td>
+                    <td class="center">{!item.PartOrderNo__c}</td>
+                    <td class="center">{!item.TotalItems__c}</td>
+                    <td class="center">{!item.OrderType__c}</td>
+                    <aura:if isTrue="{!item.lookup}">
+                      <td class="center delivery-modal" onclick="{!c.openModal}" data-orderNo="{!item.PartOrderNo__c}" data-index="{!j}">{!item.lookup}</td>
+                      <aura:set attribute="else">
+                        <td></td>
+                      </aura:set>
+                    </aura:if>
+                    
+                    <td class="center">{!item.BLOCK__c}</td>
+                    <td class="center">{!item.OrderQty__c}</td>
+                    <td class="center">{!item.ConfirmedQty__c}</td>
+                    <td class="center">{!item.PackingQty__c}</td>
+                    <td class="center">{!item.DeliveryQty__c}</td>
+                    <td class="center">{!item.CarryoverQty__c}</td>
+                    <td class="center">{!item.ShippingTerm__c}</td>
+                    <td class="center">{!item.CurrencyIsoCode}</td>
+                  </tr>
+                </aura:iteration>
+              <aura:set attribute="else">
+                <tr>
+                  <td colspan="13" style="text-align: center;">No Data</td>
+                </tr>
+              </aura:set>
+              </aura:if>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </article>
+
+</aura:component>

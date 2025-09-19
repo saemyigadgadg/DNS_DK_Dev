@@ -1,0 +1,1006 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 03-04-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-28-2025   Hyerin Ro   Initial Version
+-->
+<aura:component controller="DN_CloneOpportunityController" implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" access="global">
+
+    <aura:attribute name="newRecordId" type="String" />
+    <aura:if isTrue="{!not(empty(v.newRecordId))}">
+        <lightning:navigation aura:id="navService" />
+    </aura:if>
+
+    <aura:attribute name="opportunity" type="Opportunity"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute type="String" name="title" default="" />
+    <aura:attribute type="String" name="optyInfo" default="" />
+    <aura:attribute type="String" name="validated" default="" />
+    <aura:attribute type="String" name="qualified" default="" />
+    <aura:attribute type="String" name="condiAgree" default="" />
+    <aura:attribute type="String" name="addInfo" default="" />
+    <aura:attribute type="String" name="desc" default="" />
+    <aura:attribute type="String" name="systemInfo" default="" />
+    
+    <!-- {'label' : 'Close', 'value' : 'Close'}, -->
+    <!-- Clone Type 종류 변수 -->
+    <aura:attribute type="List" name="cloneType" default=""/>
+    <aura:attribute type="String" name="changeType" default=""/>
+    <aura:attribute type="String" name="value" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+    <aura:attribute type="String" name="changeRecordType" default=""/>
+    <aura:attribute type="String" name="changeRecordvalue" default=""/>
+    <aura:attribute type="String" name="changedRecordType" default=""/>
+    <aura:attribute type="String" name="changeRecordName" default=""/>
+    
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CloneOpportunity) {
+            overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_CloneOpportunity) {
+            width: 40rem;
+            max-width: calc(100vw - 8rem);
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDN_CloneOpportunity) {
+            padding: 0;
+            height: auto !important;
+            max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CloneOpportunity) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <div class="slds-modal__header ">
+            <h1 class="title">{!v.title}</h1>
+        </div>
+    
+        <div class="slds-modal__content">
+            <!-- Clone Type 선택 화면 -->
+            <lightning:layout verticalAlign="center" horizontalAlign="center">
+                <lightning:layoutItem flexibility="auto" padding="around-small">
+                    <lightning:radioGroup name="radioButtonGroupRequired"
+                                    label="Select Clone Type"
+                                    options="{! v.cloneType }"
+                                    value="{! v.value }"
+                                    type="button"
+                                    required="true"
+                                    onchange="{!c.changeCloneType}"/>
+                </lightning:layoutItem>
+            </lightning:layout>
+            
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </aura:if>
+            
+            <!-- first select Clone 화면 -->
+            <aura:if isTrue="{!v.changeType == 'Clone'}">
+                <div class="page-02">
+                    <aura:if isTrue="{!v.changeRecordType == 'General'}">
+                        <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Opportunity" onsubmit="{!c.handleSubmit}">
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.optyInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Name" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="RecordTypeId" disabled="true"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="AccountId" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Probability"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustomerContact__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Insight__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CloseDate"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LeadSource"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="OpportunityIdentifier__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Budget__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input label="Stage" fieldName="StageName" value="Identified" disabled="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Contact__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.validated}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ReasonForConsulting__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="MainCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Prospective_Prd__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="SubCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExistingMachine__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsTooling__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Opportunity_Owner__c"/>
+                                </lightning:layoutItem>
+                                <!-- <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsCustInvest__c"/>
+                                </lightning:layoutItem> -->
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasCompetitor__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.qualified}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="RequestDelieveryDate__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Proposal_Price__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsExport__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="DecisionFactors__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExportTo__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Material__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ProcessedProduct__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                                
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.condiAgree}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Amount__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustBudgetRoute__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.addInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsStrategicMaterial__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="FM_IsKeyAccount__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasFinalQuote__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsAccountBlocked__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="QuoteTotalPrice__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.desc}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="around-small">
+                                    <lightning:inputField fieldName="Description__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.systemInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CreatedById"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LastModifiedById"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CurrencyIsoCode"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <div class="header">
+                                <div class="separator"></div>
+                            </div>
+            
+                            <lightning:button variant="brand" class="slds-m-top_small slds-align_absolute-center" type="submit" label="{!v.title}" />
+                        </lightning:recordEditForm>
+                    </aura:if>
+            
+                    <aura:if isTrue="{!v.changeRecordType == 'Turn_Key'}">
+                        <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Opportunity" onsubmit="{!c.handleSubmit}">
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.optyInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Name" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="RecordTypeId" disabled="true"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="AccountId" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Probability"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustomerContact__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Insight__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CloseDate"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LeadSource"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="OpportunityIdentifier__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Budget__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input label="Stage" fieldName="StageName" value="Identified" disabled="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Contact__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Inquiry_Type__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.validated}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ReasonForConsulting__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="MainCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Prospective_Prd__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="SubCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExistingMachine__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsTooling__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Opportunity_Owner__c"/>
+                                </lightning:layoutItem>
+                                <!-- <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsCustInvest__c"/>
+                                </lightning:layoutItem> -->
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasCompetitor__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.qualified}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="RequestDelieveryDate__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Proposal_Price__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsExport__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="DecisionFactors__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExportTo__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Material__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ProcessedProduct__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                                
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.condiAgree}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Amount__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustBudgetRoute__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.addInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsStrategicMaterial__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="FM_IsKeyAccount__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasFinalQuote__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsAccountBlocked__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="QuoteTotalPrice__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>Description Information</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="around-small">
+                                    <lightning:inputField fieldName="Description__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.systemInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CreatedById"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LastModifiedById"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CurrencyIsoCode"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <div class="header">
+                                <div class="separator"></div>
+                            </div>
+            
+                            <lightning:button variant="brand" class="slds-m-top_small slds-align_absolute-center" type="submit" label="{!v.title}" />
+                        </lightning:recordEditForm>
+                    </aura:if>
+                </div>
+            </aura:if>
+        
+            <aura:if isTrue="{!v.changeType == 'ChangeType'}">
+                <div class="page-02">
+                    <aura:if isTrue="{!v.changeRecordType == 'General'}">
+                        <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Opportunity" onsubmit="{!c.handleSubmit}">
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.optyInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Name" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input label="Changed Record Type" fieldName="RecordTypeId" value="{!v.changeRecordName}" disabled="true"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="AccountId" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Probability"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustomerContact__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Insight__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CloseDate"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LeadSource"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="OpportunityIdentifier__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Budget__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input label="Stage" fieldName="StageName" value="Identified" disabled="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Contact__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.validated}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ReasonForConsulting__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="MainCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Prospective_Prd__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="SubCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExistingMachine__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsTooling__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Opportunity_Owner__c"/>
+                                </lightning:layoutItem>
+                                <!-- <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsCustInvest__c"/>
+                                </lightning:layoutItem> -->
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasCompetitor__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.qualified}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="RequestDelieveryDate__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Proposal_Price__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsExport__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="DecisionFactors__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExportTo__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Material__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ProcessedProduct__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                                
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.condiAgree}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Amount__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustBudgetRoute__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.addInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsStrategicMaterial__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="FM_IsKeyAccount__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasFinalQuote__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsAccountBlocked__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="QuoteTotalPrice__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.desc}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="around-small">
+                                    <lightning:inputField fieldName="Description__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.systemInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CreatedById"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LastModifiedById"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CurrencyIsoCode"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <div class="header">
+                                <div class="separator"></div>
+                            </div>
+            
+                            <lightning:button variant="brand" class="slds-m-top_small slds-align_absolute-center" type="submit" label="{!v.title}" />
+                        </lightning:recordEditForm>
+                    </aura:if>
+            
+                    <aura:if isTrue="{!v.changeRecordType == 'Turn_Key'}">
+                        <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Opportunity" onsubmit="{!c.handleSubmit}">
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.optyInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Name" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input label="Changed Record Type" fieldName="RecordTypeId" value="{!v.changeRecordName}" disabled="true"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="AccountId" required="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Probability"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustomerContact__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Insight__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CloseDate"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LeadSource"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="OpportunityIdentifier__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Budget__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:input label="Stage" fieldName="StageName" value="Identified" disabled="true"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Contact__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Inquiry_Type__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.validated}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ReasonForConsulting__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="MainCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Prospective_Prd__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="SubCategory__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExistingMachine__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsTooling__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Opportunity_Owner__c"/>
+                                </lightning:layoutItem>
+                                <!-- <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsCustInvest__c"/>
+                                </lightning:layoutItem> -->
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasCompetitor__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.qualified}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="RequestDelieveryDate__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Proposal_Price__c"/>
+                                </lightning:layoutItem>
+                                
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsExport__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="DecisionFactors__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ExportTo__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Material__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="ProcessedProduct__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                                
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.condiAgree}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="Amount__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CustBudgetRoute__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>Additional Information</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsStrategicMaterial__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="FM_IsKeyAccount__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="HasFinalQuote__c"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="IsAccountBlocked__c"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="QuoteTotalPrice__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.desc}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="12" padding="around-small">
+                                    <lightning:inputField fieldName="Description__c"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout>
+                                <lightning:layoutItem flexibility="auto" padding="around-small">
+                                    <div class="opportunity-info">
+                                        <label>{!v.systemInfo}</label>
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CreatedById"/>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="LastModifiedById"/>
+                                </lightning:layoutItem>
+            
+                                <lightning:layoutItem size="6" padding="around-small">
+                                    <lightning:inputField fieldName="CurrencyIsoCode"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+            
+                            <div class="header">
+                                <div class="separator"></div>
+                            </div>
+            
+                            <lightning:button variant="brand" class="slds-m-top_small slds-align_absolute-center" type="submit" label="{!v.title}" />
+                        </lightning:recordEditForm>
+                    </aura:if>
+                </div>
+            </aura:if>
+        </div>
+
+        <div class="slds-modal__footer">
+        </div>
+    </div>
+</aura:component>

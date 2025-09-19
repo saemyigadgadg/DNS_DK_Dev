@@ -1,0 +1,276 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-10-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-07-2025   Hyerin Ro   Initial Version
+-->
+<template>
+   <div class="total-wrap">
+      <!-- Loading Spinner -->
+      <template if:true={isLoading}>
+         <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+      </template>
+   
+      <lightning-tabset>
+         <!-- 1. 수신함 -->
+         <lightning-tab label="수신함" value="ReceivedMessage">
+            <div class="tab-01 body">
+
+               <!-- 검색조건 -->
+               <div class="top-card card-01">
+                  <div class="field-container">
+                     <div class="field-wrap">
+                        <p>수신일자</p>
+                        <div class="input-wrap">
+                           <lightning-input type="date" name="from" variant="label-hidden" value={dateFromValue}
+                              onchange={handleDateChange}></lightning-input>
+                           <span class="to">~</span>
+                           <lightning-input type="date" name="to" variant="label-hidden" value={dateToValue}
+                              onchange={handleDateChange}></lightning-input>
+                        </div>
+                     </div>
+                     <div class="field-wrap">
+                        <p>보낸이 검색</p>
+                        <div class="input-wrap">
+                           <lightning-input type="text" name="sender" variant="label-hidden" onchange={handleFormInputChange}
+                              value={sender}></lightning-input>
+                        </div>
+                     </div>
+                     <div class="field-wrap">
+                        <p>쪽지내용</p>
+                        <div class="input-wrap">
+                           <lightning-input type="text" name="receivedContent" variant="label-hidden"
+                              onchange={handleFormInputChange} value={receivedContent}></lightning-input>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="button-wrap">
+                     <lightning-button label="조회" onclick={handleReceivedSearch} title="조회"
+                        variant="brand"></lightning-button>
+                  </div>
+               </div>
+      
+               <div class="top-card card-02">
+                  <!-- 쪽지 수신 리스트 -->
+                  <div class="field-wrap">
+                     <div class="field-title">
+                        <lightning-icon icon-name='standard:messaging_conversation' alternative-text='messaging_conversation' size='small' title='messaging_conversation'></lightning-icon>
+                        <span>쪽지 수신 리스트</span>
+                     </div>
+                     <div class="table-wrap">
+                        <lightning-datatable 
+                           lwc:ref="recipientList" 
+                           key-field="idex" 
+                           data={recipientTableData}
+                           columns={recipientListColumns} 
+                           onrowaction={recipientRowAction} 
+                           selected-rows={setSelectedRecRows}>
+                        </lightning-datatable>
+                     </div>
+                  </div>
+                  <!-- 수진 쪽지 상세내용 -->
+                  <div class="field-wrap">
+                     <div class="field-title">
+                        <lightning-icon icon-name='standard:messaging_conversation' alternative-text='messaging_conversation' size='small' title='messaging_conversation'></lightning-icon>
+                        <span>수신 쪽지 상세내용</span>
+                     </div>
+                     <div class="table-wrap">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                           <tr>
+                              <th>보낸이</th>
+                              <td>
+                                 <lightning-input type="text" variant="label-hidden" value={SelectSender}
+                                    read-only></lightning-input>
+                              </td>
+                           </tr>
+                           <tr>
+                              <th>보낸일시</th>
+                              <td>
+                                 <lightning-input type="text" variant="label-hidden" value={SelectSentDate}
+                                    read-only></lightning-input>
+                              </td>
+                           </tr>
+                        </table>
+                     </div>
+                     <div class="table-wrap">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                           <thead>
+                              <tr>
+                                 <th>쪽지내용</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>
+                                    <lightning-textarea name="selectContent" variant="label-hidden" value={SelectContent}
+                                       read-only></lightning-textarea>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+               </div>
+            </div>
+   
+            <!-- 버튼 -->
+            <div class="footer">
+               <lightning-button label="답장" onclick={handleReply} title="답장" variant="brand"></lightning-button>
+               <lightning-button label="삭제" onclick={handleRecipientDelete} title="삭제" variant="brand"></lightning-button>
+            </div>
+   
+         </lightning-tab>
+   
+         <!-- 2. 발신함 -->
+         <lightning-tab label="발신함">
+            <div class="tab-02 body">
+               <!-- 조회조건 -->
+               <div class="top-card card-01">
+                  <div class="field-container">
+                     <div class="field-wrap">
+                        <p>발신일자</p>
+                        <div class="input-wrap">
+                           <lightning-input type="date" name="senderFrom" variant="label-hidden" value={senderFromValue}
+                              onchange={handleDateChange}></lightning-input>
+                           <span class="to">~</span>
+                           <lightning-input type="date" name="senderTo" variant="label-hidden" value={senderToValue}
+                              onchange={handleDateChange}></lightning-input>
+                        </div>
+                     </div>
+                     <div class="field-wrap">
+                        <p>받는이 검색</p>
+                        <div class="input-wrap">
+                           <lightning-input type="text" name="recipient" variant="label-hidden" onchange={handleFormInputChange}
+                              value={recipient}></lightning-input>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="button-wrap">
+                     <lightning-button label="조회" onclick={handleSentSearch} title="조회" variant="brand"></lightning-button>
+                  </div>
+               </div>
+      
+               <!-- 쪽지 발신 리스트 -->
+               <div class="top-card card-02">
+                  <div class="field-title">
+                     <lightning-icon icon-name='standard:messaging_user' alternative-text='messaging_user' size='small' title='messaging_user'></lightning-icon>
+                     <p>쪽지 발신 리스트</p>
+                  </div>
+                  <div class="table-wrap">
+                     <lightning-datatable lwc:ref="sendList" key-field="idex" data={sentTableData} columns={sentListColumns}
+                        onrowaction={sentRowAction}>
+                     </lightning-datatable>
+                  </div>
+               </div>
+      
+               <!-- 발신 쪽지 상세내용 -->
+               <div class="top-card card-03">
+                  <div class="field-title">
+                     <lightning-icon icon-name='standard:messaging_session' alternative-text='messaging_session' size='small' title='messaging_session'></lightning-icon>
+                     <p>발신 쪽지 상세내용</p>
+                  </div>
+      
+                  <div class="table-wrap">
+                     <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table tg">
+                        <tr>
+                           <th>받는이</th>
+                           <td>
+                              <lightning-input type="text" variant="label-hidden" value={sendSelectRecipient}
+                                 read-only></lightning-input>
+                              </td>
+                           <th>보낸일시</th>
+                           <td>
+                              <lightning-input type="text" variant="label-hidden" value={sendSelectSentDate}
+                                 read-only></lightning-input>
+                           </td>
+                        </tr>
+                        <tr>
+                           <th>쪽지내용</th>
+                           <td colspan="5">
+                              <lightning-textarea name="sendSelectContent" variant="label-hidden"
+                                 value={sendSelectContent} read-only></lightning-textarea>
+                           </td>
+                        </tr>
+                     </table>
+                  </div>
+               </div>
+            </div>
+   
+            <!-- 버튼 -->
+            <div class="footer">
+               <lightning-button label="삭제" onclick={handleSendDelete} title="삭제" variant="brand"></lightning-button>
+            </div>
+   
+         </lightning-tab>
+   
+         <!-- 3. 쪽지전송 -->
+         <lightning-tab label="쪽지전송" value="SendMessage">
+            <div class="tab-03 body">
+               <!-- 검색조건 -->
+               <div class="top-card card-01">
+                  <div class="field-container">
+                     <div class="field-wrap">
+                        <p>구분</p>
+                       <div class="input-wrap">
+                           <lightning-combobox value={grade} options={gradeOptions} name="grade" onchange={handleGradeChange}
+                              variant="label-hidden">
+                           </lightning-combobox>
+                       </div>
+                     </div>
+                     <div class="field-wrap">
+                        <p>성명</p>
+                        <div class="input-wrap">
+                           <lightning-input type="text" name="recipUser" variant="label-hidden" onchange={handleFormInputChange}
+                              value={recipUser}></lightning-input>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="button-wrap">
+                     <lightning-button label="조회" onclick={handleGradeSearch} title="조회" variant="brand"></lightning-button>
+                  </div>
+               </div>
+      
+               <!-- 대상자 리스트 -->
+               <div class="top-card card-02">
+                  <div class="field-title"> 
+                     <lightning-icon icon-name='standard:contact_list' alternative-text='contact_list' size='small' title='contact_list'></lightning-icon>
+                     <p>대상자 리스트</p>
+                  </div>
+                     <div class="table-wrap">
+                        <lightning-datatable lwc:ref="targetList" key-field="Id" data={targetTableData} selected-rows={selectedRows} columns={targetColumns}>
+                        </lightning-datatable>
+                     </div>
+               </div>
+      
+               <!-- 쪽지작성 -->
+               <div class="top-card card-03">
+                  <div class="field-title">
+                     <lightning-icon icon-name='standard:work_type' alternative-text='work_type' size='small' title='work_type'></lightning-icon>
+                     <p>쪽지 작성</p>
+                  </div>
+                 <div class="field-wrap">
+                     <p>발송유형</p>
+                    <div class="input-wrap">
+                        <lightning-record-edit-form object-api-name="Message__c">
+                           <lightning-input-field field-name="Type__c" value={sendType} data-id="sendType"
+                              variant="label-hidden"></lightning-input-field>
+                        </lightning-record-edit-form>
+                    </div>
+                 </div>
+                  <lightning-textarea name="content" variant="label-hidden" onchange={handleFormInputChange} value={sendContent}></lightning-textarea>
+               </div>
+            </div>
+   
+            <!-- 버튼 -->
+            <div class="footer">
+               <lightning-button label="전송" onclick={handleSend} title="전송" variant="brand"></lightning-button>
+            </div>         
+         </lightning-tab>
+   
+      </lightning-tabset>
+   </div>
+</template>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>서비스요원</fullName>
+        <default>false</default>
+        <label>서비스요원</label>
+    </customValue>
+    <customValue>
+        <fullName>고객</fullName>
+        <default>false</default>
+        <label>고객</label>
+    </customValue>
+    <customValue>
+        <fullName>내부직원</fullName>
+        <default>false</default>
+        <label>내부직원</label>
+    </customValue>
+    <description>sms 발송대상 관리</description>
+    <masterLabel>DN_SendTargetList</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

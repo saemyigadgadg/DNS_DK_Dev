@@ -1,0 +1,73 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-05-2025
+  @last modified by  : Hyerin Ro 
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-05-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+   implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+   controller="DN_WorkOrderCancelController" access="global">
+
+   <aura:html tag="style">
+      .slds-modal__container:has(.cDN_WorkOrderCancel) {
+         width: 32rem;
+         max-width: calc(100vw - 20rem);
+         min-width: 24rem;
+         margin: 0 auto;
+      }
+      .slds-modal__content:has(.cDN_WorkOrderCancel) {
+         height: auto !important;
+         max-height: none !important;
+         width : 100% !important;
+         padding: 0;
+         overflow-y:clip;
+      }
+      .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_WorkOrderCancel) {
+      padding:0;
+      }
+   </aura:html>
+
+   <!--Attribute-->
+   <aura:attribute name="isSpinner" type="Boolean" default="false" />
+   <aura:attribute name="listViewId" type="String" default="" />
+
+   <!--Toast-->
+   <lightning:notificationsLibrary aura:id="notifLib" />
+   <lightning:overlayLibrary aura:id="overlayLib" />
+
+   <!--Navigate-->
+   <lightning:navigation aura:id="navService"/>
+   
+   <!--Handler-->
+   <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+   <!--Container-->
+   <div>
+      <header class="slds-modal__header">
+         <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_OrderCancel}</h2>
+      </header>
+      <div class="slds-modal__content">
+        <aura:if isTrue="{!v.isSpinner}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+
+        <lightning:icon iconName='utility:warning' alternativeText='Error' size='large' title='warning'
+        class="slds-m-right_small error"></lightning:icon>
+
+         <!-- 실패 메시지 -->
+         <div class="message">
+            <p>{!$Label.c.DNS_M_OrderCancel}</p>
+         </div>
+
+      </div>
+      <footer class="slds-modal__footer">
+         <lightning:button label="{!$Label.c.DNS_B_No}" onclick="{!c.handleClose}" />
+         <lightning:button variant="brand" label="{!$Label.c.DNS_B_Yes}" onclick="{!c.handleCancel}" />
+      </footer>
+   </div>
+
+</aura:component>

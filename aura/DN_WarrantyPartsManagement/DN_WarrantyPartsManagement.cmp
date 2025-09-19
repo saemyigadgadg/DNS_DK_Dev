@@ -1,0 +1,286 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-20-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   06-28-2024   Hyerin Ro   Initial Versionb
+  1.1   12-13-2024   Hyunwook JIN   검색 결과 조회 테이블외에 화면들 제거
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="대리점 무상 부품 관리"
+  extends="c:DN_Helper"
+  controller="DN_WarrantyPartsManagement"
+  >
+
+  <!-- attribute -->
+	<aura:attribute name="uuid" type="String" />
+  <aura:attribute name="currentUserInfo" type="Object" />
+  <aura:attribute name="requiredParams" type="List" description="무상부품 헤더 정보 필수값"/>
+  <aura:attribute name="headerParams" type="Object" description="무상부품 헤더 정보"/>
+
+  <aura:attribute name="gradeRateMap" type="Object" />
+  <aura:attribute name="deliveryDateTime" type="Object" />
+  <aura:attribute name="isAdmin" type="Boolean" default="false" />
+  <aura:attribute name="isDeliveryModal" type="Boolean" default="false" />
+  <aura:attribute name="processStatus" type="List" default="[]" />
+  <aura:attribute name="partsList" type="List" default="[]" />
+  <!-- 
+  ex)
+  {'serviceOrderSeq' : '402813338', 'approvalDate' : '2015.08.08', 'durationInDays' : '3222', 'partName' : 'P76227500', 'partDetails' : 'HOSE,HYDRAULIC',
+    'requestQuantity' : '1', 'avaiableQuantity' : '2', 'STAT' : '진행', 'shippingType' : '화물', 'shipTo' : '인천지사', 'shipToAddress' : '인천 동구 송현 140', 'shipToPhone' : '010-2323-1212', 'centerName' : '대우기계', 'serviceEngineer' : '김수환', 'dealerName' : '대우기계', 'LOC' : '86-F-4-A'},
+   -->
+
+  <aura:attribute name="deliveryOptions" type="List" default="[]" />
+  <aura:attribute name="dealerOptions" type="List" default="[
+    {'label' : '대우기계', 'value' : '대우기계'},
+    {'label' : '영남머신', 'value' : '영남머신'}
+  ]" />
+
+
+  <!--handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- LMS  -->
+	<lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!-- overlay -->
+  <lightning:overlayLibrary aura:id="overlayLib"/>
+
+  <!-- Card 02 -->
+  <div class="card-02 ">
+    <div class="table-wrap">
+      <div class="table-01 table-left" aura:id="leftTableDiv">
+        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 4%">
+                <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }"
+                  variant="label-hidden" />
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">오더번호</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">품목번호</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate center" title="">청구일자</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">경과일</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">품번</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <aura:iteration items="{!v.partsList}" var="warranty" indexVar="j">
+              <tr class="slds-hint-parent">
+                <td class="center" scope="col" style="width: 4%">
+                  <lightning:input type="checkbox" aura:id="checkbox" 
+                    variant="label-hidden" checked="{!warranty.isSelected}" disabled="{!warranty.isDisabled}" />
+                    <!-- onchange="{! c.handleCheckboxChange }" -->
+                </td>
+                <td scope="row" class="center">
+                  <a accesskey="{!warranty.serviceOrderSeq}"  onclick="{!c.openCustomerOrderDetail}">{!warranty.serviceOrderSeq}</a>
+                  <!-- 오더번호 -->
+                  <!-- <a href="javascript:void(0);" onclick="{!c.openProductMaster}" data-recordid="{!productMaster.ProductMaster__r.Id}">
+                                    {!productMaster.ProductMaster__r.Name}</a> -->
+                </td>
+                <td scope="row" class="center">
+                  {!warranty.itemSeq}
+                  <!-- 품목번호 -->
+                </td>
+                <td scope="row" class="center">
+                  <div>{!warranty.approvalDate}</div>
+                  <!-- 청구일자 - 승일일자 -->
+                </td>
+                <td scope="row" class="center">
+                  <div>{!warranty.durationInDays}</div>
+                  <!-- 경과일 -->
+                </td>
+                <td scope="row">
+                  <div>{!warranty.partName}</div>
+                  <!-- 품번 -->
+                </td>
+              </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+          <colgroup>
+            <col width="10%"/>
+            <col width="5%"/>
+            <col width="5%"/>
+            <col width="7%"/>
+            <col width="7%"/>
+            <col width="10%"/>
+            <col width="30%"/>
+            <col width="7%"/>
+            <col width="7%"/>
+            <col width="7%"/>
+            <col width="7%"/>
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">
+                <div class="slds-truncate" title="">품명</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">요청수량</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">재고수량</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">진행상태</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">배송 방법</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="" style="min-width: 16rem;">배송처</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">배송처 주소</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">배송처 연락처</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">정비업체</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">서비스기사</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">공급 대리점</div>
+              </th>
+            </tr>
+            
+          </thead>
+          <tbody>
+            <aura:iteration items="{!v.partsList}" var="warranty" indexVar="j">
+              <tr data-index="{!index}" class="{!if(v.partsList.length == 1, '', if(index == (v.partsList.length - 1), 'last-row', if(index == (v.partsList.length - 2), 'last-row', '')))}">
+                <td scope="row">
+                  <div>{!warranty.partDetails}</div>
+                  <!-- 품명 -->
+                </td>
+                <td scope="row" class="right">
+                  <div>{!warranty.requestQuantity}</div>
+                  <!-- 요청수량 -->
+                </td>
+                <td scope="row" class="right">
+                  <div>{!warranty.avaiableQuantity}</div>
+                  <!-- 재고수량 -->
+                </td>
+                <td scope="row">
+                  <div>
+                    <aura:if isTrue="{!v.isAdmin}">
+                      <lightning:combobox options="{!v.processStatus}" value="{!warranty.status}"
+                      variant="label-hidden" disabled="{!warranty.isDisabled}"/>
+                      <!-- 진행상태 -->
+                    </aura:if>
+                    <aura:if isTrue="{!!v.isAdmin}">
+                      {!warranty.statusLabel}
+                    </aura:if>
+                  </div>
+                </td>
+                <td scope="row">
+                  <div>
+                    <aura:if isTrue="{!v.isAdmin}">
+                      <lightning:combobox options="{!v.deliveryOptions}" variant="label-hidden"
+                      value="{!warranty.shippingType}" disabled="{!warranty.isDisabled}" />
+                      <!-- 배송 방법  -->
+                    </aura:if>
+                    <aura:if isTrue="{!!v.isAdmin}">
+                      {!warranty.shippingTypeLabel}
+                    </aura:if>
+                    
+                  </div>
+                </td>
+                <td scope="row">
+                  <div>{!warranty.shipTo}</div>
+                  <!-- 배송처 -->
+                </td>
+                <td scope="row">
+                  <div>{!warranty.shipToAddress}</div>
+                  <!-- 배송처 주소 -->
+                </td>
+                <td scope="row">
+                  <div>{!warranty.shipToPhone}</div>
+                  <!-- 배송처 연락처 -->
+                </td>
+                <td scope="row">
+                  <div>{!warranty.centerName}</div>
+                  <!-- 정비업체 -->
+                </td>
+                <td scope="row">
+                  <div>{!warranty.serviceEngineer}</div>
+                  <!-- 서비스기사 -->
+                </td>
+                <td scope="row">
+                  <div>
+                    <aura:if isTrue="{!v.isAdmin}">
+                      <lightning:combobox options="{!v.dealerOptions}" variant="label-hidden" accesskey="{!warranty.warrantyId}"
+                        value="{!warranty.dealer}" onchange="{!c.handleChangeDealer}"  disabled="{!warranty.isDisabled}" />
+                    </aura:if>
+                    <aura:if isTrue="{!!v.isAdmin}">
+                      {!warranty.dealerName}
+                    </aura:if>
+                  </div>
+                </td>
+              </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <aura:if isTrue="{!v.isDeliveryModal}">
+    <div aura:id="deliveryModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">배송정보 입력</h2>
+          <!-- Close Button -->
+          <button class="close_button_template slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.deliveryCancel}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content slds-p-around_medium">
+          <div class="delivery-container">
+
+            <div class="field-wrap">
+              <p>배송예정일</p>
+              <div class="input-wrap">
+                <lightning:input type="datetime" label="배송예정일" variant="label-hidden" value="{!v.deliveryDateTime}" />
+              </div>
+            </div>
+          </div>
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="저장" title="Brand action" onclick="{!c.deliverySave}" disabled="{!v.isLoading }" />
+            <lightning:button variant="neutral" label="닫기" title="Brand action" onclick="{!c.deliveryCancel}" disabled="{!v.isLoading }" />
+          </footer>
+        </div>
+      </div>
+    </div>
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+</aura:component>

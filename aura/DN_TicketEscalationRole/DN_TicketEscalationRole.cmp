@@ -1,0 +1,124 @@
+<!--
+  @description       : 
+  @author            : Junyeong, Choi
+  @group             : 
+  @last modified on  : 03-18-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   01-31-2025   Junyeong, Choi   Initial Version
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    description="Role 등록" controller="DN_TicketEscalationFailureDataController">
+    <aura:attribute name="roleList" type="List" default="[]" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="openRegisterRole" type="Boolean" default="false" />
+    <aura:attribute name="options" type="List" />
+    <aura:attribute name="selectedValue" type="String" />
+    <aura:attribute name="selectedLabel" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!-- <lightning:empApi aura:id="empApi" /> 플랫폼 이벤트 -->
+
+    <lightning:card variant="Narrow">
+
+        <header class="header">
+            <div class="title">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:user_role' alternativeText='user_role' size='small' title='user_role'></lightning:icon>
+                </div>
+                <h2>Role</h2>
+            </div>
+            <lightning:button label="Role 등록" title="Role" onclick="{! c.registerRole }" />
+        </header>
+
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+
+        <div class="card-02 top-card">
+            <div class="table-02">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                        <col width="80%" />
+                        <col width="20%" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <div class="slds-truncate" title="" style="text-align: center;">Role Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title=""></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!empty(v.roleList)}">
+                            <tr>
+                                <td scope="row" colspan="7" style="text-align: center;">
+                                    <p>등록된 Role 목록이 없습니다.</p>
+                                </td>
+                            </tr>
+                        </aura:if>
+                        <aura:iteration items="{!v.roleList}" var="roleList" indexVar="j">
+                            <tr>
+                                <td scope="row">
+                                    <div>{!roleList.Name}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>
+                                        <lightning:buttonicon iconName="utility:delete" accesskey="{!j}"
+                                            onclick="{!c.roleDelete}" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning:card>
+
+    <!-- 📌 1. Role 등록 모달 -->
+    <aura:if isTrue="{!v.openRegisterRole}">
+        <div>
+            <div aura:id="roleListModal" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Role 등록</h2>
+                    </header>
+                    
+                    <!-- Modal Body -->
+                    <div class="modal-body slds-modal__content">
+                        <div class="card-02 top-card">
+                            <div class="slds-scrollable">
+                                <lightning:select name="mySelect" label="Role List" aura:id="mySelect" value="{!v.selectedValue}" onchange="{!c.changeRole}">
+                                    <option value="" selected="true"></option>
+                                    <aura:iteration items="{!v.options}" var="item">
+                                        <option text="{!item.label}" value="{!item.value}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:buttonGroup>
+                            <lightning:button variant="neutral" label="취소" title="Brand action"
+                                onclick="{!c.roleListCancel}" />
+                            <lightning:button variant="brand" label="등록" title="Brand action"
+                                onclick="{!c.roleRegister}" />
+                        </lightning:buttonGroup>
+                    </footer>
+                </div>
+            </div>
+
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,116 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 01-22-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-04   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="계약번호 리스트 모달 for 주문별 수금일정 " controller="DN_SalesOrderListController"  >
+
+  <!-- Attribute -->
+  <aura:attribute name="orderList" type="List" default="[]" />
+  <aura:attribute name="accountId" type="String" />
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <div class="orderListModal">
+    <div aura:id="orderListModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container slds-modal_large">
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">계약번호 리스트</h2>
+
+          <!-- Close -->
+          <button class="slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.closeModal}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content">
+          <div class="card-01 top-card">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="20%"/>
+                <col width="20%"/>
+                <col width="60%"/>
+              </colgroup>
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th>
+                    <div aura:id="orderNumber" title="">오더번호</div>
+                  </th>
+                  <th>
+                    <div aura:id="customer" title="">고객</div>
+                  </th>
+                  <th>
+                    <div aura:id="shipping" title="">배송처</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 값이 있을 때 -->
+                <aura:if isTrue="{!v.orderList.length > 0}">
+                  <!-- sendOrderInfo - component.find("order").get("v.value")을 위해 index 부여 -->
+                  <aura:iteration items="{!v.orderList}" var="order" indexVar="index">
+                    <tr class="slds-hint-parent" onclick="{!c.sendOrderInfo}" data-index="{!index}">
+                      <td data-label="오더번호">
+                        <div title="{!order.orderNumber}">
+                          <lightning:input type="text" name="orderNumber" variant="label-hidden"
+                            value="{!order.orderNumber}" readonly="true" aura:id="orderNumber" />
+                        </div>
+                      </td>
+                      <td data-label="고객">
+                        <div title="{!order.customer}">
+                          <lightning:input type="text" name="customer" variant="label-hidden" value="{!order.customer}"
+                            readonly="true" aura:id="customer" />
+                        </div>
+                      </td>
+                      <td data-label="배송처">
+                        <div title="{!order.shipping}" class="shipping">
+                          <lightning:input type="text" name="shipping" variant="label-hidden" value="{!order.shipping}"
+                            readonly="true" aura:id="shipping" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                  <!-- 값이 없을 때 -->
+                  <aura:set attribute="else">
+                    <tr>
+                      <td colspan="3" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:set>
+                </aura:if>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action"
+            onclick="{!c.closeModal}" />
+        </footer>
+      </div>
+    </div>
+
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+
+</aura:component>

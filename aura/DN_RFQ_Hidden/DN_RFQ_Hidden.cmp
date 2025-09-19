@@ -1,0 +1,66 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-18-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-16-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_RFQ_HiddenController">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="filter" type="String" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+
+    <!-- !!! 적용할 카드 바로 위에 해당 컴포넌트를 위치시켜 주세요 (예: RFQ 카드 위) -->
+
+
+    <aura:html tag="style">
+        <aura:if isTrue="{!v.filter == 'Hidden'}">
+            <!-- CRM: RFQ Card Remove -->
+            .main-container .slds-col *:has(.cDN_RFQ_Hidden .card-hidden) + *:has(.slds-card_related-list-fix) {
+                <!-- border: 1px solid blue !important;  -->
+                display: none;
+            }
+
+            <!-- Dealer Portal: RFQ Card Remove  -->
+            .slds-col--padded *:has(.cDN_RFQ_Hidden .card-hidden) + *:has(.slds-card_boundary) {
+                <!-- border: 1px solid blue !important; -->
+                display: none;
+            }
+        </aura:if>
+        <aura:if isTrue="{!v.filter == 'NewHidden'}">
+            <!-- CRM: RFQ Quick Action Button Remove -->
+            .main-container .slds-col *:has(.cDN_RFQ_Hidden .card-hidden) + *:has(.slds-card_related-list-fix) .slds-media .slds-p-left_xx-small {
+                <!-- border: 1px solid red !important;  -->
+                display: none;
+            }
+
+            <!-- Dealer Portal: RFQ Quick Action Button Remove -->
+            .slds-col--padded *:has(.cDN_RFQ_Hidden .card-hidden) + *:has(.slds-card_boundary) .simpleEmptyState .slds-page-header_joined .slds-grid > div:not(.slds-col) {
+                <!-- border: 1px solid red !important; -->
+                display: none;
+            }
+        </aura:if>
+
+        <!-- Dealer Portal: RFQ Detail 'Mark Approval Status as Complete' Button Remove -->
+        .siteforceSldsTwoCol84Layout:has(.cDN_RFQ_Hidden .card-hidden) .comm-content-header .ui-widget .slds-card__body_inner .slds-path .slds-path__track .runtime_sales_pathassistantPathAssistantHeader {
+            <!-- border: 1px solid red !important; -->
+            display: none;
+        }
+
+
+
+
+    </aura:html>
+
+    <div>
+        <div class="card-hidden" style="display: none;"></div>
+    </div>
+
+</aura:component>

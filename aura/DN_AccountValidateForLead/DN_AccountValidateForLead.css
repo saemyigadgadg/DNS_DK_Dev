@@ -1,0 +1,36 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    padding: 2rem 1rem;
+    text-align: center;
+    position: relative;
+}
+
+.THIS div .content {
+    margin-top: 0.75rem;
+    color: #000;
+}
+
+.THIS .slds-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.THIS .slds-modal__content .slds-m-right_small {
+    margin: 0;
+}
+
+.THIS .slds-modal__content .slds-m-right_small.error .slds-icon{
+    fill: #FF538A !important;
+}
+
+.THIS .message h3 {
+    margin: 1rem 0;
+    font-weight: 500;
+    font-size: 1rem;
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>002-001</fullName>
+        <default>false</default>
+        <label>서울강남논현로26길12</label>
+    </customValue>
+    <customValue>
+        <fullName>002-002</fullName>
+        <default>false</default>
+        <label>서울강남삼성166</label>
+    </customValue>
+    <customValue>
+        <fullName>002-003</fullName>
+        <default>false</default>
+        <label>서울강남언주로107길44</label>
+    </customValue>
+    <customValue>
+        <fullName>002-004</fullName>
+        <default>false</default>
+        <label>서울강동양재대로96길11</label>
+    </customValue>
+    <customValue>
+        <fullName>002-005</fullName>
+        <default>false</default>
+        <label>서울강동천호대로1466</label>
+    </customValue>
+    <customValue>
+        <fullName>002-006</fullName>
+        <default>false</default>
+        <label>서울강북도봉로76길49</label>
+    </customValue>
+    <masterLabel>Transportation Zone</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

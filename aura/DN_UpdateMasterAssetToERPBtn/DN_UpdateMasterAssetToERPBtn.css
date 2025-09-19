@@ -1,0 +1,13 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    min-width: unset;
+    padding: 0;
+}
+
+.THIS .slds-modal__content {
+    padding: 1rem;
+    height: 6rem;
+    text-align: center;
+    line-height: 4rem;
+}

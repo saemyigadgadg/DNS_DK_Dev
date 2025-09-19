@@ -1,0 +1,262 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 01-02-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_POListReviewController"
+  description="PO List REview">
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="openIndex" type="Integer" />
+  <aura:attribute name="jobDetail" type="Object" />
+  <aura:attribute name="pageMap" type="Object" />
+  <aura:attribute name="isShouldStop" type="Boolean" default="false" />
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <!--page Reference -->
+  <lightning:navigation aura:id="navService"/>
+  <!-- aura Event-->
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <div>
+    <span>(Batch Job Run at){!v.jobDetail.PreviousFireTime}</span>
+  </div>
+  <div class="total-wrap">
+    <article class="slds-card">
+      
+      <!-- W.AMD Detail Info : W.AMD Detail Modal -->
+      <div aura:id="WAMDDetailModal" class="printArea"></div>
+
+      <!-- Other Dealer Stock Detail Info : Other Dealer Stock Modal -->
+      <div aura:id="OtherDealerStockModal"></div>
+
+      
+
+
+      <!-- Body -->
+      <!-- <div class="body"> -->
+
+        
+
+        <!-- Card 02 : 검색 결과 테이블 -->
+        <!-- <div class="card-02 top-card"> -->
+          
+          
+          <div class="table-wrap" aura:id="partsProduct">
+            <div aura:id="leftTableDiv" class="table-01 left-table">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table"
+                aria-label="Example table of Opportunities with vertical borders">
+                <colgroup>
+                  <col width="5%" />
+                  <col width="35%" />
+                  <col width="60%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th scope="col" class="check-box">
+                      <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+                    </th>
+                    <th scope="col">Material</th>
+                    <th scope="col">Material Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.recordList}" var="poreview" indexVar="i">
+                    <tr class="slds-hint-parent">
+                      <td style="width: 5%;" type="checkbox2">
+                        <lightning:input type="checkbox" aura:id="checkbox" name="{!i}" onchange="{! c.handleCheckboxChange }" />
+                      </td>
+                      <td data-label="Material">
+                        
+                        <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.material}"
+                          readonly="true" />
+                          
+                      </td>
+                      <td data-label="Material Description">
+                        <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.materialDesc}"
+                          readonly="true" />
+                          <!-- <div class="slds-input">
+                            {!poreview.materialDesc}
+                          </div> -->
+                          
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+
+            <div aura:id="rightTableDiv" class="table-02 right-table" onscroll="{!c.handleScroll}">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table"
+                aria-label="Example table of Opportunities with vertical borders">
+                <colgroup>
+                  <col width="14%" />
+                  <col width="4%" />
+                  <col width="4%" />
+                  <col width="7%" />
+                  <col width="7%" />
+                  <col width="7%" />
+                  <col width="7%" />
+                  <col width="7%" />
+                  <col width="7%" />
+                  <col width="4%" />
+                  <col width="4%" />
+                  <col width="4%" />
+                  <col width="4%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <col width="5%" />
+                  <!-- <col width="4%" /> -->
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th scope="col">Last Parts</th>
+                    <th scope="col">BO Qty</th>
+                    <th scope="col">PO Qty</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">가용재고</th>
+                    <th scope="col">DNS 재고</th>
+                    <th scope="col">타대리점 재고</th>
+                    <th scope="col">구매처</th>
+                    <th scope="col">Due Out</th>
+                    <th scope="col">Due In</th>
+                    <th scope="col">W.AMD</th>
+                    <th scope="col">MRP Type</th>
+                    <th scope="col">ROP</th>
+                    <th scope="col">Max Lv.</th>
+                    <th scope="col">Min Lot</th>
+                    <th scope="col">R-VAL</th>
+                    <th scope="col">PDT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.recordList}" var="poreview" indexVar="i">
+                    <tr class="slds-hint-parent">
+                      <td data-label="Last Parts">
+                        {!poreview.lastParts}
+                        <!-- <div title="Last Parts">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.LSTNR}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="BO Qty" class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.boQTY}"/>
+                        <!-- <div title="BO Qty">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.BOQTY}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="PO Qty" class="right">
+                        <lightning:input type="text" name="input1 " variant="label-hidden"
+                          value="{!poreview.poQTY}" accesskey="{!i}" onchange="{!c.handeQTYChange}"/>
+                      </td>
+                      <td data-label="Price" class="right"> 
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.price}"/>
+                      </td>
+                      <td data-label="가용재고" class="right">
+                          <a onclick="{!c.openLABSTDetailModal}" name="{!i}">{!poreview.availableQTY}</a>
+                      </td>
+                      <td data-label="DNS 재고" class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.dnsQTY}"/>
+                      </td>
+                      <td data-label="타대리점 재고" class="{!poreview.otherQTY >=poreview.poQTY? 'right safe-color' : 'right'}">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.otherQTY}"/>
+                      </td>
+                      <td data-label="구매처" class="right">
+                        <div class="purchase" title="구매처" >
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.dealerName}"
+                            readonly="true" disabled="true"/>
+                          <span>
+                            <lightning:buttonicon iconName="utility:search" size="medium" accesskey="{!i}"
+                              alternativeText="Search"  onclick="{!c.openOtherDealerStockModal}" />
+                          </span>
+                        </div>
+                      </td>
+
+                      <td data-label="Due Out" class="right">
+                        <div title="Due Out">
+                          <a onclick="{!c.openDUEOUTDetailModal}" name="{!i}">{!poreview.dueOut}</a>
+                        </div>
+                      </td>
+                      <td data-label="Due In" class="right">
+                        <div title="Due In">
+                          <a onclick="{!c.openDUEINDetailModal}" name="{!i}">{!poreview.dueIn}</a>
+                        </div>
+                      </td>
+                      <td data-label="W.AMD" class="right">
+                        <div title="W.AMD">
+                          <a onclick="{!c.openWAMDDetailModal}" name="{!i}">{!poreview.wAMD}</a>
+                        </div>
+                      </td>
+                      <td data-label="MRP Type" class="center">
+                        {!poreview.mrpType}
+                        <!-- <div title="MRP Type">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.DISMM}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="ROP" class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.rop}"/>
+                        <!-- <div title="ROP">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.MINBE}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="Max Lv." class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.maxLv}"/>
+                        <!-- <div title="Max Lv.">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.MABST}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="Min Lot" class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.minLot}"/>
+                        <!-- <div title="Min Lot">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.BSTMI}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="R-VAL" class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.rVal}"/>
+                        <!-- <div title="R-VAL">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.BSTRF}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="PDT" class="right">
+                        <lightning:formattedNumber name="input1 " variant="label-hidden" value="{!poreview.pdt}"/>
+                        <!-- <div title="PDT">
+                          <lightning:input type="text" name="input1 " variant="label-hidden" value="{!poreview.PLIFZ}"
+                            readonly="true" />
+                        </div> -->
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+    </article>
+  </div>
+</aura:component>

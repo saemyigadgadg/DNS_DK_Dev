@@ -1,0 +1,126 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-17-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                         Modification
+  1.0   01-07-2025   youjin.shim@sbtglobal.com      Initial Version
+  1.1   01-09-2025   kyjung@yangwoodatapotion.com   화면/조회
+-->
+<template>
+  <template if:true={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+  </template>
+  <!-- <div class="card-02 top-card slds-scrollable"> -->
+  <div class="table-wrap">
+    <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+      <thead>
+        <tr class="slds-line-height_reset">
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">대리점명</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">주문일</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">고객사명</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">주문번호</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">항목</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">품번</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">품명</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">요청수량</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">가용재고</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">아이템 적중률</div>
+          </th>
+          <th class="" scope="col">
+            <div class="slds-truncate" title="">주문별 적중률</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <template for:each={rateSample} for:item="sample" for:index="i">
+          <tr key={sample.i}>
+            <!-- 대리점명 rowspan -->
+            <td rowspan={sample.rowspan} class={sample.isHidden}>
+              <div class="slds-text-align_center">{sample.dealerName}</div>
+            </td>
+            <!-- 주문일 rowspan -->
+            <td rowspan={sample.rowspan} class={sample.isHidden}>
+              <div class="slds-text-align_center">{sample.orderDate}</div>
+            </td>
+            <!-- 고객사명 rowspan -->
+            <td rowspan={sample.rowspan} class={sample.isHidden}>
+              <div class="slds-text-align_left">{sample.customerName}</div>
+            </td>
+            <!-- 주문번호 rowspan -->
+            <td rowspan={sample.rowspan} class={sample.isHidden}>
+              <div class="slds-text-align_center">{sample.orderNumber}</div>
+            </td>
+            <td class="slds-text-align_center">{sample.orderItemNumber}</td>
+            <td class="slds-text-align_left">{sample.partNumber}</td>
+            <td class="slds-text-align_left">{sample.partName}</td>
+            <td class="slds-text-align_right">{sample.orderQty}</td>
+            <td class="slds-text-align_right">{sample.avQty}</td>
+            <td class="slds-text-align_right">
+              <div class="slds-text-align_right">
+                <!-- {sample.calPerItem}% -->
+                <lightning-formatted-number value={sample.calPerItem} format-style="percent-fixed" maximum-fraction-digits="2"></lightning-formatted-number>
+              </div>
+            </td>
+            <!-- </td> -->
+            <!-- 주문별별 rowspan -->
+            <td rowspan={sample.rowspan} class={sample.isHidden}>
+              <div class="slds-text-align_right">
+                <!-- {sample.perOrder}% -->
+                <lightning-formatted-number value={sample.perOrder} format-style="percent-fixed" maximum-fraction-digits="2"></lightning-formatted-number>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-wrap foot-table">
+    <table>
+      <tfoot>
+        <tr>
+          <td colspan="9" class="right">
+            <div>평균</div>
+          </td>
+          <td colspan="1" class="right">
+            <div>{totalItemAvg}%</div>
+          </td>
+          <td colspan="1" class="right">
+            <div>{totalOrderAvg}%</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="10" class="right">
+            <div>아이템 수량별 적중율 합계</div>
+          </td>
+          <td colspan="1" class="right">
+            <div>{totalEOAvg}%</div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- </div> -->
+</template>

@@ -1,0 +1,617 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-18-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-11-2024   Hyerin Ro   Initial Version
+-->
+<apex:page standardController="Quote" 
+           extensions="DN_QuotationPDFController"
+           showQuickActionVfHeader="false" 
+           sidebar="false" 
+           
+           showHeader="false" 
+           applyHtmlTag="false" 
+           contentType="text/html;charset=UTF-8"
+           standardStylesheets="false">
+           <!-- -->
+    <html>
+        <head>
+            <meta charset="UTF-8" />
+            <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+            <apex:stylesheet value="{!URLFOR($Resource.PDFimage, 'PDFimage.zip')}" />
+            <style>
+                /* Common */
+                body {
+                    font-family: Arial Unicode MS;
+                    font-size: 12px;
+                    line-height: 160%;
+                }            
+                /* Styles */
+                .preface{
+                    border-bottom: 2px solid #000;
+                    padding: 0 12px;
+                }           
+                .logo{
+                    text-align: right;  
+                    padding: 0;
+                    margin: 0;
+                    margin: 12px 0;
+                }
+                .logo img{
+                    width: 162px;
+                    height: 16px;
+                }
+
+                h1{
+                    text-align: center;
+                    margin: 32px 0;                  
+                }
+                
+                .info-wrap{
+                    padding-top: 4px;
+                }
+                .info-wrap .info-title{
+                    border-bottom: 1px solid #000;
+                    padding: 2px 0;
+                    width: 60%;
+                    margin-bottom: 48px;
+                    font-size: 16px;
+                }                   
+                .info-wrap .info-title p{
+                    margin: 8px 0;
+                    text-align: center;
+                }
+                .info-wrap ul{
+                    list-style-type: none;
+                    margin: 0;
+                    padding: 0;
+                }
+                .info-wrap ul li{
+                    margin: 4px 0;
+                    font-size: 12px;
+                }  
+
+                .info-wrap .part-02 h2{
+                    font-size: 27px;
+                    margin: 0;
+                    padding: 0;
+                }
+                .info-wrap .part-02 p{
+                    margin: 4px;
+                    padding: 8px 0;
+                }
+                .info-wrap .part-02 .image{
+                    text-align: center;
+                }
+                .info-wrap .part-02 img{
+                    width: 216px;
+                    height: 168px;
+                }
+                .info-wrap .part-02 .desc{
+                    font-size: 11px;
+                    text-align: center;
+                }
+
+                .etimated-wrap{
+                    margin: 20px 0;
+                }
+                .etimated-wrap p{
+                    color: blue;
+                    font-size: 11px;
+                    margin: 0;
+                }
+                .etimated-wrap .price{
+                    font-size: 24px;
+                    margin: 8px 48px;
+                }
+                .etimated-wrap .price::after{
+                    content: '원';
+                    font-size: 13px;
+                    margin: 8px;
+                }
+
+                /* Table  */
+
+                table{
+                    width: 100%;
+                    border-spacing: 0;
+                }
+
+                .table-wrap{
+                    border-bottom: 1px solid #000;
+                    margin: 8px 0;
+                }       
+
+                .table-wrap table th{
+                    text-align: right;
+                    border-bottom: 2px solid #000;
+                    padding: 12px;
+                }    
+
+                .table-wrap table .pricing td{
+                    padding: 8px 12px;
+                    font-size: 13px;
+                }
+
+                .table-wrap table .subtotal td{
+                    border-bottom: 1px solid #000;
+                    border-top: 1px dashed #000;
+                    padding: 20px 12px;
+                    font-size: 13px;
+                }  
+                .table-wrap table td.product-code p {
+                    margin: 0;
+                    padding: 0;
+                }
+                .table-wrap table td.product-code .product {
+                    font-size: 11px;
+                }
+                .tfoot{
+                    margin: 16px 0;
+                }
+                .tfoot table th{
+                    font-size: 14px;
+                }        
+                .tfoot .filled{
+                    background-color: #d9e1f2;
+                }
+               
+                /* Text Align */
+
+                .center {text-align: center !important;}
+                .right {text-align: right !important;}
+                .left {text-align: left !important;}
+
+                /* Notice */
+
+                .notice-wrap{
+                    margin: 24px 0;
+                }
+                .notice-wrap ul{
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                .notice-wrap ul h3{
+                    font-size: 20px;
+                }
+                .notice-wrap ul li{
+                    margin-left: 16px;
+                    position: relative;
+                }
+                .notice-wrap ul li::before{
+                    content: '-';
+                    padding: 0 4px;
+                    position: absolute;
+                    left: -10px;
+                    top: 3px;
+                }
+
+                /* Footer */
+                footer{
+                    padding: 12px;
+                }
+                footer ul{
+                    list-style-type: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                footer .part-01{
+                    border-right: 1px solid #000;
+                }
+                footer .part-01 .logo{
+                    width: 160px;
+                    height: 16px;
+                }
+                footer .part-01 p{
+                    font-size: 16px;
+                }
+                footer .part-01 .image img{
+                    width: 53px;
+                    height: 57px;
+                }   
+                footer .part-02 ul{
+                    margin-top: 
+                }             
+                footer .clearfix{
+                    width: 1px;
+                    background-color: #000;
+                }
+                             
+                /* Custom Grid System */
+
+                .clearfix {
+                    clear: both;
+                }
+                .row {
+                    display: block;
+                }
+                .col-left {
+                    float: left;
+                } 
+                .col-right {
+                    float: right;
+                }             
+                .size-1-of-2 {
+                    width: 48%;
+                }      
+                .size-1-of-4{
+                    width: 20%;
+                }
+                .size-3-of-4{
+                    width: 80%;
+                }
+                /* 페이지 구분을 위한 점선 */
+                .page-break-line {
+                    border-top: 1px dashed #000;
+                    margin: 20px 0;
+                    display: none;
+                }
+                
+                /* 화면에서만 점선 표시 */
+                @media screen {
+                    .page-break-line {
+                        display: block;
+                    }
+                }
+
+                /* PDF에서는 점선 숨김 */
+                @media print {
+                    .page-break-line {
+                        display: none;
+                    }
+                }
+                @page {
+                    @bottom-center {
+                        content: "Page " counter(page) " of " counter(pages);
+                    }
+                }
+                
+            </style>
+        </head>
+        <body>
+            <apex:repeat value="{!result['QuoteLineItems']}" var="item">
+            <!-- Header -->
+            <div class="preface row">
+                <p class="size-1-of-2 col-left">견적번호 : {!result['QuoteNumber']} </p>
+                <div class="logo size-1-of-2 col-right">
+                    <img src="{!URLFOR($Resource.PDFimage, 'logo.jpg')}" />
+                </div>
+                <div class='clearfix'></div>
+            </div>
+
+            <!-- Title -->
+            <h1>견 &nbsp; 적 &nbsp; 서</h1>
+
+            <!-- Info -->
+             <div class="info-wrap">
+                <div class="part-01 size-1-of-2 col-left">
+                    <div class="info-title row">
+                        <p class="size-1-of-2 col-left">{!result['AccountName']}</p>
+                        <p class="size-1-of-2 col-right">貴中</p>
+                        <p class="clearfix"></p>
+                    </div>
+                    <ul>
+                        <li>납기 예상일 : {!item['ExpDate']}</li>
+                        <li>인도 조건 : {!result['Incoterms']}</li>
+                        <li>지불 조건 : {!result['TermsOfPayment']}</li>
+                        <li>견적 작성 일 : {!result['CreatedDate']}</li>
+                        <li>견적 유효 기간 : 제출 일+1개월</li>
+                        <li>무상 보증 기간 : 부품 2년, 공임 1년 무상 제공</li>
+                    </ul>
+                </div>
+
+                <div class="part-02 size-1-of-2 col-right">
+                    <h2>{!item['ModelName']}</h2>
+                    <p>&#248;{!item['ModelDescription']}</p>
+                    <div class="image">
+                        <!-- <img src="https://dn-solutions--dev.sandbox.my.site.com/partners/sfc/servlet.shepherd/version/download/068F7000002CTuHIAW" /> -->
+                        <!-- <img src="{!URLFOR($Resource.DN_Common)}" /> -->
+                        <img src="{!item['ModelImage']}" />
+                    </div>
+                    <p class="desc">* 상기 대표 이미지는 제품 사양 및 구성에 따라 상이할 수 있습니다.</p>
+                </div>
+                <div class="clearfix"></div>
+             </div>
+
+             <!-- Estimated Price -->
+
+             <div class="etimated-wrap">
+                <p>예상 견적 가격 (VAT 별도)</p>
+                <div class="price">{!item['AllExtPrice']}</div>
+             </div>
+
+             <!-- Table -->
+
+             <div class="table-wrap">
+                <colgroup>
+                    <col width="8%" />
+                    <col width="20%" />
+                    <col width="35%" />
+                    <col width="5%" />
+                    <col width="14%" />
+                    <col width="14%" />
+                  </colgroup>
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="3" class="left">제품 선택 사항</th>
+                            <th>수량</th>
+                            <th>단가</th>
+                            <th>금액</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr class="pricing">
+                            <td>Model</td>
+                            <td class="product-code">
+                                <p class="model">{!item['ModelName']}</p>
+                                <p class="product">{!item['ProductCode']}</p>
+                            </td>
+                            <!-- <td>동시 5축 수직형 머시팅 센터 <br />TABLE SIZE: 630 x 450mm</td> -->
+                            <td><apex:outputText value="{!item['RDD']}" escape="false"></apex:outputText> </td>
+                            <td class="right">{!item['Quantity']}</td>
+                            <td class="right">{!item['TotalPrice']}</td>
+                            <td class="right">{!item['PrdAllPrice']}</td>
+                        </tr>
+                        <tr class="subtotal">
+                            <td colspan="2"></td>
+                            <td class="center">소 계</td>
+                            <!-- <td class="right">{!item['Quantity']}</td> -->
+                            <!-- <td class="right">{!item['TotalPrice']}</td> -->
+                            <td class="right"></td>
+                            <td class="right"></td>
+                            <td class="right">{!item['PrdAllPrice']}</td>
+                        </tr>
+                        <apex:repeat value="{!item['CharacteristicValues']}" var="charValue">
+                            <tr class="pricing" style="{!IF(charValue['Category'] != 'CV', 'display: none;', '')}">
+                                <td>{!charValue['Option']}</td>
+                                <td></td>
+                                <!-- <td>{!charValue['Character']} - {!charValue['Value']}</td> -->
+                                <!-- <td>{!charValue['Character']}<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!charValue['Descrip']}</td> -->
+                                <td>{!charValue['Character']}{!charValue['Descrip']}</td>
+                                <td class="right">{!charValue['cvQty']}</td>
+                                <td class="right">{!charValue['Price']}</td>
+                                <td class="right">{!charValue['CVAllPrice']}</td>
+                            </tr>
+
+                            <tr class="pricing" style="{!IF(charValue['Category'] == 'CV', 'display: none;', '')}">
+                                <td>{!charValue['Option']}</td>
+                                <td></td>
+                                <!-- <td>{!charValue['Character']} - {!charValue['Value']}</td> -->
+                                <td>{!charValue['Character']}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!charValue['Descrip']}</td>
+                                <td class="right">{!charValue['cvQty']}</td>
+                                <td class="right">{!charValue['Price']}</td>
+                                <td class="right">{!charValue['CVAllPrice']}</td>
+                            </tr>
+                        </apex:repeat>
+                        <tr class="subtotal">
+                            <td colspan="2"></td>
+                            <td class="center">소 계</td>
+                            <!-- <td class="right">{!item['SubQty']}</td>
+                            <td class="right">{!item['SubTotal']}</td> -->
+                            <td class="right"></td>
+                            <td class="right"></td>
+                            <td class="right">{!item['subAllTotal']}</td>
+                        </tr>
+                    
+                    </tbody>
+                </table>
+             </div>
+
+             <div class="tfoot">
+                <table>
+                    <colgroup>
+                        <col width="8%" />
+                        <col width="20%" />
+                        <col width="35%" />
+                        <col width="5%" />
+                        <col width="14%" />
+                        <col width="14%" />
+                      </colgroup>
+                      <thead>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                            <th class="right filled">총 예상 구입가 (VAT 별도)</th>
+                            <th colspan="3" class="right filled">{!item['AllExtPrice']}</th>
+                        </tr>
+                    </thead>
+                </table>
+             </div>
+
+             <div class="notice-wrap">
+                <h3>알립니다.</h3>
+                <ul>
+                    <li>본 견적서는 고객님의 의사결정에 도움이 되고자 작성한 것으로 법적인 효력은 없으며, 계약 내용은 최종 계약서를 기준으로 합니다.</li>
+                    <li>최종 계약 시, 기계 매매대금은 디엔솔루션즈 전용계좌 또는 디엔솔루션즈 지정 영업대리점 전용계좌로 입금하셔야 합니다.<br />당사는 타 계좌 입금으로 발생되는 문제에는 책임지지 않습니다. (대납 피해 주의!)</li>
+                    <li>제품 설치 공장의 유틸리티 준비는 고객사(User)에서 준비하여야 합니다.<br />(예시,공장 전원 220V 아닐 경우 변압기(Transformer) 준비, 항온항습 필요시설 준비, 에어컴프레셔 준비 등)</li>
+                    <li>본 제품은 국외 수출시 대외무역법 제 19조 제 12항 및 동법 시행령 제 33조에 따라 반드시 산업통상자원부로부터 전략물자 수출허가를 득하여야 함을 고지하며, 제 3자 양도 또는 재 판매(중고 거래)할 경우에도 동일한 의무사항을 준수해야 합니다.</li>
+                    <li>상기 견적 제출 후 당사 가격 및 정책 변경에 따라 동일 조건의 제품에 대한 견적이 일치하지 않을 수 있습니다.</li>
+                </ul>
+             </div>
+
+             <footer class="row">
+                <div class="part-01 size-1-of-2 col-left">
+                    <div class="logo">
+                        <img src="{!URLFOR($Resource.PDFimage, 'logo.jpg')}" />
+                    </div>
+                    <ul>
+                        <li>경남 창원시 성산구 정동로 162번길 40</li>
+                        <li>대표번호 : 055-280-4114</li>
+                    </ul>
+                    <div class="signature row">
+                        <p class="size-1-of-2 col-left">대표이사 김 원 종</p>
+                        <div class="size-1-of-2 col-right image">
+                            <img src="{!URLFOR($Resource.PDFimage, 'DN_Seal.png')}" />
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <div class="part-02 size-1-of-2 col-right">
+                <!-- 대리점직원인경우 -->
+                    <apex:outputPanel rendered="{!result['roleType'] == 'Worker'}">
+                        <p></p>
+                        <div class="part-02 size-1-of-4 col-left">
+                            <img src="{!$Resource.DN_Dealer_LOGO}" style="width: 50px; height: 50px;" />
+                        </div>
+                        <div class="part-02 size-3-of-4 col-right">
+                            <ul>
+                                <li>{!result['distiName']}</li>
+                                <li>{!result['quoteaddress']}</li>
+                                <li>{!result['distiRep']}</li>
+                                <li>{!result['mainphoneRep']}</li>
+                                <li>{!result['mobilephoneRep']}</li>
+                                <li>{!result['mailRep']}</li>
+                                <p></p>
+                                <li>{!result['quotesalesoffice']}</li>
+                                <li>{!result['mobilephone']}</li>
+                                <li>{!result['mainEmail']}</li>
+                            </ul>
+                        </div>
+                    </apex:outputPanel>
+                    
+                    <!-- 대리점 대표인 경우 -->
+                    <apex:outputPanel rendered="{!result['roleType'] == 'Manager'}">
+                        <p></p>
+                        <div class="part-02 size-1-of-4 col-left">
+                            <img src="{!$Resource.DN_Dealer_LOGO}" style="width: 50px; height: 50px;" />
+                        </div>
+                        <div class="part-02 size-3-of-4 col-right">
+                            <ul>
+                                <li>{!result['distiName']}</li>
+                                <li>{!result['quoteaddress']}</li>
+                                <li>{!result['distiRep']}</li>
+                                <li>{!result['mainphoneRep']}</li>
+                                <li>{!result['mobilephoneRep']}</li>
+                                <li>{!result['mailRep']}</li>
+                            </ul>
+                        </div>
+                    </apex:outputPanel>
+
+                    <!-- 직영인 경우 -->
+                    <apex:outputPanel rendered="{!result['roleType'] == 'Direct'}">
+                        <p></p>
+                        <!-- <div class="part-02 size-1-of-4 col-left">
+                            <img src="{!$Resource.DN_Dealer_LOGO}" style="width: 50px; height: 50px;" />
+                        </div> -->
+                        <!-- <div class="part-02 size-3-of-4 col-right"> -->
+                            <ul>
+                                <li>{!result['quotesalesoffice']}</li>
+                                <li>{!result['quoteaddress']}</li>
+                                <li>{!result['mainphone']}</li>
+                                <li>{!result['mobilephone']}</li>
+                                <li>{!result['mainEmail']}</li>
+                            </ul>
+                        <!-- </div> -->
+                    </apex:outputPanel>
+                </div> 
+                <div class="clearfix"></div>
+               
+             </footer>
+           
+
+
+            <!-- <div class="header">
+                <h1>견적서</h1>
+                <h2>DVF 5000</h2>
+                <p>Ø630mm 트러리테이블의 동시 5축 수평형 머시닝센터</p>
+            </div>
+
+            <table class="info">
+                <tr>
+                    <td>회사명: {!companyName}</td>
+                    <td>날짜: {!createdDate}</td>
+                </tr>
+                <tr>
+                    <td>고객 담당자: {!customerName}</td>
+                    <td>견적 유효 기간: {!validUntil}</td>
+                </tr>
+                <tr>
+                    <td>전화: {!phone}</td>
+                    <td>결제 조건: {!paymentTerms}</td>
+                </tr>
+                <tr>
+                    <td>이메일: {!email}</td>
+                    <td>인도 조건: {!deliveryTerms}</td>
+                </tr>
+                <tr>
+                    <td>FAX: {!fax}</td>
+                    <td>보증 기간: {!warranty}</td>
+                </tr>
+            </table>
+
+            <table >
+                <thead>
+                    <tr>
+                        <th>제품 상세 사항</th>
+                        <th>수량</th>
+                        <th>단가</th>
+                        <th>금액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <apex:repeat value="{!models}" var="model">
+                        <tr>
+                            <td>{!model.description}</td>
+                            <td>{!model.quantity}</td>
+                            <td>{!model.unitPrice}</td>
+                            <td>{!model.amount}</td>
+                        </tr>
+                        <apex:repeat value="{!options}" var="optionGroup">
+                            <apex:repeat value="{!optionGroup.options}" var="option">
+                                <tr>
+                                    <td>{!option.description}</td>
+                                    <td>{!option.quantity}</td>
+                                    <td>{!option.unitPrice}</td>
+                                    <td>{!option.amount}</td>
+                                </tr>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </apex:repeat>
+                    <tr>
+                        <td colspan="3" class="total">총 예상 구매가 (VAT 별도)</td>
+                        <td>{!totalPrice}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="footer">
+                <p>알립니다.</p>
+                <p>1. 본 견적서는 고객사의 요청에 의해 드리는 것이며 공급자의 확정된 계약 조건을 의미하지 않습니다.</p>
+                <p>2. 계약 후에는 계약 내용을 최종 확인하는 것이 고객사와 공급자의 책임입니다.</p>
+                <p>3. 위 내용에 대해 궁금한 점이 있으시면 문의 바랍니다.</p>
+                <table>
+                    <tr>
+                        <td>DN SOLUTIONS</td>
+                        <td class="right-align">직영점 정보</td>
+                    </tr>
+                    <tr>
+                        <td>주소: 경상남도 창원시 성산구 정동로 162번길 40</td>
+                        <td class="right-align">주소: 인천시 서구 가좌로 5</td>
+                    </tr>
+                    <tr>
+                        <td>대표이사: 김원중</td>
+                        <td class="right-align">전화: 032-561-5254</td>
+                    </tr>
+                    <tr>
+                        <td>전화</td>
+                        <td class="right-align">FAX: 032-222-2222</td>
+                    </tr>
+                </table>
+            </div> -->
+            <!-- 페이지 브레이크 및 점선 추가 -->
+        <apex:outputPanel rendered="{!NOT(item['IsLast'])}">
+            <div class="page-break-line"></div>
+            <div style="page-break-before: always;"></div>
+        </apex:outputPanel>
+        </apex:repeat>
+        </body>
+    </html>
+</apex:page>

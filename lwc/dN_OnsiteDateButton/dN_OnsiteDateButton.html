@@ -1,0 +1,45 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 2025-01-22
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    
+    <template if:true={isModalOpen}>
+        <div class="total-wrap modal-01">
+            <div class="body">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:edit' alternative-text='edit' size='small' title='edit'></lightning-icon>
+                </div>
+                <h3 class="title">{cLabel.DNS_FSL_CustomerAppointmentTimeSetting}</h3>
+                <div class="message">{cLabel.DNS_FSL_RegisterCustomerTimeSetTime}</div>
+                <lightning-input type="datetime" value={onSiteDateTime} onchange={handleDateTimeChange}></lightning-input>
+                <div class="button-wrap">
+                    <lightning-button variant="neutral" label={cLabel.DNS_FSL_Cancel} onclick={closeModal}></lightning-button>
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleConfirmClick}></lightning-button>
+                </div>
+            </div>
+        </div>
+
+    </template>
+
+    <!-- Modal for completion message -->
+    <template if:true={isCompletionModalOpen}>
+        <div class="total-wrap modal-02">
+            <div class="body">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:check' alternative-text='check' size='small' title='check'></lightning-icon>
+                </div>
+                <h3 class="title">{cLabel.DNS_FSL_CustomerAppointmentTimeSettingComplete}</h3>
+                <div class="message">{cLabel.DNS_FSL_CustomerTimeregisteredSetTime}</div>
+                <div class="button-wrap">
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={closeCompletionModal}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

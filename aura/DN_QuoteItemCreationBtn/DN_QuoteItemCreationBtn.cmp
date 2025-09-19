@@ -1,0 +1,44 @@
+<!--
+  @class             : DN_QuoteItemCreationController
+  @description       : Quote에서 Quotelineitem 생성 버튼
+  @author            : yeongju.yun
+  @last modified on  : 2024-12-17
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2024-11-20   yeongju.yun   Initial Version
+-->
+<aura:component 
+    controller="DN_QuoteItemCreationController" 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    access="global">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="isStatus" type="Boolean" default="false" />
+
+    <aura:if isTrue="{!v.isStatus}">
+        <aura:html tag="style">
+            .slds-modal__container:has(.cDN_QuoteItemCreationBtn){
+                width: 70%;
+                max-width: calc(100vw - 8rem);
+                min-width: 480px;
+            }
+    
+            .slds-modal__content:has(.cDN_QuoteItemCreationBtn){
+                padding: 0;
+                height:auto !important;
+                max-height:none !important;
+                overflow-y: clip;
+                border-radius: 0.25rem;
+            }
+    
+            .forceChatterBasePublisher:not(.PHONE) .cuf-content:has(.cDN_QuoteItemCreationBtn){
+                padding: 0 !important;
+            }
+        </aura:html>
+    
+        <c:dN_QuoteItemCreationModal recordId="{!v.recordId}" objName="Quote" onclosemodal="{!c.handleClose}"></c:dN_QuoteItemCreationModal>
+    
+    </aura:if>
+    
+</aura:component>

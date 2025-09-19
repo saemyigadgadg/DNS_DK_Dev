@@ -1,0 +1,68 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-18-2024
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-01-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes"
+                controller="DN_CommodityController"
+                description="DNSA Model Tab">
+
+    <!-- Attributes -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="objectName"       type="String"   default="DNSAModel__c" />
+    <aura:attribute name="modelId"          type="String"   default="" />
+    <aura:attribute name="fieldList"        type="List"     default="[]" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:navigation aura:id="navService" />
+    <!-- <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/> -->
+
+    <div class="slds-card slds-card_boundary slds-card_related-list-fix">
+        <!-- 🚩 Header -->
+        <div class="slds-page-header slds-page-header_record-home">
+            <div class="header">
+
+                <!-- Header Title -->
+                <div class="title-wrap">
+                    <div class="icon-wrap">
+                        <lightning:icon iconName='custom:custom92' alternativeText='DNSA Modal' size='small' title='DNSA Modal'></lightning:icon>
+                    </div>
+                    <h1>DNSA Model</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🚩 Body -->
+        <div class="body">
+            <!-- 🚩 Body -->
+            <div class="table-wrap">
+                <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+                <div class="slds-form slds-align_absolute-center">
+                    <aura:if isTrue="{! NOT(EMPTY(v.modelId)) }">
+                        <lightning:recordViewForm aura:id="recordEditForm" objectApiName="{! v.objectName }" recordId="{! v.modelId }">
+                            <div class="section-container">
+                                <aura:iteration items="{!v.fieldList}" var="field">
+                                    <div class="col">
+                                        <lightning:outputField aura:id="recordField" fieldName="{! field }" />
+                                    </div>
+                                </aura:iteration>
+                            </div>
+                        </lightning:recordViewForm>
+                    </aura:if>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</aura:component>

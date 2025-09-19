@@ -1,0 +1,34 @@
+.THIS .slds-modal__content {
+    position: relative;
+    padding: 0;
+}
+
+.THIS .body {
+    padding: 1rem;
+}
+
+.THIS .card {
+    width: 20rem;
+}
+
+.THIS .file-uploader .slds-form-element__label,
+.THIS .file-uploader .slds-file-selector_files .slds-file-selector__text {
+    display: none !important;
+}
+
+.THIS .card .slds-file__text {
+    width: 16rem;
+    padding: 0 0.25rem;
+}
+
+.THIS .slds-file_card {
+    border-radius: 0.25rem;
+}
+
+.THIS .card .slds-file:not(.slds-file_loading) .slds-file__crop:hover:before {
+    background-color: rgba(0, 0, 0, 0.015) !important;
+}
+
+.THIS .card .slds-file:not(.slds-file_loading) .slds-file__crop:hover:after {
+    display: none;
+}

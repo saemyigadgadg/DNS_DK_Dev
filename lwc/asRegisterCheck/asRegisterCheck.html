@@ -1,0 +1,458 @@
+<!-- AS Register Check Component -->
+<template>
+   <div class="total-wrap">
+        <!-- 로딩 스피너 -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+        <template if:true={toastVisible}>
+            <div class="toast">
+                <span>{message}</span>
+            </div>
+        </template>
+
+    
+        <!-- 페이지 1: 전화번호 입력 -->
+        <template if:true={isPageOne}>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-text-heading_large slds-p-bottom_medium">
+                    A/S 진행상황
+                </div>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input 
+                            type="tel" 
+                            label="전화번호" 
+                            value={phoneNumber}
+                            onchange={handlePhoneNumberChange}
+                            placeholder="전화번호를 숫자로 입력해주세요 (-제외)"
+                            pattern="[0-9]{10,11}"
+                            message-when-pattern-mismatch="올바른 전화번호 형식이 아닙니다."
+                            required>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-text-body_small slds-p-top_x-small">
+                        입력방법: "-"없이, 01012345678
+                    </div>
+                </div>
+                <div class="slds-p-top_medium">
+                    <lightning-button 
+                        variant="brand" 
+                        label="조회" 
+                        onclick={handleSearch}
+                        class="slds-button_stretch">
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+    
+        <!-- 페이지 2: AS 정보 표시 -->
+        <template if:true={isPageTwo}>
+            <div class="slds-box slds-theme_default">
+                <div class="slds-text-heading_large slds-p-bottom_medium">
+                    A/S 진행상황
+                </div>
+                
+                <!-- AS 정보 카드 목록 -->
+                <template if:true={computedAlarmTalks}>
+                    <template for:each={computedAlarmTalks} for:item="alarmTalk">
+                        <div key={alarmTalk.Id} class="slds-card slds-m-bottom_medium">
+                            <div class="slds-card__header slds-grid">
+                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            접수번호: {alarmTalk.computedCaseNumber}
+                                        </h2>
+                                    </div>
+                                </header>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <!-- 기본 정보 -->
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">접수일자</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">
+                                                    {alarmTalk.CreatedDate}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">오더넘버</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.computedOrderNumber}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">고객명</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.computedAccountName}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">전화번호</span>
+                                            <div class="slds-form-element__control">
+                                                <a href={alarmTalk.computedPhoneLink} class="slds-text-heading_small">
+                                                    {alarmTalk.computedPhone}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <!-- 장비 정보 -->
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">장비번호</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.computedEquipmentNumber}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">장비명</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.computedEquipmentName}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 진행 현황 Status -->
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">진행 상태</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.Status}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <!-- 고장증상 및 요청사항 -->
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">고장증상</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-longform">{alarmTalk.computedSymptom}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">요청사항</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-longform">{alarmTalk.computedRequest}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <!-- 서비스 정보 -->
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">수리요청일시</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.computedRequestedTerm}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">서비스 부품</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">{alarmTalk.computedServicePart}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <!-- 서비스 담당자 정보 -->
+                                <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">서비스 담당자</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">
+                                                    {alarmTalk.computedServiceEngineer}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <span class="slds-form-element__label">담당자 연락처</span>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-text-heading_small">
+                                                    <template if:true={alarmTalk.computedServicePhone}>
+                                                        <a href={alarmTalk.computedServicePhoneLink}>{alarmTalk.computedServicePhone}</a>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <template if:true={alarmTalk.IsStatus}>
+                                    <!-- 버튼 섹션 -->
+                                    <div class="slds-grid slds-wrap slds-gutters slds-m-top_medium button-section">
+                                        <div class="upload-file-btn">
+                                            <lightning-button 
+                                                label={alarmTalk.mediaButtonLabel}
+                                                onclick={toggleMediaDialog}
+                                                data-id={alarmTalk.Id}
+                                                variant="neutral"
+                                                class="slds-button_stretch">
+                                            </lightning-button>
+                                        </div>
+        
+                                        <div class="check-btn">
+                                            <lightning-button 
+                                                label="부품정보 조회" 
+                                                onclick={togglePartsDialog}
+                                                data-id={alarmTalk.Id}
+                                                variant="brand"
+                                                class="slds-button_stretch">
+                                            </lightning-button>
+                                        </div>     
+
+                                        <div class="cancel-btn">
+                                            <lightning-button 
+                                                label="A/S 접수 취소" 
+                                                onclick={toggleCancelDialog}
+                                                data-id={alarmTalk.Id}
+                                                variant="destructive"
+                                                class="slds-button_stretch"
+                                                disabled={alarmTalk.isCancelDisabled}>
+                                            </lightning-button>
+                                            <template if:true={alarmTalk.repairRequestDateTime}>
+                                                <div class="slds-text-body_small slds-text-color_weak slds-p-top_xx-small">
+                                                    수리요청일시: {alarmTalk.repairRequestDateTime}
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+    
+                <!-- 이전 버튼 -->
+                <template if:false={isTicketNo}>
+                    <div class="slds-p-top_medium">
+                        <lightning-button 
+                            label="이전" 
+                            onclick={handlePrevious}
+                            variant="neutral"
+                            class="slds-button_stretch">
+                        </lightning-button>
+                    </div>
+                </template>
+            </div>
+        </template>
+    
+        <!-- 취소 모달 -->
+        <template if:true={showCancelDialog}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">A/S 접수 취소 사유</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-radio-group
+                                    name="cancelReason"
+                                    label="취소 사유"
+                                    options={cancelReasons}
+                                    value={selectedCancelReason}
+                                    onchange={handleCancelReasonChange}
+                                    type="radio">
+                                </lightning-radio-group>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="취소" 
+                            onclick={toggleCancelDialog}
+                            class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="확인" 
+                            variant="brand" 
+                            onclick={handleCancel}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    
+        <!-- 미디어 모달 -->
+        <template if:true={showMediaDialog}>
+            <section role="dialog" class="slds-modal slds-fade-in-open slds-modal_medium showMediaDialog">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">사진/동영상</h2>
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            alternative-text="닫기"
+                            title="닫기"
+                            variant="bare"
+                            onclick={toggleMediaDialog}
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="max-height: 70vh; overflow-y: auto;">
+                            <!-- 파일 업로드 영역 -->
+                            <lightning-file-upload
+                                label="파일 업로드"
+                                name="fileUploader"
+                                accept={acceptedFormats}
+                                onuploadfinished={handleUploadFinished}
+                                multiple>
+                            </lightning-file-upload>
+    
+                        <!-- 미디어 그리드 -->
+                        <div class="media-grid slds-p-top_medium">
+                            <template for:each={uploadedFiles} for:item="file">
+                                <div key={file.id} class="media-item">
+                                    <template if:true={file.canDelete}>
+                                        <div class="file-badge slds-badge slds-theme_success slds-m-bottom_xx-small">
+                                            새로 추가됨
+                                        </div>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="삭제"
+                                            title="삭제"
+                                            variant="border-filled"
+                                            class="slds-button_icon slds-button_icon-border-filled delete-button"
+                                            onclick={handleDeleteFile}
+                                            data-id={file.contentDocumentId}>
+                                        </lightning-button-icon>
+                                    </template>
+                                    <div onclick={handleMediaClick} data-id={file.id}>
+                                        <template if:true={file.isImage}>
+                                            <img src={file.thumbnailUrl} alt={file.title} loading="lazy"/>
+                                        </template>
+                                        <template if:true={file.isVideo}>
+                                            <div class="video-thumbnail">
+                                                <lightning-icon icon-name="utility:video" size="large"></lightning-icon>
+                                            </div>
+                                        </template>
+                                        <div class="media-title">{file.title}</div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    
+        <!-- 이미지 프리뷰 모달 -->
+        <template if:true={showMediaPreview}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" style="border: 4px solid black;">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">{selectedMedia.title}</h2>
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            alternative-text="닫기"
+                            title="닫기"
+                            variant="bare"
+                            onclick={closeMediaPreview}
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                    </header>
+                    <div class="slds-modal__content" style="padding: 0;">
+                        <div class="preview-container">
+                            <img src={selectedMedia.downloadUrl} alt={selectedMedia.title} class="preview-image"/>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="다운로드" 
+                            variant="brand" 
+                            onclick={handleDownload}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    
+        <!-- 부품정보 모달 추가 -->
+        <template if:true={showPartsDialog}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">부품 상세정보</h2>
+                        <button class="slds-button slds-button_icon slds-modal__close" onclick={togglePartsCloseDialog}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- 부품 정보 테이블 -->
+                        <div class="slds-box slds-theme_default">
+                            <div class="table-wrap">
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th scope="col">부품번호</th>
+                                            <th scope="col">부품명</th>
+                                            <th scope="col">수량</th>
+                                            <th scope="col">상태</th>
+                                            <th scope="col">납기일</th>
+                                            <th scope="col">오더번호</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={partsList} for:item="part">
+                                            <tr key={part.number}>
+                                                <td>{part.number}</td>
+                                                <td>{part.name}</td>
+                                                <td>{part.quantity}</td>
+                                                <td>
+                                                    <span class={part.statusClass}>{part.status}</span>
+                                                </td>
+                                                <td>{part.deliveryDate}</td>
+                                                <td>{part.orderNumber}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="닫기" 
+                            onclick={togglePartsCloseDialog}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+   </div>
+</template>

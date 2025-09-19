@@ -1,0 +1,624 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 05-07-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-11-28   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<template>
+    <div class="chargingParts">
+        <article class="slds-card slds-card_boundary">
+
+            <!-- Spinner -->
+            <template lwc:if={isSpinner}>
+                <div class="exampleHolder">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+
+            <div class="slds-card__header slds-grid slds-page-header" style="padding-bottom:0.5rem; border-bottom:solid 1px #c9c9c9;">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate" >
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-work_order" title="work_order">
+                        <lightning-icon size='small' icon-name="standard:work_order"></lightning-icon>
+                        <span class="slds-assistive-text">work_order</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span>{cLabel.DNS_T_ProductRequest}</span>
+                        </h2>
+                    </div>
+                    <div class="slds-no-flex">                    
+                        <lightning-button-group>
+                            <!-- GPES -->
+                            <lightning-button label="GPES" onclick={gpesModal} title={cLabel.DNS_B_Stock} disabled={isButtonDisabled}></lightning-button>
+                            <!-- 재고 -->
+                            <lightning-button label="재고" onclick={stockModal} title={cLabel.DNS_B_Stock} disabled={isButtonDisabled}></lightning-button>
+                            <!-- 조회 -->
+                            <lightning-button label="조회(대리점)" onclick={serviceModal} title={cLabel.DNS_B_Search} disabled={isButtonDisabled}></lightning-button>
+                            <!-- 스핀들 -->
+                            <lightning-button label="(유)스핀들" onclick={spindleModal} title={cLabel.DNS_B_Spindle} disabled={isSpindleDisabled}></lightning-button>
+                        </lightning-button-group>
+                        
+                        <lightning-button-group class="slds-m-left_x-small action">
+                            <!-- 엑셀 붙여넣기 -->
+                            <lightning-button label="엑셀 붙여넣기" onclick={openExcelModal} title="엑셀 붙여넣기" disabled={isButtonGroupDisabled}></lightning-button>
+                            <!-- 라인삭제 -->
+                            <lightning-button-icon 
+                                icon-name="utility:dash" 
+                                variant="border-filled" 
+                                onclick={deleteSelectedRows} 
+                                disabled={isButtonGroupDisabled}
+                                title="선택항목 삭제">
+                            </lightning-button-icon>
+                            <!-- 라인추가 -->
+                            <lightning-button-icon 
+                                icon-name="utility:add" 
+                                variant="border-filled" 
+                                onclick={addRowClick} 
+                                disabled={isAddLineDisabled}
+                                title="라인추가">
+                            </lightning-button-icon>
+                            <!-- 저장 -->
+                            <lightning-button label={cLabel.DNS_B_ProductRequestSave} onclick={saveBtnClick} disabled={isSaveLineDisabled}></lightning-button>
+                        </lightning-button-group>
+                    </div>
+                </header>
+            </div>
+            <div>
+                <div style="color: red;">{addLineDisabledMessage}</div>
+            </div>
+            <div class="table-wrap">
+                <table class="slds-table slds-table_bordered">
+                    <colgroup>
+                        <col width="32px" />
+                        <col width="32px" />
+                        <col width="48px" />
+                        <col width="56px" />
+                        <col width="116px" />
+                        <col width="160px" />
+                        <col width="68px" />
+                        <col width="60px" />
+                        <col width="156px" />
+                        <col width="136px" />
+                        <col width="136px" />
+                        <col width="72px" />
+                        <col width="96px" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">
+                                <div class="slds-truncate">
+                                    <lightning-input type="checkbox" name="headerCheckbox" onchange={checkAllClick}></lightning-input>
+                                </div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="삭제">
+                                    <lightning-icon icon-name="utility:dash" size="x-small"></lightning-icon>
+                                </div>
+                            </th>
+                            <th scope="col"><div class="slds-truncate" title="상태">상태</div></th>
+                            <th scope="col"><div class="slds-truncate" title="순번">순번</div></th>
+                            <th scope="col"><div class="slds-truncate" title="품번">품번</div></th>
+                            <th scope="col"><div class="slds-truncate" title="품명">품명</div></th>
+                            <th scope="col"><div class="slds-truncate" title="수량">수량</div></th>
+                            <th scope="col"><div class="slds-truncate" title="재고">재고</div></th>
+                            <th scope="col"><div class="slds-truncate" title="탁송구분">탁송구분</div></th>
+                            <th scope="col"><div class="slds-truncate" title="배송처">배송처</div></th>
+                            <th scope="col"><div class="slds-truncate" title="대리점명">대리점명</div></th>
+                            <th scope="col"><div class="slds-truncate" title="무게">무게</div></th>
+                            <th scope="col"><div class="slds-truncate" title="스핀들구분">스핀들구분</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={resultDataWithDisabled} for:item="row" for:index="index">
+                            <tr key={row.PartAmountNo} class="slds-hint-parent">
+                                <td>
+                                    <lightning-input type="checkbox" 
+                                        data-id={row.PartAmountNo} 
+                                        onchange={checkCellClick} 
+                                        checked={row.isChecked}
+                                        disabled={row.isApproved}>
+                                    </lightning-input>
+                                </td>
+                                <td> 
+                                    <lightning-button-icon 
+                                        icon-name="utility:dash" 
+                                        variant="bare"
+                                        onclick={deleteLine}
+                                        data-id={row.PartAmountNo}
+                                        disabled={row.isApproved}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td> <!--상태-->
+                                    <div class="slds-truncate">{row.ProgressStatus}</div>
+                                </td>
+                                <td> <!--순번-->
+                                    <div class="slds-truncate">{row.PartNo}</div>
+                                </td>
+                                <td> <!--품명-->
+                                    <template if:true={row.EditMode}>
+                                        <lightning-record-edit-form object-api-name="ProductRequest">
+                                            <lightning-input-field 
+                                            field-name="Product__c"
+                                            value={row.ProductId}
+                                            data-id={row.PartAmountNo}
+                                            onchange={productChange}
+                                            required="true"
+                                            variant="label-hidden" class="custom-container">
+                                        </lightning-input-field>
+                                    </lightning-record-edit-form>
+                                    </template>
+                                    <template if:false={row.EditMode}>
+                                        <div class="slds-truncate">{row.ProductCode}</div>
+                                    </template>
+                                </td>
+                                <td role="gridcell"> <!--품번-->
+                                    <div class="slds-truncate">
+                                        <lightning-formatted-url value={row.ProductUrl} tooltip={row.ProductCode} label={row.ProductName} target="_self"></lightning-formatted-url>
+                                        </div>
+                                </td>
+                                <td> <!--수량-->
+                                    <lightning-input 
+                                        type="number" 
+                                        value={row.PartAmount}
+                                        data-id={row.PartAmountNo}
+                                        name="PartAmount"
+                                        onchange={handleInputChange}
+                                        variant="label-hidden"
+                                        disabled={row.isApproved}>
+                                    </lightning-input>
+                                </td>
+                                <td> <!--재고 돋보기버튼-->
+                                    <lightning-button-icon 
+                                        icon-name="utility:search" 
+                                        variant="bare"
+                                        onclick={openPart}
+                                        data-id={row.PartAmountNo}
+                                        disabled={row.isApproved}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td> <!--탁송구분-->
+                                    <lightning-combobox
+                                        value={row.TransportDivision}
+                                        options={transportDivisionOptions}
+                                        data-id={row.PartAmountNo}
+                                        name="TransportDivision"
+                                        onchange={handleTransportDivisionChange}
+                                        disabled={row.isApproved}
+                                        variant="label-hidden"
+                                        placeholder="선택">
+                                    </lightning-combobox>
+                                </td>
+                                <td> <!--배송처-->
+                                    <!-- <template if:true={isSpinndleType}>
+                                        <lightning-combobox
+                                            value={row.ShipTo}
+                                            options={serviceTerritoryOptions}
+                                            data-id={row.PartAmountNo}
+                                            name="ShipTo"
+                                            onchange={handleShipToChange}
+                                            disabled="true"
+                                            variant="label-hidden"
+                                            placeholder="선택">
+                                        </lightning-combobox>                                     
+                                    </template>
+                                    <template if:false={isSpinndleType}> -->
+                                        <lightning-combobox
+                                            value={row.ShipTo}
+                                            options={serviceTerritoryOptions}
+                                            data-id={row.PartAmountNo}
+                                            name="ShipTo"
+                                            onchange={handleShipToChange}
+                                            disabled={row.isSpinShip}
+                                            variant="label-hidden"
+                                            placeholder="선택">
+                                        </lightning-combobox>
+                                    <!-- </template> -->
+                                    
+                                </td>
+                                <td> <!--대리점명-->
+                                    <div class="slds-truncate">{row.WorkCenterName}</div>
+                                </td>
+                                <td> <!--무게-->
+                                    <div class="slds-truncate">{row.WeightWithUnit}</div>
+                                </td>
+                                <td> <!--스핀들구분-->
+                                    <div class="slds-truncate">{row.ProductType}</div>
+                                </td>
+                                <td colspan="13"></td>
+                                <td colspan="13"></td>
+                                <td colspan="13"></td>
+                                <td colspan="13"></td>
+                                <td colspan="13"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+        
+        <!-- GPES 모달 START : 버튼명 [GPES] -->
+        <template if:true={isGPESModal}>
+            <section class="slds-modal slds-fade-in-open" role="dialog">
+                <div class="slds-modal__container">
+                    
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick={gpesModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">닫기</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">GPES</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium">
+        
+                        <div class="container" style="height: 100%;">
+                            <iframe src={apexPageURL} width="100%" height="100%"></iframe>
+                        </div>
+        
+                    </div>
+                    
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={gpesModal}>Cancel</button>
+                    </footer>
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>   
+        </template>
+        <!-- GPES 모달 END-->
+
+        <!-- 부품별 재고 현황 조회 모달 START : 버튼명 [재고] -->
+        <template if:true={isStockModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open chargingParts stockModal">
+                <!-- Spinner -->
+                <template lwc:if={isStockModalSpinner}>
+                    <div class="exampleHolder">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <div class="slds-modal__container">
+                    <!-- 모달 헤더 -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                            onclick={stockModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                                size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">재고 조회</h2>
+                    </header>
+
+                    <!-- 모달 내용 -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="overflow-y: auto;">
+                        <!-- 제품 검색 영역 -->
+                        <div class="search-section slds-m-bottom_medium">
+                            <lightning-record-edit-form object-api-name="ProductRequest" onsubmit={handleSubmit}>
+                                <lightning-input-field 
+                                    field-name="Product__c" 
+                                    onchange={stockSearch} 
+                                    required="true"
+                                    data-id="product2Id"
+                                    variant="label-hidden">
+                                </lightning-input-field>
+                            </lightning-record-edit-form>
+                        </div>
+
+                        <!-- 상단 정보 카드 -->
+                        <div class="card-01">
+                            <template if:true={stockResult.hasNoData}>
+                                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                                    <span class="slds-assistive-text">info</span>
+                                    <h2>{stockResult.message}</h2>
+                                </div>
+                            </template>
+                            <template if:false={stockResult.hasNoData}>
+                            <div class="slds-grid slds-gutters">
+                                    <div class="slds-col">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label">품번</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static">{stockResult.MATNR}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">품명</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.MAKTX}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">대체품</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.REPNR}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">규격</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.THREAD}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">단위</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.MEINS}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">판매가</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.NETPR} {stockResult.WAERS}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">HQ_WH1</label><!--창원_가용재고-->
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.LABST}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">HQ_WH2</label><!--천안_가용재고-->
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.LABST2}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col"></div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">구매LT</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.PLIFZ}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">서비스LT</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{stockResult.AVRLT}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </template>
+                        </div>
+
+                        <!-- 대리점 목록 테이블 -->
+                        <div class="card-02 slds-m-top_medium">
+                            <template if:true={hasNoStockData}>
+                                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info" role="alert">
+                                    <span class="slds-assistive-text">info</span>
+                                    <h2>대리점 재고 정보가 없습니다.</h2>
+                                </div>
+                            </template>
+                            <template if:false={hasNoStockData}>
+                            <div class="table-section">
+                                <lightning-datatable
+                                    key-field="DEALER_CD"
+                                    data={stockTableData}
+                                    columns={stockColumnsChange}
+                                    hide-checkbox-column
+                                    onrowaction={stockRowAction}>
+                                </lightning-datatable>
+                            </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- 모달 푸터 -->
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={stockModal}>닫기</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- 부품별 재고 현황 조회 모달 END-->
+        
+        <!-- 부품재고 전체 대리점 조회 모달 START : 버튼명 [조회] -->
+        <template if:true={isServiceModal}>
+            <section class="slds-modal slds-fade-in-open serviceModal" role="dialog">
+                <!-- Spinner -->
+                <template lwc:if={isServiceModalSpinner}>
+                    <div class="exampleHolder">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <div class="slds-modal__container">
+                    
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick={serviceModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">{cLabel.DNS_B_Close}</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">부품재고 전체 대리점 조회</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <!-- Table Section -->
+                        <div class="table-section">
+                            <lightning-datatable
+                                key-field="DEALER_CD"
+                                data={serviceTableData}
+                                columns={serviceColumns}
+                                hide-checkbox-column
+                                onrowaction={serviceRowAction}>
+                                <!-- <template lwc:slot="customProductList">
+                                    <div class="slds-p-around_x-small">
+                                        <template for:each={value.products} for:item="product">
+                                            <div key={product.ProductCode} class="slds-grid slds-wrap slds-p-bottom_x-small">
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                                    <div class="slds-text-title">품번: {product.ProductCode}</div>
+                                                    <div class="slds-text-body_small">품명: {product.ProductName}</div>
+                                                </div>
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                                    <div class="slds-text-body_small">현재고: {product.CurrentStock}</div>
+                                                    <div class="slds-text-body_small">가용재고: {product.AvailableStock}</div>
+                                                    <div class="slds-text-body_small">주문예약재고: {product.OrderRequired}</div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template> -->
+                            </lightning-datatable>
+                        </div>
+                    </div>
+                    
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={serviceModal}>닫기</button>
+                    </footer>
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>    
+        <!-- 부품재고 전체 대리점 조회 모달 END -->
+    
+        <!-- 스핀들 조회 모달 START : 버튼명 [(유)스핀들] -->
+        <template if:true={isSpindleModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true">
+                <!-- Spinner -->
+                <template lwc:if={isSpindleModalSpinner}>
+                    <div class="exampleHolder">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={spindleModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">스핀들 조회</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="min-height: 200px;">
+                        <template if:true={hasSpindleError}>
+                            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                                <span class="slds-assistive-text">error</span>
+                                <h2>{spindleErrorMessage}</h2>
+                            </div>
+                        </template>
+                        <template if:false={hasSpindleError}>
+                            <lightning-datatable
+                                key-field="EQUNR"
+                                data={spindleTableData}
+                                columns={spindleColumns}
+                                hide-checkbox-column
+                                onrowaction={spindleRowAction}>
+                            </lightning-datatable>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={spindleModal}>닫기</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>    
+        <!-- 스핀들 조회 모달 END -->
+
+        <!-- 대리점 조회 모달 START : 버튼명 [?] -->
+        <template if:true={isWorkCenterModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeWorkCenterModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">대리점 조회</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-text-title_caps" scope="col">대리점명</th>
+                                    <th class="slds-text-title_caps" scope="col">대리점코드</th>
+                                    <th class="slds-text-title_caps" scope="col">주소</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={workCenterOptions} for:item="workCenter">
+                                    <tr key={workCenter.id} onclick={selectWorkCenter} data-id={workCenter.id} class="slds-hint-parent">
+                                        <td>{workCenter.name}</td>
+                                        <td>{workCenter.code}</td>
+                                        <td>{workCenter.address}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeWorkCenterModal}>취소</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- 대리점 조회 모달 END -->
+
+        <!-- 엑셀 붙여넣기 모달 START : 버튼명 [엑셀붙여넣기] -->
+        <template if:true={isExcelModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-labelledby="modal-heading-01" aria-modal="true">
+                <div class="slds-modal__container">
+                    <!-- Spinner -->
+                    <template lwc:if={isSpinner}>
+                        <div class="exampleHolder">
+                            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                        </div>
+                    </template>
+
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeExcelModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">엑셀 데이터 붙여넣기</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-box slds-theme_info slds-m-bottom_medium">
+                            <p>엑셀 데이터 붙여넣기 안내:</p>
+                            <ul class="slds-list_dotted slds-m-top_x-small">
+                                <li>품번, 수량 순서로만 입력 가능합니다.</li>
+                                <li>엑셀에서 복사한 데이터를 아래 텍스트 영역에 붙여넣기(Ctrl+V) 해주세요.</li>
+                            </ul>
+                        </div>
+                        <lightning-textarea 
+                            name="excelData" 
+                            label="엑셀 데이터"
+                            placeholder="여기에 엑셀 데이터를 붙여넣기 하세요."
+                            onchange={handleExcelDataChange}
+                            onpaste={handlePaste}>
+                        </lightning-textarea>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeExcelModal}>취소</button>
+                        <button class="slds-button slds-button_brand" onclick={processExcelData}>확인</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- 엑셀 붙여넣기 모달 END -->
+    </div>    
+</template>

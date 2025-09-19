@@ -1,0 +1,442 @@
+.THIS.slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+
+/* Clear Btn*/
+.THIS .clear-btn {
+    position: absolute;
+    border: none;
+    right: 34px;
+}
+
+/* Card Header */
+
+.THIS .card-header {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+.THIS .card-header h2 span {
+    font-weight: initial;
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.THIS .card-01 .field-wrap:last-of-type{
+    grid-column: span 2;
+}
+
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    position: relative;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .clear-btn{
+    position: absolute;
+    top: 0;
+    right: 34px;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element__control{
+    display: flex;
+    gap: 0.5rem;
+}
+
+.THIS .input-wrap .slds-combobox_container{
+    width: 100%;
+}
+
+/* Card 02 */
+
+.THIS .card-02 .card-body{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.THIS .card-02 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.THIS .card-02 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-02 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.THIS .card-02 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .card-02 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+
+
+/* Card 03 */
+
+.THIS .card-03 .table-wrap {
+    overflow: auto;
+}
+
+.THIS .card-03 .table-02 th{
+    padding: 0.45rem 0.75rem;
+}
+
+.THIS .card-03 .table-wrap table td .input-wrap{
+    position: relative;
+    display: flex;
+    gap: 0.25rem;
+    width: 100%;
+}
+
+.THIS .card-03 .input-wrap .clear-btn{
+    position: absolute;
+    top: 0;
+    right: 36px;
+}
+
+.THIS .card-03 table td .slds-form-element{
+    width: 100%;
+}
+
+.THIS .card-03 table td .delete {
+    text-align: center;
+}
+
+
+/* Table Design */
+
+.THIS .body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .body table .slds-input[readonly] {
+    border: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+    text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .body .card-03 .table-wrap {
+    height: calc(100vh - 40rem);
+    overflow-y: auto;
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+}
+
+@media screen and (max-width: 1800px) {
+    .THIS .body .card-03 .table-wrap {
+        height: calc(100vh - 24rem);
+    }
+}
+
+.THIS .body .card-03 .table-wrap table{
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.THIS .body .card-03 .table-wrap table thead {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+}
+
+.THIS .card-03 .table-wrap .search-input {
+    min-width: 9rem;
+}
+
+/* Sticky Tables : Table 01 */
+
+.THIS .body .card-03 .table-01 {
+    flex: 2;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .body .card-03 .table-01 td.replacingPartName {
+    max-width: 250px;
+}
+
+.THIS .body .card-03 .table-01 td.replacingPartName div {
+    max-width: 90%; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 2020px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 3;
+    }
+    .THIS .body .card-03 .table-01 td.replacingPartName {
+        max-width: 230px;
+    }
+}
+
+@media screen and (max-width: 1480px) {
+    .THIS .body .card-03 .table-01 td.replacingPartName {
+        max-width: 200px;
+    }
+}
+
+@media screen and (max-width: 1360px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 4;
+    }
+    .THIS .body .card-03 .table-01 td.replacingPartName {
+        max-width: 150px;
+    }
+}
+
+@media screen and (max-width: 1240px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 6;
+    }
+}
+
+@media screen and (max-width: 1140px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 8;
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .THIS .body .card-03 .table-01 {
+        flex: 9;
+    }
+}
+
+.THIS .body .card-03 .table-01 table tr>td:last-child {
+    font-size: 13px;
+}
+
+.THIS .body .card-03 .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+.THIS .body .card-03 .table-01 thead {
+    height: 34.4px;
+}
+
+/* Sticky Tables : Table 02 */
+
+.THIS .body .card-03 .table-02 {
+    flex: 3;
+    overflow: scroll;
+    table-layout: fixed;
+}
+
+/* Main Button */
+
+.THIS .mainBtn {
+    background: #0176D3;
+    border-color: #0176D3 !important;
+    color: #fff;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+    text-overflow: ellipsis;
+}
+
+/* excel modal */
+.THIS .excelModalButton {
+    display: inline;
+    position: relative;
+    margin-left: .25rem;
+}
+
+.THIS .excelModal {
+    position: absolute;
+    top: 123px;
+    left: -449px;
+  }
+  
+  .THIS .excelModal .slds-modal__header {
+    position: relative;
+    box-shadow: 1px -1px 3px 0 rgba(0, 0, 0, 0.16);
+  }
+  
+  .THIS .excelModal .slds-modal__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+  }
+  
+  .THIS .excelModal .slds-modal__container {
+    width: 540px;
+  }
+  
+  .THIS .excelModal .slds-modal__content {
+    box-shadow: 1px 0px 3px 0 rgba(0, 0, 0, 0.16);
+  }
+  
+  .THIS .excelModal .slds-modal__content .file-input {
+    margin: 1rem;
+    text-align: center;
+  }

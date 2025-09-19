@@ -1,0 +1,138 @@
+<!--
+  @description       :
+  @author            : sungheum.yeon@sobetec.com
+  @group             :
+  @last modified on  : 04-04-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+
+    <div class="wrapper">
+        <div class="btn-wrap">
+            <lightning-button icon-name="utility:add" name="addItems" onclick={addLinesFunction}></lightning-button>
+            <lightning-button icon-name="utility:save" type="button" name="saveButton"
+                onclick={saveResultHandler}></lightning-button>
+            <lightning-button icon-name="utility:delete" name="searchItems" onclick={deleteWorkList}></lightning-button>
+        </div>
+
+        <div class="table-wrap">
+            <template for:each={workOrderResults} for:item="record">
+                <lightning-record-edit-form key={record.resultId} object-api-name="WorkOrderResult__c">
+                    <lightning-messages></lightning-messages>
+                    <div class="contents-wrap">
+                        <!-- 체크박스 -->
+                        <div class="check-wrap">
+                            <div class="input-wrap">
+                                <lightning-input type="checkbox" data-id={record.resultId}
+                                    onchange={checkhandler}></lightning-input>
+                            </div>
+                        </div>
+                        <!-- 필드 값 입력 -->
+
+                        <div class="field-wrap">
+                            <div class="input-wrap">
+                                <lightning-input label="Product Code" required="true" type="text"
+                                    value={record.ProductNumber} readonly="true" disabled="true" name="ProductNumber"
+                                    data-id={record.resultId}></lightning-input>
+                                <!-- <lightning-button-icon
+                                icon-name="utility:close"
+                                size="medium"
+                                alternative-text="Delete Product Code"
+                                onclick={clearProductNumber}
+                                class="clear-btn"
+                                data-id={record.resultId}>
+                            </lightning-button-icon> -->
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-input label="Description" required="true" type="text" disabled="true"
+                                    value={record.ProductName} name="ProductName" data-id={record.resultId}
+                                    onchange={handleValueChange}></lightning-input>
+                                <lightning-button-icon icon-name="utility:search" size="medium"
+                                    alternative-text="Search Product Code" onclick={searchProductCode}
+                                    class="searchIconn" data-id={record.resultId}>
+                                </lightning-button-icon>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-input label="Qty" type="Number" required="true" value={record.Quantity}
+                                    name="Quantity" data-id={record.resultId}
+                                    onchange={handleValueChange}></lightning-input>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-input label="Text" type="text" value={record.Note} name="Note"
+                                    data-id={record.resultId} onchange={handleValueChange}></lightning-input>
+                            </div>
+                            <div class="input-wrap cause-part">
+                                <p>Cause Parts</p>
+                                <lightning-input type="Checkbox" checked={record.IsCause}
+                                    name="IsCause" data-id={record.resultId}
+                                    onchange={handleValueChange}></lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-record-edit-form>
+            </template>
+        </div>
+
+
+
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading" aria-modal="true"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- 헤더 -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Part No.</h2>
+                        <div class="modal-btn-wrap">
+                            <lightning-button variant="brand" label="search" size="medium" onclick={handleProductSearch}></lightning-button>
+                        </div>
+                    </header>
+
+                    <!-- 본문 -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="field-wrap">
+                            <div class="input-wrap">
+                                <lightning-input label="Part No" onchange={handleInputChange} value={partNumber}
+                                    data-field="partNumber"></lightning-input>
+                                <lightning-input label="Part Name" onchange={handleInputChange} value={partName}
+                                    data-field="partName"></lightning-input>
+                            </div>
+                        </div>
+                        
+                        <template if:true={productList.length}>
+                            <div class="part-NO-table-wrap">
+                                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Part No.</th>
+                                            <th>Part Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={productList} for:item="product">
+                                            <tr key={product.Id} onclick={handleRowClick} data-id={product.Id}
+                                                data-productcode={product.ProductCode}
+                                                data-productname={product.FM_MaterialDetails__c}>
+                                                <td>{product.Name}</td>
+                                                <td>{product.FM_MaterialDetails__c}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </template>
+                    </div>
+
+                    <!-- 푸터 -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="neutral" label="Cancel" onclick={closeModal}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template>

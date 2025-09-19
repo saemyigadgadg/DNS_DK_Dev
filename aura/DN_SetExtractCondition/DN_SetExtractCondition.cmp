@@ -1,0 +1,123 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 11-11-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-11-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+   implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+   description="추출조건설정모달" controller="DN_CampaignExtractConditionController">
+   <aura:html tag="style">
+      .slds-modal__content:has(.cDN_SetExtractCondition) {
+      height: auto !important;
+      max-height: none !important;
+      padding: 0;
+      overflow-y:clip;
+      }
+      .slds-modal__container:has(.cDN_SetExtractCondition) {
+      width: 30rem;
+      max-width: none;
+      min-width: none;
+      }
+      .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_SetExtractCondition) {
+      padding:0;
+      }
+      <!-- overflow -->
+      .modal-body:has(.cDN_SetExtractCondition) {
+      overflow: visible;
+      }
+      .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_SetExtractCondition) {
+      overflow:visible;
+      }
+      .slds-modal__content:has(.cDN_SetExtractCondition) {
+      overflow: visible;
+      }
+   </aura:html>
+
+   <!--Attribute-->
+   <aura:attribute name="recordId" type="String" />
+   <aura:attribute name="isLoading" type="Boolean" default="false" />
+   <aura:attribute name="extractTarget" type="String" default="" />
+   <aura:attribute name="extractCondition" type="String" default="" />
+   <aura:attribute name="ticketType" type="String" default="" />
+   <aura:attribute name="ticketTypeMiddle" type="String" default="" />
+   <aura:attribute name="conditionDate" type="String" default="" />
+   <aura:attribute name="closedDateType" type="String" default="" />
+
+   <!--Handler-->
+   <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+   <div class="ExtractConditionModal" aura:id="ExtractConditionModal">
+      <div class="slds-modal slds-fade-in-open">
+         <div class="slds-modal__container">
+            <!-- Header -->
+            <header class="slds-modal__header">
+               <h2 class="slds-text-heading_medium">추출 조건 설정</h2>
+            </header>
+   
+            <!-- Modal -->
+            <div class="slds-modal__content slds-p-around_medium">
+               <div class="condition-content">
+                  <lightning:recordEditForm objectApiName="ExtractCondition__c">
+                     <!--Extraction Target-->
+                     <lightning:inputField fieldName="ExtractionTarget__c" aura:id="extractTarget"
+                        value="{!v.extractTarget}" onchange="{!c.handleTarget}" />
+                     <!--Extraction Condition-->
+                     <lightning:inputField fieldName="ExtractionCondition__c" aura:id="extractCondition"
+                        value="{!v.extractCondition}" onchange="{!c.handleCondition}" />
+                     <!-- Ticket -->
+                        <!--티켓 종료 일자 타입-->
+                        <aura:if isTrue="{! AND( v.extractTarget =='Ticket', OR(v.extractCondition == '티켓종료일자', v.extractCondition == 'Ticket Closed Date'))}">
+                           <div class="date">
+                              <lightning:inputField fieldName="TicketType__c" value="{!v.closedDateType}" aura:id="closedDateType" label="Type"/>
+                           </div>
+                        </aura:if>
+                        <!--티켓 종료 일자-->
+                        <aura:if isTrue="{! AND( v.closedDateType == '종결 날짜 지정')}">
+                           <label class="date-label">{!v.extractCondition}</label>
+                           <div class="date">
+                              <lightning:inputField fieldName="FromDate__c" aura:id="ticketFromDate" variant="label-hidden" />
+                              <p>~</p>
+                              <lightning:inputField fieldName="ToDate__c" aura:id="ticketToDate" variant="label-hidden" />
+                           </div>
+                        </aura:if>
+                        <!--티켓 타입-->
+                        <aura:if
+                           isTrue="{! AND( v.extractTarget =='Ticket', OR(v.extractCondition == '티켓유형', v.extractCondition == 'Ticket Type'))}">
+                           <lightning:inputField fieldName="TicketType__c" aura:id="ticketType2" value="{!v.ticketType}" id="ticketType2" />
+                        </aura:if>
+                        <!--티켓 Middle 타입-->
+                        <aura:if
+                           isTrue="{! AND( v.extractTarget =='Ticket', OR(v.extractCondition == '티켓유형', v.extractCondition == 'Ticket Type'))}">
+                           <lightning:inputField fieldName="TicketTypeMiddle__c" aura:id="ticketTypeMiddle" value="{!v.ticketTypeMiddle}" />
+                        </aura:if>
+                     <!-- Service Order -->
+                     <aura:if
+                        isTrue="{! AND( v.extractTarget == 'Service Order', OR(v.extractCondition == '설치완료일자', v.extractCondition == 'Warranty Start Date'))}">
+                        <label class="date-label">{!v.extractCondition}</label>
+                        <div class="date">
+                           <lightning:inputField fieldName="FromDate__c" aura:id="workOrderFromDate"
+                              variant="label-hidden" />
+                           <P>~</P>
+                           <lightning:inputField fieldName="ToDate__c" aura:id="workOrderToDate" variant="label-hidden" />
+                        </div>
+                     </aura:if>
+                  </lightning:recordEditForm>
+               </div>
+            </div>
+   
+            <!-- Footer -->
+            <footer class="slds-modal__footer">
+               <lightning:button label="취소" onclick="{!c.handleCancel}" class="slds-m-left_x-small" />
+               <lightning:button variant="brand" label="저장" onclick="{!c.handleSave}" class="slds-m-left_x-small" />
+            </footer>
+         </div>
+      </div>
+
+      <div class="slds-backdrop slds-backdrop_open"></div>
+   </div>
+</aura:component>

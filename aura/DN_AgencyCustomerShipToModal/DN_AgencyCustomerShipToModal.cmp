@@ -1,0 +1,267 @@
+<!--
+  @description       : 
+  @author            : Daewook.KIM
+  @last modified on  : 04-22-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   11-19-2024   Daewook.KIM   Initial Version
+  1.1   04-01-2025   Hyunwoo.Jin   대리점 재고 관리 관련 기능 추가
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PortalModalController"
+  description="고객사 배송처 검색 모달">
+
+  <!-- Attribute -->
+  <aura:attribute name="parentCmp"      type="String"   />
+  <aura:attribute name="isLoading"      type="Boolean"  default="false" />
+  <aura:attribute name="inputModalOpen" type="Boolean"  default="false" />
+  <aura:attribute name="isAddress"      type="Boolean"  default="false" />
+  <aura:attribute name="shipToList"     type="List"     default="[
+        {'customerCode' : '1057091', 'customerName' : '대우씨엔씨(장세원)', 'customerAddress' : '(306-120) 대전광역시 대덕구 신탄진로 583번길 5, 12층(상서동)', 'manager' : '장세원', 'customerPhone' : '01090465273'},
+        {'customerCode' : '1057449', 'customerName' : '경호기계', 'customerAddress' : '(45621) 부산광역시 강서구 유통단지 1로', 'manager' : '김병곤', 'customerPhone' : '01051332444'},
+        {'customerCode' : '1057231', 'customerName' : '링엔지니어링', 'customerAddress' : '(416887) 서울시 송파구 잠실3로 232-33', 'manager' : '장순이', 'customerPhone' : '01048327494'}
+    ]" />
+  <aura:attribute name="options"        type="List"     default="[
+        {'label': '검색', 'value': 'Search'},
+        {'label': '수기입력', 'value': 'Input'}
+    ]" />
+  <aura:attribute name="shipToList2"     type="List" />
+  <aura:attribute name="dealerURIKeys"   type="List"   default="['customer-order-create']" />
+  <aura:attribute name="detailedAddress" type="String" description="상세주소" />
+  <aura:attribute name="value" type="String" default="Search" />
+
+  <aura:attribute name="dealerInfo" type="Object" description="딜러 정보" />
+
+  <!-- DD 250422 추가 -->
+  <aura:attribute name="addr" type="String" description="포탈 오더 생성 수기입력 city 값" />
+  <aura:attribute name="detail" type="String" description="포탈 오더 생성 수기입력 street 값" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+  <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}" />
+
+ 
+  <div class="customerShipToModal">
+    <div aura:id="customerShipToModal" class="slds-modal slds-fade-in-open">
+      <!-- 🎈 Modal 01 : 배송처 -->
+      <div class="modal-1 slds-modal__container slds-modal_large">
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">배송처</h2>
+
+          <!-- Close -->
+          <button class="slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.customerShipToCancel}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content slds-p-around_medium">
+
+          <!-- Card 01 -->
+          <div class="card-01 top-card">
+
+            <div class="field-container field-head">
+              <div class="field-wrap">
+                <p>선택사항</p>
+                <div class="input-wrap">
+                  <lightning:radioGroup aura:id="mygroup" options="{! v.options }" value="{! v.value }" onchange="{! c.handleChange }" />
+                </div>
+              </div>
+              <div class="input-wrap">
+                <lightning:button name="search" label="Search"  class="main-button" onclick="{!c.searhBuyerInfo}" />
+              </div>
+            </div>
+
+            <div class="field-container field-body">
+              <div class="field-wrap">
+                <p>고객코드</p>
+                <div class="input-wrap" onkeypress="{!c.handleKeyPress}">
+                  <lightning:input variant="label-hidden" aura:id="buyerCode"  />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>고객사명</p>
+                <div class="input-wrap" onkeypress="{!c.handleKeyPress}">
+                  <lightning:input variant="label-hidden" aura:id="buyerName" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Card 02 -->
+          <div class="card-02 top-card">
+            <div class="table-wrap">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">고객사 코드</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">고객사명</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">(우편번호) 주소</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">담당자</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">연락처</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.shipToList2}" var="shipToList" indexVar="j">
+                    <tr class="slds-hint-parent" onclick="{!c.clickRow}" data-record="{!j}">
+                      <td data-label="고객사코드" class="center">
+                        <div class="slds-truncate" title="{!shipToList.customerCode}">
+                          {!shipToList.customerCode}
+                        </div>
+                      </td>
+                      <td data-label="고객사명">
+                        <div class="slds-truncate customer" title="{!shipToList.customerName}">
+                          {!shipToList.customerName}
+                        </div>
+                      </td>
+                      <td data-label="(우편번호) 주소">
+                        <div class="slds-truncate juso" title="{!shipToList.customerAddress}">
+                          {!shipToList.customerAddress + shipToList.customerDetail} 
+                        </div>
+                      </td>
+                      <td data-label="담당자" class="center">
+                        <div class="slds-truncate" title="{!shipToList.manager}">
+                          {!shipToList.manager}
+                        </div>
+                      </td>
+                      <td data-label="연락처">
+                        <div class="slds-truncate" title="{!shipToList.customerPhone}">
+                          {!shipToList.customerPhone}
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.customerShipToCancel}" />
+        </footer>
+      </div>
+
+
+      <!-- 🎈 Modal 02 : 수기입력-->
+      <aura:if isTrue="{!v.inputModalOpen}">
+        <div class="slds-modal slds-fade-in-open" style="z-index: 9002 !important;">
+          <div class="modal-2 slds-modal__container">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">수기입력</h2>
+
+              <!-- Close -->
+              <button class="slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                  title='close' name="closeModal" onclick="{!c.addressInputCancel}"></lightning:icon>
+              </button>
+            </header>
+            <!-- Modal Content -->
+            <div class="modal-body slds-modal__content" aura:id="addressInputModal">
+
+              <div class="card-01 card-write top-card">
+
+                <div class="card-head">
+                  <p>* 주소가 검색되지 않을 경우 다음 링크에 접속하여 검색 하신 후 수기 입력해 주세요.</p>
+                  <a onclick="{!c.addressInfo}">[행안부 도로명 주소 안내]</a>
+                </div>
+
+                <div class="card-body">
+                  <div class="field-wrap">
+                    <p>고객사명<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                      <lightning:input variant="label-hidden" aura:id="inputCustomerName" />
+                    </div>
+                  </div>
+                  <div class="field-wrap">
+                    <p>우편번호/도시<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap postcode">
+                      <lightning:input variant="label-hidden" aura:id="inputZipCode" />
+                      <lightning:input variant="label-hidden" aura:id="inputCountry" />
+                      <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                        onclick="{!c.handleSearchAddress}" />
+                    </div>
+                  </div>
+                  <div class="field-wrap">
+                    <p>주소<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                      <lightning:input variant="label-hidden" 
+                        maxlength="36"
+                        messageWhenTooLong="상세주소는 최대 36자까지만 작성가능합니다."
+                      aura:id="inputAddress" disabled="true" class="detail-info-input" />
+                    </div>
+                  </div>
+                  <div class="field-wrap">
+                    <p>상세주소<abbr class="slds-required" title="required"></abbr></p>
+                    <div class="input-wrap">
+                      <lightning:input variant="label-hidden" 
+                        maxlength="36"
+                        messageWhenTooLong="상세주소는 최대 36자까지만 작성가능합니다."
+                      aura:id="detailAddress" />
+                    </div>
+                  </div>
+                  <div class="field-container">
+                    <div class="field-wrap">
+                      <p>담당자<abbr class="slds-required" title="required">*</abbr></p>
+                      <div class="input-wrap">
+                        <lightning:input variant="label-hidden" aura:id="inputManager" />
+                      </div>
+                    </div>
+                    <div class="field-wrap">
+                      <p>전화번호<abbr class="slds-required" title="required">*</abbr></p>
+                      <div class="input-wrap">
+                        <lightning:input variant="label-hidden" aura:id="inputPhone" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                onclick="{!c.addressInputCancel}" />
+              <lightning:button name="choice" label="선택" onclick="{!c.inputAddressClick}" class="main-button" />
+            </footer>
+          </div>
+        </div>
+        <div class="modal-2-bg slds-backdrop slds-backdrop_open"></div>
+      </aura:if>
+    </div>
+    <!-- 도로명 주소 검색 모달 -->
+    <aura:if isTrue="{!v.isAddress}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open community-modal">
+            <c:DN_AccountAddressPopUp isCommunity="{! v.isAddress }" aura:id="shippingAddress" />
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    
+  </div>
+</aura:component>

@@ -1,0 +1,130 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  - 영업지원팀의 Account Team Member 삭제를 위한 컴포넌트
+  @last modified on  : 06-04-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2025-05-29   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId"
+    controller="DN_WithoutSharingClass" description="Delete Account Team Member">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="accTeamList" type="AccountTeamMember[]" default="[]" />
+
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container.cDN_DeleteAccTeam {
+        width: 100%;
+        max-width: none;
+        min-width: unset;
+        padding: 0;
+        }
+        .slds-modal__content:has(.cDN_DeleteAccTeam) {
+        height:auto !important;
+        max-height:none !important;
+        padding: 0;
+        overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_DeleteAccTeam) {
+        padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            
+            <!-- Header -->
+            <!-- <div> Delete Account Team Member </div> -->
+            <header class="slds-modal__header">
+                <div class="slds-text-heading_medium">팀 구성원 삭제</div>
+            </header>
+
+            <!-- 값이 있을 때 -->
+            <aura:if isTrue="{!not(empty(v.accTeamList))}">
+
+                <!-- Body -->
+                <div class="slds-modal__content">
+
+                    <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+
+                    <div class="card-01">
+                        <p>정말 삭제 하시겠습니까?</p>
+                    </div>
+                    <div class="card-02">
+                        <aura:iteration items="{!v.accTeamList}" var="accTeam">
+                            <div class="card">
+                                <div class="name">
+                                    <lightning:avatar src="{!accTeam.User.SmallPhotoUrl }" size="x-small"
+                                        alternativeText="User Photo" />
+                                    <span>{!accTeam.User.Name}</span>
+                                </div>
+                                <div class="email">
+                                    <span>{!accTeam.User.Email}</span>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                    </div>
+
+                    <!-- <div class="table-wrap">
+                        <table class="slds-table slds-table_cell-buffer IP-table slds-no-row-hover">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>사용자</th>
+                                    <th>이메일</th>
+                                    <th>선택</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.accTeamList}" var="accTeam">
+                                    <tr>
+                                        <td>
+                                            <lightning:avatar src="{!accTeam.User.SmallPhotoUrl }" size="small" alternativeText="User Photo" />
+                                        </td>
+                                        <td>{!accTeam.User.Name}</td>
+                                        <td>{!accTeam.User.Email}</td>
+                                        <td>
+                                            <lightning:input type="checkbox" aura:id="rowCheckbox" name="select"
+                                                value="{!accTeam.Id}" />
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div> -->
+                </div>
+
+                <!-- 값이 없을 때 -->
+                <aura:set attribute="else">
+                    <p>No Data</p>
+                </aura:set>
+            </aura:if>
+
+            <!-- Footer -->
+            <div class="slds-modal__footer">
+                <lightning:button variant="neutral" label="Cancel" onclick="{! c.handleCloseModal }" />
+                <lightning:button variant="destructive" label="Delete" onclick="{! c.handleDelete }" />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="slds-backdrop slds-backdrop_open"></div>
+
+</aura:component>

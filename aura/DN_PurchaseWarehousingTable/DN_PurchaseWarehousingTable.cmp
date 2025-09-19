@@ -1,0 +1,138 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-31-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-13-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable"
+  extends="c:DN_Helper"
+  controller="DN_PurchaseWarehousingTableController"
+  description="구매입고 테이블">
+
+  <!-- attribute -->
+  <aura:attribute name="purchaseList" type="List" />
+  <aura:attribute name="selectedProducts" type="List" default="[]" />
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="strQuery" type="List" />
+  <aura:attribute name="currentUserInfo" type="Object" />
+  <aura:attribute name="orderList" type="List" />
+  <aura:attribute name="printDate" type="Date" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+            onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!-- Modal : 저장위치 생성/설정 -->
+  <div aura:id="settingStorageModal"></div>
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <!--모달이벤트-->
+  <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+  <div class="table-wrap">
+    <!--Table Left-->
+    <div class="table-01 left-table" aura:id="leftTableDiv">
+      <table>
+        <colgroup>
+          <col width="1%"/>
+          <col width="20%"/>
+          <col width="20%"/>
+          <col width="20%"/>
+          <col width="40%"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>
+              <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" variant="label-hidden"/>
+            </th>
+            <th>구매주문번호</th>
+            <th>구매처</th>
+            <th>부품번호</th>
+            <th>품명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.orderList}" var="order" indexVar="j">
+            <tr>
+              <td>
+                <lightning:input type="checkbox" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" name="{!j}" />
+              </td>
+              <td>{!order.orderNumber}</td>
+              <td>{!order.buyerName}</td>
+              <td>{!order.partNumber}</td>
+              <td>{!order.partName}</td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+
+    <!--Table Right-->
+    <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+      <table>
+        <colgroup>
+          <col width="5%"/>
+          <col width="5%"/>
+          <col width="5%"/>
+          <col width="5%"/>
+          <col width="5%"/>
+          <col width="15%"/>
+          <col width="15%"/>
+          <col width="15%"/>
+          <col width="15%"/>
+          <col width="15%"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>창고재고</th>
+            <th>입고가능수량</th>
+            <th>기입고수량</th>
+            <th>반품수량</th>
+            <th>입고수량</th>
+            <th>송장번호</th>
+            <th>저장위치</th>
+            <th>주문일자</th>
+            <th>출고일자</th>
+            <th>출력일자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.orderList}" var="order" indexVar="j">
+            <tr>
+              <td>{!order.stockQuantity}</td>
+              <td>{!order.gRPossibleQuantity}</td>
+              <td>{!order.gRTemporaryQuantity}</td>
+              <td>{!order.gRReturnQuantity}</td>
+              <td>
+                <div class="input-wrap">
+                  <lightning:input aura:id="qtyInput" type="text" name="qtyInput" value="{!order.gRQuantity}" variant="label-hidden" accesskey="{!j}" onchange="{!c.handleQTYChange}" />
+                </div>
+              </td>
+              <td>
+                <a onclick="{!c.handleClick}" name="{!order.text1}">{!order.text1}</a>
+                <!-- {!order.text1} -->
+              </td>
+              <td class="save-location">
+                <lightning:button name="{!j}"  label="설정" onclick="{!c.openSettingStorage}" />
+                {!order.stockLocation}
+              </td>
+              <td>{!order.orderDate}</td>
+              <td>{!order.gIdate}</td>
+              <td>
+                <div class="input-wrap date-input">
+                  <lightning:input type="date" value="{!order.printDate}" variant="label-hidden"  name="{!j}" />
+                </div>
+              </td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</aura:component>

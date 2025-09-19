@@ -1,0 +1,160 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 07-08-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-10   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_OtherGiCancelController"
+  description="기타출고취소">
+
+  <!-- Attribute -->
+  <aura:attribute name="dealerInfo" type="Object" default="" />
+  <aura:attribute name="isSearched" type="Boolean" default="false" />
+  <aura:attribute name="giType" type="List" default="[]" />
+  <aura:attribute name="giPeriod1" type="Date" default="" />
+  <aura:attribute name="giPeriod2" type="Date" default="" />
+  <aura:attribute name="giList" type="List" default="[]" />
+  <aura:attribute name="selectedGIs" type="List" default="[]" />
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="filter" type="Object" default="{
+      'fieldApiName' : 'productCode',
+      'parentFieldApiName' : '',
+      'fieldType' : 'Lookup',
+      
+  }"/>
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+    onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+
+  <!-- Handler -->
+  <!-- <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" /> -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="3%" />
+                <col width="8%" />
+                <col width="6%" />
+                <col width="10%" />
+                <col width="15%" />
+                <col width="10%" />
+                <col width="10%" />
+                <col width="7%" />
+                <col width="7%" />
+                <col width="7%" />
+                <col width="8%" />
+                <col width="6%" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>
+                    <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+                  </th>
+                  <th>
+                    <div>대리점 출고번호</div>
+                  </th>
+                  <th>
+                    <div>항목</div>
+                  </th>
+                  <th>
+                    <div>품번</div>
+                  </th>
+                  <th>
+                    <div>품명</div>
+                  </th>
+                  <th>
+                    <div>규격</div>
+                  </th>
+                  <th style="width: 12%;">
+                    <div>저장위치</div>
+                  </th>
+                  <th style="width: 8%;">
+                    <div>현재고</div>
+                  </th>
+                  <th style="width: 8%;">
+                    <div>출고수량</div>
+                  </th>
+                  <th style="width: 8%;">
+                    <div>취소가능수량</div>
+                  </th>
+                  <th style="width: 8%;">
+                    <div>취소요청수량</div>
+                  </th>
+                  <th>
+                    <div>출고일</div>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <aura:if isTrue="{!not(v.isSearched)}">
+                  <tr>
+                    <td colspan="12" style="text-align: center; padding: 10px;">No Data</td>
+                  </tr>
+                </aura:if>
+
+                <aura:if isTrue="{!v.isSearched}">
+                  <aura:iteration items="{!v.giList}" var="gi" indexVar="j">
+                    <tr>
+                      <td class="center">
+                        <div>
+                          <lightning:input type="checkbox" aura:id="checkbox" name="{!j}" onchange="{! c.handleCheckboxChange }" />
+                        </div>
+                      </td>
+                      <td>
+                        <div>{!gi.inventoryNumber}</div>
+                      </td>
+                      <td>
+                        <div class="center">{!gi.itemNumber}</div>
+                      </td>
+                      <td>
+                        <div>{!gi.partNumber}</div>
+                      </td>
+                      <td>
+                        <div>{!gi.partName}</div>
+                      </td>
+                      <td>
+                        <div>{!gi.partSpec}</div>
+                      </td>
+                      <td>
+                        <div class="center">{!gi.location}</div>
+                      </td>
+                      <td>
+                        <div class="right">{!gi.currentStockQuantity}</div>
+                      </td>
+                      <td>
+                        <div class="right">{!gi.quantity}</div>
+                      </td>
+                      <td>
+                        <div class="right">{!gi.cancelAvailableQty}</div>
+                      </td>
+                      <td>
+                        <!-- Input 필드 -->
+                        <div>
+                          <lightning:input type="text" aura:id="" name="cancelRequestQty" variant="label-hidden"
+                            value="{!gi.cancelRequestQty}" accesskey="{!j}" onchange="{!c.handeQTYChange}" />
+                        </div>
+                      </td>
+                      <td>
+                        <div class="center">{!gi.goodsIssueDate}</div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+
+                </aura:if>
+
+
+              </tbody>
+            </table>
+</aura:component>

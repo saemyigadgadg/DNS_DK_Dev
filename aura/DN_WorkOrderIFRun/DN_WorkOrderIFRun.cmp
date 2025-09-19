@@ -1,0 +1,41 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-12-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-12-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_WorkOrderIFRunController">
+
+    <aura:attribute name="isSpinner" type="Boolean" default="false"/>
+
+    <!--Toast-->
+   <lightning:notificationsLibrary aura:id="notifLib" />
+   <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div class="slds-card">
+        <aura:if isTrue="{!v.isSpinner}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="header">
+            <div class="title">
+                <lightning:icon iconName="utility:warning" size="small" />
+                <h2 class="slds-card__header-title">
+                    <span>{!$Label.c.DNS_T_ERPUpdate}</span>
+                </h2>
+            </div>
+            <div class="button-wrap">
+                <lightning:button label="{!$Label.c.DNS_B_ERPUpdate}" variant="brand" onclick="{!c.handleInterface}"/>
+            </div>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner text">{!$Label.c.DNS_M_Retransmission}</div>
+    </div>
+
+
+</aura:component>

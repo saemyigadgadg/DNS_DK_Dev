@@ -1,0 +1,61 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader">
+    <!--삭제 예정-->
+    
+    <aura:html tag="style">
+    section.bodyWrapper:has(.cDN_Modal) {
+    position:relative;
+    }
+    .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_Modal) {
+    overflow-y: unset;
+    }
+
+    .modal-container:has(.cDN_Modal) {
+      width: fit-content;
+      max-width: 75rem;
+      min-width: 37rem;
+    }
+
+    .cDN_Modal .slds-modal__container {
+    max-width:none;
+    }
+    .slds-modal__content:has(.cDN_Modal) {
+    height: fit-content !important;
+    max-height: none !important;
+    padding: 0;
+    overflow:unset;
+    overflow-y:inherit;
+    }
+    .cDN_Modal .slds-modal__content {
+    height: fit-content;
+    max-height:70vh;
+    padding:1rem;
+    }
+    .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_Modal) {
+    padding: 0;
+    }
+    .cDN_Modal .AI2 .slds-form-element lightning-datepicker {
+    width: 100%;
+    }
+    .custom-row:hover {
+    background-color: #f0f0f0; /* 마우스를 올렸을 때 배경 색상 변경 */
+    }
+    .cDN_Modal .slds-truncate.item .slds-listbox.slds-listbox_vertical.slds-dropdown.slds-dropdown_fluid.slds-dropdown_left{
+      width: fit-content !important;
+    }
+  </aura:html>
+    
+   <div class="fullModal" aura:id="firstModal">
+    <div class="slds-modal__container" style="width:100%; padding:0;">
+      <header class="slds-modal__header">
+        <h2 class="slds-text-heading_medium">대상장비 등록</h2>
+      </header>
+      <div class="slds-modal__content modalContent CR">
+        
+      </div>
+      <footer class="slds-modal__footer">
+        <lightning:button variant="neutral" label="취소" onclick="{!c.handleCancel}" />
+        <lightning:button variant="brand" label="등록" onclick="{!c.fnFirst}" />
+      </footer>
+    </div>
+  </div>
+</aura:component>

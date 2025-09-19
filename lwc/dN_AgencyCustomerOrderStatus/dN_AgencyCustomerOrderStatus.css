@@ -1,0 +1,115 @@
+.top-card{
+    padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+.card-01{
+    padding: 1rem 1.25rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.card-01 .field-wrap{
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 8px;
+}
+
+.card-01 .field-wrap p{
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.card-01 .input-wrap {
+    border-bottom: 1px solid #d9d9d9;
+    min-height: 1.25rem;
+}
+
+/* Card 02 */
+.card-02{
+    margin-top: 1rem;
+}
+
+.card-02 .table-wrap {
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    max-height: calc(100vh - 34rem);
+}
+
+.card-02 .table-wrap thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.card-02 table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 1rem; 
+}
+
+.card-02 table td{
+    padding: .25rem .5rem !important;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.card-02 table tr:hover{
+    background-color: #f3f3f3;
+}
+
+.center{text-align: center !important;}
+.left{text-align: left !important;}
+.right{text-align: right !important;}
+
+.card-02 table td .slds-input[readonly]{
+    background: none;
+}
+
+.card-02 .title {
+    padding: 5px 5px 15px 5px;
+    font-weight: 700
+}
+
+/* Table Design */
+
+.card-02 table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .5rem 1rem;
+    border-top: 1px solid #D9D9D9;
+    border-left: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.card-02 table th+th:last-child{
+    border-right: 1px solid #D9D9D9;
+}
+
+.card-02 table td{
+    background-color: #fff;
+    padding: .5rem 1rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border: 1px solid #d9d9d9;
+    border-left: none;
+}

@@ -1,0 +1,355 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 04-24-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   07-23-2024   Hayeong Min   Initial Version
+  1.1   10-11-2024   Hayeong Min   WorkOrder-Service Resource 관계 추가
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_NewWorkOrderController" access="global">
+
+    <aura:html tag="style">
+        .slds-modal__content:has(.cDN_NewWorkOrder) {
+        height: auto !important;
+        max-height: none !important;
+        padding: 0;
+        overflow-y:clip;
+        }
+        .slds-modal__container:has(.cDN_NewWorkOrder) {
+        width: 60vw;
+        min-width: 50rem;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_NewWorkOrder) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_NewWorkOrder) {
+        overflow-y: clip;
+        }
+    </aura:html>
+
+
+    <!--Record Type 구분용-->
+    <aura:attribute name="isDNSA" type="Boolean" default="false" />
+    <aura:attribute name="recordTypeId" type="String" default="" />
+
+    <!--Attribute-->
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <aura:attribute name="assetId" type="String" default="" />
+    <aura:attribute name="model" type="String" default="" />
+    <aura:attribute name="ticketId" type="String" default="" />
+    <aura:attribute name="orderType" type="String" default="" />
+    <aura:attribute name="ticketType" type="String" default="" />
+    <aura:attribute name="workCenterId" type="String" default="" />
+    <aura:attribute name="spTask" type="String" default="" />
+    <aura:attribute name="isSPTask" type="Boolean" default="false" />
+    <aura:attribute name="serviceResourceId" type="String" default="" />
+    <aura:attribute name="isAlarmTalk" type="Boolean" default="true" />
+    <aura:attribute name="soldTo" type="String" default="" />
+    <aura:attribute name="soldToRecordType" type="String" default="" />
+    <aura:attribute name="shipTo" type="String" default="" />
+    <aura:attribute name="shipToAccountGroup" type="String" default="" />
+    <aura:attribute name="salesOrder" type="String" default="" />
+    <aura:attribute name="soNumber" type="String" default="" />
+    <aura:attribute name="soShipToId" type="String" default="" />
+    <aura:attribute name="soShipTo" type="String" default="" />
+    <aura:attribute name="soShipToCode" type="String" default="" />
+    <aura:attribute name="soShipToRecordType" type="String" default="" />
+    <aura:attribute name="soSoldTo" type="String" default="" />
+    <aura:attribute name="soSoldToCode" type="String" default="" />
+    <aura:attribute name="soSoldToRecordType" type="String" default="" />
+    <aura:attribute name="warranty" type="String" default="" />
+    <aura:attribute name="dispatchTime" type="Datetime" default="" />
+    <aura:attribute name="poNumber" type="String" default="" />
+    <aura:attribute name="isDirect" type="Boolean" default="false" />
+    <aura:attribute name="orderTypeOptions" type="List" default="" />
+    <aura:attribute name="defaultOTOptions" type="List" default="" />
+
+    <aura:attribute name="workerId" type="String" default="" />
+    <aura:attribute name="serviceTerritoryId" type="String" default="" />
+    <aura:attribute name="isSelect" type="Boolean" default="fasle" />
+    <aura:attribute name="isSP" type="Boolean" default="fasle" />
+    <aura:attribute name="errMsg" type="String" default="" />
+    <aura:attribute name="saveBtn" type="Boolean" default="false" />
+
+
+
+    <aura:attribute name="retryCount" type="Integer" default="0" />
+
+    <!-- handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <!--Tab 닫기 위한 용도-->
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!--DNSA-->
+    <aura:if isTrue="{!v.isDNSA}">
+        <aura:if isTrue="{!v.isSpinner}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="NewWorkOrder">
+            <lightning:recordEditForm objectApiName="WorkOrder" recordTypeId="{!v.recordTypeId}">
+                <lightning:messages />
+                <div class="total-wrap">
+                    <article class="slds-card container-01">
+                        <header>
+                            <h2>New Service Order</h2>
+                        </header>
+                        <div class="body">
+                            <div class="card-01">
+                                <lightning:inputField variant="label-inline" fieldName="CaseId" required="true"
+                                    value="{!v.ticketId}" disabled="true" />
+                                <lightning:inputField variant="label-inline" fieldName="TicketType__c"
+                                    value="{!v.ticketType}" disabled="true" style="display:none;" />
+                                <lightning:inputField variant="label-inline" fieldName="EquipmentWarranty__c"
+                                    value="{!v.warranty}" readonly="true" style="display:none;" />
+                                <lightning:inputField variant="label-inline" fieldName="OrderType__c"
+                                    value="{!v.orderType}" required="true" />
+                                <lightning:inputField variant="label-inline" fieldName="AssetId" required="true"
+                                    value="{!v.assetId}" disabled="true" />
+                                <lightning:inputField variant="label-inline" fieldName="Model__c" value="{!v.model}"
+                                    disabled="true" />
+                                <lightning:inputField aura:id="shipTo" variant="label-inline" fieldName="AccountId"
+                                    required="true" disabled="true" value="{!v.shipTo}" />
+                                <lightning:inputField variant="label-inline" fieldName="isAlarmToStaff__c"
+                                    value="{!v.isAlarmTalk}" />
+                                <lightning:inputField variant="label-inline" aura:id="soldTo" fieldName="SoldTo__c"
+                                    required="true" value="{!v.soldTo}" disabled="true" />
+                                <lightning:inputField variant="label-inline" aura:id="dispatchTime"
+                                    fieldName="ScheduledDispatchTime__c" value="{!v.dispatchTime}" required="true" />
+                                <aura:if isTrue="{!v.orderType =='602'}">
+                                    <lightning:inputField variant="label-inline" aura:id="poNumber" fieldName="PONo__c"
+                                        value="{!v.poNumber}" />
+                                </aura:if>
+                            </div>
+                        </div>
+                        <footer>
+                            <lightning:button label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.onTabClosed}"
+                                class="slds-m-top_medium" />
+                            <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" class="slds-m-top_medium"
+                                onclick="{!c.handleSave}" disabled="{!v.saveBtn}"/>
+                        </footer>
+                    </article>
+                </div>
+            </lightning:recordEditForm>
+        </div>
+    </aura:if>
+
+    <!--국내 DNS-->
+    <aura:if isTrue="{!!v.isDNSA}">
+        <div aura:id="locationContainer"></div>
+        <div class="NewWorkOrder">
+            <lightning:recordEditForm objectApiName="WorkOrder" recordTypeId="{!v.recordTypeId}">
+                <lightning:messages />
+
+                <div class="total-wrap">
+                    <!-- Card 01 -->
+                    <article class="slds-card container-01">
+
+                        <!-- Header -->
+                        <header>
+                            <h2>New Service Order</h2>
+                            <div class="button-wrap">
+                                <lightning:button label="{!$Label.c.ServiceResourceLocation}"
+                                    onclick="{!c.handleLocation}" class="slds-m-left_x-small" />
+                            </div>
+                        </header>
+
+                        <!-- Body -->
+                        <div class="body">
+                            <!-- Loading Spinner -->
+                            <aura:if isTrue="{!v.isSpinner}">
+                                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                            </aura:if>
+
+                            <div class="card-01">
+                                <lightning:inputField variant="label-inline" fieldName="CaseId" required="true"
+                                    value="{!v.ticketId}" disabled="true" />
+                                <lightning:inputfield />
+
+                                <lightning:inputField variant="label-inline" fieldName="AssetId" required="true"
+                                    value="{!v.assetId}" disabled="true" />
+                                <lightning:inputField variant="label-inline" fieldName="EquipmentWarranty__c"
+                                    value="{!v.warranty}" readonly="true" />
+                                <lightning:inputField variant="label-inline" fieldName="Model__c" value="{!v.model}"
+                                    disabled="true" />
+                                <lightning:inputfield />
+                                <lightning:inputField variant="label-inline" fieldName="TicketType__c"
+                                    value="{!v.ticketType}" disabled="true" style="display:none;" />
+                                <!-- <lightning:inputField variant="label-inline" fieldName="OrderType__c"
+                                    value="{!v.orderType}" onchange="{!c.handleOrderType}" requiered="true" /> -->
+                                <!-- <lightning:select variant="label-inline"  name="orderType" 
+                                                label="Order Type" 
+                                                value="{!v.orderType}" 
+                                                onchange="{!c.handleOrderType}">
+                                    <aura:iteration items="{!v.orderTypeOptions}" var="opt">
+                                        <option value="{!opt.value}">{!opt.label}</option>
+                                    </aura:iteration>
+                                </lightning:select> -->
+                                <div class="slds-form-element slds-form-element_horizontal">
+                                    <label class="slds-form-element__label" for="orderType"><abbr class="slds-required" title="required">*</abbr>PM Activity Type</label>
+                                    <div class="slds-form-element__control">
+                                        <lightning:select aura:id="orderType"
+                                                        name="orderType"
+                                                        value="{!v.orderType}"
+                                                        onchange="{!c.handleOrderType}">
+                                            <aura:iteration items="{!v.orderTypeOptions}" var="opt">
+                                                <option value="{!opt.value}">{!opt.label}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </div>
+                                <lightning:inputField variant="label-inline" aura:id="isDirect" fieldName="IsDirectPaidService__c" value="{!v.isDirect}" onchange="{!c.handleIsDirect}"/>
+                                <lightning:inputField aura:id="shipTo" variant="label-inline" fieldName="AccountId"
+                                    required="true" disabled="true" value="{!v.shipTo}" />
+                                <!-- <lightning:inputField  aura:id ="shipTo" variant="label-inline" fieldName="AccountId" required="true" value="{!v.shipTo}" onchange="{!c.changeShipTo}"/> -->
+                                <lightning:inputField variant="label-inline" fieldName="isAlarmToStaff__c"
+                                    value="{!v.isAlarmTalk}" />
+
+                                <!-- W/C && Service Resource -->
+                                <c:dN_SearchFilterCombobox aura:id="searchFilterCombobox"
+                                    serviceTerritoryId="{!v.serviceTerritoryId}" workerId="{!v.workerId}"
+                                    isSelect="{!v.isSelect}" isSP="{!v.isSP}" onvaluechange="{!c.handleValueChange}"
+                                    class="c_searchFilterCombobox" />
+
+                                <!--설치시운전일 때 장비의 Sales Order의 Ship to, 그 외의 오더유형인 경우에는 장비의 Sold-To-->
+                                <!--Sold To의 정보가 대리점인지 1030인지 체크 필요 -->
+                                <div class="soldTo">
+                                    <aura:if isTrue="{!v.orderType == '104' || v.orderType == '809' || v.orderType == '801'}">
+                                        <lightning:inputField variant="label-inline" aura:id="soldTo" fieldName="SoldTo__c" required="true"
+                                            value="{!v.soldTo}" onchange="{!c.changeSoldTo}" />
+                                    </aura:if>
+                                    <div class="error-msg">{!v.errMsg}</div>
+                                </div>
+
+                                <lightning:inputField variant="label-inline" aura:id="dispatchTime"
+                                    fieldName="ScheduledDispatchTime__c" value="{!v.dispatchTime}" required="true" />
+                                <!--Spindle Order Type의 경우 SPTask 필드 입력-->
+                                <aura:if isTrue="{!v.orderType == '214' || v.orderType == '215' || v.orderType == '218'}">
+                                    <lightning:inputField variant="label-inline" fieldName="SPTask__c"
+                                        value="{!v.spTask}" required="{!v.isSPTask}" />
+                                </aura:if>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <footer>
+                            <lightning:button label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.onTabClosed}"
+                                class="slds-m-top_medium" />
+                            <!-- <aura:if isTrue="{!v.shipToAccountGroup == '1030' || v.soldToRecordType == 'Dealer'}"> -->
+                            <aura:if isTrue="{!v.orderType == '104' || v.orderType == '809' || v.orderType == '801'}">
+                                <aura:if
+                                    isTrue="{!v.soldToRecordType == 'Ship to Party' || v.soldToRecordType == 'Dealer'}">
+                                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" disabled="true"
+                                        class="slds-m-top_medium" />
+                                    <aura:set attribute="else">
+                                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}"
+                                            class="slds-m-top_medium" onclick="{!c.handleSave}" disabled="{!v.saveBtn}"/>
+                                    </aura:set>
+                                </aura:if>
+
+                                <aura:set attribute="else">
+                                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}"
+                                        class="slds-m-top_medium" onclick="{!c.handleSave}" disabled="{!v.saveBtn}"/>
+                                </aura:set>
+                            </aura:if>
+                        </footer>
+                    </article>
+
+                    <!-- Card 02 : Sales Order 참고용 정보-->
+                    <aura:if isTrue="{!v.orderType == '104' || v.orderType == '809' || v.orderType == '801'}">
+                        <article class="slds-card container-02">
+                            <div class="slds-card__header slds-grid">
+                                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                    <div class="slds-media__figure">
+                                        <span class="slds-icon_container slds-icon-standard-orders" title="order">
+                                            <lightning:icon iconName="standard:orders" alternativeText="Sales Order"
+                                                title="Sales Order" />
+                                            <span class="slds-assistive-text">Sales Order</span>
+                                        </span>
+                                    </div>
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            <span>Sales Order(Reference)</span>
+                                        </h2>
+                                    </div>
+                                </header>
+                            </div>
+                            <div class="slds-card__body slds-card__body_inner">
+                                <table
+                                    class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th colspan="4">
+                                                <div class="slds-truncate" title="Sales Order">
+                                                    Sales Order No. :
+                                                    <lightning:formattedUrl value="{! '/'+v.salesOrder}"
+                                                        label="{!v.soNumber}" target="_blank" />
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="slds-hint-parent">
+                                            <th data-label="Sold-to-party" scope="row" style="font-weight: bold;">
+                                                <div class="slds-truncate" title="Sold-to-party">
+                                                    Sold-to-party
+                                                </div>
+                                            </th>
+                                            <td data-label="Customer Code">
+                                                <div class="slds-truncate" title="Customer Code">
+                                                    {!v.soSoldToCode}
+                                                </div>
+                                            </td>
+                                            <td data-label="Name">
+                                                <div class="slds-truncate" title="Name">
+                                                    {!v.soSoldTo}
+                                                </div>
+                                            </td>
+                                            <td data-label="Name">
+                                                <div class="slds-truncate" title="Name">
+                                                    {!v.soSoldToRecordType}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="slds-hint-parent">
+                                            <th data-label="Ship-to-party" scope="row" style="font-weight: bold;">
+                                                <div class="slds-truncate" title="Ship-to-party">
+                                                    Ship-to-party
+                                                </div>
+                                            </th>
+                                            <td data-label="Customer Code">
+                                                <div class="slds-truncate" title="Customer Code">
+                                                    {!v.soShipToCode}
+                                                </div>
+                                            </td>
+                                            <td data-label="Name">
+                                                <div class="slds-truncate" title="Name">
+                                                    {!v.soShipTo}
+                                                </div>
+                                            </td>
+                                            <td data-label="Name">
+                                                <div class="slds-truncate" title="Name">
+                                                    {!v.soShipToRecordType}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </aura:if>
+                </div>
+            </lightning:recordEditForm>
+        </div>
+    </aura:if>
+</aura:component>

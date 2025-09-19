@@ -1,0 +1,336 @@
+.THIS .slds-card {
+    height: auto;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* 주소 검색 결과 */
+.THIS .cDN_AccountAddressPopUp.isCommunity {
+    top: 0;
+    transform: none;
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+    padding: 0.75rem;
+    padding-bottom: 1.25rem;
+}
+
+.THIS .body .top-card {
+    padding: 1.75rem;
+    padding-top: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS .body .top-card h3{
+    font-weight: 600;
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+.THIS .button-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.75rem 0;
+}
+
+/* card-main */
+.THIS .body .card-main .main-container {
+    display: flex;
+    gap: 1.5rem;
+    width: 50%;
+    min-width: 960px;
+}
+
+
+.THIS .body .card-main .main-container>div {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 0.5rem;
+    gap: 0.5rem;
+}
+
+.THIS .body .card-main .main-container .main-container-title {
+    width: 33%;
+    font-size: 12px;
+    color: #444;
+}
+
+.THIS .body .card-main .main-container .field-wrap {
+    width: 85%;
+}
+
+.THIS .body .main-container .field-wrap.none-search {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 0.5rem;
+}
+
+.THIS .body .card-main .main-container .button-wrap {
+    width: 5%;
+    min-width: 60px;
+    margin: 0;
+}
+
+
+@media screen and (max-width:767px) {
+    .THIS .body .card-main .main-container {
+        flex-direction: column;
+    }
+
+    .THIS .body .card-main .main-container .main-container-title {
+        width: 10%;
+    }
+
+    .THIS .body .card-main .main-container .field-wrap {
+        width: 30%;
+    }
+}
+
+/* help text 안 보이게 */
+.THIS .body .card-main lightning-helptext {
+    display: none;
+}
+
+/* Card 01 */
+
+.THIS .body .card-01 .main-container {
+    display: flex;
+    gap: 1.75rem;
+    margin-top: 0.75rem;
+}
+
+.THIS .body .card-01 .field-wrap{
+    flex: 1;
+}
+
+.THIS .body .card-01 .vertical-line{
+    width: 1px;
+    height: auto;
+    background-color: #e5e5e5;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.THIS .body .has-account .card-01 {
+    margin-top: 0.75rem;
+}
+
+.THIS .card-01 .slds-table_cell-buffer tr>th:first-child,
+.THIS .card-01 .slds-table_cell-buffer tr>th:first-child,
+.THIS .card-01 .slds-table_cell-buffer tr>td:first-child,
+.THIS .card-01 .slds-table_cell-buffer tr>td:first-child {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+.THIS .card-01 .slds-table .slds-form-element {
+    text-align: center;
+}
+
+.THIS .card-01 .slds-table .slds-form-element .slds-checkbox_faux {
+    margin-right: 0;
+}
+
+/* card-02 */
+
+.THIS .body .has-account .card-02 {
+    margin-top: 0.75rem;
+}
+
+.THIS .body .card-02 .button-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 0;
+}
+
+.THIS .body .card-02 .button-wrap .results {
+    color: #939393;
+}
+
+.THIS .body .card-02 .button-wrap .results span{
+    display: inline-block;
+    margin: 0 0.25rem;
+    /* color: #0176D3; */
+}
+
+.THIS .body .has-account .card-02 .header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    padding: 0;
+    border-bottom: none;
+}
+
+.THIS .body .has-account .card-02 .header div {
+    margin-bottom: 1rem;
+}
+
+/* card-03 */
+.THIS .body .card-03 .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    border-bottom: none;
+}
+
+
+/* Card Wrap */
+
+.THIS .body .card-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+/* .THIS .body .card-wrap .card-02 {
+    grid-area: 1 / 1 / 2 / 2;
+}
+
+.THIS .body .card-wrap .card-03 {
+    grid-area: 1 / 2 / 3 / 3;
+}
+
+.THIS .body .card-wrap .card-04 {
+    grid-area: 2 / 1 / 3 / 2;
+} */
+
+.THIS .body .card-wrap .card-02 { grid-area: 1 / 1 / 3 / 2; }
+.THIS .body .card-wrap .card-03 { grid-area: 1 / 2 / 4 / 3; }
+.THIS .body .card-wrap .card-04 { grid-area: 3 / 1 / 4 / 2; }
+
+/* Table Design */
+.THIS table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+/* SLDS : Accordion */
+
+.THIS .slds-form-element_horizontal .slds-form-element__label {
+    float: none !important;
+    margin-bottom: .25rem;
+    font-weight: normal;
+    max-width: unset;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__control {
+    padding-left: 0 !important;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__icon {
+    float: none !important;
+}
+
+.THIS .card-01 .slds-form-element_horizontal:not(.slds-form-element_readonly) {
+    margin-bottom: 0;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__help {
+    margin-left: 0 !important;
+}
+
+.THIS .card-03 .slds-form-element_compound .slds-form-element__row .slds-form-element__label {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+@media (min-width: 48em) {
+    .THIS .slds-form-element_horizontal .slds-form-element__label {
+        float: none !important;
+        margin-bottom: .25rem;
+        font-weight: normal;
+        max-width: unset;
+    }
+
+    .THIS .slds-form-element_horizontal .slds-form-element__control {
+        padding-left: 0 !important;
+    }
+
+    .THIS .slds-form-element_horizontal .slds-form-element__icon {
+        float: none !important;
+    }
+
+    .THIS .card-01 .slds-form-element_horizontal:not(.slds-form-element_readonly) {
+        margin-bottom: 0;
+    }
+}
+
+/* SLDS : Dueling List  */
+
+.THIS .card-01 .slds-dueling-list__column_responsive .slds-dueling-list__options {
+    height: 17rem !important;
+}
+
+.THIS .card-01 .slds-dueling-list__column {
+    justify-content: center;
+}
+
+.THIS .card-01 .slds-dueling-list .slds-form-element__label {
+    font-weight: 400 !important;
+}
+
+.THIS .community-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.THIS .hide {
+    display: none;
+}

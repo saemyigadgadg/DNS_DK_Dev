@@ -1,0 +1,290 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-24-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-20-2024   Hanyeong Choi   Initial Version
+  1.0   06-20-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force.hasSObjectName,lightning:actionOverride"
+                controller="DN_SQController" 
+                description="SQ 검색 Action Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="isGlobal"         type="Boolean"  default="false" />
+    <aura:attribute name="checkInit"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="productModel"     type="String"   default="" />
+    <aura:attribute name="productCode"      type="String"   default="" />
+    <aura:attribute name="keyword"          type="String"   default="" />
+    <aura:attribute name="userDistrict"     type="String"   default="" />
+    <aura:attribute name="userLicense"      type="String"   default="" />
+    <aura:attribute name="checkGlobal"      type="String"   default="" />
+    <aura:attribute name="searchDataList"   type="List" />
+    <aura:attribute name="dataRow"          type="List" />
+    <aura:attribute name="selectedRows"     type="List"     default="[]" />
+    <aura:attribute name="selectedTitle"    type="List"     default="[]" />
+    <aura:attribute name="requestedTitle"   type="List"     default="[]" />
+    <aura:attribute name="modal"            type="Boolean"  default="false" />
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.searchInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_SQSearchModalButton) {
+            width: 70rem;
+            min-width: 24rem;
+            max-width: calc(100vw - 12rem);
+            padding: 0;
+        }
+        .slds-modal__content:has(.cDN_SQSearchModalButton) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_SQSearchModalButton) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="SQSearchModalButton">
+        <div class="slds-modal__container">
+    
+            <!-- 🚩 Modal Header -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">{!$Label.c.DNS_SQR_B_SEARCH}</h2>
+            </header>
+    
+            <!-- 🚩 Modal Body -->
+            <div class="slds-modal__content">
+                <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+    
+                <div class="modal-body">
+                    <div class="topcard card-01" onkeyup="{! c.handleEnterSearch }">
+                        <lightning:input name="input5" class="model-input" value="{!v.productModel}" variant ="label-hidden" placeholder="Model Name.." disabled="true" />
+                        <lightning:input aura:id="inputKeyword" name="inline-search-input" type="search" variant ="label-hidden" value="{! v.keyword }" placeholder="Keyword.." />
+                        <lightning:button label="Search" title="Search" onclick="{! c.handleClickSearch }" />
+                    </div>
+    
+                    <div class="topcard card-02">
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="5%" />
+                                    <col width="8%" />
+                                    <col width="33%" />
+                                    <col width="28%" />
+                                    <col width="8%" />
+                                    <col width="7%" />
+                                    <col width="11%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="slds-truncate"></div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SQTYPE}">{!$Label.c.DNS_SQR_C_SQTYPE}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_TITLE}">{!$Label.c.DNS_SQR_C_TITLE}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_DESCRIPTION}">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_ISORDER}">{!$Label.c.DNS_SQR_C_ISORDER}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_REVIEWDATE}">{!$Label.c.DNS_SQR_C_REVIEWDATE}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.searchDataList}" var="row" indexVar="k">
+                                        <tr>
+                                            <td>
+                                                <div class="slds-truncate center">
+                                                    <lightning:input type="checkbox" aura:id="checkbox" label="label-hidden" name="input1" value="{!k}" onchange="{! c.handleRowSelection }" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate center" title="{! row.sqType }">{! row.sqType }</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{! row.sqTitle }">{! row.sqTitle }</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate desc" title="{! row.descriptionHtml }">{! row.description }</div>
+                                                
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate right" title="{! row.price }">{! row.price != null ? row.price : 0 }</div>
+                                                <!-- <aura:if isTrue="{! row.sqType == 'Sales SQ' }">
+                                                    <div class="slds-truncate right" title="{! row.listPrice }">{! row.listPrice }</div>
+
+                                                    <aura:set attribute="else">
+                                                        <div class="slds-truncate right" title="{! row.price }">{! row.price }</div>
+                                                    </aura:set>
+                                                </aura:if> -->
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate center" title="{! row.isOrder }">{! row.isOrder }</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate center" title="{! row.reviewDate }">{! row.reviewDate }</div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            <!-- <aura:if isTrue="{! !v.isGlobal }">
+                            </aura:if> -->
+
+                            <!-- ****************************** Global ****************************** -->
+                            <!-- <aura:if isTrue="{! v.isGlobal }">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="4%" />
+                                        <col width="8%" />
+                                        <col width="34%" />
+                                        <col width="28%" />
+                                        <col width="10%" />
+                                        <col width="7%" />
+                                        <col width="10%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="slds-truncate"></div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SQTYPE}">{!$Label.c.DNS_SQR_C_SQTYPE}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_TITLE}">{!$Label.c.DNS_SQR_C_TITLE}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_DESCRIPTION}">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_ISORDER}">{!$Label.c.DNS_SQR_C_ISORDER}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_REVIEWDATE}">{!$Label.c.DNS_SQR_C_REVIEWDATE}</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.searchDataList}" var="row" indexVar="k">
+                                            <tr>
+                                                <td>
+                                                    <div class="slds-truncate center">
+                                                        <lightning:input type="checkbox" aura:id="checkbox" label="label-hidden" name="input1" value="{!k}" onchange="{! c.handleRowSelection }" />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate center" title="{! row.sqType }">{! row.sqType }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate" title="{! row.sqTitle }">{! row.sqTitle }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate desc" title="{! row.descriptionHtml }">{! row.description }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate right">{! row.price }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate center">{! row.isOrder }</div>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-truncate center">{! row.reviewDate }</div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </aura:if> -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- 🚩Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button class="slds-button slds-button_neutral" label="{!$Label.c.DNS_B_Close}" onclick="{! c.handleClickClose }" />
+                <lightning:button class="slds-button slds-button_neutral" variant="brand" label="{!$Label.c.DNS_B_Next}" onclick="{! c.handleClickNext }" />
+            </footer>
+        </div>
+    </div>
+
+    <aura:if isTrue="{! v.modal }">
+        <!-- Modal 02 Backdrop -->
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    
+        <!-- Modal 02 -->
+        <div class="slds-modal__container modal-02">
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">Select Requested SQ</h2>
+            </header>
+            <div class="slds-modal__content">
+                <div class="table-wrap modal-body">
+                    <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                        <colgroup>
+                            <col width="8%" />
+                            <col width="92%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="slds-truncate"></div>
+                                </th>
+                                <th>
+                                    <div class="slds-truncate">{!$Label.c.DNS_SQR_T_REQTITLE}</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.requestedTitle}" var="row" indexVar="i">
+                                <tr>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning:input type="checkbox" aura:id="checkboxTitle" label="label-hidden" name="input1" onchange="{! c.handleTitleSelection }" value="{!i}" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{! row.Name }</div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button class="slds-button slds-button_neutral" label="{!$Label.c.DNS_B_Close}" onclick="{! c.handleModalClose }" />
+                <lightning:button class="slds-button slds-button_neutral" variant="brand" label="{!$Label.c.DNS_B_APPLY}" onclick="{! c.handleClickModalApply }" />
+            </footer>
+        </div>
+    </aura:if>
+</aura:component>

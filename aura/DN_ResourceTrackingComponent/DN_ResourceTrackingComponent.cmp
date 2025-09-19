@@ -1,0 +1,808 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-02-11
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-07-22   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="서비스요원 위치조회" controller="DN_ResourceTrackingController">
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="searchDitance" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="ticketId" type="String" default="" />
+    <aura:attribute name="objectName" type="String" default="" />
+    <aura:attribute name="accountId" type="String" />
+    <aura:attribute name="paramObject" type="Object" />
+    <aura:attribute name="accAddress" type="String" />
+    <aura:attribute name="searchAddress" type="String" />
+    <aura:attribute name="affiliation" type="String" default="{!$Label.c.DNS_SRT_All}" />
+    <aura:attribute name="workStatus" type="String" default="{!$Label.c.DNS_SRT_All}" />
+    <aura:attribute name="resourceName" type="String" default="" />
+    <aura:attribute name="distanceFilterTranslate" type="String" default="{!$Label.c.DNS_SRT_All}" />
+    <aura:attribute name="distanceFilter" type="String" default="50" />
+    <aura:attribute name="mapPageURL" type="String" />
+    <aura:attribute name="selectRow" type="Decimal" />
+    <aura:attribute name="affiliationOptions" type="List" default="[]" />
+    <aura:attribute name="workStatusOptions" type="List" default="[]" />
+    <aura:attribute name="distanceFilterOptions" type="List" default="[]" />
+
+    <aura:attribute name="addressList" type="List" default="[]" />
+    <aura:attribute name="defaultTechnicianList" type="List" default="[]" />
+    <aura:attribute name="technicianList" type="List" default="[]" />
+    <aura:attribute name="currentSortLabel" type="String" default="" />
+    <aura:attribute name="currentSortAuraId" type="String" default="" />
+    <aura:attribute name="selectTechnicianIndex" type="Decimal" default="" />
+    <aura:attribute name="technicianListSortType" type="Decimal" default="0" />
+    <aura:attribute name="srList" type="List" default="[]" />
+    <aura:attribute name="drList" type="List" default="[]" />
+    <aura:attribute name="nrList" type="List" default="[]" />
+    <aura:attribute name="srHistoryList" type="List" default="[]" />
+    <aura:attribute name="technicianId" type="String" default="" />
+    <aura:attribute name="workcenterId" type="String" default="" />
+    <aura:attribute name="handleChangeTechnicianLoc" type="Boolean" default="false" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- Event -->
+    <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+    <!-- Excel -->
+    <!-- <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />     -->
+    <ltng:require scripts="{!$Resource.ExcelJS + '/unpkg/exceljs.min.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+    <!-- <ltng:require scripts="{!$Resource.FileSaver + '/FileSaver.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded2}" /> -->
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_ResourceTrackingComponent) {
+            max-width: calc(100vw - 7rem);
+            width: 80rem;
+            min-width: 70%;
+            padding-top: 4rem;
+            padding-bottom: 3rem;
+        }
+        .slds-modal__content:has(.cDN_ResourceTrackingComponent) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_ResourceTrackingComponent) {
+            padding:0;     
+        }
+       .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_ResourceTrackingComponent){
+            overflow: hidden;
+        }
+    </aura:html>
+
+    <!-- Ticket에서 생성 버튼 -->
+    <aura:if isTrue="{!v.objectName == 'Ticket'}">
+        <div class="locationModal">
+            <div aura:id="locationModal" class="slds-modal slds-fade-in-open">
+                <!-- <div aura:id="resourceInfoModalContainer"></div>
+                <div aura:id="dispatchedPlanContainer"></div> -->
+                <div class="slds-modal__container">
+    
+                    <!-- 📌 Header -->
+                    <header class="slds-modal__header">
+    
+                        <h1 class="slds-text-heading_medium">{!$Label.c.DNS_SRT_ServiceResourceLocation}</h1>
+    
+                        <!-- Select Button -->
+                        <lightning:button class="selectButton" name="selectButton" variant="brand" onclick="{!c.handleClick}"
+                            label="{!$Label.c.DNS_SRT_Select}"/>
+    
+                        <!-- Close Button -->
+                        <button class="close_button_template slds-modal__close">
+                            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                                title='close' name="closeModal" onclick="{!c.closeLocationModal}">
+                            </lightning:icon>
+                        </button>
+                    </header>
+    
+                    <!-- 📌 Body -->
+                    <div class="modal-body slds-modal__content slds-modal_large">
+    
+                        <!-- Loading Spinner -->
+                        <aura:if isTrue="{!v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+                        </aura:if>
+    
+                        <div class="container">
+                            <!-- 1. 서비스요원 위치조회 맵 -->
+                            <div class="box-01">
+                                <iframe width="100%" height="100%" src="{!v.mapPageURL}" frameborder="0" />
+                                <div>{!$Label.c.DNS_SRT_AccountAddress} : {!v.accAddress}</div>
+                            </div>
+    
+                            <!-- 2. 주치의 -->
+                            <div class="box-02">
+                                <h3>{!$Label.c.DNS_SRT_MainWorkCenter}</h3>
+                                <div class="table-wrap">
+                                    <table>
+                                        <colgroup>
+                                            <col width="15%" />
+                                            <col width="20%" />
+                                            <col width="45%" />
+                                            <col width="20%" />
+                                          </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>SAP ID</th>
+                                                <th>AD ID</th>
+                                                <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                <th>{!$Label.c.DNS_SRT_Name}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.srList}" var="sr" indexVar="i">
+                                                <tr>
+                                                    <td>{!sr.StaffNumber__c}</td>
+                                                    <td>{!sr.AD_ID__c}</td>
+                                                    <td>{!sr.Service_Territory__r.Name}</td>
+                                                    <td>{!sr.Name}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-info">Rows : {!v.srList.length}</div>
+                            </div>
+    
+                            <!-- 3. 출동가용인원 -->
+                            <div class="box-03">
+                                <h3>{!$Label.c.DNS_SRT_AvailablePersonnel}</h3>
+                                <div class="table-wrap">
+                                    <table>
+                                        <colgroup>
+                                            <col width="7%" />
+                                            <col width="8%" />
+                                            <col width="28%" />
+                                            <col width="32%" />
+                                            <col width="25%" />
+                                          </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">{!$Label.c.DNS_SRT_Dispatch}</th>
+                                                <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                <th>{!$Label.c.DNS_SRT_Name}</th>
+                                                <th>{!$Label.c.DNS_SRT_Distance}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.drList}" var="dr" indexVar="i">
+                                                <tr>
+                                                    <td>{!i + 1}</td>
+                                                    <td>
+                                                        <lightning:input name="{!'dr?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                    </td>
+                                                    <td>{!dr.workcenter}</td>
+                                                    <td>{!dr.name}</td>
+                                                    <td>{!dr.distance}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-info">Rows : {!v.drList.length}</div>
+                            </div>
+    
+                            <!-- 4. 출동계획미지정인원 -->
+                            <div class="box-04">
+                                <h3>{!$Label.c.DNS_SRT_UndesignatedPersonnel}</h3>
+                                <div class="table-wrap">
+                                    <table>
+                                        <colgroup>
+                                            <col width="35%" />
+                                            <col width="40%" />
+                                            <col width="25%" />
+                                          </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                <th>{!$Label.c.DNS_SRT_Name}</th>
+                                                <th>{!$Label.c.DNS_SRT_Distance}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.nrList}" var="nr" indexVar="i">
+                                                <tr>
+                                                    <td>{!nr.workcenter}</td>
+                                                    <td>{!nr.name}</td>
+                                                    <td>{!nr.distance}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-info">Row : {!v.nrList.length}</div>
+                            </div>
+    
+                            <!-- 5. 주소 조회 -->
+                            <div class="box-05">
+                                <div class="field-wrap">
+                                    <h3>{!$Label.c.DNS_SRT_SearchAddress}</h3>
+                                    <div class="input-wrap-1" onkeyup="{!c.handleKeyupSearch}">
+                                        <div class="label">
+                                            {!$Label.c.DNS_SRT_Address}
+                                        </div>
+                                        <lightning:input name="searchAddress" value="{!v.searchAddress}"
+                                            placeholder="{!$Label.c.DNS_SRT_Example + ') 마포구 상수동'}" variant="label-hidden" />
+                                        <lightning:button name="searchButton" onclick="{!c.searchAddressInfo}" label="{!$Label.c.DNS_SRT_Search}"
+                                            variant="brand" />
+                                    </div>
+                                </div>
+    
+                                <div class="field-wrap">
+                                    <h3>{!$Label.c.DNS_SRT_SearchServiceResource}</h3>
+                                    <div class="input-wrap-2">
+                                        <div class="input">
+                                            <div class="label">
+                                                {!$Label.c.DNS_SRT_Affiliation}
+                                            </div>
+                                            <lightning:combobox name="affiliation" options="{!v.affiliationOptions}"
+                                                value="{!v.affiliation}" variant="label-hidden" />
+                                        </div>
+                                        <div class="input">
+                                            <div class="label">
+                                                {!$Label.c.DNS_SRT_WorkStatus}
+                                            </div>
+                                            <lightning:combobox name="workStatus" options="{!v.workStatusOptions}"
+                                                value="{!v.workStatus}" variant="label-hidden" />
+                                        </div>
+                                        <div class="input" onkeyup="{!c.handleKeyupSearch2}">
+                                            <div class="label">
+                                                {!$Label.c.DNS_SRT_Name}
+                                            </div>
+                                            <lightning:input name="resourceName" value="{!v.resourceName}"
+                                                placeholder="{!$Label.c.DNS_SRT_Example + ') 홍길동'}" variant="label-hidden" />
+                                        </div>
+                                    </div>
+                                    <div class="input-wrap-1">
+                                        <span></span>
+                                        <lightning:button name="searchButton" onclick="{!c.searchTechnicians}" label="{!$Label.c.DNS_SRT_Search}"
+                                            variant="brand" />
+                                    </div>
+                                </div>
+    
+                                <div class="table-wrap">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>{!$Label.c.DNS_SRT_Address}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.addressList}" var="address" indexVar="i">
+                                                <tr>
+                                                    <td onclick="{!c.selectAddress}" name="{!i}">{!address.roadAddrPart1}
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-info">Rows : {!v.addressList.length}</div>
+                            </div>
+    
+                            <!-- 6. 서비스요원 정보 -->
+                            <div class="box-06">
+                                <div class="box-header">
+                                    <h3>{!$Label.c.DNS_SRT_ServiceResourceInfomation}</h3>
+                                    <div class="filter">
+                                        <lightning:combobox name="distanceFilter" options="{!v.distanceFilterOptions}"
+                                            value="{!v.distanceFilter}" variant="label-hidden" />
+                                        <lightning:button name="searchButton" onclick="{!c.searchDistanceButton}"
+                                            label="{!$Label.c.DNS_SRT_SearchNearby}" />
+                                        <!-- <lightning:button name="searchButton" onclick="{!c.openDispatchedPlan}" label="출동계획" /> -->
+                                        <lightning:button name="searchButton" onclick="{!c.downloadExcel}" label="{!$Label.c.DNS_SRT_Excel}" />
+    
+                                    </div>
+                                </div>
+                                <aura:if isTrue="{!v.searchDitance}">
+                                    <div class="table-wrap">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th colspan="2" aura:id="topWorkcenterTrue"
+                                                        onclick="{!c.technicianListSorting}" data-id="topWorkcenter"
+                                                        data-label="{!$Label.c.DNS_SRT_Branch}">{!$Label.c.DNS_SRT_Branch}</th>
+                                                    <th aura:id="workcenterTrue"
+                                                        onclick="{!c.technicianListSorting}" data-id="workcenter"
+                                                        data-label="{!$Label.c.DNS_SRT_WorkCenter}">{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                    <th aura:id="nameTrue" onclick="{!c.technicianListSorting}"
+                                                        data-id="name" data-label="{!$Label.c.DNS_SRT_Name}">{!$Label.c.DNS_SRT_Name}</th>
+                                                    <th aura:id="locationTrue" onclick="{!c.technicianListSorting}"
+                                                        data-id="location" data-label="{!$Label.c.DNS_SRT_CurrentLocation}">{!$Label.c.DNS_SRT_CurrentLocation}</th>
+                                                    <th aura:id="distanceTrue" onclick="{!c.technicianListSorting}"
+                                                        data-id="distance" data-label="{!$Label.c.DNS_SRT_Distance}">{!$Label.c.DNS_SRT_Distance}</th>
+                                                    <th aura:id="statusTrue" onclick="{!c.technicianListSorting}"
+                                                        data-id="status" data-label="{!$Label.c.DNS_SRT_WorkStatus}">{!$Label.c.DNS_SRT_WorkStatus}</th>
+                                                    <th aura:id="phoneTrue" onclick="{!c.technicianListSorting}"
+                                                        data-id="phone" data-label="{!$Label.c.DNS_SRT_Phone}">{!$Label.c.DNS_SRT_Phone}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.technicianList}" var="resource" indexVar="i">
+                                                    <tr id="{!'technician' + i}" onclick="{!c.handleChangeTechnicianLoc}" data-record="{!i}">
+                                                        <td class="center">
+                                                            <lightning:input name="{!'technician?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                        </td>
+                                                        <td class="center">{!i + 1}</td>
+                                                        <td class="center">{!resource.topWorkcenter}</td>
+                                                        <td class="center">{!resource.workcenter}</td>
+                                                        <td class="center nm">{!resource.name}</td>
+                                                        <td class="lc">{!resource.location}</td>
+                                                        <td>{!resource.distance}</td>
+                                                        <td class="statusTd">{!resource.status}</td>
+                                                        <!-- <td>{!resource.phone}</td> -->
+                                                        <td><lightning:clickToDial value="{!resource.phone}" /></td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="row-info">Rows : {!v.technicianList.length}</div>
+                                    <aura:set attribute="else">
+                                        <div class="table-wrap">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th colspan="2" aura:id="topWorkcenter"
+                                                            onclick="{!c.technicianListSorting}" data-id="topWorkcenter"
+                                                            data-label="{!$Label.c.DNS_SRT_Branch}">{!$Label.c.DNS_SRT_Branch}</th>
+                                                        <th aura:id="workcenter"
+                                                            onclick="{!c.technicianListSorting}" data-id="workcenter"
+                                                            data-label="{!$Label.c.DNS_SRT_WorkCenter}">{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                        <th aura:id="name" onclick="{!c.technicianListSorting}"
+                                                            data-id="name" data-label="{!$Label.c.DNS_SRT_Name}">{!$Label.c.DNS_SRT_Name}</th>
+                                                        <th aura:id="location" onclick="{!c.technicianListSorting}"
+                                                            data-id="location" data-label="{!$Label.c.DNS_SRT_CurrentLocation}">{!$Label.c.DNS_SRT_CurrentLocation}</th>
+                                                        <th aura:id="status" onclick="{!c.technicianListSorting}"
+                                                            data-id="status" data-label="{!$Label.c.DNS_SRT_WorkStatus}">{!$Label.c.DNS_SRT_WorkStatus}</th>
+                                                        <th aura:id="phone" onclick="{!c.technicianListSorting}"
+                                                            data-id="phone" data-label="{!$Label.c.DNS_SRT_Phone}">{!$Label.c.DNS_SRT_Phone}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <aura:iteration items="{!v.technicianList}" var="resource" indexVar="i">
+                                                        <tr id="{!'technician' + i}"
+                                                            onclick="{!c.handleChangeTechnicianLoc}" data-record="{!i}">
+                                                            <td class="center">
+                                                                <lightning:input name="{!'technician?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                            </td>
+                                                            <td class="center">{!i + 1}</td>
+                                                            <td class="center">{!resource.topWorkcenter}</td>
+                                                            <td class="center">{!resource.workcenter}</td>
+                                                            <td class="center nm">{!resource.name}</td>
+                                                            <td class="lc">{!resource.location}</td>
+                                                            <td class="statusTd">{!resource.status}</td>
+                                                            <!-- <td>{!resource.phone}</td> -->
+                                                            <td><lightning:clickToDial value="{!resource.phone}" /></td>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="row-info">Rows : {!v.technicianList.length}</div>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+    
+                            <!-- 7. 출동이력보유자 -->
+                            <div class="box-07">
+                                <h3>{!$Label.c.DNS_SRT_DispatchHistoryPersonnel}</h3>
+                                <div class="table-wrap">
+                                    <table>
+                                        <colgroup>
+                                            <col width="7%" />
+                                            <col width="8%" />
+                                            <col width="28%" />
+                                            <col width="32%" />
+                                            <col width="25%" />
+                                          </colgroup>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">{!$Label.c.DNS_SRT_Dispatch}</th>
+                                                <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                <th>{!$Label.c.DNS_SRT_Name}</th>
+                                                <th>{!$Label.c.DNS_SRT_Distance}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.srHistoryList}" var="resource" indexVar="i">
+                                                <tr>
+                                                    <td>{!i + 1}</td>
+                                                    <td>
+                                                        <lightning:input name="{!'srH?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                    </td>
+                                                    <td>{!resource.workcenter}</td>
+                                                    <td>{!resource.name}</td>
+                                                    <td>{!resource.distance}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-info">Rows : {!v.srHistoryList.length}</div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- 📌 Footer -->
+                    <!-- <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                            onclick="{!c.closeLocationModal}" />
+                    </footer> -->
+                </div>
+            </div>
+            <div aura:id="locationModalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+    <!-- Service Order 내부 버튼 -->
+    <aura:if isTrue="{!v.objectName == 'Service Order'}">
+        <div class="slds-modal__container serviceOrder">    
+            <!-- 📌 Header -->
+            <header class="slds-modal__header">
+
+                <h1 class="slds-text-heading_medium">{!$Label.c.DNS_SRT_ServiceResourceLocation}</h1>
+
+                <!-- Select Button -->
+                <lightning:button class="selectButton" name="selectButton" variant="brand" onclick="{!c.handleClick}"
+                    label="{!$Label.c.DNS_SRT_Select}"/>
+
+                <!-- Close Button -->
+                <button class="close_button_template slds-modal__close">
+                    <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                        title='close' name="closeModal" onclick="{!c.closeLocationModal}">
+                    </lightning:icon>
+                </button>
+            </header>
+
+            <!-- 📌 Body -->
+            <div class="modal-body slds-modal__content slds-modal_large">
+
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{!v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+                </aura:if>
+
+                <div class="container">
+                    <!-- 1. 서비스요원 위치조회 맵 -->
+                    <div class="box-01">
+                        <iframe width="100%" height="100%" src="{!v.mapPageURL}" frameborder="0" />
+                        <div>{!$Label.c.DNS_SRT_AccountAddress} : {!v.accAddress}</div>
+                    </div>
+
+                    <!-- 2. 주치의 -->
+                    <div class="box-02">
+                        <h3>{!$Label.c.DNS_SRT_MainWorkCenter}</h3>
+                        <div class="table-wrap">
+                            <table>
+                                <colgroup>
+                                    <col width="15%" />
+                                    <col width="20%" />
+                                    <col width="45%" />
+                                    <col width="20%" />
+                                  </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>SAP ID</th>
+                                        <th>AD ID</th>
+                                        <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                        <th>{!$Label.c.DNS_SRT_Name}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.srList}" var="sr" indexVar="i">
+                                        <tr>
+                                            <td>{!sr.StaffNumber__c}</td>
+                                            <td>{!sr.AD_ID__c}</td>
+                                            <td>{!sr.Service_Territory__r.Name}</td>
+                                            <td>{!sr.Name}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row-info">Rows : {!v.srList.length}</div>
+                    </div>
+
+                    <!-- 3. 출동가용인원 -->
+                    <div class="box-03">
+                        <h3>{!$Label.c.DNS_SRT_AvailablePersonnel}</h3>
+                        <div class="table-wrap">
+                            <table>
+                                <colgroup>
+                                    <col width="7%" />
+                                    <col width="8%" />
+                                    <col width="28%" />
+                                    <col width="32%" />
+                                    <col width="25%" />
+                                  </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">{!$Label.c.DNS_SRT_Dispatch}</th>
+                                        <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                        <th>{!$Label.c.DNS_SRT_Name}</th>
+                                        <th>{!$Label.c.DNS_SRT_Distance}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.drList}" var="dr" indexVar="i">
+                                        <tr>
+                                            <td>{!i + 1}</td>
+                                            <td>
+                                                <lightning:input name="{!'dr?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                            </td>
+                                            <td>{!dr.workcenter}</td>
+                                            <td>{!dr.name}</td>
+                                            <td>{!dr.distance}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row-info">Rows : {!v.drList.length}</div>
+                    </div>
+
+                    <!-- 4. 출동계획미지정인원 -->
+                    <div class="box-04">
+                        <h3>{!$Label.c.DNS_SRT_UndesignatedPersonnel}</h3>
+                        <div class="table-wrap">
+                            <table>
+                                <colgroup>
+                                    <col width="35%" />
+                                    <col width="40%" />
+                                    <col width="25%" />
+                                  </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                        <th>{!$Label.c.DNS_SRT_Name}</th>
+                                        <th>{!$Label.c.DNS_SRT_Distance}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.nrList}" var="nr" indexVar="i">
+                                        <tr>
+                                            <td>{!nr.workcenter}</td>
+                                            <td>{!nr.name}</td>
+                                            <td>{!nr.distance}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row-info">Row : {!v.nrList.length}</div>
+                    </div>
+
+                    <!-- 5. 주소 조회 -->
+                    <div class="box-05">
+                        <div class="field-wrap">
+                            <h3>{!$Label.c.DNS_SRT_SearchAddress}</h3>
+                            <div class="input-wrap-1" onkeyup="{!c.handleKeyupSearch}">
+                                <div class="label">
+                                    {!$Label.c.DNS_SRT_Address}
+                                </div>
+                                <lightning:input name="searchAddress" value="{!v.searchAddress}"
+                                    placeholder="{!$Label.c.DNS_SRT_Example + ') 마포구 상수동'}" variant="label-hidden" />
+                                <lightning:button name="searchButton" onclick="{!c.searchAddressInfo}" label="{!$Label.c.DNS_SRT_Search}"
+                                    variant="brand" />
+                            </div>
+                        </div>
+
+                        <div class="field-wrap">
+                            <h3>{!$Label.c.DNS_SRT_SearchServiceResource}</h3>
+                            <div class="input-wrap-2">
+                                <div class="input">
+                                    <div class="label">
+                                        {!$Label.c.DNS_SRT_Affiliation}
+                                    </div>
+                                    <lightning:combobox name="affiliation" options="{!v.affiliationOptions}"
+                                        value="{!v.affiliation}" variant="label-hidden" />
+                                </div>
+                                <div class="input">
+                                    <div class="label">
+                                        {!$Label.c.DNS_SRT_WorkStatus}
+                                    </div>
+                                    <lightning:combobox name="workStatus" options="{!v.workStatusOptions}"
+                                        value="{!v.workStatus}" variant="label-hidden" />
+                                </div>
+                                <div class="input" onkeyup="{!c.handleKeyupSearch2}">
+                                    <div class="label">
+                                        {!$Label.c.DNS_SRT_Name}
+                                    </div>
+                                    <lightning:input name="resourceName" value="{!v.resourceName}"
+                                        placeholder="{!$Label.c.DNS_SRT_Example + ') 홍길동'}" variant="label-hidden" />
+                                </div>
+                            </div>
+                            <div class="input-wrap-1">
+                                <span></span>
+                                <lightning:button name="searchButton" onclick="{!c.searchTechnicians}" label="{!$Label.c.DNS_SRT_Search}"
+                                    variant="brand" />
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>{!$Label.c.DNS_SRT_Address}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.addressList}" var="address" indexVar="i">
+                                        <tr>
+                                            <td onclick="{!c.selectAddress}" name="{!i}">{!address.roadAddrPart1}
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row-info">Rows : {!v.addressList.length}</div>
+                    </div>
+
+                    <!-- 6. 서비스요원 정보 -->
+                    <div class="box-06">
+                        <div class="box-header">
+                            <h3>{!$Label.c.DNS_SRT_ServiceResourceInfomation}</h3>
+                            <div class="filter">
+                                <lightning:combobox name="distanceFilter" options="{!v.distanceFilterOptions}"
+                                    value="{!v.distanceFilter}" variant="label-hidden" />
+                                <lightning:button name="searchButton" onclick="{!c.searchDistanceButton}"
+                                    label="{!$Label.c.DNS_SRT_SearchNearby}" />
+                                <!-- <lightning:button name="searchButton" onclick="{!c.openDispatchedPlan}" label="출동계획" /> -->
+                                <lightning:button name="searchButton" onclick="{!c.downloadExcel}" label="{!$Label.c.DNS_SRT_Excel}" />
+
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.searchDitance}">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th colspan="2" aura:id="topWorkcenterTrue"
+                                                onclick="{!c.technicianListSorting}" data-id="topWorkcenter"
+                                                data-label="{!$Label.c.DNS_SRT_Branch}">{!$Label.c.DNS_SRT_Branch}</th>
+                                            <th aura:id="workcenterTrue"
+                                                onclick="{!c.technicianListSorting}" data-id="workcenter"
+                                                data-label="{!$Label.c.DNS_SRT_WorkCenter}">{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                            <th aura:id="nameTrue" onclick="{!c.technicianListSorting}"
+                                                data-id="name" data-label="{!$Label.c.DNS_SRT_Name}">{!$Label.c.DNS_SRT_Name}</th>
+                                            <th aura:id="locationTrue" onclick="{!c.technicianListSorting}"
+                                                data-id="location" data-label="{!$Label.c.DNS_SRT_CurrentLocation}">{!$Label.c.DNS_SRT_CurrentLocation}</th>
+                                            <th aura:id="distanceTrue" onclick="{!c.technicianListSorting}"
+                                                data-id="distance" data-label="{!$Label.c.DNS_SRT_Distance}">{!$Label.c.DNS_SRT_Distance}</th>
+                                            <th aura:id="statusTrue" onclick="{!c.technicianListSorting}"
+                                                data-id="status" data-label="{!$Label.c.DNS_SRT_WorkStatus}">{!$Label.c.DNS_SRT_WorkStatus}</th>
+                                            <th aura:id="phoneTrue" onclick="{!c.technicianListSorting}"
+                                                data-id="phone" data-label="{!$Label.c.DNS_SRT_Phone}">{!$Label.c.DNS_SRT_Phone}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.technicianList}" var="resource" indexVar="i">
+                                            <tr id="{!'technician' + i}" onclick="{!c.handleChangeTechnicianLoc}" data-record="{!i}">
+                                                <td class="center">
+                                                    <lightning:input name="{!'technician?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                </td>
+                                                <td class="center">{!i + 1}</td>
+                                                <td class="center">{!resource.topWorkcenter}</td>
+                                                <td class="center">{!resource.workcenter}</td>
+                                                <td class="center nm">{!resource.name}</td>
+                                                <td class="lc">{!resource.location}</td>
+                                                <td>{!resource.distance}</td>
+                                                <td class="statusTd">{!resource.status}</td>
+                                                <!-- <td>{!resource.phone}</td> -->
+                                                <td><lightning:clickToDial value="{!resource.phone}" /></td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row-info">Rows : {!v.technicianList.length}</div>
+                            <aura:set attribute="else">
+                                <div class="table-wrap">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th colspan="2" aura:id="topWorkcenter"
+                                                    onclick="{!c.technicianListSorting}" data-id="topWorkcenter"
+                                                    data-label="{!$Label.c.DNS_SRT_Branch}">{!$Label.c.DNS_SRT_Branch}</th>
+                                                <th aura:id="workcenter"
+                                                    onclick="{!c.technicianListSorting}" data-id="workcenter"
+                                                    data-label="{!$Label.c.DNS_SRT_WorkCenter}">{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                                <th aura:id="name" onclick="{!c.technicianListSorting}"
+                                                    data-id="name" data-label="{!$Label.c.DNS_SRT_Name}">{!$Label.c.DNS_SRT_Name}</th>
+                                                <th aura:id="location" onclick="{!c.technicianListSorting}"
+                                                    data-id="location" data-label="{!$Label.c.DNS_SRT_CurrentLocation}">{!$Label.c.DNS_SRT_CurrentLocation}</th>
+                                                <th aura:id="status" onclick="{!c.technicianListSorting}"
+                                                    data-id="status" data-label="{!$Label.c.DNS_SRT_WorkStatus}">{!$Label.c.DNS_SRT_WorkStatus}</th>
+                                                <th aura:id="phone" onclick="{!c.technicianListSorting}"
+                                                    data-id="phone" data-label="{!$Label.c.DNS_SRT_Phone}">{!$Label.c.DNS_SRT_Phone}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.technicianList}" var="resource" indexVar="i">
+                                                <tr id="{!'technician' + i}"
+                                                    onclick="{!c.handleChangeTechnicianLoc}" data-record="{!i}">
+                                                    <td class="center">
+                                                        <lightning:input name="{!'technician?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                    </td>
+                                                    <td class="center">{!i + 1}</td>
+                                                    <td class="center">{!resource.topWorkcenter}</td>
+                                                    <td class="center">{!resource.workcenter}</td>
+                                                    <td class="center nm">{!resource.name}</td>
+                                                    <td class="lc">{!resource.location}</td>
+                                                    <td class="statusTd">{!resource.status}</td>
+                                                    <!-- <td>{!resource.phone}</td> -->
+                                                    <td><lightning:clickToDial value="{!resource.phone}" /></td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row-info">Rows : {!v.technicianList.length}</div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+
+                    <!-- 7. 출동이력보유자 -->
+                    <div class="box-07">
+                        <h3>{!$Label.c.DNS_SRT_DispatchHistoryPersonnel}</h3>
+                        <div class="table-wrap">
+                            <table>
+                                <colgroup>
+                                    <col width="7%" />
+                                    <col width="8%" />
+                                    <col width="28%" />
+                                    <col width="32%" />
+                                    <col width="25%" />
+                                  </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">{!$Label.c.DNS_SRT_Dispatch}</th>
+                                        <th>{!$Label.c.DNS_SRT_WorkCenter}</th>
+                                        <th>{!$Label.c.DNS_SRT_Name}</th>
+                                        <th>{!$Label.c.DNS_SRT_Distance}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.srHistoryList}" var="resource" indexVar="i">
+                                        <tr>
+                                            <td>{!i + 1}</td>
+                                            <td>
+                                                <lightning:input name="{!'srH?' + i}" type="checkbox" variant="label-hidden" aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                            </td>
+                                            <td>{!resource.workcenter}</td>
+                                            <td>{!resource.name}</td>
+                                            <td>{!resource.distance}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row-info">Rows : {!v.srHistoryList.length}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📌 Footer -->
+            <!-- <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                    onclick="{!c.closeLocationModal}" />
+            </footer> -->
+        </div>
+    </aura:if>
+</aura:component>

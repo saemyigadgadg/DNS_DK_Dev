@@ -1,0 +1,213 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 02-10-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-14   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_GRGIManagementController"
+  description="입출고 관리"
+  extends="c:DN_Helper">
+
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+    onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="openUrl" type="String"/>
+  <aura:attribute name="headerParams" type="Object" description=""/>
+  <aura:attribute name="requiredParams" type="List" description="반품 주문 필터 정보 필수값"/>
+  <aura:attribute name="customerId" type="String" />
+  <aura:attribute name="resultList" type="List" />
+  <aura:attribute name="grgiType" type="String" default="전체" />
+  <aura:attribute name="grgiDetail" type="String" default="전체" />
+  <aura:attribute name="searchDate1" type="date" />
+  <aura:attribute name="searchDate2" type="date" />
+  <aura:attribute name="customerName" type="String" />
+  <aura:attribute name="grSum1" type="Decimal" />
+  <aura:attribute name="grSum2" type="Decimal" />
+  <aura:attribute name="grSum3" type="Decimal" />
+  <aura:attribute name="grSum4" type="Decimal" />
+  <aura:attribute name="grSum5" type="Decimal" />
+  <aura:attribute name="grSum6" type="Decimal" />
+  <aura:attribute name="grSumAll" type="Decimal" />
+  <aura:attribute name="giSum1" type="Decimal" />
+  <aura:attribute name="giSum2" type="Decimal" />
+  <aura:attribute name="giSum3" type="Decimal" />
+  <aura:attribute name="giSum4" type="Decimal" />
+  <aura:attribute name="giSum5" type="Decimal" />
+  <aura:attribute name="giSum6" type="Decimal" />
+  <aura:attribute name="giSumAll" type="Decimal" />
+
+  <!-- handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <!--Toast & Navigation-->
+  <lightning:navigation aura:id="navService" />
+
+  <!--container-->
+  <!--입출고모달 -->
+  <div aura:id="grgiDetailModal"></div>
+  <div aura:id="PurchaseOrderDetail"></div> 
+  <!-- ltng -->
+  <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+  
+  <div class="total-wrap">
+    <article class="slds-card">
+
+      <!-- Loading Spinner -->
+      <!-- <aura:if isTrue="{! v.isLoading }">
+
+          <lightning:spinner alternativeText="Loading" size="large" />
+
+      </aura:if> -->
+        
+      <div class="table-wrap">
+        <div class="table-01 left-table" aura:id="leftTableDiv">
+          <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+            <colgroup>
+              <col width="15%" /> 
+              <col width="20%" /> 
+              <col width="50%" /> 
+              <col width="15%" /> 
+            </colgroup>
+            <thead>
+              <tr>
+                <th>입출고 구분</th>
+                <th>세부 분류</th>
+                <th>구매처/고객사명</th>
+                <th>문서번호</th>
+              </tr>
+            </thead>
+            <tbody>
+              <aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+                <tr class="slds-hint-parent">
+                  <td class="center">{!result.reordType}</td>
+                  <td class="center">{!result.reordDTName}</td>
+                  <td>{!result.customerName}</td>
+                  <td class="center">
+                    <a onclick="{!c.openDetailInfoModal}" value="{!i}"> {!result.giDocNumber} </a>
+                  </td>
+                </tr>
+              </aura:iteration>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}"> 
+          <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+            <colgroup>
+              <col width="3%" />
+              <col width="10%" />
+              <col width="30%" />
+              <col width="2%" />
+              <col width="3%" />
+              <col width="3%" />
+              <col width="2%" />
+              <col width="10%" />
+              <col width="15%" />
+              <col width="30%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>생성일자</th>
+                <th>품번</th>
+                <th>품명</th>
+                <th>수량</th>
+                <th>저장위치</th>
+                <th>금액</th>
+                <th>통화</th>
+                <th>참고문서번호</th>
+                <th>기타</th>
+                <th>배송처</th>
+              </tr>
+            </thead>
+            <tbody>
+              <aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+                <tr class="slds-hint-parent">
+                  <td class="center">{!result.createdDate}</td>
+                  <td>{!result.productCode}</td>
+                  <td>{!result.productName}</td>
+                  <td class="right">
+                    <lightning:formattedNumber value="{!result.quantity}"/>
+                  </td>
+                  <td>{!result.location}</td>
+                  <td class="right">
+                    <lightning:formattedNumber value="{!result.discountAmount}" />
+                  </td>
+                  <td class="center">{!result.currencyValue}</td>
+                  <td class="center">
+                    <a onclick="{!c.openDetailInfoModal2}" value="{!i}">{!result.refDocNumber}</a>
+                  </td>
+                  <td>{!result.comment}</td>
+                  <td>
+                    <aura:if isTrue="{!result.shipToName}">
+                      {!result.shipToName}
+                    </aura:if>
+                    <aura:if isTrue="{!!result.shipToName}">
+                      ᅟ 
+                    </aura:if>
+                  </td>
+                </tr>
+              </aura:iteration>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-03">
+        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">              
+          <tbody>
+            <tr>
+              <th class="part01">DNS구매</th>
+              <td class="part01">{!v.grSum1}</td><!--grSum1-->
+              <th class="part01">대리점 구매</th>
+              <td class="part01">{!v.grSum2}</td> <!--grSum2-->
+              <th class="part01">기타입고</th>
+              <td class="part01">{!v.grSum3}</td>
+              <th class="part02">무상출고취소</th>
+              <td class="part02">{!v.grSum4}</td>
+              <th class="part02">주문서반품</th>
+              <td class="part02">{!v.grSum5}</td>
+              <th class="part02">기타출고취소</th>
+              <td class="part02">{!v.grSum6}</td>
+              <th class="part03">입고 합계</th>
+              <td class="part03">{!v.grSumAll}</td>
+            </tr>
+            <tr>
+              <th class="part01">DNS반품</th>
+              <td class="part01">{!v.giSum1}</td>
+              <th class="part01">대리점구매반품</th>
+              <td class="part01">{!v.giSum2}</td>
+              <th class="part01">기타입고 취소</th>
+              <td class="part01">{!v.giSum3}</td>
+              <th class="part02">주문서 출고</th>
+              <td class="part02">{!v.giSum4}</td>
+              <th class="part02">무상출고</th>
+              <td class="part02">{!v.giSum5}</td>
+              <th class="part02">기타출고</th>
+              <td class="part02">{!v.giSum6}</td>
+              <th class="part03">출고 합계</th>
+              <td class="part03">{!v.giSumAll}</td>
+            </tr>
+            <tr>
+              <td colspan="14">
+                순입고 금액 = ( DNS구매 + 대리점구매 + 기타입고 ) - ( DNS반품 + 대리점구매반품 + 기타입고 취소 )
+              </td>
+            </tr>
+            <tr>
+              <td colspan="14">
+                순출고 금액 = ( 주문서 출고 + 무상출고 + 기타출고) - ( 주문서반품 + 무상출고취소 + 기타출고취소 )
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+        <!-- </div> -->
+    </article>
+  </div>
+
+
+</aura:component>

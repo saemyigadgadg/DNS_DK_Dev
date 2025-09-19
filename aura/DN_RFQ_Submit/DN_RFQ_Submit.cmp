@@ -1,0 +1,65 @@
+<!--
+  @description       : 
+  @author            : Sejin Kwon
+  @group             : 
+  @last modified on  : 04-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-09-2024   Sejin Kwon   Initial Version
+-->
+<aura:component controller="DN_RFQ_SubmitController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute type="String" name="value" default="" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />     
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_RFQ_Submit) {
+            width:100%;
+            max-width: 36rem;
+        }
+        .slds-modal__content:has(.cDN_RFQ_Submit) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_RFQ_Submit) {
+            padding:0;
+            
+            .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_RFQ_Submit){
+                overflow: hidden;
+            }
+        }
+        .slds-modal__container:has(.cDN_RFQ_Submit) .slds-modal__header .slds-modal__close {
+            display: none;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner alternativeText="Loading" variant="brand" />
+        </aura:if>
+        <!-- 모달 헤더 -->
+        <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+            <h2 class="slds-text-heading_medium slds-hyphenate">
+                {!$Label.c.DNS_M_RFQReview}
+            </h2>
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="닫기"
+                onclick="{! c.handleClickClose }">
+                <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+            </button>
+        </div>
+        <!-- 모달 푸터 -->
+        <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+            <!-- 취소 버튼 -->
+            <lightning:button title="취소" onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_M_Cancel}" variant="neutral" />
+            <lightning:button title="확인" label="{!$Label.c.DNS_M_Confirm}" variant="brand" onclick="{! c.requestSubmit}" />
+        </div>
+    </div>
+</aura:component>

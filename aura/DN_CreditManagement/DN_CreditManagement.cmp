@@ -1,0 +1,251 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2025-05-14
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-05-30   yuhyun.park@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="여신관리" controller="DN_DealerIFController">
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="dealerInfo" type="Object" default="" />
+  <aura:attribute name="creditSummary" type="List" default="[]" />
+  <aura:attribute name="creditDetailList" type="List" default="[]" />
+  <aura:attribute name="koreanCreditDetailList" type="List" default="[]" />
+  <aura:attribute name="incomingCollect" type="Object" />
+  <aura:attribute name="excelName" type="String" default="여신관리" />
+  <aura:attribute name="recordId" type="String" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+
+  <!-- Modal Background -->
+  <div id="modal-bg"></div>
+
+  <!-- Body -->
+  <div class="total-wrap">
+    <article class="slds-card">
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading}">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName="custom:custom17" size="small" alternativeText="Credit Management" />
+          <h2 class="slds-truncate">여신관리</h2>
+        </div>
+
+        <div class="button-wrap">
+          <c:DN_ExcelUtilButton excelData="{! v.koreanCreditDetailList }" excelName="{! v.excelName }" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        <!-- Card 01 -->
+        <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p class="label">담보여신</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].MTAMT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">평가여신</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].EVAMT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">일시여신</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].LMAMT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">총여신</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].TCAMT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">미수금</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].ICAMT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">잔여여신</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].RCLAT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">여신율</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].NCRAT}" maximumFractionDigits="1" />%
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">선수금</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].DOWNMT}" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p class="label">출하완료(매출 전)</p>
+            <div class="input-wrap">
+              <lightning:formattedNumber value="{!v.creditSummary[0].DELIMT}" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 02 -->
+        <div class="card-02 top-card">
+          <div class="table-wrap">
+
+            <!-- Fixed : Left -->
+            <div class="table-01">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>지불인</th>
+                    <th>대표자</th>
+                    <th>계약번호</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <!-- 값이 있을 때 -->
+                  <aura:if isTrue="{!v.creditDetailList.length > 0}">
+                    <aura:iteration items="{!v.creditDetailList}" var="credit">
+                      <tr>
+                        <td>
+                          <div>{!credit.NAME1}</div>
+                        </td>
+                        <td>
+                          <div>{!credit.J_1KFREPRE}</div>
+                        </td>
+                        <td class="center">
+                          <div>{!credit.VBELN_VA}</div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                    <!-- 값이 없을 때 -->
+                    <aura:set attribute="else">
+                      <tr>
+                        <td colspan="3" class="center">No Data</td>
+                      </tr>
+                    </aura:set>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Scrollable : Right -->
+            <div class="table-02">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>판매번호</th>
+                    <th>청구일</th>
+                    <th>매출액</th>
+                    <th>수금금액</th>
+                    <th>매출채권</th>
+                    <th>캐피탈 AR</th>
+                    <th>담보채권</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <!-- 값이 있을 때 -->
+                  <aura:if isTrue="{!v.creditDetailList.length > 0}">
+                    <aura:iteration items="{!v.creditDetailList}" var="credit">
+                      <tr>
+                        <td class="center">
+                          <div>{!credit.VBELN_VF}</div>
+                        </td>
+                        <td class="center">
+
+                          <lightning:formattedDateTime 
+                            value="{!credit.FKDAT}" 
+                            year="numeric" 
+                            month="2-digit" 
+                            day="2-digit"
+                          />
+                          
+                          <!-- <div>{!credit.FKDAT}</div> -->
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!credit.NETWR}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!credit.CLAMT}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!credit.AVGAR}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!credit.FBAMT}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!credit.MRAMT}" />
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- card 03 -->
+        <div class="card-03 top-card">
+          <h3>월별 수금계획</h3>
+          <div class="table-wrap">
+            <table>
+              <colgroup>
+                <col width="4%" style="min-width:120px" />
+                <col width="16%" />
+                <col width="16%" />
+                <col width="16%" />
+                <col width="16%" />
+                <col width="16%" />
+                <col width="16%" />
+              </colgroup>
+              <tr>
+                <th></th>
+                <th>M + 0</th>
+                <th>M + 1</th>
+                <th>M + 2</th>
+                <th>M + 3</th>
+                <th>M + 4</th>
+                <th>M + 5</th>
+              </tr>
+              <tr>
+                <td>수금예정금액</td>
+                <td><lightning:formattedNumber value="{!v.incomingCollect.m0}" /></td>
+                <td><lightning:formattedNumber value="{!v.incomingCollect.m1}" /></td>
+                <td><lightning:formattedNumber value="{!v.incomingCollect.m2}" /></td>
+                <td><lightning:formattedNumber value="{!v.incomingCollect.m3}" /></td>
+                <td><lightning:formattedNumber value="{!v.incomingCollect.m4}" /></td>
+                <td><lightning:formattedNumber value="{!v.incomingCollect.m5}" /></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</aura:component>

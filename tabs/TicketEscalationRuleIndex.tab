@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <auraComponent>DN_TicketEscalationRuleIndex</auraComponent>
+    <label>Escalation 우선순위 지정</label>
+    <motif>Custom23: Mail</motif>
+</CustomTab>

@@ -1,0 +1,98 @@
+/* 주문번호 검색 style */
+.THIS.slds-card {
+    border: none;
+}
+
+.THIS .body {
+    padding: .75rem;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+}
+
+.THIS .top-card {
+    padding: 1.75rem;
+    padding-top: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: .25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS .top-card.card-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 1024px) {
+    .THIS .top-card.card-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+.THIS .top-card .readOnly {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    margin-right: 7rem;
+}
+
+@media screen and (max-width:767px) {
+    .THIS .top-card .readOnly {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-right: 0;
+    }
+}
+
+.THIS .top-card h3 {
+    font-weight: 600;
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+.THIS .card-main .main-container {
+    display: flex;
+    align-items: center;
+    padding-top: .5rem;
+    gap: 1.5rem;
+}
+
+@media screen and (max-width:767px) {
+    .THIS .card-main .main-container {
+        gap: 0.5rem;
+    }
+}
+
+.THIS .card-main .main-container .main-container-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #444;
+    min-width: 4rem;
+}
+
+.THIS .card-main .main-container .field-wrap {
+    width: 240px;
+}
+
+.THIS .card-main .main-container .button-wrap {
+    margin: 0;
+}
+
+/* 검색 후 바뀌는 주문번호 style */
+.THIS .body.searched {
+    border-bottom: none;
+    box-shadow: none;
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+/* 검색 후 밑에 뜨는 컴포넌트 css */
+.THIS .slds-card .body {
+    padding: 0;
+}

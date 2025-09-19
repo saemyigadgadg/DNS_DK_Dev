@@ -1,0 +1,188 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-23-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome"
+    extends="c:DN_Helper" access="global"
+    controller="DN_DealerPortalShipToListController"
+    > 
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />  
+    <aura:attribute name="isAddress" type="Boolean" default="false" />
+    <aura:attribute name="shipToList" type="List" default="[]"/>
+    <aura:attribute name="selected" type="List" default="[]" />
+    <aura:attribute name="deleted" type="List" default="[]" />
+    <aura:attribute name="openJusoIndex" type="Decimal" default="0"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="ship" type="String" default="" />
+    <aura:attribute name="isBtn" type="Boolean" default="true" />
+    <aura:attribute name="isHeaderChange" type="Boolean" default="false" />
+    <aura:attribute name="shipToCss" type="Object" default="{  'sldsCard':'',
+            'topCard':'',
+            'tableWrap':'',
+            'table01':'',
+            'checkBox':'',
+            'checkBoxCenter':'',
+            'center':'',
+            'sldsIcon':'',}"/>
+
+    <!-- 주소 분기처리하기 위해 설정-->
+    <aura:attribute name="addressType" type="String" default='shipToAddress'/>
+    <!-- /* standard quick action design */ -->
+    <aura:html tag="style">
+      .slds-modal__container:has(.quick-actions-panel .cDN_DealerPortalShipToList) {
+        width: 60vw;
+        max-width: 1024px !important;
+      }
+      .quick-actions-panel>.slds-modal__content:has(.cDN_DealerPortalShipToList) {
+        height: fit-content !important;
+        max-height: none !important;
+        padding: 0;
+      }
+      .quick-actions-panel .slds-modal__content .cuf-content {
+        padding: 0;
+      }
+    </aura:html>
+    
+    <aura:if isTrue="{!v.shipToCss}">
+      <article class="{!v.shipToCss.sldsCard}" aura:id="articleElement">
+        <!-- sldsCard : css적용 -->
+        <!-- ShipList -->
+        <div class="{!v.shipToCss.topCard}"> <!--topCard : css적용-->
+          <aura:if isTrue="{!v.isAddress}">
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+                class="slds-modal slds-fade-in-open community-modal">
+                <c:DN_AccountAddressPopUp isCommunity="{! v.isAddress }" addressType="{!v.addressType}" aura:id="shippingAddress" />
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+          </aura:if>
+  
+          <div class="card-header">
+            
+            
+            <aura:if isTrue="{!v.isHeaderChange}">
+              <div class="{!v.shipToCss.headerWrap}">
+                <lightning:icon iconName='standard:shipment' alternativeText='shipment' size='small'/>
+                <h2>배송정보</h2>
+              </div>
+              <div class="{!v.shipToCss.buttonWrap}">
+                <aura:if isTrue="{!v.isBtn}">
+                  <lightning:buttonIcon iconName="utility:save" class="{!v.shipToCss.sldsButton}" variant="brand" onclick="{! c.handleSave }" />
+                </aura:if>
+                <lightning:buttonIcon iconName="utility:add" name="searchItems" onclick="{!c.handleAdd}" variant="border-filled"/>
+                <lightning:buttonIcon iconName="utility:delete" name="searchItems" onclick="{!c.handleMin}" variant="border-filled"/>
+              </div>
+              <aura:set attribute="else">
+                <h2>배송정보</h2>
+                <div class="{!v.shipToCss.buttonWrap}">
+                  <aura:if isTrue="{!v.isBtn}">
+                    <lightning:button class="{!v.shipToCss.sldsButton}" variant="brand" label="저장" onclick="{! c.handleSave }" />
+                  </aura:if>
+                  <lightning:button iconName="utility:add" name="searchItems" label="추가" onclick="{!c.handleAdd}" />
+                  <lightning:button iconName="utility:delete" name="searchItems" label="삭제"
+                    onclick="{!c.handleMin}" />
+                </div>
+              </aura:set>
+            </aura:if>
+            
+          </div>
+  
+          <div class="{!v.shipToCss.tableWrap}">
+            <!--Table Left-->
+            <div class="{!v.shipToCss.table01}" aura:id="leftTableDiv">
+              <lightning:recordEditForm aura:id="recordEditForm" objectApiName="DealerCustomer__c" recordId="{!v.recordId}">
+                <div class="ship-type">
+                  <p>배송 방법</p>
+                  <div class="input-wrap">
+                    <lightning:inputField variant="label-hidden" fieldName="ShippingType__c" disabled="{!v.isHeaderChange}"
+                      aura:id="ShippingType__c" />
+                  </div>
+                </div>
+              </lightning:recordEditForm>
+              <table aria-label="Example table of Opportunities with vertical borders">
+                <colgroup>
+                  <col width="1%"/>
+                  <col width="20%"/>
+                  <col width="45%"/>
+                  <col width="34%"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col" class="{!v.shipToCss.checkBox}">
+                      <lightning:input type="checkbox" aura:id="headerCheckbox"  onchange="{! c.selectAll }" />
+                    </th>
+                    <th class="" scope="col">
+                      <div>우편번호</div> 
+                    </th>
+                    <th class="" scope="col">
+                      <div>주소</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div>상세주소</div>
+                    </th>
+                  </tr>
+                </thead>
+  
+                <!-- body-->
+                <tbody>
+                  
+                  <aura:iteration items="{!v.shipToList}" var="ship" indexVar="j">
+                    <tr>
+                      <td class="{!v.shipToCss.checkBoxCenter}">
+                        <lightning:input type="checkbox" id="{!ship.id}"  name="{!j}" aura:id="checkbox" data-name="{!ship.isDealer}" onchange="{! c.handleCheck }" disabled="{!ship.isDealer}" />
+                      </td>
+                      <td class="{!v.shipToCss.center}">
+                        <div class="input-wrap" title="우편번호">
+                          <lightning:input type="text" variant="label-hidden" value="{!ship.postalCode}" disabled="true"/>
+                          <span class="{!v.shipToCss.sldsIcon}">
+                            <aura:if isTrue="{!ship.isDealer}">
+                              <aura:set attribute="else">
+                                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                  onclick="{!c.openJuso}" accesskey="{!j}"  />
+                              </aura:set>
+                            </aura:if>
+                            
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <lightning:input type="text" variant="label-hidden" value="{!ship.roadAddr}" readonly="true" disabled="true"/>
+                        
+                        <!-- <div class="slds-truncate" title="주소">
+                          <lightning:input type="text" variant="label-hidden" value="" readonly="true"/>
+                        </div>-->
+                      </td>
+                      <td>
+                        <lightning:input aura:id="detailsInfo" data-index="{index}" type="text" class="detail-info-input" variant="label-hidden" value="{!ship.detailInfo}" 
+                            disabled="{!ship.isDealer}"
+                            maxlength="36"
+                            messageWhenTooLong="상세주소는 최대 36자까지만 작성가능합니다."
+                          />
+                        
+                        <div class="slds-truncate" title="상세주소">  
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+  
+        </div>  
+      </article>    
+    </aura:if>
+    <!-- 🚩Modal Footer -->
+    <!-- <aura:if isTrue="{!v.isBtn}">
+      <footer class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" onclick="{! c.handleClose }">Close</button>
+        <lightning:button class="slds-button slds-button_neutral" variant="brand" label="저장" onclick="{! c.handleSave }" />
+      </footer>
+    </aura:if> -->
+</aura:component>

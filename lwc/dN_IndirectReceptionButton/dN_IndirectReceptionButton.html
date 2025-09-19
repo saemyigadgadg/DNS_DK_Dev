@@ -1,0 +1,95 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 2025-02-19
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+      
+    <template if:true={isModalOpen}>
+        <lightning-card>
+            <div class="total-wrap">
+                
+                <h2>{cLabel.DNS_FSL_PleaseEnterInformation}</h2>
+                <!-- <div>간접접수 라벨명 : {cLabel.DNS_FSL_IndirectApplication}</div> -->
+                <div class="container box-01">
+                    
+                    <!-- <lightning-record-edit-form object-api-name="Case">
+                        <lightning-input-field field-name="AccountId" ></lightning-input-field>
+                        <lightning-input-field field-name="ContactPhone"></lightning-input-field>
+                        <lightning-input-field field-name="AssetId"></lightning-input-field>
+                    </lightning-record-edit-form> -->
+                    
+                    <lightning-record-picker
+                        name="고객사" 
+                        label={cLabel.DNS_FSL_Account}
+                        placeholder="Search Accounts..." 
+                        object-api-name="Account" 
+                        matching-info={matchingAccInfo}
+                        display-info={displayAccInfo}
+                        onchange={handleRecordPickerChange}>
+                    </lightning-record-picker>
+                    <lightning-record-picker
+                        name="담당자" 
+                        label={cLabel.DNS_FSL_Contact}
+                        placeholder="Search Contacts..." 
+                        object-api-name="Contact" 
+                        matching-info={matchingInfo}
+                        display-info={displayInfo}
+                        onchange={handleRecordPickerChange}>
+                    </lightning-record-picker>
+                    <lightning-record-picker
+                        name="장비" 
+                        label={cLabel.DNS_FSL_Equipment}
+                        placeholder="Search Assets..." 
+                        object-api-name="Asset" 
+                        matching-info={matchingInfo}
+                        display-info={displayInfo}
+                        onchange={handleRecordPickerChange}>
+                    </lightning-record-picker>
+    
+                    <!-- <lightning-input type="text" label="호기" value={model} onchange={handleInputChange}></lightning-input> -->
+                    <!-- <lightning-input type="text" label="제조번호" value={manufacturingNumber} onchange={handleInputChange}></lightning-input> -->
+                </div>
+                
+                   <div class="container box-02">
+                        <lightning-radio-group 
+                            name="출동여부"
+                            label={cLabel.DNS_FSL_Dispatched}
+                            options={dispatchOptions} 
+                            value={dispatchStatus} 
+                            type="radio" 
+                            onchange={handleRadioChange}>
+                        </lightning-radio-group>
+                   </div>
+                
+                <div class="container box-03">
+                    <lightning-radio-group 
+                        name="완료여부"
+                        label={cLabel.DNS_FSL_Completed}
+                        options={completionOptions} 
+                        value={completionStatus} 
+                        type="radio" 
+                        onchange={handleRadioChange}>
+                    </lightning-radio-group>
+                    
+                </div>
+                <!-- 접수일시 -->
+                <lightning-input name="접수일시" label={cLabel.DNS_FDM_ReceptionDate} type="datetime" value={onSiteDateTime} onchange={handleDateTimeChange}></lightning-input>
+                    
+                <!-- 확인 필요 -->
+                <div class="container box-04">
+                    <lightning-textarea name="접수내용" label={cLabel.DNS_C_ReceptionDetails} value={receiptDetails} onchange={handleInputChange}></lightning-textarea>
+                </div>
+                
+                <div class="button-wrap">
+                    <!-- <lightning-button variant="brand" label={cLabel.DNS_FSL_CompleteInput} onclick={handleSubmit} class="slds-m-top_medium"></lightning-button> -->
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_CompleteInput} onclick={handleSubmit} disabled={isSubmitDisabled} class="slds-m-top_medium"></lightning-button>
+                </div>
+            </div>
+        </lightning-card>
+    </template>
+</template>

@@ -1,0 +1,155 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 04-14-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-29-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" 
+description="출동인원관리(부재)" controller="DN_PortalServiceController">
+<aura:attribute name="typeList" type="List" default="[]"/>
+
+<aura:attribute name="resourceAbsenceList"      type="List" /> <!-- Type값-->
+<!-- 검색 조건-->
+<aura:attribute name="searchResource"   type="String" />
+<aura:attribute name="searchWorkCenter"   type="String" />
+<aura:attribute name="searchType"   type="String" />
+<aura:attribute name="searchDate"   type="String" />
+<aura:attribute name="searchFrom"   type="String" />
+<aura:attribute name="searchTo"   type="String" />
+<aura:attribute name="isLoading" type="Boolean" default="false"/> 
+<aura:attribute name="pageInfo" type="Object"/>
+<aura:attribute name="_lastScrollCall" type="Integer"  default="0" access="private"/>
+<aura:attribute name="scrollListenerInitialized" type="Boolean" default="false"/>
+
+<!-- Row 선택-->
+<aura:attribute name="selected"   type="List" />
+<!-- 지사 구분-->
+<aura:attribute name="isBranch"   type="Boolean" default="false" />
+<aura:attribute name="WorkCInfo"   type="Object" />
+<!--handler-->
+<aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+<!-- Body -->
+<article class="slds-card">
+    <!--출동인원관리(부재) 생성-->
+    <div aura:id="ResourceAbsenceCreate" />
+    <!--출동인원관리(부재) 수정-->
+    <div aura:id="ResourceAbsenceEdit" />
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+
+    <!-- Loading Spinner  -->
+    <aura:if isTrue="{! v.isLoading}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+    
+    <!-- Header -->
+    <div class="header test">
+      <div class="title">
+        <lightning:icon iconName="standard:groups" size="small" />
+        <h2>출동인원관리(부재)</h2>
+      </div>
+
+      <div class="button-wrap">
+        <!-- 검색 필터 및 기능 추가 필요 -->
+        <lightning:button name="create" label="생성" iconName="utility:add" onclick="{!c.handleResourceAbsenceAdd}" />
+        <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left" onclick="{!c.handleSearch}" />       
+        <lightning:button name="search" label="삭제"  iconName="utility:delete" onclick="{!c.handleDelete}" />       
+      </div>
+    </div>
+
+
+    <div class="body">
+      <!-- Card 01 -->
+      <div class="card-01 top-card">
+        <!-- <div class="field-wrap">
+          <p>작업자</p>
+          <div class="input-wrap">
+            <lightning:input type="text" aura:id="Resource" name=""  variant="label-hidden" value="{!v.searchResource}" onchange="{!c.handleChangeValue}"/>
+          </div>
+        </div> -->
+        <div class="field-wrap">
+          <p>Work Center</p>
+          <div class="input-wrap">
+            <lightning:input disabled="true" variant="label-hidden" value="{!v.WorkCInfo.Service_Territory__r.Name}"/>
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>유형</p>
+          <div class="input-wrap">
+            <lightning:combobox name="type" aura:id="Type"  variant="label-hidden" value="{!v.searchType}" options="{! v.typeList }" onchange="{!c.handleType}"/>
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>일정 From</p>
+          <div class="input-wrap">
+            <lightning:input variant="label-hidden" type="date"  value="{!v.searchFrom}" onchange="{!c.handleChangeValue}"/>
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>일정 To</p>
+          <div class="input-wrap">
+            <lightning:input variant="label-hidden" type="date"  value="{!v.searchTo}" onchange="{!c.handleChangeValue}"/>
+          </div>
+        </div>
+      </div>
+      <!-- card-02 -->
+      <div class="card-02 top-card">
+        <div class="table-wrap" onscroll="{!c.handleScroll}">
+          <table>
+            <colgroup>
+              <col width="1%"/>
+              <col width="10%"/>
+              <col width="10%"/>
+              <col width="10%"/>
+              <col width="15%"/>
+              <col width="15%"/>
+              <col width="39%"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th><lightning:input type="checkbox"  onchange="{!c.handleCheckAll}" data-index="All" /></th>
+                <th>부재 번호</th>
+                <th>작업자</th>
+                <th>유형</th>
+                <th>시작 시간</th>
+                <th>종료 시간</th>
+                <th>상세내용</th>
+              </tr>
+            </thead>
+            <tbody> <!--resourceAbsenceList-->
+                <aura:iteration items="{!v.resourceAbsenceList}" var="item" indexVar="j">
+                    <tr>
+                        <td class="center"><lightning:input type="checkbox" aura:id="checkbox" id="{!item.Id}" onchange="{!c.handleCheckRow}" data-index="{!j}" /></td>
+                        <td class="center"><a data-id="{!item.Id}" data-type="{!item.Type}" href="" onclick="{!c.handleDetail}">{!item.AbsenceNumber}</a></td>
+                        <td class="center">{!item.Resource.Name}</td>
+                        <td class="center">{!item.Type}</td>
+                        <td class="center">{!item.Start}</td>
+                        <td class="center">{!item.End}</td>
+                        <td>
+                          <div title="{!item.Description}" class="description">
+                            <lightning:formattedRichText value="{!item.Description}"></lightning:formattedRichText>
+                          </div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+              <!-- <aura:iteration items="{!v.returnList}" var="item" indexVar="j"> -->
+                <!-- <tr>
+                  <td class="center">수리기사 1호</td>
+                  <td class="center">Installation</td>
+                  <td class="center">11/30/2024, 12:00 PM</td>
+                  <td class="left">11/30/2024, 1:00 PM</td>
+                </tr> -->
+              <!-- </aura:iteration> -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </article>	
+
+</aura:component>

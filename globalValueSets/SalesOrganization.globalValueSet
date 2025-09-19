@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1800</fullName>
+        <default>false</default>
+        <label>DN Solutions</label>
+    </customValue>
+    <customValue>
+        <fullName>1846</fullName>
+        <default>false</default>
+        <label>DNS Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>4140</fullName>
+        <default>false</default>
+        <label>DNS America Machine</label>
+    </customValue>
+    <customValue>
+        <fullName>4146</fullName>
+        <default>false</default>
+        <label>DNS America Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>1140</fullName>
+        <default>false</default>
+        <label>DI MT Sales org.</label>
+    </customValue>
+    <customValue>
+        <fullName>1146</fullName>
+        <default>false</default>
+        <label>DI MT Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>2740</fullName>
+        <default>false</default>
+        <label>DNSC Sales org.</label>
+    </customValue>
+    <customValue>
+        <fullName>2746</fullName>
+        <default>false</default>
+        <label>DNSC Parts MT</label>
+    </customValue>
+    <customValue>
+        <fullName>7346</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNS Europe Parts(7346)</label>
+    </customValue>
+    <customValue>
+        <fullName>7340</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNS Europe(7340)</label>
+    </customValue>
+    <customValue>
+        <fullName>4150</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSA Export Team(4150)</label>
+    </customValue>
+    <customValue>
+        <fullName>7350</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSEU Export Team(7350)</label>
+    </customValue>
+    <customValue>
+        <fullName>4130</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DIA EG(4130)</label>
+    </customValue>
+    <customValue>
+        <fullName>4106</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DIA EG PDC(4106)</label>
+    </customValue>
+    <masterLabel>Sales Organization</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Queue xmlns="http://soap.sforce.com/2006/04/metadata">
+    <doesSendEmailToMembers>false</doesSendEmailToMembers>
+    <name>TicketEscalationRule</name>
+    <queueMembers>
+        <users>
+            <user>hayeong.min@dncompany.com</user>
+            <user>junyeong.c@dncompany.com</user>
+            <user>suheon.ha@dncompany.com</user>
+            <user>yeongdeok.s@dncompany.com</user>
+        </users>
+    </queueMembers>
+    <queueSobject>
+        <sobjectType>TicketEscalationRule__c</sobjectType>
+    </queueSobject>
+</Queue>

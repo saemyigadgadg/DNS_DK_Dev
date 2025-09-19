@@ -1,0 +1,215 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   10-21-2024   Hyerin Ro   Initial Version
+-->
+<aura:component 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    controller="DN_Opportunity_Path_Controller"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="variant" type="String" default="linear"/>
+    <aura:attribute name="hideUpdateButton" type="Boolean" default="false"/>
+    <aura:attribute name="recordStage" type="String" default="false"/>
+    <aura:attribute name="beforeStage" type="String" default="false"/>
+    <aura:attribute name="currentStage" type="String" default="false"/>
+    <aura:attribute name="btnBoolean" type="Boolean" default="false"/>
+
+    <aura:attribute name="closedStage" type="String[]" default="Closed Won,Closed Lost,Closed Drop" />
+    <aura:attribute name="selectedStage" type="String" default="Closed Won" />
+
+    <aura:attribute name="picklistPrd" type="List" default="[]" />
+    <aura:attribute name="selectedPrd" type="String" default="" />
+    
+    <aura:attribute name="picklistPrice" type="List" default="[]" />
+    <aura:attribute name="selectedPrice" type="String" default="" />
+
+    <aura:attribute name="picklistDiv" type="List" default="[]" />
+    <aura:attribute name="selectedDiv" type="String" default="" />
+
+    <aura:attribute name="picklistSales" type="List" default="[]" />
+    <aura:attribute name="selectedSales" type="String" default="" />
+
+    <aura:attribute name="picklistService" type="List" default="[]" />
+    <aura:attribute name="selectedService" type="String" default="" />
+
+    <aura:attribute name="picklistMis" type="List" default="[]" />
+    <aura:attribute name="selectedMis" type="String" default="" />
+
+    <aura:attribute name="picklistCustomer" type="List" default="[]" />
+    <aura:attribute name="selectedCustomer" type="String" default="" />
+
+    <aura:attribute name="isModalOpen" type="Boolean" default="false" /><!--modal open-->
+    <aura:attribute name="isService" type="Boolean" default="true"/>
+    <aura:attribute name="isMis" type="Boolean" default="true"/>
+    <aura:attribute name="isCustomer" type="Boolean" default="false"/>
+    <aura:attribute name="isDuration" type="Boolean" default="false" /><!--modal open-->
+
+    <aura:attribute name="titleMsg" type="String"  />
+    <aura:attribute name="color" type="String" default="color: green;" />
+
+    <aura:attribute type="String" name="save" default="" />
+    <aura:attribute type="String" name="cancel" default="" />
+    <aura:attribute type="String" name="Stage" default="" />
+    <aura:attribute type="String" name="selectClosed" default="" />
+    <aura:attribute name="dataLoad" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:empApi aura:id="empApi" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:handler name="destroy" value="{!this}" action="{!c.unsubscribe}" />
+    
+    <aura:html tag="style">
+        @media all and (max-width:767px) {
+            *:has(.cDN_Opportunity_Path .box-01){
+                overflow: hidden !important;
+                touch-action: none !important;
+            }
+        }
+    </aura:html>
+
+    <lightning:card>
+        <div class="card-title" style="{!v.color}">{!v.titleMsg}</div>
+        
+        <!-- Path Component -->
+        <lightning:path aura:id="path" recordId="{!v.recordId}"
+        variant="{!v.variant}"
+        hideUpdateButton="{!v.btnBoolean}"
+        onselect="{!c.handleSelect}"
+        />
+        
+    </lightning:card>
+
+    <aura:if isTrue="{! v.isModalOpen }">
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <div class="fullModal">
+            <div class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- modal Header -->
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!v.selectClosed}</h1>
+                    </div>
+
+                    <div class="container">
+                        <aura:if isTrue="{! v.isDuration}">
+                            <div class="confirm-wrap">
+                                <div class="card">
+                                    <div class="dialog slds-modal__content">{!$Label.c.DN_M_DurationNoti}</div>
+                                    <div class="button-wrap slds-modal__footer">
+                                        <lightning:button label="{!$Label.c.DNS_M_Confirm}" variant="brand" onclick="{!c.saveDuration}"/>
+                                        <lightning:button label="{!$Label.c.DNS_M_Cancel}" onclick="{!c.closeModal}"
+                                            variant="neutral" />
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        
+                        <!-- modal Content -->
+                        <div class="slds-modal__content">
+    
+                            <aura:if isTrue="{!not(v.dataLoad)}">
+                                <lightning:spinner alternativeText="Loading" size="large" />
+                            </aura:if>
+                            <div class="box-01">
+                                <div class="input-wrap">
+                                     <lightning:select name="stageId" label="{!v.Stage}" aura:id="stageId" value="{!v.selectedStage}" onchange="{!c.changeClosedStage}">
+                                         <aura:iteration items="{!v.closedStage}" var="closedStage">
+                                             <option text="{!closedStage}" value="{!closedStage}" selected="{!closedStage.selected}"/>
+                                         </aura:iteration>
+                                     </lightning:select>
+                                </div>
+                            </div>
+                            
+                            <div class="box-02">
+                                <div class="input-wrap">
+                                    <p>{!$Label.c.DNS_M_Product}</p>                            
+                                    <lightning:select name="productId" aura:id="productId" value="{!v.selectedPrd}" variant="label-hidden">
+                                        <aura:iteration items="{!v.picklistPrd}" var="picklistPrd">
+                                            <option text="{!picklistPrd}" value="{!picklistPrd}" selected="{!picklistPrd.selected}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                
+                                <div class="input-wrap">
+                                    <p>{!$Label.c.DNS_M_Price}</p>
+                                    <lightning:select name="priceId" aura:id="priceId" value="{!v.selectedPrice}" variant="label-hidden">
+                                        <aura:iteration items="{!v.picklistPrice}" var="picklistPrice">
+                                            <option text="{!picklistPrice}" value="{!picklistPrice}" selected="{!picklistPrice.selected}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                               </div>
+                               
+                               <div class="input-wrap">
+                                    <p>{!$Label.c.DNS_M_Delivery}</p>
+                                    <lightning:select name="divId" aura:id="divId" value="{!v.selectedDiv}" variant="label-hidden">
+                                        <aura:iteration items="{!v.picklistDiv}" var="picklistDiv">
+                                            <option text="{!picklistDiv}" value="{!picklistDiv}" selected="{!picklistDiv.selected}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                
+                               <div class="input-wrap">
+                                    <p>{!$Label.c.DNS_M_Sales}</p>
+                                    <lightning:select name="salesId" aura:id="salesId" value="{!v.selectedSales}" variant="label-hidden">
+                                        <aura:iteration items="{!v.picklistSales}" var="picklistSales">
+                                            <option text="{!picklistSales}" value="{!picklistSales}" selected="{!picklistSales.selected}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                
+                                <aura:if isTrue="{! v.isService }">
+                                    <div class="input-wrap">
+                                        <p>{!$Label.c.DNS_M_Service}</p>
+                                        <lightning:select name="serviceId" aura:id="serviceId" value="{!v.selectedService}" variant="label-hidden">
+                                            <aura:iteration items="{!v.picklistService}" var="picklistService">
+                                                <option text="{!picklistService}" value="{!picklistService}" selected="{!picklistService.selected}"/>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </aura:if>
+                                
+                                <!-- <aura:if isTrue="{! v.isMis }"> -->
+                                    <div class="input-wrap">
+                                        <p>{!$Label.c.DNS_M_Miscellaneous}</p>
+                                        <lightning:select name="misId" aura:id="misId" value="{!v.selectedMis}" variant="label-hidden">
+                                            <aura:iteration items="{!v.picklistMis}" var="picklistMis">
+                                                <option text="{!picklistMis}" value="{!picklistMis}" selected="{!picklistMis.selected}"/>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                <!-- </aura:if> -->
+                                
+                                <aura:if isTrue="{! v.isCustomer }">
+                                    <div class="input-wrap">
+                                        <p>{!$Label.c.DNS_M_Customer}</p>
+                                        <lightning:select name="customerId" aura:id="customerId" value="{!v.selectedCustomer}" variant="label-hidden">
+                                            <aura:iteration items="{!v.picklistCustomer}" var="picklistCustomer">
+                                                <option text="{!picklistCustomer}" value="{!picklistCustomer}" selected="{!picklistCustomer.selected}"/>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </aura:if>
+                            </div>
+    
+                        </div>
+    
+                        <!-- modal Footer -->
+                        <footer class="slds-modal__footer">
+                            <div class="button-wrap">
+                                <lightning:button label="{!v.save}" title="Save" variant="brand" onclick="{!c.saveRecord}"/>
+                                <lightning:button label="{!v.cancel}" title="Cancel" onclick="{!c.closeModal}"
+                                    variant="neutral" />
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

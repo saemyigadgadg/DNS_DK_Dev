@@ -1,0 +1,608 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 02-17-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   07-31-2024   Hayeong Min    Initial Version
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_SearchAccountController">
+
+    <aura:html tag="style">
+        .slds-modal__content:has(.cDN_SearchAccount) {
+            height: auto !important;
+            max-height: none !important;
+            padding: 0;
+            overflow-y:clip;
+        }
+        .slds-modal__container:has(.cDN_SearchAccount) {
+            width: 65vw;
+            max-width: none;
+            min-width: 1200px;
+            padding-bottom: 3rem;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_SearchAccount) {
+            padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_SearchAccount) {
+            overflow-y: clip;
+        }
+    </aura:html>
+
+    <!-- CTI Parameters -->
+    <aura:attribute name="contactId" type="String" default="" />
+    <aura:attribute name="taskId" type="String" default="" />
+    <aura:attribute name="uId" type="String" default="" />
+
+    <!-- Boolean -->
+    <aura:attribute name="isSpinner" type="Boolean" default="false" />
+    <aura:attribute name="isNext" type="Boolean" default="false" />
+    <aura:attribute name="isContact" type="Boolean" default="fasle" />
+
+    <!--Contact List-->
+    <aura:attribute name="phoneNumber" type="String" default="" />
+    <aura:attribute name="contactList" type="List" default="[]" />
+    
+    <!-- Search Conditions -->
+    <aura:attribute name="accountKey" type="String" default="" />
+    <aura:attribute name="assetTerm" type="String" default="" />
+
+    <!-- InboundCall Info -->
+    <aura:attribute name="phoneKey" type="String" default="" />
+    <aura:attribute name="contactKey" type="String" default="" />
+    <aura:attribute name="recType" type="String" default="" />
+
+    <!-- Equipment List -->
+    <aura:attribute name="assetKey" type="String" default="" />
+    <aura:attribute name="searchList" type="List" default="[]" />
+
+    <!-- Selected Equipment -->
+    <aura:attribute name="equipmentId" type="String" default="" />
+    
+    <!-- Ticket List -->
+    <aura:attribute name="ticketList" type="List" default="[]" />
+
+    <!-- Selected Ticket -->
+    <aura:attribute name="ticketId" type="String" default="" />
+    
+    <!-- Prevent For Double Click -->
+    <aura:attribute name="lastClickedTime" type="DateTime" />
+    <aura:attribute name="searchCondition" type="Object" default="{}" />
+
+    <!--Sort-->
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:workspaceAPI aura:id="workspace" />
+
+    <!--Container-->
+    <div class="SearchAccountModal">
+        <!-- 🚩 Step 01 -->
+        <aura:if isTrue="{!!v.isNext}">
+            <!-- Contact Modal -->
+            <aura:if isTrue="{!v.isContact}">
+            <div class="slds-backdrop slds-backdrop_open inner"></div>
+            <div class="slds-modal slds-fade-in-open inner">
+                <div class="slds-modal__container searchContacts">
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_SearchContact}</h1>
+                    </div>
+                    <div class="slds-modal__content">
+                        <div class="card-01">
+                            <lightning:input name="input5" disabled="true" value="{!v.phoneNumber}" label="Phone Number" variant="label-inline"/>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="6%" />
+                                    <col width="6%" />
+                                    <col width="40%" />
+                                    <col width="24%" />
+                                    <col width="24%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">{!$Label.c.DNS_B_Select}</th>
+                                        <th>{!$Label.c.DNS_C_Account}</th>
+                                        <th>{!$Label.c.DNS_C_ContactName}</th>
+                                        <th>{!$Label.c.DNS_C_Phone}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.contactList}" var="contact" indexVar="i">
+                                        <tr ondblclick="{!c.doubleClickContact}" data-id="{!contact.Id}">
+                                            <td>{!i + 1}</td>
+                                            <td>
+                                                <lightning:input name="{!contact.Id}" type="checkbox" variant="label-hidden"
+                                                    class="contactbox" onchange="{! c.handleContactChb }" />
+                                            </td>
+                                            <td>{!contact.Account.Name}</td>
+                                            <td>{!contact.Name}</td>
+                                            <td>{!contact.MobilePhone}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <!-- <lightning:button onclick="{! c.handleModalCancel }" label="Cancel" /> -->
+                        <lightning:button variant="brand" onclick="{! c.selectContact }" label="{!$Label.c.DNS_B_Select}" />
+                    </div>
+                </div>
+            </div>
+            </aura:if>
+
+
+            <div>
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_SearchAccount}</h2>
+                </header>
+
+                <div class="slds-modal__container">
+                    <aura:if isTrue="{!v.isSpinner}">
+                        <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                    </aura:if>
+
+                    <div class="slds-modal__content ">
+                        <div aura:id="table" class="search-wrapper">
+                            <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case">
+                                <lightning:messages />
+                                <table class="slds-table search-table slds-no-row-hover">
+                                    <colgroup>
+                                        <col width="13%" />
+                                        <col width="33%" />
+                                        <col width="13%" />
+                                        <col width="33%" />
+                                        <col width="8%" />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                    {!$Label.c.DNS_C_Account}</div>
+                                            </th>
+                                            <td scope="col">
+
+                                                <!-- 🚗 Input Td - 01. Account -->
+                                                <div>
+                                                    <lightning:inputField fieldName="AccountId" variant="label-hidden"
+                                                        value="{!v.accountKey}"/>
+                                                </div>
+
+                                            </td>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Equipment}">
+                                                    {!$Label.c.DNS_C_Equipment}</div>
+                                            </th>
+                                           <td scope="col">
+                                                <!-- 🚗 Input Td - 02. Equipment -->
+                                                <div>
+                                                    <lightning:input type="text" variant="label-hidden" name="input1"
+                                                        placeholder="장비번호를 입력해주세요."
+                                                        value="{!v.assetTerm}" onchange="{!c.handleAsset}"/>
+                                                </div>
+                                            </td>
+                                            <td rowspan="2" class="search-btn">
+                                                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Search}"
+                                                    onclick="{!c.handleSearch}" class="slds-m-left_x-small" />
+                                            </td>
+                                        </tr>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Phone}">
+                                                    {!$Label.c.DNS_C_Phone}</div>
+                                            </th>
+                                            <td scope="col">
+
+                                                <!-- 🚗 Input Td - 03. Phone -->
+                                                <div>
+                                                    <lightning:input type="text" variant="label-hidden" name="input1"
+                                                        placeholder="{!$Label.c.DNS_P_EnterNumber}"
+                                                        value="{!v.phoneKey}" disabled="true"/>
+                                                </div>
+
+                                            </td>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Requester}">
+                                                    {!$Label.c.DNS_C_Requester}</div>
+                                            </th>
+                                            <td scope="col">
+
+                                                <!-- 🚗 Input Td - 04. Contact -->
+                                                <div>
+                                                    <lightning:inputField fieldName="Requester__c"
+                                                        variant="label-hidden" value="{!v.contactKey}" onchange="{!c.handleContact}" disabled="true"/>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </lightning:recordEditForm>
+                        </div>
+
+                        <div class="list-wrapper">
+                            <div class="title">
+                                <h3>{!$Label.c.DNS_S_EquipmentList}</h3>
+                            </div>
+                            <div aura:id="table" class="list-table">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="2%" />
+                                        <col width="3%" />
+                                        <col width="9%" />
+                                        <col width="18%" />
+                                        <col width="12%" />
+                                        <col width="6%" />
+                                        <col width="12%" />
+                                        <col width="16%" />
+                                        <col width="6%" />
+                                        <col width="7%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">
+                                                <div class="slds-truncate"></div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Number}">
+                                                    {!$Label.c.DNS_C_Number}</div>
+                                            </th>
+                                            <th scope="col" data-fieldname="FM_AccountName__c"  onclick="{!c.doSort}">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                    {!$Label.c.DNS_C_Account}
+                                                    <lightning:icon iconName="{!v.sortedBy == 'FM_AccountName__c' ? (v.sortDirection == 'asc' ? 'utility:chevrondown' : 'utility:chevronup') : ''}" 
+                                                    size="xx-small"/>
+                                                </div>
+                                            </th>
+                                            <th scope="col" data-fieldname="Name" onclick="{!c.doSort}">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Equipment}">
+                                                    {!$Label.c.DNS_C_Equipment}
+                                                    <lightning:icon iconName="{!v.sortedBy == 'Name' ? (v.sortDirection == 'asc' ? 'utility:chevrondown' : 'utility:chevronup') : ''}" size="xx-small"/>
+                                                </div>
+                                            </th>
+                                            <th scope="col" data-fieldname="MachineName__c" onclick="{!c.doSort}">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Model}">
+                                                    {!$Label.c.DNS_C_Model}
+                                                    <lightning:icon iconName="{!v.sortedBy == 'MachineName__c' ? (v.sortDirection == 'asc' ? 'utility:chevrondown' : 'utility:chevronup') : ''}" size="xx-small"/>
+                                                </div>
+                                            </th>
+                                             <th scope="col">
+                                                <div class="slds-truncate" title="SEM 구매여부">
+                                                    SEM 구매여부</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_LandlinePhone}">
+                                                    {!$Label.c.DNS_C_LandlinePhone}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_MobilePhone}">
+                                                    {!$Label.c.DNS_C_MobilePhone}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_ShippingDate}">
+                                                    {!$Label.c.DNS_C_ShippingDate}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Address}">
+                                                    {!$Label.c.DNS_C_Address}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_DetailedAddress}">
+                                                    {!$Label.c.DNS_C_DetailedAddress}</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.searchList}" var="s" indexVar="j">
+                                            <tr class="slds-hint-parent" ondblclick="{!c.handleDoubleClick}"
+                                                data-id="{!s.Id}">
+                                                <td data-label="Check">
+                                                    <div class="slds-truncate">
+                                                        <lightning:input class="checkbox" type="checkbox"
+                                                            variant="label-hidden" aura:id="checkbox" name="{!s.Id}"
+                                                            accesskey="{!j}" onchange="{!c.handleCheck}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Number}" class="number">
+                                                    <div class="slds-truncate">
+                                                        {!j+1}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!s.FM_AccountName__c}">
+                                                    <div class="slds-truncate" title="{!s.FM_AccountName__c}">
+                                                        <lightning:formattedUrl value="{!'/'+s.AccountId}"
+                                                            label="{!s.FM_AccountName__c}" target="_blank" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!s.Name}">
+                                                    <div class="slds-truncate" title="{!s.Name}">
+                                                        <lightning:formattedUrl value="{!'/'+s.Id}" label="{!s.Name}"
+                                                            target="_blank" />
+
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!s.MachineName__c}">
+                                                    <div class="slds-truncate" title="{!s.MachineName__c}"> 
+                                                        {!s.MachineName__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="SEM 구매여부">
+                                                    <!-- <div class="slds-truncate" title="SEM 구매여부">
+                                                        {!s.IsPurchaseServicePackage__c}
+                                                    </div> -->
+                                                    <aura:iteration items="{!s.ServicePackages}" var="pkg">
+                                                    <div class="slds-truncate" title="SEM 구매여부">
+                                                        {!pkg.Name} / {!pkg.StartServiceDate} <br/>
+                                                    </div>
+                                                </aura:iteration>
+                                                </td>
+                                                <td data-label="{!s.Account.Phone}">
+                                                    <div class="slds-truncate" title="{!s.Account.Phone}">
+                                                        {!s.Account.Phone}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!s.Account.Mobile__c}">
+                                                    <div class="slds-truncate" title="{!s.Account.Mobile__c}">
+                                                        {!s.Account.Mobile__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_ShippingDate}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_ShippingDate}">
+                                                        {!s.Order__r.ActualShippingDate__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Address}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Address}">
+                                                        {!s.Account.ShippingCity}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_DetailedAddress}">
+                                                    <div class="slds-truncate"
+                                                        title="{!$Label.c.DNS_C_DetailedAddress}">
+                                                        {!s.Account.ShippingStreet}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                </div>
+
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}" class="slds-m-left_x-small" />
+                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Next}" onclick="{!c.handleNext}" class="slds-m-left_x-small" />
+                </footer>
+            </div>
+        </aura:if>
+
+        <!-- 🚩 Step 02 - 조회된 Ticket 목록-->
+        <aura:if isTrue="{!v.isNext}">
+            <div>
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_SearchTicketList}</h2>
+                </header>
+
+                <!-- Container -->
+                <div class="slds-modal__container">
+
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{!v.isSpinner}">
+                        <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                    </aura:if>
+
+                    <!-- Body -->
+                    <div class="slds-modal__content ">
+                        <div aura:id="table" class="search-wrapper">
+                            <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case">
+                                <lightning:messages />
+                                <table class="slds-table search-table slds-no-row-hover">
+                                    <tbody>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                    {!$Label.c.DNS_C_Account}</div>
+                                            </th>
+                                            <td scope="col">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField fieldName="AccountId" variant="label-hidden"
+                                                        value="{!v.accountKey}" disabled="true" />
+                                                </div>
+                                            </td>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Equipment}">
+                                                    {!$Label.c.DNS_C_Equipment}
+                                                </div>
+                                            </th>
+                                            <td scope="col">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField fieldName="AssetId" variant="label-hidden"
+                                                        value="{!v.assetKey}" disabled="true" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Phone}">
+                                                    {!$Label.c.DNS_C_Phone}</div>
+                                            </th>
+                                            <td scope="col">
+                                                <div class="slds-truncate">
+                                                    <lightning:input type="text" variant="label-hidden" name="input1"
+                                                        value="{!v.phoneKey}" disabled="true" />
+                                                </div>
+                                            </td>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Requester}">
+                                                    {!$Label.c.DNS_C_Requester}</div>
+                                            </th>
+                                            <td scope="col">
+                                                <div>
+                                                    <lightning:inputField fieldName="Requester__c"
+                                                        variant="label-hidden" value="{!v.contactKey}"
+                                                        disabled="true" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </lightning:recordEditForm>
+                        </div>
+
+                        <div class="list-wrapper">
+                            <div class="title">
+                               <h3>Ticket List</h3>
+                                <lightning:button variant="brand" label="{!$Label.c.DNS_B_NewTicket}" onclick="{!c.handleCreate}" class="slds-m-left_x-small" />
+                            </div>
+                            <div aura:id="table" class="list-table">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table" aria-label="Example table of Opportunities with vertical borders">
+                                    <colgroup>
+                                        <col width="2%" />
+                                        <col width="3%" />
+                                        <col width="7%" />
+                                        <col width="16%" />
+                                        <col width="11%" />
+                                        <col width="7%" />
+                                        <col width="11%" />
+                                        <col width="12%" />
+                                        <col width="6%" />
+                                        <col width="15%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">
+                                                <div class="slds-truncate"></div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Number}">
+                                                    {!$Label.c.DNS_C_Number}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_RecordType}">
+                                                    {!$Label.c.DNS_C_RecordType}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Ticket}">
+                                                    {!$Label.c.DNS_C_Ticket}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                    {!$Label.c.DNS_C_Account}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Contact}">
+                                                    {!$Label.c.DNS_C_Contact}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Equipment}">
+                                                    {!$Label.c.DNS_C_Equipment}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_Status}">
+                                                    {!$Label.c.DNS_C_Status}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_DateOfReceipt}">
+                                                    {!$Label.c.DNS_C_DateOfReceipt}</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="{!$Label.c.DNS_C_ReceptionDetails}">
+                                                    {!$Label.c.DNS_C_ReceptionDetails}</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.ticketList}" var="s" indexVar="j">
+                                            <tr class="slds-hint-parent" ondblclick="{!c.handleTicketDoubleClick}"
+                                            data-id="{!s.Id}">
+                                                <td data-label="Check">
+                                                    <div class="slds-truncate">
+                                                        <lightning:input type="checkbox" variant="label-hidden"
+                                                            name="{!s.Id}" class="ticketbox" accesskey="{!j}"
+                                                            onchange="{!c.hadleTicket}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Number}" class="number">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Number}">
+                                                        {!j+1}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_RecordType}" style="text-align:center;">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_RecordType}">
+                                                        {!s.RecordType.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Account}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                        {!s.FM_TicketName__c}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Account}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                        {!s.Account.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Account}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Account}">
+                                                        {!s.Requester__r.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Equipment}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Equipment}">
+                                                        {!s.Asset.Name}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_Status}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_Status}">
+                                                        {!s.Status}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_DateOfReceipt}">
+                                                    <div class="slds-truncate" title="{!$Label.c.DNS_C_DateOfReceipt}">
+                                                        <lightning:formattedDateTime
+                                                            value="{!s.ApplicationDateTime__c}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!$Label.c.DNS_C_ReceptionDetails}">
+                                                    <div class="slds-truncate"
+                                                        title="{!$Label.c.DNS_C_ReceptionDetails}">
+                                                        {!s.ReceptionDetails__c}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button  label="{!$Label.c. DNS_B_Cancel}" onclick="{!c.handleCancel}" class="slds-m-left_x-small" /> 
+                    <lightning:button label="{!$Label.c.DNS_B_Previous}" onclick="{!c.handlePrevious}" class="slds-m-left_x-small" />
+                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Select}" onclick="{!c.handleSelect}" class="slds-m-left_x-small" />
+                </footer>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

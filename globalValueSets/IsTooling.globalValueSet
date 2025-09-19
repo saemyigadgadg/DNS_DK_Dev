@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>MY</fullName>
+        <default>false</default>
+        <label>Yes</label>
+    </customValue>
+    <customValue>
+        <fullName>MN</fullName>
+        <default>false</default>
+        <label>No</label>
+    </customValue>
+    <description>수요산업구분 금형여부</description>
+    <masterLabel>금형여부</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

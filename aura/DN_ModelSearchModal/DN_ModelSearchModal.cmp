@@ -1,0 +1,209 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-18-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-13-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+  controller="DN_PortalModalController"
+  description="기종 검색 모달">
+
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="type" type="String" /> <!-- 모달 타입-->
+  <aura:attribute name="MachineName" type="String" /> <!-- 선택한 기종 이름-->
+
+  <aura:attribute name="parentCmp" type="String" description="대리점 재고 관리에서 사용. 해당 컴포넌트를 불러오는 상위 컴퍼넌트명"/>
+
+  <!-- 기종 모달 속성 -->
+  <aura:attribute name="modelValue" type="String" />
+  <aura:attribute name="modelList" type="List" />
+  <aura:attribute name="serialList" type="List" />
+
+  <!-- 기종 없는 장비번호 모달 속성 -->
+  <aura:attribute name="machineNo" type="String" />
+  <aura:attribute name="equipmentNo" type="String" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <!-- Event -->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <!-- 📌 기종 모달 오픈 -->
+  <aura:if isTrue="{!v.type == '기종'}">
+    <div class="modelListModal">
+      <div aura:id="modelListModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_medium">
+          <!-- Loading -->
+          <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+          </aura:if>
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.service_lbl_model}</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='border-filled' size='small'
+                title='close' name="closeModal" onclick="{!c.modelModalCancel}"></lightning:icon>
+            </button>
+
+          </header>
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content slds-p-around_medium">
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>{!$Label.c.service_lbl_model}</p>
+                <div class="input-wrap" onkeypress="{!c.handleKeyPress}">
+                  <lightning:input value="{!v.modelValue}" variant="label-hidden" aura:id="inputModelValue" data-aura-id="inputModelValue"/>
+                  <lightning:button name="search" label="{!$Label.c.service_btn_search}" onclick="{!c.searchMachine}" />
+                </div>
+              </div>
+            </div>
+
+            <div class="card-02 top-card">
+              <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">Model No.</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">{!$Label.c.service_lbl_model}</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:if isTrue="{!empty(v.modelList)}">
+                      <tr class="slds-hint-parent">
+                          <td scope="row" colspan="9" class="center">
+                            {!$Label.c.service_msg_validation_013}
+                          </td>
+                      </tr>
+                    </aura:if>
+  
+                    <aura:iteration items="{!v.modelList}" var="modelList" indexVar="j">
+                      <tr class="slds-hint-parent" name="modelList" onclick="{!c.rowClick}" data-record="{!j}">
+                        <td data-label="기종코드">
+                          <div class="slds-truncate" title="기종코드">
+                            {!modelList.value}
+                          </div>
+                        </td>
+                        <td data-label="기종">
+                          <div class="slds-truncate" title="기종">
+                            {!modelList.label}
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.modelModalCancel}" />
+          </footer>
+        </div>
+      </div>
+
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+
+  <!-- 📌 장비번호 모달 오픈 -->
+  <aura:if isTrue="{!v.type == '장비번호'}">
+    <div class="serialListModal">
+      <div aura:id="serialListModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+          <!-- Loading -->
+          <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+          </aura:if>
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.service_lbl_serial_no}</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.serialModalCancel}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content slds-p-around_medium serialListModal">
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>Model No.</p>
+                <div class="input-wrap" onkeypress="{!c.handleKeyPress}">
+                  <lightning:input aura:id="inputMachineNoValue" name="machineNo" value="{!v.machineNo}" variant="label-hidden" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>Serial No.</p>
+                <div class="input-wrap" onkeypress="{!c.handleKeyPress}">
+                  <lightning:input name="equipmentNo" value="{!v.equipmentNo}" variant="label-hidden" />
+                </div>
+              </div>
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" onclick="{!c.searchEquipment}" />
+          </div>
+            <div class="card-02 top-card">
+              <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">Model</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">Serial</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:if isTrue="{!empty(v.serialList)}">
+                      <tr class="slds-hint-parent">
+                        <td scope="row" colspan="9" class="center">
+                          {!$Label.c.service_msg_validation_013}
+                        </td>
+                      </tr>
+                    </aura:if>
+                    <aura:iteration items="{!v.serialList}" var="sl" indexVar="j">
+                      <tr class="slds-hint-parent" name="serialList" onclick="{!c.selectRow}" data-record="{!j}">
+                        <td>
+                          <div class="slds-truncate" title="Model">{!sl.machineName}</div>
+                        </td>
+                        <td>
+                          <div class="slds-truncate" title="Serial">{!sl.label}</div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+          </div>
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.serialModalCancel}" />
+          </footer>
+        </div>
+      </div>
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+</aura:component>

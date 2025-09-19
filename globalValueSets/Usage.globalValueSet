@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>A10</fullName>
+        <default>false</default>
+        <label>Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>A11</fullName>
+        <default>false</default>
+        <label>3rd Party</label>
+    </customValue>
+    <customValue>
+        <fullName>A12</fullName>
+        <default>false</default>
+        <label>Prepaid</label>
+    </customValue>
+    <customValue>
+        <fullName>B01</fullName>
+        <default>false</default>
+        <label>ORDER TO STOCK</label>
+    </customValue>
+    <customValue>
+        <fullName>B02</fullName>
+        <default>false</default>
+        <label>ORDER TO FACTORY</label>
+    </customValue>
+    <customValue>
+        <fullName>F01</fullName>
+        <default>false</default>
+        <label>STOCK</label>
+    </customValue>
+    <customValue>
+        <fullName>F02</fullName>
+        <default>false</default>
+        <label>CUSTOMER</label>
+    </customValue>
+    <customValue>
+        <fullName>F03</fullName>
+        <default>false</default>
+        <label>RENTAL</label>
+    </customValue>
+    <customValue>
+        <fullName>SVP</fullName>
+        <default>false</default>
+        <label>SVP Configurations</label>
+    </customValue>
+    <customValue>
+        <fullName>Y0</fullName>
+        <default>false</default>
+        <label>Military Supply</label>
+    </customValue>
+    <customValue>
+        <fullName>Y1</fullName>
+        <default>false</default>
+        <label>Gen. Order(Portal)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y2</fullName>
+        <default>false</default>
+        <label>Exempt Mat. Det.</label>
+    </customValue>
+    <customValue>
+        <fullName>Y3</fullName>
+        <default>false</default>
+        <label>MMI - Approved</label>
+    </customValue>
+    <customValue>
+        <fullName>Z1</fullName>
+        <default>false</default>
+        <label>New Purchase</label>
+    </customValue>
+    <customValue>
+        <fullName>Z2</fullName>
+        <default>false</default>
+        <label>Additional Purchase</label>
+    </customValue>
+    <customValue>
+        <fullName>Z3</fullName>
+        <default>false</default>
+        <label>Replacement</label>
+    </customValue>
+    <customValue>
+        <fullName>Z4</fullName>
+        <default>false</default>
+        <label>Special DC Sale</label>
+    </customValue>
+    <customValue>
+        <fullName>Z5</fullName>
+        <default>false</default>
+        <label>Special Application</label>
+    </customValue>
+    <customValue>
+        <fullName>Z6</fullName>
+        <default>false</default>
+        <label>Consolidation</label>
+    </customValue>
+    <customValue>
+        <fullName>Safety Companion Fund Execution</fullName>
+        <default>false</default>
+        <label>Safety Companion Fund Execution</label>
+    </customValue>
+    <masterLabel>Usage</masterLabel>
+    <sorted>true</sorted>
+</GlobalValueSet>

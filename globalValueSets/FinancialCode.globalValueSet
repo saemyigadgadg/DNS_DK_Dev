@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>KA01</fullName>
+        <default>false</default>
+        <label>Doosan Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA02</fullName>
+        <default>false</default>
+        <label>Hanmi Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA03</fullName>
+        <default>false</default>
+        <label>SamSung Card</label>
+    </customValue>
+    <customValue>
+        <fullName>KA04</fullName>
+        <default>false</default>
+        <label>Aju Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA05</fullName>
+        <default>false</default>
+        <label>IBK Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA06</fullName>
+        <default>false</default>
+        <label>Hyosung Lease</label>
+    </customValue>
+    <customValue>
+        <fullName>KA07</fullName>
+        <default>false</default>
+        <label>Hyundai Commercial</label>
+    </customValue>
+    <customValue>
+        <fullName>KA08</fullName>
+        <default>false</default>
+        <label>Acuon Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA09</fullName>
+        <default>false</default>
+        <label>ShinHan Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA10</fullName>
+        <default>false</default>
+        <label>BNK Capital</label>
+    </customValue>
+    <customValue>
+        <fullName>KA11</fullName>
+        <default>false</default>
+        <label>NH Capital</label>
+    </customValue>
+    <masterLabel>Financial Code</masterLabel>
+    <sorted>true</sorted>
+</GlobalValueSet>

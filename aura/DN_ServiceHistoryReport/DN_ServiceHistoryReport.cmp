@@ -1,0 +1,745 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 05-07-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   01-07-2025   Hyerin Ro      Initial Version
+  2.0   01-08-2025   Hayeong Min    기능추가
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_ServiceHistoryReportController" description="하자접수이력관리">
+
+    <aura:attribute name="isLoading" type="Boolean" default="true" />
+    <aura:attribute name="orderNumber" type="String" default="" />
+
+    <aura:attribute name="workcenterOptions" type="List" default="[]" />
+    <aura:attribute name="workCenter" type="String" default="" />
+
+    <aura:attribute name="branchOptions" type="List" default="[]" />
+    <aura:attribute name="branch" type="String" default="" />
+
+    <aura:attribute name="statusOptions" type="List" default="[]" />
+    <aura:attribute name="status" type="String" default="" />
+
+    <aura:attribute name="account" type="String" default="" />
+    <aura:attribute name="customerCode" type="String" default="" />
+    <aura:attribute name="modelValue" type="String" default="" />
+    <aura:attribute name="modelTypeValue" type="String" default="" />
+    <aura:attribute name="modelTypeNameValue" type="String" default="" />
+    <aura:attribute name="isCheckStandard" type="Boolean" default="false" />
+
+    <aura:attribute name="startDate" type="Date" default="" />
+    <aura:attribute name="endDate" type="Date" default="" />
+    <aura:attribute name="completeStartDate" type="Date" default="" />
+    <aura:attribute name="completeEndDate" type="Date" default="" />
+    <aura:attribute name="confirmStartDate" type="Date" default="" />
+    <aura:attribute name="confirmEndDate" type="Date" default="" />
+    <aura:attribute name="historyList" type="Object[]" />
+
+    <aura:attribute name="searchModel" type="Boolean" default="false" />
+    <aura:attribute name="searchTypeModel" type="Boolean" default="false" />
+    <aura:attribute name="isModalLoading" type="Boolean" default="false" />
+    <aura:attribute name="selectedModel" type="String" default="" />
+    <aura:attribute name="modelSearchVal" type="String" default="" />
+    <aura:attribute name="modelTypeSearchVal" type="String" default="" />
+    <aura:attribute name="equipList" type="List" default="[]" />
+    <aura:attribute name="modelList" type="List" />
+    <aura:attribute name="selectedModelList" type="List" />
+    <aura:attribute name="selectedEquipList" type="List" default="[]" />
+
+    
+
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!-- ExcelJS -->
+    <ltng:require scripts="{!$Resource.ExcelJS + '/unpkg/exceljs.min.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <article class="slds-card total-wrap">
+
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="medium" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:shift_type' alternativeText='shift_type' size='small'>
+                    </lightning:icon>
+                </div>
+                <h2 class="slds-card__header-title">하자접수이력관리</h2>
+            </header>
+            <div class="button-wrap">
+                <lightning:button iconName="doctype:excel" label="Excel" title="Excel" onclick="{! c.downloadExcel }" />
+                <lightning:button variant="brand" label="조회" title="조회" onclick="{! c.handleSearch }" />
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body body">
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>접수일자</p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="" value="{!v.startDate}" variant="label-hidden" aura:id="" />
+                        <span class="to">~</span>
+                        <lightning:input type="date" name="" value="{!v.endDate}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>완료일자</p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="" value="{!v.completeStartDate}" variant="label-hidden"
+                            aura:id="" />
+                        <span class="to">~</span>
+                        <lightning:input type="date" name="" value="{!v.completeEndDate}" variant="label-hidden"
+                            aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>오더번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="" name="" value="{!v.orderNumber}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <!-- <p>통지번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="" name="" value="" variant="label-hidden" aura:id="" />
+                    </div> -->
+                    <p>표준공수</p>
+                    <div class="input-wrap">
+                        <lightning:input type="checkbox" variant="label-hidden" name="input1" checked="{!v.isCheckStandard}"/>
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>서비스 Work Center</p>
+                    <div class="input-wrap">
+                        <lightning:combobox name="" value="{!v.workCenter}" variant="label-hidden"
+                            options="{! v.workcenterOptions }" placeholder="선택" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>관할지사</p>
+                    <div class="input-wrap">
+                        <lightning:combobox name="" value="{!v.branch}" variant="label-hidden"
+                            options="{! v.branchOptions }" placeholder="선택" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>업체명</p>
+                    <div class="input-wrap">
+                        <lightning:input type="" name="" value="{!v.account}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>고객번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="" name="" value="{!v.customerCode}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>진행상태</p>
+                    <div class="input-wrap">
+                        <lightning:combobox name="" value="{!v.status}" variant="label-hidden"
+                            options="{!v.statusOptions}" placeholder="선택" />
+                    </div>
+                </div>
+                <!-- <div class="field-wrap">
+                    <p>유상서비스</p>
+                    <div class="input-wrap">
+                        <lightning:combobox name="" value="" variant="label-hidden" aura:id="" placeholder="선택" />
+                    </div>
+                </div> -->
+                <div class="field-wrap">
+                    <p>확정일자</p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="" value="{!v.confirmStartDate}" variant="label-hidden"
+                            aura:id="" />
+                        <span class="to">~</span>
+                        <lightning:input type="date" name="" value="{!v.confirmEndDate}" variant="label-hidden"
+                            aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>장비번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="" name="" value="{!v.modelValue}" variant="label-hidden" aura:id="" disabled="true" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openModal}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <!-- <p>표준공수</p>
+                    <div class="input-wrap">
+                        <lightning:input type="checkbox" variant="label-hidden" name="input1" checked="{!v.isCheckStandard}"/>
+                    </div> -->
+                    <p>기종</p>
+                    <div class="input-wrap">
+                        <lightning:input type="" name="" value="{!v.modelTypeValue}" variant="label-hidden" aura:id="" disabled="true" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openTypeModal}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-02">
+                <div class="table-wrap">
+                    <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">오더번호</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">PM Activity</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">관할지사</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스 W/C</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스요원(명)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">기종</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">장비번호</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">출하일자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">업체명</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">주소</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">전화번호</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">접수유형(대)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">접수유형(중)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">접수내용</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">고장부위(대)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">고장부위(소)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">고장현상</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Ticket 접수일자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Ticket 접수시간</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">출발예정일시</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Service Order 생성일자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Service Order 생성시간</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">고객약속일자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">고객약속시간</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">출발일자(Mobile)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">출발시간(Mobile)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">작업완료일자(Mobile)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">작업완료시간(Mobile)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">출발일자(Service Report)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">출발시간(Service Report)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">도착일자(Service Report)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">도착시간(Service Report)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">작업완료일자(Service Report)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">작업완료시간(Service Report)</div>
+                                </th>
+
+
+
+                                <!-- <th class="" scope="col">
+                                    <div class="slds-truncate" title="">수리요청일</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">수리요청시</div>
+                                </th> -->
+                                <!-- <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스시작일</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스시작시</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스완료일</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스완료시</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스확정일</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">서비스확정시</div>
+                                </th> -->
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">상담원</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">조치내역</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">2시간내 출동</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">24시간내 처리</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">작업 M/H</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">표준공수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">표준인원</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">표준작업항목</div>
+                                </th>
+                                <!-- <th class="" scope="col">
+                                    <div class="slds-truncate" title="">장비 시리즈명</div>
+                                </th> -->
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">청구여부</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">표준시간초과사유</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">진행상태</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">공동작업자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">포털 확정일자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">포털 확정시간</div>
+                                </th>
+                                <!-- <th class="" scope="col">
+                                    <div class="slds-truncate" title="">포털 출발일자</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">포털 출발시간</div>
+                                </th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.historyList}" var="item" indexVar="j">
+                                <tr class="slds-line-height_reset">
+                                    <td class="row-index">
+                                        <div class="slds-truncate" title="">{!j+1}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.orderNum}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.pmType}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.branch}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.workcenter}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.resourceName}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.model}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serialNum}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.shippingDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.account}</div>
+                                    </td>
+                                    <td class="left">
+                                        <div class="slds-truncate" title="">{!item.address}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.phone}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.ticketTypeMajor}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.ticketTypeMiddle}</div>
+                                    </td>
+                                    <td class="left receptionDetail">
+                                        <div class="slds-truncate" title="">{!item.receptionDetail}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.failureAreaMajor}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.failureAreaMiddle}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.failurePhenomenon}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.receptionDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.receptionTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.scheduledDispatchTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.orderCreatedDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.orderCreatedTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.timeAgreedOnSiteDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.timeAgreedOnSiteTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.mobile_departureDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.mobile_departureTime}</div>
+                                    </td>
+                                    <!-- <td>
+                                        <div class="slds-truncate" title="">{!item.arrivalDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.arrivalTime}</div>
+                                    </td> -->
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.mobile_completeDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.mobile_completeTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serviceReport_departureDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serviceReport_departureTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serviceReport_arrivalDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serviceReport_arrivalTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serviceReport_completeDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.serviceReport_completeTime}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.receptionist}</div>
+                                    </td>
+                                    <td class="inspectionDetail left">
+                                        <div class="slds-truncate" title="">{!item.inspectionDetail}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.in2Hour}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.in24Hour}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.totalMH}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.standardMH}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.standardCnt}</div>
+                                    </td>
+                                    <td class="left standardWork">
+                                        <div class="slds-truncate" title="">{!item.standardWork}</div>
+                                    </td>
+                                    <!-- <td>
+                                        <div class="slds-truncate" title="">{!item.equipSeries}</div>
+                                    </td> -->
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.isBilled}</div>
+                                    </td>
+                                    <td class="overReason left">
+                                        <div class="slds-truncate" title="">{!item.overReason}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.status}</div>
+                                    </td>
+                                    <td class="left">
+                                        <div class="slds-truncate" title="">{!item.collaborator}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.portal_completetDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!item.portal_completetTime}</div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+    <!-- 3. Model 검색 모달 -->
+    <aura:if isTrue="{!v.searchModel}">
+        <div class="searchModelList">
+
+            <div aura:id="searchModelList" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">장비번호 선택</h2>
+                    </header>
+                    <!-- Modal Body -->
+                    <div class="modal-body slds-modal__content">
+                        <aura:if isTrue="{! v.isModalLoading }">
+                            <lightning:spinner size="medium" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+                        <div class="card-01 top-card">
+                            <div class="field-wrap">
+                                <p>장비번호</p>
+                                <span onkeypress="{!c.handleMEnterKey}" class="slds-size--11-of-12">
+                                    <lightning:input variant="label-hidden" placeholder="장비번호를 입력해주세요."
+                                    value="{!v.modelSearchVal}" />
+                                </span>
+                            </div>
+                            <div class="button-wrap">
+                                <lightning:button name="search" label="Search" onclick="{!c.modelSearch}" />
+                            </div>
+                        </div>
+                        <!-- 선택된 모델 영역 -->
+                        <div class="card-03 selected-models" style="margin-top: 1rem;">
+                            <div class="slds-pill_container" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                <aura:iteration items="{!v.selectedEquipList}" var="selected">
+                                    <span class="slds-pill" title="{!selected}">
+                                        <span class="slds-pill__label">{!selected}</span>
+                                        <lightning:buttonIcon iconName="utility:close"
+                                                            alternativeText="Remove"
+                                                            variant="bare"
+                                                            value="{!selected}"
+                                                            onclick="{!c.removeSelectedEquip}" />
+                                    </span>
+                                </aura:iteration>
+                            </div>
+                        </div>
+                        <!-- 전체 equipList 테이블 영역 -->
+                        <div class="card-02 top-card">
+                            <div class="slds-scrollable table-wrap">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="10%" />
+                                        <col width="45%" />
+                                        <col width="45%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title=""></div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">장비번호</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">기종</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.equipList}" var="equip" indexVar="j">
+                                            <tr class="slds-hint-parent" data-record="{!j}">
+                                                <td data-label="">
+                                                    <div class="slds-truncate" title="">
+                                                        <lightning:input type="checkbox"
+                                                                        variant="label-hidden"
+                                                                        name="{!equip.Name}"
+                                                                        class="equipbox"
+                                                                        checked="{!equip.isChecked}"
+                                                                        onchange="{!c.hadleEquipModel}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="장비번호">
+                                                    <div class="slds-truncate" title="장비번호">{!equip.Name}</div>
+                                                </td>
+                                                <td data-label="기종">
+                                                    <div class="slds-truncate" title="기종">{!equip.MachineName__c}</div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Close}" onclick="{!c.closeModal}" />
+                        <lightning:button variant="Brand" label="{!$Label.c.DNS_B_Select}" onclick="{!c.selectModel}" />
+                    </footer>
+                </div>
+            </div>
+
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+    <!-- 기종 Model 검색 모달 -->
+    <aura:if isTrue="{!v.searchTypeModel}">
+        <div class="searchModelList">
+            <div aura:id="searchModelList" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">기종</h2>
+                    </header>
+                    <div class="modal-body slds-modal__content">
+                        <aura:if isTrue="{! v.isModalLoading }">
+                            <lightning:spinner size="medium" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+
+                        <div class="card-01 top-card">
+                            <div class="field-wrap">
+                                <p>기종</p>
+                                <span onkeypress="{!c.handleMTEnterKey}" class="slds-size--11-of-12">
+                                    <lightning:input variant="label-hidden" placeholder="기종번호를 입력해주세요."
+                                        value="{!v.modelTypeSearchVal}"/>
+                                </span>
+                            </div>
+                            <div class="button-wrap">
+                                <lightning:button name="search" label="Search" onclick="{!c.modelTypeSearch}" />
+                            </div>
+                        </div>
+                        <div class="card-03 selected-models" style="margin-top: 1rem;">
+                            <div class="slds-pill_container" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                <aura:iteration items="{!v.selectedModelList}" var="selected">
+                                    <span class="slds-pill" title="{!selected.Name}">
+                                        <span class="slds-pill__label">{!selected.Name}</span>
+                                        <button class="slds-button slds-button_icon slds-button_icon" title="Remove"
+                                                data-id="{!selected.Id}" onclick="{!c.removeSelectedModel}">
+                                            <lightning:icon iconName="utility:close" size="x-small" alternativeText="Remove" />
+                                        </button>
+                                    </span>
+                                </aura:iteration>
+                            </div>
+                        </div>
+                        <div class="card-02 top-card">
+                            <div class="slds-scrollable table-wrap">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="10%" />
+                                        <col width="45%" />
+                                        <col width="45%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title=""></div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">기종 코드</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">기종</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.modelList}" var="type" indexVar="k">
+                                            <tr class="slds-hint-parent" data-record="{!k}">
+                                                <td data-label="">
+                                                    <div class="slds-truncate" title="">
+                                                        <lightning:input type="checkbox" variant="label-hidden"
+                                                            name="{!type.Name}" class="equipbox" checked="{!type.isChecked}"
+                                                            onchange="{!c.hadleModel}" />
+                                                    </div>
+                                                </td>
+                                                <td data-label="장비번호">
+                                                    <div class="slds-truncate" title="Model No.">{!type.ModelCode__c}</div>
+                                                </td>
+                                                <td data-label="기종">
+                                                    <div class="slds-truncate" title="기종">{!type.Name}</div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Close}" onclick="{!c.closeTypeModal}" />
+                        <lightning:button variant="Brand" label="{!$Label.c.DNS_B_Select}" onclick="{!c.selectTypeModel}" />
+                    </footer>
+                </div>
+            </div>
+
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+</aura:component>

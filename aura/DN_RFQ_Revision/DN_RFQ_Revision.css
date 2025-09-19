@@ -1,0 +1,36 @@
+.THIS.slds-modal__container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+.THIS .hidden-field {
+  display: none;
+}
+.THIS .slds-modal__content {
+  overflow: hidden;
+}
+.THIS .body {
+  max-height: calc(100vh - 15rem);
+  overflow: auto;
+  padding: 1.25rem;
+}
+.THIS .slds-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.THIS .body .header {
+  background: #f3f3f3;
+  width: 100%;
+  text-align: left;
+  color: #181818;
+  font-size: 1rem;
+  padding: .5rem 1rem;
+  border-radius: 0.25rem;
+}
+.THIS .body .input-container {
+  padding: 0.5rem 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+}

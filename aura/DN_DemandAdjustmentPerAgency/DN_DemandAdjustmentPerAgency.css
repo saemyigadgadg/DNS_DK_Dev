@@ -1,0 +1,206 @@
+.THIS .total-wrap{
+    background-color: #f3f3f3;
+}
+
+.THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%)
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: flex;
+    align-items: end;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+}
+
+.THIS .top-card .field-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.THIS .top-card .field-wrap p {
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+.THIS .top-card .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .25rem;
+}
+
+/* Card 02 */
+.THIS .card-02 .card-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.THIS .card-02 .card-header .field-container{
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+.THIS .card-02 .card-header .field-container p{
+    margin-bottom: 0;
+}
+.THIS .card-02 .card-header .field-container .slds-input{
+    min-height: 1.75rem;
+    border-radius: 3px;
+    min-width: 7rem;
+}
+
+
+/* Card Header */
+
+.THIS .top-card .card-header{
+    margin-bottom: 1rem;
+}
+
+.THIS .top-card .card-header h2{
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Table Design */
+
+.THIS .body table:not(.slds-datepicker__month){
+    border: 1px solid #D9D9D9;
+}
+
+.THIS .body table .colunmsTd ,
+.THIS .body table:not(.slds-datepicker__month) th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .5rem 1rem;
+    border: 1px solid #d9d9d9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table:not(.slds-datepicker__month) td {
+    padding: .25rem 0.5rem;
+    border-bottom: 1px solid #D9D9D9;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.THIS .body table:not(.slds-datepicker__month) .slds-input {
+    border: none !important;
+}
+
+
+/* SLDS Custom */
+
+.THIS .slds-table--header-fixed_container:before {
+    display: none;
+}
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    min-width: 12rem;
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+/*  
+.THIS .top-card {
+    width: 98%;
+    padding: 1rem 2rem;
+    background: #ffffff;
+    margin: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+}
+ 
+.THIS .top-card .btn-group {
+    display: flex;
+    justify-content: space-between;
+}
+ 
+.THIS .slds-table th, .THIS .slds-table th div {
+    color: #4345aa;
+}
+.THIS .start-date-wrapper, .THIS .end-date-wrapper {
+    position: relative;
+}
+ 
+.THIS .top-card .btn-group {
+    width: 100%;
+    text-align: end;
+}
+
+.THIS .colunmsTd {
+    background-color: #EEF2FF;
+} */

@@ -1,0 +1,68 @@
+<!--
+  @description       :
+  @author            : sungheum.yeon@sobetec.com
+  @group             :
+  @last modified on  : 2025-04-21
+  @last modified by  : chungwoo.lee@sobetec.com
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div class="wrapper">
+        <div class="btn-wrap">
+            <lightning-button icon-name="utility:add" name="addItems" onclick={addLinesFunction}></lightning-button>
+            <lightning-button icon-name="utility:save" type="button" name="saveButton"  onclick={saveResultHandler}></lightning-button>
+            <lightning-button icon-name="utility:delete" name="searchItems"
+                onclick={deleteWorkList}></lightning-button>
+        </div>
+        <div class="table-wrap">
+            <template for:each={workOrderResults} for:item="record">
+                <lightning-record-edit-form key={record.resultId} object-api-name="WorkOrderResult__c">
+                    <lightning-messages></lightning-messages>
+                    <div class="contents-wrap">
+                        <div class="check-wrap">
+                            <!-- 체크박스 -->
+                            <div class="input-wrap">
+                                <lightning-input type="checkbox" data-id={record.resultId}
+                                    onchange={checkhandler}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <!-- 필드 값 입력 -->
+                            <div class="input-wrap">
+                                <lightning-input-field required="true" field-name="WorkDate__c" value={record.WorkDate} label="Work Date"
+                                    data-id={record.resultId} name="WorkDate" onchange={handleFieldChange}></lightning-input-field>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-combobox required name="WorkStartTime" label="Start Time" value={record.WorkStartTime}
+                                    data-id={record.resultId} options={timeOptions} placeholder="Select option.."
+                                    onchange={handleFieldChange}>
+                                </lightning-combobox>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-input-field required="true" field-name="TravelHour__c" value={record.TravelHour}
+                                    data-id={record.resultId} name="TravelHour" 
+                                    onchange={handleFieldChange}></lightning-input-field>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-combobox required name="WorkEndTime" label="End Time" value={record.WorkEndTime}
+                                    data-id={record.resultId} options={timeOptions} placeholder="Select option.."
+                                    onchange={handleFieldChange}>
+                                </lightning-combobox>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-input-field required="true" field-name="AirTrip__c" value={record.AirTrip}
+                                    data-id={record.resultId} name="AirTrip" onchange={handleFieldChange}></lightning-input-field>
+                            </div>
+                            <div class="input-wrap">
+                                <lightning-input-field required="true" field-name="WorkTime__c" value={record.WorkTime} label="Work Time"
+                                    data-id={record.resultId} name="WorkTime" disabled="true"></lightning-input-field>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-record-edit-form>
+            </template>
+        </div>
+    </div>
+</template>

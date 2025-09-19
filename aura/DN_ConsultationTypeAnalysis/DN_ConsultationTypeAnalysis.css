@@ -1,0 +1,154 @@
+/* Header */
+
+.THIS .slds-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+}
+
+.THIS .slds-card__header .slds-media_center{
+    gap: 0.5rem;
+}
+
+.THIS .slds-card__header-title {
+    font-size: 1rem;
+}
+
+/* Body */
+
+.THIS .body {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 16rem);
+    padding: 0.75rem;
+    gap: 0.75rem;
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: flex;
+    align-items: flex-end;
+    padding-left: 0.25rem;
+    justify-content: space-between;
+}
+
+.THIS .card-01 .field-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    flex: auto;
+    min-width: 9rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .card-01 .field-wrap .slds-form-element__help {
+    display: none !important;
+}
+
+.THIS .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+
+.THIS .card-01 .button-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Card 02 */
+
+.THIS .table-wrap {
+    flex: auto;
+    overflow: auto;
+    color: #444;
+    border-right: 1px solid #c9c9c9;
+    border-left: 1px solid #c9c9c9;
+}
+
+.THIS .table-wrap table {
+    border-collapse: separate;
+}
+
+.THIS .table-wrap table thead {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.THIS .table-wrap table th {
+    text-align: center;
+    width: 6%;
+    font-weight: 700;
+}
+
+.THIS .table-wrap table .first-th {
+    border-left: 1px solid #c9c9c9
+}
+
+.THIS .table-wrap table thead tr:first-child th:first-child {
+    width: 10%;
+}
+
+.THIS .table-wrap table td {
+    text-align: right;
+}
+
+.THIS .table-wrap table td:first-child {
+    text-align: center;
+}
+
+.THIS .table-wrap table tfoot th,
+.THIS .table-wrap table tfoot td {
+    border-top: 1px solid #c9c9c9;
+    background-color: #EEF4FF;
+}
+
+/* SLDS Custom */
+
+.THIS .card-01 .input-wrap .slds-form-element__control {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    /* min-width: 12rem; */
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}

@@ -1,0 +1,225 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-05-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-13-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+    description="서비스 청구부품 불출진행 현황" controller="DN_PortalManageServiceController">
+
+    <!-- Aura Attribute -->
+    <aura:attribute name="isLoading"       type="Boolean"  default="false" />
+    <aura:attribute name="machineName"     type="String"  />
+    <aura:attribute name="assetName"       type="String"  />
+    <aura:attribute name="startDate"       type="Date"  />
+    <aura:attribute name="endDate"         type="Date"  />
+    <aura:attribute name="orderNumStart"   type="String"  />
+    <aura:attribute name="orderNumEnd"     type="String"  />
+    <aura:attribute name="partsOrderStart" type="String"  />
+    <aura:attribute name="partsOrderEnd"   type="String"  />
+    <aura:attribute name="WorkCenter"      type="Object"  />
+    <aura:attribute name="serialNumber"    type="String" /> <!-- 장비번호(기호 + 장비번호) -->
+    <aura:attribute name="orderOption"     type="List" default="[
+        {'label':'Field Service Order', 'value' : 'CS02'}
+    ]" />
+    <aura:attribute name="orderValue"      type="String" default="CS02" />
+    <aura:attribute name="orderList"       type="List" />
+    <aura:attribute name="excelList"       type="List" />
+
+    <!-- Handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <article class="slds-card">
+        <!-- 모달 -->
+        <div aura:id="ModelSearchModal" /> <!--기종/장비번호-->
+
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title slds-grid">
+                <lightning:icon iconName="standard:relationship" size="small"
+                    alternativeText="Service History Result" />
+                <h2 class="slds-truncate">서비스 청구부품 불출진행 현황</h2>
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left"
+                    onclick="{!c.doSearch}" />
+                <c:DN_ExcelUtilButton excelData="{!v.excelList}" ></c:DN_ExcelUtilButton>
+            </div>
+        </div>
+
+        <!-- body -->
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p class="label">주문유형<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:combobox name="type" options="{!v.orderOption}" variant="label-hidden" value="{!v.orderValue}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>기종</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.machineName}" variant="label-hidden" readonly="true"
+                            disabled="true" />
+                            <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine" 
+                            onclick="{!c.clearMachine}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openModelModal}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>장비번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.assetName}" variant="label-hidden"/>
+                        <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"  
+                            onclick="{!c.clearAsset}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openSerialNumberModal}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>오더번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.orderNumStart}" variant="label-hidden" aura:id="" />
+                        <span>~</span>
+                        <lightning:input type="text" name="" value="{!v.orderNumEnd}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>조회 일자<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" aura:id="Start" name="" value="{!v.startDate}"  
+                            variant="label-hidden" />
+                        <span>~</span>
+                        <lightning:input type="date" aura:id="End" name=""  value="{!v.endDate}"
+                            variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>부품 오더</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.partsOrderStart}" variant="label-hidden" aura:id="" />
+                        <span>~</span>
+                        <lightning:input type="text" name="" value="{!v.partsOrderEnd}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>WorkCenter<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.WorkCenter.Name}" variant="label-hidden" readonly="true"
+                            disabled="true" aura:id="" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 02 -->
+            <div class="card-02 top-card">
+
+                <div class="table-wrap" >
+                    <!-- Fixed : Left -->
+                    <div class="table-01 table-left" aura:id="leftTableDiv">
+                        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                            <thead>
+                                <tr>
+                                    <th>오더번호</th>
+                                    <th>접수번호</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.orderList}" var="order" indexVar="j">
+                                    <tr>
+                                        <td class="center">{!order.AUFNR}</td>
+                                        <td class="center">{!order.QMNUM}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Scrollable : Right -->
+                    <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="10%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    
+                                    <th>부품 오더</th>
+                                    <th>생성일자</th>
+                                    <th>항목</th>
+                                    <th>품목</th>
+                                    <th>내역</th>
+                                    <th>수량</th>
+                                    <th>단위</th>
+                                    <th>공급 가능 일자</th>
+                                    <th>산출 근거</th>
+                                    <th>출고 수량</th>
+                                    <th>잔여량</th>
+                                    <th>출하지시</th>
+                                    <th>출고</th>
+                                    <th>실 출고일</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <aura:iteration items="{!v.orderList}" var="order" indexVar="j">
+                                        <tr>
+                                            <td class="center">{!order.VBELN}</td>
+                                            <td class="center">{!order.AUDAT}</td>
+                                            <td class="center">{!order.POSNR}</td>
+                                            <td>{!order.MATNR}</td>
+                                            <td class="detail">{!order.MAKTX}</td>
+                                            <td class="center">{!order.KWMENG}</td>
+                                            <td class="center">{!order.MEINS}</td>
+                                            <td class="center">{!order.PRETD}</td>
+                                            <td class="center">{!order.CALBASE}</td>
+                                            <td class="center">{!order.LFIMG}</td>
+                                            <td class="center">{!order.REQTY}</td>
+                                            <td class="center">
+                                                <lightning:icon class="{!order.VBELN_ST_Icon}" iconName="utility:record" alternativeText="출하지시" title="출하지시" size="x-small"/>
+                                            </td>
+                                            <td class="center">
+                                                <lightning:icon class="{!order.WBSTA_ST_Icon}" iconName="utility:record" alternativeText="출고" title="출고" size="x-small" />
+                                            </td>
+                                            <td class="center">{!order.WADAT}</td>
+                                        </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+
+</aura:component>

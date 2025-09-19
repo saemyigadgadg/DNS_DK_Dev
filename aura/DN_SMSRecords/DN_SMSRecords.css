@@ -1,0 +1,230 @@
+.THIS table th,
+.THIS table tr,
+.THIS table td {
+   border: 1px solid #ced4da;
+   padding: 5px;
+}
+
+.THIS table th {
+   background-color: #e9ecef;
+}
+
+/* header-table */
+
+.THIS .header-table {
+   display: flex;
+}
+
+.THIS .header-table .header-table-wrapper {
+   width: 95%;
+}
+
+.THIS .header-table .table-btn {
+   width: 5%;
+   margin: 0 auto;
+}
+
+.THIS .header-table .table-btn .slds-button {
+   width: 55px;
+   height: 87px;
+   padding: 0;
+}
+
+.THIS .header-table .header-table-wrapper .date-wrapper {
+   width: 636px;
+}
+
+.THIS .header-table .header-table-wrapper tr th {
+   width: 10%;
+   text-align: center;
+}
+
+.THIS .header-table .header-table-wrapper tr td.date-wrapper>div {
+   display: flex;
+   align-items: center;
+   justify-content: space-around;
+}
+
+.THIS .header-table .header-table-wrapper tr td.date-wrapper>div p {
+   font-size: 16px;
+   font-weight: 600;
+}
+
+.THIS .header-table .header-table-wrapper tr td.date-wrapper lightning-input {
+   width: 45%;
+   min-width: 104px;
+}
+
+/* 캘린더 늘어나는 이슈 */
+
+.THIS .header-table .header-table-wrapper .slds-datepicker {
+   /* width: 20rem; */
+}
+
+/* sms-table */
+
+.THIS .sms-wrapper {
+   margin: 1rem;
+}
+
+.THIS .sms-wrapper .title {
+   margin-bottom: 5px;
+   font-size: 12px;
+   font-weight: 600;
+}
+
+.THIS .sms-wrapper .sms-table-wrapper {
+   overflow: hidden;
+   height: 65vh;
+   overflow-x: scroll;
+   overflow-y: scroll;
+}
+
+.THIS .sms-wrapper .sms-table-wrapper .sms-table {
+   width: 100rem;
+   min-width: 100%;
+}
+
+.THIS .sms-wrapper .sms-table-wrapper .sms-table thead {
+   position: sticky;
+   top: -1px;
+}
+
+.THIS .sms-wrapper .sms-table-wrapper .sms-table tr th {
+   text-align: center;
+}
+
+.THIS .sms-wrapper .sms-table-wrapper .sms-table tr th.message {
+   width: 21rem;
+}
+
+
+
+/* Send SMS */
+
+/* common */
+.THIS .send-wrapper .contents-wrapper table tbody::-webkit-scrollbar {
+   width: 7px;
+   height: 7px;
+   background-color: #f8f9fa;
+}
+
+.THIS .send-wrapper .contents-wrapper table tbody::-webkit-scrollbar-thumb {
+   background-color: #dee2e6;
+   height: 5%;
+   border-radius: 0.25rem;
+}
+
+.THIS:has(.send-wrapper) {
+   height: 100%;
+}
+
+.THIS .send-wrapper {
+   height: 100%;
+}
+
+.THIS .slds-tabs_default__content:has(.send-wrapper) {
+   height: 98%;
+}
+
+.THIS .slds-tabs_default:has(.send-wrapper) {
+   height: 100%;
+}
+
+/********** header **********/
+.THIS .send-wrapper .header-wrapper {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   height: 2.5rem;
+   border-top: 1px solid #ced4da;
+   border-bottom: 1px solid #ced4da;
+}
+
+.THIS .send-wrapper .header-wrapper .header-table {
+   width: 90%;
+}
+
+.THIS .send-wrapper .header-wrapper .header-table th {
+   width: 10%;
+   text-align: center;
+   border-bottom: 0;
+   border-top: 0;
+}
+
+.THIS .send-wrapper .header-wrapper .header-table td {
+   width: 40%;
+   border-top: 0;
+   border-bottom: 0;
+}
+
+.THIS .send-wrapper .header-wrapper .header-btn {
+   width: 10%;
+   padding: 5px;
+   text-align: end;
+}
+
+/********** contents-wrpper **********/
+.THIS .send-wrapper .contents-wrapper {
+   display: flex;
+   justify-content: space-between;
+   height: calc(100% - 6.5rem);
+   margin-top: 1rem;
+   padding-right: 1rem;
+   padding-left: 1rem;
+}
+
+.THIS .send-wrapper .contents-wrapper .title {
+   margin-bottom: 5px;
+   font-size: 12px;
+   font-weight: 600;
+}
+
+.THIS .send-wrapper .contents-wrapper .right-wrapper {
+   width: 47%;
+}
+
+.THIS .send-wrapper .contents-wrapper .right-wrapper .right-table {
+   height: 95%;
+   border: 1px solid #ced4da;
+}
+
+@media (max-width: 1600px) {
+   .THIS .send-wrapper .contents-wrapper .right-wrapper .right-table {
+      height: 93%;
+   }
+}
+
+.THIS .send-wrapper .contents-wrapper .arrow-wrapper {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   gap: 0.5rem;
+   width: 5%;
+}
+
+.THIS .send-wrapper .contents-wrapper .arrow-wrapper .slds-button+.slds-button {
+   margin-left: 0;
+}
+
+.THIS .send-wrapper .contents-wrapper .left-wrapper {
+   width: 47%;
+}
+
+.THIS .send-wrapper .contents-wrapper .left-wrapper .left-table {
+   height: 68%;
+   border: 1px solid #ced4da;
+}
+
+@media (max-width: 1600px) {
+   .THIS .send-wrapper .contents-wrapper .left-wrapper .left-table {
+      height: 56%;
+   }
+}
+
+/********** footer **********/
+
+.THIS .send-wrapper .btn-wrapper {
+   text-align: end;
+   margin-right: 1rem;
+}

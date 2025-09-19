@@ -1,0 +1,507 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-22-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-23-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="대상장비등록" access="global" controller="DN_RegisterTargetEquipmentController">
+    <!--Attribute-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="publicIsLoading" type="Boolean" default="false" />
+    <aura:attribute name="searchAccount" type="Boolean" default="false" />
+    <aura:attribute name="searchModel" type="Boolean" default="false" />
+    <aura:attribute name="searchAsset" type="Boolean" default="false" />
+    <aura:attribute name="targetList" type="List" />
+    <aura:attribute name="accountList" type="List" />
+    <aura:attribute name="modelList" type="List" />
+    <aura:attribute name="assetList" type="List" />
+    <aura:attribute name="accountName" type="String" />
+    <aura:attribute name="modelName" type="String" />
+    <aura:attribute name="assetName" type="String" />
+    <aura:attribute name="accountSearchVal" type="String" />
+    <aura:attribute name="modelSearchVal" type="String" />
+    <aura:attribute name="assetSearchVal" type="String" />
+    <aura:attribute name="selectedEquipment" type="List" />
+    <aura:attribute name="DNSARecordType" type="Boolean" default="false" />
+    <aura:attribute name="maintPlant" type="String" />
+    <aura:attribute name="planningPlant" type="String" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_RegisterTargetEquipment) {
+            width: 80rem;
+            max-width: calc(100vw - 5rem);
+            padding: 3rem 0;
+        }
+        .slds-modal__content:has(.cDN_RegisterTargetEquipment) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_RegisterTargetEquipment) {
+            padding:0;
+        }
+    </aura:html>
+
+    <!--대상장비 중복확인 모달-->
+    <div class="existing-modal" aura:id="ExistingTargetEquipmentModal" />
+
+    <!-- 📌 1. 대상장비 등록 -->
+    <div class="slds-modal__container slds-modal_large">
+        <div class="RegisterTargetEquipmentModal">
+
+            <!-- 🍙 Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_TargetEquipmentRegister}</h2>
+                <div class="button-wrap">
+                    <lightning:buttonGroup>
+                        <lightning:button name="searchEquipment" label="{!$Label.c.DNS_B_Search}" onclick="{!c.searchEquipments}" />
+                    </lightning:buttonGroup>
+                </div>
+            </header>
+
+            <!-- 🍙 Modal Body -->
+            <div class="modal-body slds-modal__content">
+
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+
+                <lightning:recordEditForm objectApiName="Asset">
+                    <div class="card-01 top-card">
+                        <div class="field-wrap">
+                            <p>{!$Label.c.DNS_C_Account}</p>
+                            <div class="input-wrap">
+                                <!-- <lightning:input value="{!v.accountName}" variant="label-hidden" /> -->
+                                <lightning:recordEditForm objectApiName="CampaignAsset__c">
+                                    <lightning:inputField fieldName="AccountName__c" value="{!v.accountName}"
+                                        variant="label-hidden" />
+                                </lightning:recordEditForm>
+
+                                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                    onclick="{!c.accountSearchModal}" />
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{!$Label.c.DNS_C_Model}</p>
+                            <div class="input-wrap">
+                                <lightning:input variant="label-hidden" value="{!v.modelName}" />
+                                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                    onclick="{!c.modelSearchModal}" />
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>{!$Label.c.DNS_C_Equipment}</p>
+                            <div class="input-wrap">
+                                <lightning:input variant="label-hidden" value="{!v.assetName}" />
+                                <!-- <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                    onclick="{!c.assetSearchModal}" /> -->
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <lightning:inputField fieldName="Maintplant__c" aura:id="maintPlant"
+                                value="{!v.maintPlant}" />
+                        </div>
+                        <div class="field-wrap">
+                            <lightning:inputField fieldName="PlannerGrp__c" aura:id="planningPlant"
+                                value="{!v.planningPlant}" />
+                        </div>
+                    </div>
+
+                </lightning:recordEditForm>
+
+
+                <div class="card-02 top-card">
+
+                    <div class="table-02">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="12px" />
+                                <col width="40px" />
+                                <col width="40px" />
+                                <col width="28px" />
+                                <col width="40px" />
+                                <col width="40px" />
+                                <col width="40px" />
+                                <col width="40px" />
+                                <col width="40px" />
+                                <!-- <col width="5%" />
+                                <col width="12%" />
+                                <col width="12%" />
+                                <col width="7%" />
+                                <col width="30%" />
+                                <col width="6%" />
+                                <col width="7%" />
+                                <col width="17%" /> -->
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">({!v.targetList.length})</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Equipment}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Account}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_AccountCode}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Address}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Representative}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Phone}</div>
+                                    </th>
+                                    <aura:if isTrue="{!v.DNSARecordType}">
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="">Sold To</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="">Email</div>
+                                        </th>
+                                        <aura:set attribute="else">
+                                            <!-- DNSARecordType이 false일 때 -->
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_Manager}</div>
+                                            </th>
+                                        </aura:set>
+                                    </aura:if>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.targetList}" var="targetList" indexVar="j">
+                                    <tr>
+                                        <td scope="row" class="center">
+                                            <lightning:input type="checkbox" aura:id="checkbox"
+                                                onchange="{! c.handleCheckboxChange }" accesskey="{!j}" />
+                                        </td>
+                                        <td scope="row">
+                                            <a href="javascript:void(0);" onclick="{!c.openAssetId}"
+                                                data-recordid="{!targetList.AssetId}">
+                                                <div>{!targetList.Name}</div>
+                                            </a>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.AccountName}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.BusinessNumber}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.Address}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.Representative}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.Phone}</div>
+                                        </td>
+                                        <aura:if isTrue="{!v.DNSARecordType}">
+                                            <td scope="row">
+                                                <div>{!targetList.SoldTo}</div>
+                                            </td>
+                                            <td scope="row">
+                                                <div>
+                                                    <lightning:input type="text" aura:id="text" accesskey="{!j}"
+                                                        value="{!targetList.Email}" variant="label-hidden"
+                                                        placeholder="ex) dn@dn.com" />
+                                                </div>
+                                            </td>
+                                            <aura:set attribute="else">
+                                                <td scope="row">
+                                                    <div>
+                                                        <lightning:recordEditForm objectApiName="CampaignAsset__c">
+                                                            <lightning:inputField fieldName="Manager__c"
+                                                                aura:id="manager" accesskey="{!j}"
+                                                                value="{!targetList.Manager__c}"
+                                                                onchange="{!c.handleInputFieldChange}"
+                                                                variant="label-hidden" />
+                                                        </lightning:recordEditForm>
+                                                    </div>
+                                                </td>
+                                            </aura:set>
+                                        </aura:if>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🍙 Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Cancel}" title="Brand action" onclick="{!c.closeModal}" />
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Register}" title="Brand action" onclick="{!c.registerEquipment}" />
+            </footer>
+        </div>
+    </div>
+
+    <!-- 📌 2. 고객사 검색 모달 -->
+    <aura:if isTrue="{!v.searchAccount}">
+        <div class="accountListModal">
+            <div aura:id="accountListModal" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_SearchAccount }</h2>
+
+                        <!-- Close Button -->
+                        <button class="close_button_template slds-modal__close">
+                            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse'
+                                size='small' title='close' name="closeModal" onclick="{!c.accountListCancel}">
+                            </lightning:icon>
+                        </button>
+                    </header>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body slds-modal__content">
+
+                        <aura:if isTrue="{! v.publicIsLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+
+
+                        <div class="card-01 top-card">
+                            <div class="field-wrap">
+                                <p>{!$Label.c.DNS_C_Account}</p>
+                                <div class="input-wrap">
+                                    <lightning:input variant="label-hidden" value="{!v.accountSearchVal}" />
+                                    <lightning:button name="search" label="Search" onclick="{!c.accountSearch}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-02 top-card">
+                            <div class="slds-scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_AccountCode}</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_Account}</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_Representative}
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.accountList}" var="accountList" indexVar="j">
+                                            <tr class="slds-hint-parent" onclick="{!c.inputAccount}" data-record="{!j}">
+                                                <td data-label="고객사코드">
+                                                    <div class="slds-truncate" title="고객사코드">
+                                                        {!accountList.BusinessNumber}</div>
+                                                </td>
+                                                <td data-label="고객사명">
+                                                    <div class="slds-truncate" title="고객사코드">
+                                                        {!accountList.Name}</div>
+                                                </td>
+                                                <td data-label="대표자명">
+                                                    <div class="slds-truncate" title="대표자명">
+                                                        {!accountList.Representative}</div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                            onclick="{!c.accountListCancel}" />
+                    </footer>
+                </div>
+            </div>
+
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+    <!-- 📌 3. Model 검색 모달 -->
+    <aura:if isTrue="{!v.searchModel}">
+        <div class="searchModelList">
+
+            <div aura:id="searchModelList" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_SearchModelList}</h2>
+
+                        <!-- Close Button -->
+                        <button class="close_button_template slds-modal__close">
+                            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse'
+                                size='small' title='close' name="closeModal" onclick="{!c.modelListCancel}">
+                            </lightning:icon>
+                        </button>
+                    </header>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body slds-modal__content">
+
+                        <aura:if isTrue="{! v.publicIsLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+
+                        <div class="card-01 top-card">
+                            <div class="field-wrap">
+                                <p>{!$Label.c.DNS_C_Model}</p>
+                                <div class="input-wrap">
+                                    <lightning:input variant="label-hidden" value="{!v.modelSearchVal}" />
+                                    <lightning:button name="search" label="Search" onclick="{!c.modelSearch}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-02 top-card">
+                            <div class="slds-scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_Model}</div>
+                                            </th>
+                                            <!-- <th class="" scope="col">
+                                                <div class="slds-truncate" title="">기종군</div>
+                                            </th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.modelList}" var="modelList" indexVar="j">
+                                            <aura:if isTrue="{!modelList.Model}">
+                                                <tr class="slds-hint-parent" onclick="{!c.inputModel}"
+                                                    data-record="{!j}">
+                                                    <td data-label="기종">
+                                                        <div class="slds-truncate" title="기종">{!modelList.Model}</div>
+                                                    </td>
+                                                    <!-- <td data-label="기종군">
+                                                        <div class="slds-truncate" title="기종군">{!modelList.ModelCategory}</div>
+                                                    </td> -->
+                                                </tr>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                            onclick="{!c.modelListCancel}" />
+                    </footer>
+                </div>
+            </div>
+
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+    <!-- 📌 4. 제조번호 검색 모달 -->
+    <aura:if isTrue="{!v.searchAsset}">
+        <div class="searchAssetList">
+
+
+            <div aura:id="searchAssetList" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_SearchEquipmentList}</h2>
+
+                        <!-- Close Button -->
+                        <button class="close_button_template slds-modal__close">
+                            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse'
+                                size='small' title='close' name="closeModal" onclick="{!c.assetListCancel}">
+                            </lightning:icon>
+                        </button>
+                    </header>
+
+                    <!-- Modal Body -->
+                    <div class="modal-body slds-modal__content">
+
+                        <aura:if isTrue="{! v.publicIsLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+
+
+                        <div class="card-01 top-card">
+                            <div class="field-wrap">
+                                <p>{!$Label.c.DNS_C_Equipment}</p>
+                                <div class="input-wrap">
+                                    <lightning:input variant="label-hidden" value="{!v.assetSearchVal}" />
+                                    <lightning:button name="search" label="Search" onclick="{!c.assetSearch}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-02 top-card">
+                            <div class="slds-scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_SerialNumber}</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_Account}</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.assetList}" var="assetList" indexVar="j">
+                                            <tr class="slds-hint-parent" onclick="{!c.inputAsset}" data-record="{!j}">
+                                                <td data-label="제조번호">
+                                                    <div class="slds-truncate" title="제조번호">{!assetList.Name}</div>
+                                                </td>
+                                                <td data-label="고객사명">
+                                                    <div class="slds-truncate" title="고객사명">{!assetList.AccountName}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                            onclick="{!c.assetListCancel}" />
+                    </footer>
+                </div>
+            </div>
+
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+
+</aura:component>

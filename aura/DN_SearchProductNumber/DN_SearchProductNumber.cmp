@@ -1,0 +1,213 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 일단 오더 생성에서 사용하도록 셋팅 했습니다.
+  @last modified on  : 2025-09-15
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-05-29   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+  controller="DN_PortalModalController"
+  description="부품검색">
+
+  <!-- attribute -->
+  <aura:attribute name="isLoading"        type="Boolean" default="false" /> <!-- 로딩 -->
+  <aura:attribute name="parentCmp"        type="String" /> <!-- 모달창을 호출한 컴포넌트명 -->
+  <aura:attribute name="filterPartList"   type="List" /> <!-- 모달창 호출 시 기존 Part제외할 값 -->
+
+  <aura:attribute name="type"               type="String" />
+  <aura:attribute name="partCode"           type="String" />
+  <aura:attribute name="partName"           type="String" />
+  <aura:attribute name="originPartsNumber"  type="String" />
+  <aura:attribute name="partsList"          type="List"   />
+
+  <!-- 대체품 모달 용 -->
+  <aura:attribute name="partNumber"         type="String" />
+  <aura:attribute name="replacementList"    type="List"   />
+
+  <!-- Event -->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <!-- Excel -->
+  <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />  
+
+  <div class="searchProductModal">
+    <div aura:id="searchProductModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container slds-modal_large">
+
+        <!-- 🚩Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading }">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading"></lightning:spinner>
+        </aura:if>
+
+        <!-- Modal을 열때 받아온 type으로 구분 -->
+        <aura:if isTrue="{!v.type == '부품번호'}">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.service_ttl_part_no}</h2>
+            <div class="button-wrap">
+              <lightning:button name="search" label="{!$Label.c.service_btn_search}" onclick="{!c.searchParts}" />
+            </div>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.searchPartsModalCancel}"> </lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-body slds-modal__content searchProductModal">
+
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>{!$Label.c.service_lbl_part_no}</p>
+                <div class="input-wrap"  onkeypress="{!c.handleKeyPress}">
+                  <lightning:input name="partCode" value="{!v.partCode}" variant="label-hidden" onchange="{!c.handleChange}" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>{!$Label.c.service_lbl_part_name}</p>
+                <div class="input-wrap" onkeypress="{!c.handleKeyPress}">
+                  <lightning:input name="partName" value="{!v.partName}" variant="label-hidden" onchange="{!c.handleChange}"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-02 top-card">
+              <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <colgroup>
+                    <col width="40%" />
+                    <col width="60%" />
+                  </colgroup>
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th scope="col">
+                        <div class="slds-truncate" title="">{!$Label.c.service_fld_part_no}</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">{!$Label.c.service_fld_part_name}</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:iteration items="{!v.partsList}" var="parts" indexVar="i">
+                      <tr class="slds-hint-parent" onclick="{!c.clickRow}" data-record="{!i}">
+                        <td type="부품번호">
+                          <div class="slds-truncate" title="부품번호">
+                            <lightning:input type="text" name="input1" variant="label-hidden" value="{!parts.ProductCode}" 
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="품명">
+                          <div class="slds-truncate" title="품명" >
+                            <lightning:input type="text" name="input2" variant="label-hidden" value="{!parts.Name}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+              onclick="{!c.searchPartsModalCancel}" />
+          </footer>
+        </aura:if>
+
+        <!-- Modal을 열때 받아온 type으로 구분 -->
+        <aura:if isTrue="{!v.type == '대체품'}">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_FSL_Replacement} <!-- 대체품 --></h2>
+
+            <div class="button-wrap">
+              <!-- <lightning:button name="search" label="검색" iconName="utility:search" onclick="" /> -->
+              <lightning:button name="excel" label="엑셀" iconName="doctype:excel" onclick="{!c.downloadExcel}" />
+            </div>
+
+             <!-- Close Button -->
+             <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal" onclick="{!c.searchPartsModalCancel}"></lightning:icon>
+            </button>
+
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-body slds-modal__content replacement-modal">
+
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>{!$Label.c.service_fld_part_no}<!-- 부품번호 --></p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.partNumber}" variant="label-hidden" disabled="true" />
+                </div>
+              </div>
+            </div>
+
+            <div class="card-02 top-card">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_lbl_part_no}<!-- 부품번호 --></div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.service_lbl_part_name}<!-- 품명 --></div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">{!$Label.c.BPI_StockAvailability}<!-- 재고유무 --></div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.replacementList}" var="parts" indexVar="i">
+                    <tr class="slds-hint-parent" onclick="{!c.clickRow}" data-record="{!i}">
+                      <td type="부품번호">
+                        <div class="slds-truncate" title="부품번호">
+                          <lightning:input type="text" name="input1" variant="label-hidden" value="{!parts.MATNR}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="품명">
+                        <div class="slds-truncate" title="품명">
+                          <lightning:input type="text" name="input2" variant="label-hidden" value="{!parts.MAKTX}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="재고유무">
+                        <div class="slds-truncate" title="재고유무">
+                          <lightning:input type="text" name="input3" variant="label-hidden"
+                            value="{!parts.AVA_FLAG}" readonly="true" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+              onclick="{!c.searchPartsModalCancel}" />
+          </footer>
+        </aura:if>
+      </div>
+    </div>
+
+    <div aura:id="searchProductModalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+
+  </div>
+
+</aura:component>

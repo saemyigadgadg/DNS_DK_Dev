@@ -1,0 +1,72 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 2025-01-20
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-08-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="lightning:actionOverride,force:hasRecordId,lightning:isUrlAddressable,lightning:hasPageReference,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    controller="DN_PreparationFormController">
+
+    <aura:attribute name="isNew" type="Boolean" access="public" default="false"/>
+    <aura:attribute name="isDesktop" type="Boolean" default="true"/>
+    <aura:attribute name="isPortal" type="Boolean" default="false"/>
+
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <lightning:navigation aura:id="navigation"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="render" value="{!this}" action="{!c.handleNavigation}" />
+
+    <aura:html tag="style">
+        @media all and (min-width: 480px) {
+            .slds-modal__container:has(.cDN_PreparationEditBtn){
+                max-width: 950px !important;
+                min-width: 480px !important;
+                margin: 0 auto !important;
+                width: 70% !important;
+            }
+
+            .cus-modal-container{
+                max-width: 950px !important;
+                min-width: 480px !important;
+                margin: 0 auto !important;
+                width: 70% !important;
+            }
+        }
+
+        @media all and (max-width: 479px) {
+            .slds-modal__container:has(.cDN_PreparationEditBtn){
+                width: 100%;
+                min-width: unset;
+                max-width: unset;
+                margin: 0;
+            }
+        }
+
+        .modal-body:has(.cDN_PreparationEditBtn) {
+            padding: 0;
+            overflow: hidden;
+        }
+    </aura:html>
+    <aura:if isTrue="{! and(v.isDesktop, v.isPortal)}">
+        <c:dN_PreparationForm recordId="{!v.recordId}" isNew="{!v.isNew}" onclose="{!c.closeModal}"></c:dN_PreparationForm>
+        
+        <aura:set attribute="else">
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                <div class="cus-modal-container slds-modal__container">
+                    <div class="outer slds-modal__content ">
+                        <c:dN_PreparationForm recordId="{!v.recordId}" isNew="{!v.isNew}" onclose="{!c.closeModal}"></c:dN_PreparationForm>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </aura:set>
+    </aura:if>
+
+
+</aura:component>

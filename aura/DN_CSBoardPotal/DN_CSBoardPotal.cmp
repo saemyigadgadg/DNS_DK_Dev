@@ -1,0 +1,314 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-04-15
+  @last modified by  : chungwoo.lee@sobetec.com
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,flexipage:availableForRecordHome,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_BoardController" description="CS통합 게시판">
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoaded" type="Boolean" default="false" />
+  <aura:attribute name="baseUrl"          type="String" /> <!-- Sandbox & Production url 구분 -->
+  <aura:attribute name="isQnA" type="Boolean" default="false" />
+  <aura:attribute name="isAnn" type="Boolean" default="false" />
+  <aura:attribute name="addQnAModal" type="Boolean" default="false" />
+  <aura:attribute name="boardList" type="List" />
+  <aura:attribute name="pickListValue" type="List" />
+  <aura:attribute name="searchSubject" type="String" default="" />
+  <aura:attribute name="searchKeyword" type="String" default="" />
+  <aura:attribute name="searchBoardMonth" type="String" default="" />
+  <aura:attribute name="searchCategory" type="String" default="All" />
+  <aura:attribute name="boardMonth" type="String" />
+  <aura:attribute name="searchStartDate" type="Date" />
+  <aura:attribute name="searchEndDate" type="Date" />
+
+  <!-- QnA modal -->
+  <aura:attribute name="qnaTitle" type="String" />
+  <aura:attribute name="qnaQuestion" type="String" />
+
+
+  <!-- Paging Attribute -->
+  <aura:attribute name="pagingResultList" type="List" default="[]" />
+  <aura:attribute name="dividePageCount" type="Integer" default="20" />
+  <aura:attribute name="allResultCount" type="Integer" default="0" />
+  <aura:attribute name="totalPage" type="Decimal" default="1" />
+  <aura:attribute name="pageAllCountList" type="List" />
+  <aura:attribute name="pageCountListIndex" type="Decimal" default="0" />
+  <aura:attribute name="pageCountList" type="List" default="[0]" />
+  <aura:attribute name="currentPage" type="Decimal" default="1" />
+  <aura:attribute name="pageList" type="List" />
+  <!--design setting-->
+  <aura:attribute name="header"   type="String"/>
+  <aura:attribute name="recordType"   type="String"/>
+  <!-- recordTypeId-->
+  <aura:attribute name="recordTypeId" type="String" />
+  <!-- Handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <lightning:overlayLibrary aura:id="overlayLib" />
+
+
+  <!-- Body -->
+  <article class="slds-card">
+    <!-- Loading Spinner  -->
+    <aura:if isTrue="{! v.isLoaded}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+
+    <!-- Header -->
+    <div class="header test">
+      <div class="title">
+        <lightning:icon iconName="standard:partner_fund_claim" size="small" alternativeText="통합 게시판" />
+        <h2>{!v.header}</h2>
+      </div>
+
+      <div class="button-wrap">
+        <aura:if isTrue="{!v.isQnA}">
+          <lightning:button label="등록" iconName="utility:add" iconPosition="left" onclick="{!c.addQnA}" />
+          <lightning:button name="searchCustomsClearance" label="Search" iconName="utility:search" iconPosition="left"
+            onclick="{! c.handleSearch }" />
+          <aura:set attribute="else">
+            <lightning:button name="searchCustomsClearance" label="Search" iconName="utility:search" iconPosition="left"
+              onclick="{! c.handleSearch }" />
+          </aura:set>
+        </aura:if>
+
+      </div>
+    </div>
+
+    <div class="body">
+      <!-- Card 01 : Search Condition Area -->
+      <div class="card-01 top-card">
+        <aura:if isTrue="{!v.isQnA}">
+          <!-- QnA 카테고리 필드 x -->
+          <aura:set attribute="else">
+            <div class="field-wrap">
+              <p>카테고리</p>
+              <div class="input-wrap">
+                <c:dN_CSBoardCategory searchCategory="{!v.searchCategory}" recordTypeId="{!v.recordType}" onchange="{!c.handleChangeCategory}" />
+              </div>
+            </div>
+          </aura:set>
+        </aura:if>
+
+        <div class="field-wrap">
+          <p>제목</p>
+          <div class="input-wrap" onkeyup="{! c.handleEnterSearch }">
+            <lightning:input type="text" name="Search Title" value="{!v.searchSubject}"
+              onchange="{! c.handleChangeTitle }" variant="label-hidden" />
+          </div>
+        </div>
+
+        <div class="field-wrap">
+          <p><abbr class="slds-required" title="required">*</abbr>작성월</p>
+          <div class="input-wrap">
+            <ui:inputDate aura:id="SearchBoardMonth" displayDatePicker="true" value="{! v.boardMonth }" format="yyyy-MM"
+              change="{! c.handleChangeMonth }" />
+          </div>
+        </div>
+
+        <aura:if isTrue="{!v.isAnn}">
+          <!-- 공지사항 작성자 필드 x -->
+          <aura:set attribute="else">
+            <div class="field-wrap">
+              <p>작성자</p>
+              <div class="input-wrap">
+                <lightning:input type="text" name="Writer" value="" variant="label-hidden" />
+              </div>
+            </div>
+          </aura:set>
+        </aura:if>
+
+
+      </div>
+
+      <!-- Card 02 : Board List -->
+      <div class="card-02 top-card">
+        <div class="table-wrap">
+          <!-- Fixed : Left -->
+          <aura:if isTrue="{!v.isQnA}">
+            <div class="table-01 table-left">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="24%" />
+                  <col width="40%" />
+                  <col width="12%" />
+                  <col width="12%" />
+                  <col width="12%" />
+                </colgroup>
+
+                <thead>
+                  <tr>
+                    <th>제목</th>
+                    <th>질문</th>
+                    <th>작성자</th>
+                    <th>답변자</th>
+                    <th>작성일</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <aura:iteration items="{!v.boardList}" var="board">
+                    <tr>
+                      <td>
+                        <aura:if isTrue="{!board.isNew}">
+                          <p class="highlight"> [New] <a href="{!v.baseUrl + '/board/' + board.Id}">{!board.Name} </a> </p>
+                          <aura:set attribute="else">
+                            <lightning:formattedUrl value="{!v.baseUrl + '/board/' + board.Id}" tooltip="{!board.Name}" label="{!board.Name}" target="_self" />
+                          </aura:set>
+                        </aura:if>
+                      </td>
+                      <td>
+                        {!board.AnswerContent__c}
+                      </td>
+                      <td class="center">
+                        <div>{!board.FM_Writer__c}</div>
+                      </td>
+                      <td>
+                        {!board.FM_Respondent__c}
+                      </td>
+                      <td class="center">
+                        <div>{!board.PostingDate__c}</div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+            <aura:set attribute="else">
+              <div class="table-01 table-left">
+                <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                  <colgroup>
+                    <col width="12%" />
+                    <col width="64%" />
+                    <col width="12%" />
+                    <col width="12%" />
+                  </colgroup>
+
+                  <thead>
+                    <tr>
+                      <th>카테고리</th>
+                      <th>제목</th>
+                      <th>작성자</th>
+                      <th>작성일</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <aura:iteration items="{!v.boardList}" var="board">
+                      <tr>
+                        <td class="center">
+                          <div>{!board.Category__c}</div>
+                        </td>
+                        <td>
+                          <aura:if isTrue="{!board.isNew}">
+                          <p class="highlight"> [New] <a href="{!v.baseUrl + '/board/' + board.Id}">{!board.Name} </a> </p>
+                          <aura:set attribute="else">
+                            <lightning:formattedUrl value="{!v.baseUrl + '/board/' + board.Id}" tooltip="{!board.Name}" label="{!board.Name}" target="_self" />
+                          </aura:set>
+                        </aura:if>
+                        </td>
+                        <td class="center">
+                          <div>{!board.FM_Writer__c}</div>
+                        </td>
+                        <td class="center">
+                          <div>{!board.PostingDate__c}</div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+            </aura:set>
+          </aura:if>
+
+        </div>
+        <!-- 🚩Aura Page -->
+        <div class="pagination-wrap">
+          <div class="total">
+            <p>
+              총 건수 : <span style="font-weight: bold;">{!v.allResultCount}</span>
+              ({!v.currentPage}/{!v.totalPage})
+            </p>
+          </div>
+          <ul class="pagination">
+            <li class="first">
+              <a onclick="{!c.handleChangePage}" name="first" value="1">
+                <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small'
+                  title='jump_to_left'></lightning:icon>
+              </a>
+            </li>
+            <li class="prev">
+              <a onclick="{!c.handleChangePage}" name="previous" value="{!v.currentPage - 1}">
+                <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small'
+                  title='chevronleft'></lightning:icon>
+              </a>
+            </li>
+            <li class="pages">
+              <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                  <span class="here"> {!pageNumber + 1} </span>
+
+                  <aura:set attribute="else">
+                    <span>
+                      <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber
+                        +1}</a>
+                    </span>
+                  </aura:set>
+                </aura:if>
+              </aura:iteration>
+            </li>
+            <li class="next">
+              <a onclick="{!c.handleChangePage}" name="next" value="{!v.currentPage + 1}">
+                <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small'
+                  title='chevronright'></lightning:icon>
+              </a>
+            </li>
+            <li class="last">
+              <a onclick="{!c.handleChangePage}" name="last" value="{!v.pageList.length}">
+                <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small'
+                  title='jump_to_right'></lightning:icon>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <aura:if isTrue="{!v.addQnAModal}">
+      <div class="slds-modal slds-fade-in-open qnaModal">
+        <div class="slds-modal__container slds-modal_large">
+          <header class="slds-modal__header">
+            <div class="header-wrap">
+              <h2 class="slds-text-heading_medium">등록</h2>
+            </div>
+
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='brand' size='small'
+                title='close' name="closeModal" onclick="{!c.closeModal}">
+              </lightning:icon>
+            </button>
+          </header>
+
+          <div class="modal-body slds-modal__content slds-p-around_medium">
+            <div class="card-modal top-card">
+              <lightning:input type="text" label="제목" value="{!v.qnaTitle}"/>
+              <lightning:textarea name="등록" aura:id="" value="{!v.qnaQuestion}" label="질문" />
+            </div>
+          </div>
+
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.closeModal}" />
+            <lightning:button variant="brand" label="등록" title="add" onclick="{!c.handleAdd}" />
+          </footer>
+
+        </div>
+      </div>
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open modalInModalBg"></div>
+    </aura:if>
+  </article>
+
+</aura:component>

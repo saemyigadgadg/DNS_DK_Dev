@@ -1,0 +1,66 @@
+<template>
+    <div class="table-wrapper">
+        <div class="table-quarter">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                <th class="vertical-header"></th>
+                <th class="vertical-header">1Q</th>
+                <th class="vertical-header">2Q</th>
+                <th class="vertical-header">3Q</th>
+                <th class="vertical-header">4Q</th>
+                <th class="vertical-header">YearTotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td class="row-label">Target</td>
+                <template for:each={quarters.Target} for:item="value">
+                    <td key={value}>{value}</td>
+                </template>
+                </tr>
+                <tr>
+                <td class="row-label">Order Total</td>
+                <template for:each={quarters.OrderTotal} for:item="value">
+                    <td key={value}>{value}</td>
+                </template>
+                </tr>
+                <tr>
+                <td class="row-label">Oppty Total</td>
+                <template for:each={quarters.OpptyTotal} for:item="value">
+                    <td key={value}>{value}</td>
+                </template>
+                </tr>
+            </tbody>
+        </table>
+        <div class="left-footer-link">
+            <a href="https://dn-solutions.lightning.force.com/lightning/r/Dashboard/01ZTJ000003KILe2AO/view?queryScope=userFolders" target="_blank">Global 영업기회/SQ 현황 대시보드 바로가기</a>
+        </div>
+    </div>
+
+    <div class="table-month">
+        <table class="custom-table">
+        <thead>
+            <tr>
+            <th></th>
+            <template for:each={months} for:item="month">
+                <th key={month}>{month}</th>
+            </template>
+            <th>YearTotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template for:each={rows} for:item="row">
+            <tr key={row.label}>
+                <td>{row.label}</td>
+                <template for:each={row.monthlyValues} for:item="value">
+                <td key={value}>{value}</td>
+                </template>
+                <td>{row.yearTotal}</td>
+            </tr>
+            </template>
+        </tbody>
+        </table>
+    </div>
+  </div>
+</template>

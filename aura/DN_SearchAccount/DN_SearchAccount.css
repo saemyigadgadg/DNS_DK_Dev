@@ -1,0 +1,169 @@
+/* common */
+
+.THIS .slds-modal__container {
+   width: 100%;
+   max-width: none;
+   padding: 0;
+   border-radius: 0;
+}
+
+.THIS .slds-modal__container.searchContacts {
+   width: 48rem;
+   max-width: calc(100vw - 12rem);
+   margin: 0 auto;
+}
+
+.THIS .slds-modal__content {
+   width: 100%;
+   /* height: 65vh; */
+   height: calc(100vh - 16rem);
+   max-height: 36rem;
+   overflow-y: clip;
+   display: flex;
+   flex-direction: column;
+   box-shadow: none !important;
+   padding: 0.75rem;
+   background: #F9F9F9;
+}
+
+/* Table Design */
+
+.THIS table {
+   border-collapse: separate;
+   border-top: 1px solid #C9C9C9;
+   background: #FFFFFF;
+}
+
+.THIS table th {
+   background-color: #f3f3f3;
+   text-align: center;
+   font-weight: 600;
+}
+
+.THIS table th,
+.THIS table td {
+   padding: 0.25rem 0.5rem;
+   border-bottom: 1px solid #C9C9C9;
+}
+
+.THIS .list-wrapper table td:first-of-type,
+.THIS .list-wrapper table th:first-of-type {
+   padding-left: 0.75rem;
+}
+
+.THIS .list-wrapper table td:last-of-type,
+.THIS .list-wrapper table th:last-of-type {
+   padding-right: 0.75rem;  
+}
+
+.THIS table td+td,
+.THIS table th+th {
+   border-left: 1px solid #C9C9C9;
+}
+
+.THIS table tr {
+   border-bottom: 1px solid #C9C9C9;
+}
+
+/* Search Table */
+
+.THIS .search-wrapper table th {
+   text-align: left;
+   font-weight: 600;
+   padding-left: 0.75rem;
+   line-height: 120%;
+}
+
+.THIS .search-wrapper table .search-btn {
+   text-align: center;
+   width: 60px;
+}
+
+.THIS .search-wrapper table .search-btn .slds-button {
+   margin: 0;
+}
+
+/* List Table */
+
+.THIS .list-wrapper {
+   /* margin: 1rem; */
+   margin-top: 0.75rem;
+   flex: auto;
+   overflow: hidden;
+   display: flex;
+   flex-direction: column;
+}
+
+.THIS .list-wrapper .title {
+   margin-bottom: 5px;
+   font-weight: 600;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0 0.75rem;
+}
+
+.THIS .list-wrapper .title h3 {
+   margin-bottom: 0.5rem;
+   font-size: 14px;
+}
+
+.THIS .list-wrapper .list-table {
+   /* height: 50vh; */
+   overflow: hidden;
+   overflow-y: auto;
+   overflow-x: auto;
+}
+
+@media (max-width: 1600px) {
+   .THIS .list-wrapper .list-table {
+      height: 47vh;
+   }
+}
+
+.THIS .list-wrapper .list-table thead {
+   position: sticky;
+   top: -1px;
+   z-index: 3;
+}
+
+.THIS .list-wrapper .list-table::-webkit-scrollbar {
+   width: 0.5rem;
+   background-color: #FFFFFF;
+   border-left: 1px solid #E5E5E5;
+}
+
+.THIS .list-wrapper .list-table::-webkit-scrollbar-thumb {
+   background-color: #C9C9C9;
+}
+
+.THIS .list-wrapper .list-table .slds-checkbox {
+   text-align: center;
+}
+
+.THIS .list-wrapper .list-table .slds-checkbox__label .slds-checkbox_faux {
+   margin: 0;
+}
+
+.THIS .list-wrapper .list-table td.number {
+   text-align: center;
+}
+
+/* SLDS Styles */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+   border: 1px solid #C9C9C9;
+}
+
+.THIS .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+   margin-right: 0 !important;
+}
+
+.THIS .searchContacts .slds-form-element_horizontal .slds-form-element__control {
+   padding-left: 16% !important;
+}
+
+/* .THIS .slds-modal__footer .slds-m-left_x-small {
+   margin-left: 0;
+} */

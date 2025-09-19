@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>GlobalSalesDashboardAccess</name>
+    </customPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>글로벌영업 대시보드 접근권한</label>
+</PermissionSet>

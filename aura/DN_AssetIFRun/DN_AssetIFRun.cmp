@@ -1,0 +1,41 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-02-18
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-02-18   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_AssetIFRunController">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+
+    <!--Toast-->
+   <lightning:notificationsLibrary aura:id="notifLib" />
+   <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div class="slds-card">
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="header">
+            <div class="title">
+                <lightning:icon iconName="utility:warning" size="small" />
+                <h2 class="slds-card__header-title">
+                    <span>{!$Label.c.DNS_T_ERPUpdate}</span>
+                </h2>
+            </div>
+            <div class="button-wrap">
+                <lightning:button label="{!$Label.c.DNS_B_ERPUpdate}" variant="brand" onclick="{!c.handleInterface}"/>
+            </div>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner text">{!$Label.c.DNS_M_Retransmission}</div>
+    </div>
+
+
+</aura:component>

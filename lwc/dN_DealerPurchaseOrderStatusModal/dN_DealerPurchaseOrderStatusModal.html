@@ -1,0 +1,23 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-17-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-17-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    <lightning-modal-header label="대리점 구매 상태"></lightning-modal-header>
+    <lightning-modal-body class="modalbody"> 
+        <div class="modal customerOrderStatus">
+            <c-d-n_-dealer-purchase-order-status 
+                    order-id={orderId}>
+            </c-d-n_-dealer-purchase-order-status>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label="닫기" onclick={handleClose}></lightning-button>
+    </lightning-modal-footer>
+</template>

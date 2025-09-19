@@ -1,0 +1,131 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 02-28-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-11-20   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_AccountValidateForLeadController"
+    description="Duplication Check ERP Customer for Convert from Lead to Account">
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading" type="boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isFlag" type="Boolean" default="false" />
+    <aura:attribute name="isERPChecked" type="Boolean" default="false" />
+    <aura:attribute name="isValidated" type="Boolean" default="false" />
+    <aura:attribute name="isMissing" type="Boolean" default="false" />
+    <aura:attribute name="resultMessage" type="String" default="" />
+
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <aura:html tag="style">
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_AccountValidateForLead) {
+        overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_AccountValidateForLead) {
+        margin: auto;
+        padding: 0;
+        }
+        .slds-modal__content:has(.cDN_AccountValidateForLead) {
+        padding: 0 !important;
+        overflow-y: clip;
+        height: unset !important;
+        max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_AccountValidateForLead) {
+        padding: 0 !important;
+        }
+    </aura:html>
+
+
+    <div class="slds-modal__container">
+
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_DuplicateValidation}</h2>
+            <!-- <h2 class="slds-text-heading_medium">중복 확인</h2> -->
+        </header>
+
+        <!-- Body -->
+        <div class="slds-modal__content">
+
+            <!-- 이미 완료된 경우 -->
+            <div>
+                <aura:if isTrue="{!v.isValidated}">
+                    <p>{!$Label.c.DNS_M_AlreadyDuplicated}</p>
+                    <!-- <p>이미 중복 확인이 완료된 고객입니다.</p> -->
+                </aura:if>
+            </div>
+
+            <!-- Validate를 위한 정보가 없을 경우 (Company, Representative) -->
+            <div>
+                <aura:if isTrue="{!v.isMissing}">
+                    <!-- 실패 아이콘 -->
+                    <lightning:icon iconName='utility:warning' alternativeText='Error' size='large' title='warning'
+                        class="slds-m-right_small error"></lightning:icon>
+                    <p class="content">{!$Label.c.DNS_M_EnterRepresentative}</p>
+                    <!-- <p>회사명 또는 대표자명을 입력해주세요.</p> -->
+                </aura:if>
+            </div>
+
+
+            <!-- 중복이 없는 경우 -->
+            <aura:if isTrue="{!v.isERPChecked}">
+                <aura:if isTrue="{!v.isFlag}">
+
+                    <!-- 성공 아이콘 -->
+                    <lightning:icon iconName="action:approval" alternativeText="Success" size="medium"
+                        class="slds-m-right_small" />
+
+                    <!-- 성공 메시지 -->
+                    <div class="message">
+                        <h3>{!$Label.c.DNS_M_SuccessDuplicateCheck}</h3>
+                        <!-- <h3>중복 체크 완료</h3> -->
+                        <p>{!$Label.c.DNS_M_InformConvert}</p>
+                        <!-- <p>새로운 잠재고객 및 연락처로 변환해주세요.</p> -->
+                    </div>
+
+                    <!-- 고객이 이미 존재하는 경우 -->
+                    <aura:set attribute="else">
+
+                        <!-- 실패 아이콘 -->
+                        <lightning:icon iconName='utility:warning' alternativeText='Error' size='large' title='warning'
+                            class="slds-m-right_small error"></lightning:icon>
+
+                        <!-- 실패 메시지 -->
+                        <div class="message">
+                            <h3>{!$Label.c.DNS_M_DuplicatedCustomer}</h3>
+                            <!-- <h3>중복 고객 존재</h3> -->
+                            <p>{!$Label.c.DNS_M_InformDuplicatedCustomer}</p>
+                            <!-- <p>
+                                기존에 생성된 고객이 존재합니다.<br />
+                                기존 고객 및 연락처를 검색해서 변환해주세요.
+                            </p> -->
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:if>
+        </div>
+
+        <!-- 📌 Footer -->
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Close" onclick="{!c.doClose}" />
+        </footer>
+
+
+    </div>
+
+</aura:component>

@@ -1,0 +1,9 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" controller="MatrixChatController" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:handler name="change" value="{!v.recordId}" action="{!c.onRecordIdChange}"/>
+    <lightning:utilityBarAPI aura:id="utilitybar" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler event="lightning:tabFocused" action="{! c.onTabFocused }"/> 
+    <c:kakaoListUseCase onreceivemessage="{!c.handleReceiveMessage}" aura:id="kakaoListUseCase" />
+</aura:component>

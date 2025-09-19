@@ -1,0 +1,10 @@
+<design:component label="화면 설정">
+    <design:attribute name="DisplayKey" label="Display Key" description="화면마다 고유 Key 정보" />
+    <design:attribute name="ObjectName" label="Object Name"  description="화면마다 오브젝트 정보" />
+    <design:attribute name="DataTableComponent" label="DataTable Component"  description="해당 화면에 테이블 컴포넌트 명" />
+	<design:attribute name="designItemsPerPage" label="페이지당 레코드 수" description="페이지마다 레코드수" />
+    <design:attribute name="designPagesPerGroup" label="화면에 페이지 수" description="한 화면에 보일 페이지 수"  />
+    <design:attribute name="orderByField" label="정렬 기준 필드" description="정렬 기준 필드" />
+    <design:attribute name="orderBy" label="정렬 기준(ASC/DESC)" description="정렬 기준(ASC/DESC)" />
+    <design:attribute name="isPageing" label="페이징 처리 여부"  description="페이징 처리 여부" />
+</design:component>

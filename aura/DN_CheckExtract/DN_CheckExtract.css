@@ -1,0 +1,27 @@
+/* Modal */
+
+.THIS .slds-modal__container {
+   width: 100%;
+   max-width: none;
+   padding: 0;
+}
+
+.THIS .slds-modal__footer {
+   display: flex;
+   justify-content: flex-end;
+}
+
+/* Body */
+
+.THIS .modal-body {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   gap: 1.25rem;
+   padding: 2.5rem 1rem;
+}
+
+.THIS .modal-body p {
+   font-size: 14px;
+   font-weight: 600;
+}

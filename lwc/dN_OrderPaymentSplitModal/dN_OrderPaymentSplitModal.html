@@ -1,0 +1,39 @@
+<template>
+    <div class="split_wrapper" style="position: relative;">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <lightning-modal-header label={cLabel.DNS_H_Split}></lightning-modal-header>
+        <lightning-modal-body>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="12">
+                    <lightning-input 
+                        type="number" 
+                        label={cLabel.DNS_F_NumberOfInstallments} 
+                        value="0" 
+                        data-value="numberOfInstallments" 
+                        variant="label-inline" 
+                        required="true"
+                        onblur={handleBlur}
+                    ></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                    <lightning-input 
+                        type="number" 
+                        label={cLabel.DNS_F_PaymentInterval} 
+                        value="1" 
+                        data-value="paymentInterval" 
+                        variant="label-inline" 
+                        required="true"
+                        onblur={handleBlur}
+                    ></lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-modal-body>
+        <lightning-modal-footer>
+            <lightning-button label={cLabel.DNS_B_Cancel} onclick={handleCancel}></lightning-button>
+            <lightning-button label={cLabel.DNS_B_Save} variant="brand" onclick={handleSave} class="slds-m-left_x-small" ></lightning-button>
+        </lightning-modal-footer>
+    </div>
+</template>

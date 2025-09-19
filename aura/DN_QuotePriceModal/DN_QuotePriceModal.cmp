@@ -1,0 +1,77 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-07-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-07-2025   Hyerin Ro   Initial Version
+-->
+<aura:component controller="DN_QuotePriceModalController"
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global">
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+    <aura:attribute name="recordIds" type="List" default="[]" />
+    <aura:attribute name="lineItemList" type="List" />
+    <aura:attribute name="openModal" type="String" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute type="String" name="title" default="" />
+    <aura:attribute type="String" name="subtitle" default="" />
+    <aura:attribute type="String" name="confirm" default="" />
+    <aura:attribute type="String" name="cancel" default="" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+    <aura:html tag="style">
+        .slds-template_default:has(.cDN_QuotePriceModal){
+        overflow: hidden;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.openModal}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <div class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- 모달 헤더 -->
+                    <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                        <h2 class="slds-text-heading_medium slds-hyphenate">
+                            {!v.title}
+                        </h2>
+                        <!-- <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="닫기" onclick="{! c.handleClickClose }">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+                        </button> -->
+                    </div>
+
+                    <!-- 모달 본문 -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="body">
+                            <aura:if isTrue="{!v.isLoading}">
+                                <lightning:spinner alternativeText="Loading" variant="brand" />
+                            </aura:if>
+                            <p class="slds-text-body_regular slds-m-bottom_medium">
+                                {!v.subtitle}
+                            </p>
+                        </div>
+
+                        <!-- 모달 푸터 -->
+                        <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                            <!-- 취소 버튼 -->
+                            <lightning:button title="취소" onclick="{! c.handleClickClose }" label="{!v.cancel}"
+                                variant="neutral" />
+                            <!-- 삭제 버튼 -->
+                            <lightning:button title="확인" label="{!v.confirm}" variant="brand"
+                                onclick="{! c.quotePrice}" />
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+    </aura:if>
+</aura:component>

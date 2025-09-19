@@ -1,0 +1,19 @@
+.THIS.slds-modal__container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+.THIS .slds-modal__footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.THIS .slds-modal__content{
+  background-color: #323639;
+  padding: 1rem .75rem;
+}
+
+.THIS .iframe-wrap{
+  background-color: #fff;
+}

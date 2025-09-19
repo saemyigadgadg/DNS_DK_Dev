@@ -1,0 +1,79 @@
+/* common */
+.THIS .slds-modal__container {
+  width: 100%;
+  max-width: none !important;
+  min-width: none !important;
+  margin: 0;
+  padding: 0;
+}
+
+.THIS table th,
+.THIS table tr,
+.THIS table td {
+  border: 1px solid #ced4da;
+  padding: 5px;
+}
+
+.THIS table th {
+  background-color: #e9ecef;
+  text-align: center;
+}
+
+.THIS .search-table table th {
+  width: 10%;
+}
+
+.THIS .list-wrapper .list-table-wrapper::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: #f8f9fa;
+}
+
+.THIS .list-wrapper .list-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #dee2e6;
+  height: 5%;
+  border-radius: 0.25rem;
+}
+
+/* search table */
+.THIS .search-table td.search-btn {
+  width: 10%;
+  min-width: 6rem;
+  border-left: 0;
+}
+
+/* list */
+.THIS .list-wrapper {
+  margin: 1rem;
+}
+
+.THIS .list-wrapper .title {
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.THIS .list-wrapper .list-table-wrapper {
+  border: 1px solid #ced4da;
+  height: 35vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.THIS .list-wrapper .list-table-wrapper thead {
+  position: sticky;
+  top: -1px;
+  z-index: 3;
+}
+
+.THIS .list-wrapper .list-table-wrapper table .slds-checkbox {
+  text-align: center;
+}
+
+.THIS .list-wrapper .list-table-wrapper table .slds-checkbox__label .slds-checkbox_faux {
+  margin: 0;
+}
+
+.THIS .list-wrapper .list-table-wrapper table td.number {
+  text-align: center;
+}

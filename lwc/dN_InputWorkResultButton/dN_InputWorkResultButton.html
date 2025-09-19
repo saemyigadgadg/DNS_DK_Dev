@@ -1,0 +1,139 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 05-07-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<template>
+    <div class="scroll-container">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <template if:true={isModalOpen}>
+            <div class="total-wrap modal-01">
+                <div class="body">
+                    <div class="icon-wrap">
+                        <lightning-icon icon-name='utility:edit' alternative-text='edit' size='small'
+                            title='edit'></lightning-icon>
+                    </div>
+                    <h3 class="title">{cLabel.DNS_FSL_InputWorkResult}</h3>
+                    <div class="message">{cLabel.DNS_FSL_SelectInputWorkResult}</div>
+                    <template if:true={isDNSA}>
+                        <!-- Machine Down Checkbox -->
+                        <div class="input-wrap">
+                            <lightning-input type="checkbox" label="Machine Down" name="machineDown"
+                                checked={machineDown} onchange={handleCheckboxChange}>
+                            </lightning-input>
+                        </div>
+                        <!-- Repair Start Date -->
+                        <div class="input-wrap date">
+                            <lightning-input type="date" name="repairStart" label="Repair Start" value={repairStart}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                            <div class="mobile-icon">
+                                <lightning-icon icon-name='utility:date_input' alternative-text='date_input'
+                                    size='xx-small' title='date_input'></lightning-icon>
+                            </div>
+                        </div>
+                        <!-- Repair End Date -->
+                        <div class="input-wrap date">
+                            <lightning-input type="date" name="repairEnd" label="Repair End" value={repairEnd}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                            <div class="mobile-icon">
+                                <lightning-icon icon-name='utility:date_input' alternative-text='date_input'
+                                    size='xx-small' title='date_input'></lightning-icon>
+                            </div>
+                        </div>
+                        <!-- Report Type -->
+                        <div class="input-wrap">
+                            <lightning-combobox name="reportType" label="Report Type"
+                                placeholder="Select the Report Type." options={reportOptions} value={reportValue}
+                                onchange={handleReportTypeChange}>
+                            </lightning-combobox>
+                        </div>
+                    </template>
+                    <!-- 고장부위 -->
+                    <div class="input-wrap">
+                        <lightning-combobox name="failureAreaMajor" label={cLabel.DNS_FSL_FailureAreaMajor}
+                            placeholder={cLabel.DNS_FSL_SelectFailureAreaMajor} options={majorOptions}
+                            value={majorValue} onchange={handleFailureAreaMajorChange}>
+                        </lightning-combobox>
+                    </div>
+                    <!-- 고장부위 그룹 -->
+                    <div class="input-wrap">
+                        <lightning-combobox name="failureAreaMiddle" label={cLabel.DNS_FSL_FailureAreaMiddle}
+                            placeholder={cLabel.DNS_FSL_SelectFailureAreaMiddle} options={middleOptions}
+                            value={middleValue} onchange={handleFailureAreaMiddleChange} disabled={isMiddleDisabled}>
+                        </lightning-combobox>
+                    </div>
+                    <!-- 고장현상 -->
+                    <div class="input-wrap">
+                        <lightning-combobox name="failurePhenomenon" label={cLabel.DNS_FSL_FailurePhenomenon}
+                            placeholder={cLabel.DNS_FSL_SelectFailurePhenomenon} options={phenomenonOptions}
+                            value={phenomenonValue} onchange={handleFailurePhenomenonChange}
+                            disabled={isPhenomenonDisabled}>
+                        </lightning-combobox>
+                    </div>
+                    <!-- 고장부위/현상 상세 -->
+                    <div class="input-wrap">
+                        <lightning-textarea name="failurePhenomenonDetail"
+                            label={cLabel.DNS_FSL_FailurePhenomenonDetail} value={editObject.FailurePhenomenonDetail__c}
+                            onchange={handlePicklistChange} onfocus={handleTextareaFocus} onblur={handleTextareaBlur} placeholder=""></lightning-textarea>
+                    </div>
+                    <!-- 고장원인 -->
+                    <div class="input-wrap">
+                        <lightning-combobox name="failureCause" label={cLabel.DNS_FSL_FailureCause}
+                            placeholder={cLabel.DNS_FSL_SelectFailureCause} options={causeOptions} value={causeValue}
+                            onchange={handleFailureCauseChange} disabled={isCauseDisabled}>
+                        </lightning-combobox>
+                    </div>
+                    <!-- 고장원인 상세 -->
+                    <div class="input-wrap">
+                        <lightning-textarea name="causeOfFailureDetail" label={cLabel.DNS_FSL_FailureCauseDetail}
+                            value={editObject.CauseOfFailureDetail__c} onchange={handlePicklistChange} onfocus={handleTextareaFocus} onblur={handleTextareaBlur}
+                            placeholder=""></lightning-textarea>
+                    </div>
+                    <!-- 조치내역 -->
+                    <div class="input-wrap">
+                        <lightning-combobox name="repairAction" label={cLabel.DNS_FSL_RepairAction}
+                            placeholder={cLabel.DNS_FSL_SelectRepairAction} options={repairOptions} value={repairValue}
+                            onchange={handleRepairActionChange}>
+                        </lightning-combobox>
+                    </div>
+                    <!-- 미결사항/고객요구사항 -->
+                    <div class="input-wrap">
+                        <lightning-textarea name="pendingOrCustomerMatters" label={cLabel.DNS_FSL_RepairDetail}
+                            value={editObject.PendingOrCustomerMatters__c} onchange={handlePicklistChange} onfocus={handleTextareaFocus} onblur={handleTextareaBlur}
+                            placeholder=""></lightning-textarea>
+                    </div>
+                    <div class="button-wrap">
+                        <lightning-button variant="neutral" label={cLabel.DNS_FSL_Cancel}
+                            onclick={closeModal}></lightning-button>
+                        <lightning-button variant="brand" label={cLabel.DNS_FSL_Okay}
+                            onclick={handleUpdate}></lightning-button>
+                        <!-- <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleConfirmClick}></lightning-button> -->
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={isCompletionModalOpen}>
+            <div class="total-wrap modal-02">
+                <div class="body">
+                    <div class="icon-wrap">
+                        <lightning-icon icon-name='utility:check' alternative-text='check' size='small'
+                            title='check'></lightning-icon>
+                    </div>
+                    <h3 class="title">{cLabel.DNS_FSL_SuccessfulInputWorkResult}</h3>
+                    <div class="message">{cLabel.DNS_FSL_InputWorkResultSuccessful}</div>
+                    <div class="button-wrap">
+                        <lightning-button variant="brand" label={cLabel.DNS_FSL_Okay}
+                            onclick={closeCompletionModal}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

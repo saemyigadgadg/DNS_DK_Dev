@@ -1,0 +1,80 @@
+.THIS .slds-modal__container {
+    width: 100%;
+    max-width: none !important;
+    min-width: none !important;
+}
+
+.THIS .modal__container {
+    width: 100% !important;
+    margin: 0 auto;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__header {
+    position: relative;
+}
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: -0.25rem;
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    border: none;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* Card 01 */
+
+.THIS .modal-body .card-01 {
+    padding: 2.25rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 1.5rem;
+    column-gap: 1rem;
+}
+
+.THIS .modal-body .card-01 h3 {
+    padding: 0.75rem;
+    margin-top: 0.75rem;
+    background-color: #f3f3f3;
+    border-radius: 0.25rem;
+    font-size: 14px;
+    font-weight: 500;
+    grid-column: span 2;
+}
+
+.THIS .modal-body .card-01 .field-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #d9d9d9;
+    margin: 0 0.75rem;
+}
+
+.THIS .modal-body .card-01 .field-wrap:nth-of-type(1) {
+    grid-column: span 2;
+}
+
+.THIS .modal-body .card-01 .field-wrap p {
+    font-weight: 500;
+    text-wrap: nowrap;
+}
+
+.THIS .modal-body .card-01 .field-wrap:not(:nth-of-type(3)) p {
+    width: 3.25rem;
+}
+
+.THIS .info_message {
+    display: flex;
+    justify-content: center;
+    font-size: large;
+    font-weight: bold;
+    padding-top: 20px;
+}

@@ -1,0 +1,392 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-01-08
+  @last modified by  : yeongdeok.seo@sbtglobal.com 
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-01-08   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<template>
+    <!-- 로딩 스피너 -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    
+    <template if:false={showCheckComponent}>
+        <div class="slds-p-around_medium">
+            <!-- 진행 상태 표시 -->
+            <div class="slds-progress-bar slds-progress-bar_circular slds-m-bottom_medium" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progressValue}>
+                <span class="slds-progress-bar__value" style={progressStyle}>
+                    <span class="slds-assistive-text">진행률: {progressText}</span>
+                </span>
+            </div>
+            
+            <!-- 페이지 1: 고객정보 입력 -->
+            <template if:true={isAccountInfoSection}>
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">고객정보 입력</div>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input 
+                                type="text" 
+                                label="이름" 
+                                value={contactName}
+                                onchange={handleContactNameChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input 
+                                type="tel" 
+                                label="전화번호" 
+                                value={contactPhoneNumber}
+                                onchange={handlePhoneNumberChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-text-body_small slds-text-color_weak slds-p-top_small">
+                        A/S 접수 후 연락 받을 연락처를 입력 해 주세요. 다음 버튼을 탭 하는 경우 이름과 전화번호를 ㈜DN솔루션즈에서 수집하는 것에 대한 동의를 하는 것으로 간주 합니다.
+                    </div>
+                </div>
+            </template>
+
+            <!-- 페이지 2: 장비정보 입력 -->
+            <template if:true={isAssetInfoSection}>
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">장비 선택 옵션</div>
+                    <div class="slds-text-color_error slds-m-bottom_small">
+                        ❗장비선택/제조번호/명판사진 중 하나를 선택해 주세요.
+                    </div>
+                    <lightning-radio-group 
+                        name="assetOption"
+                        label="선택 옵션"
+                        options={radioOptions}
+                        value={selectedOption}
+                        onchange={handleAssetOptionChange}
+                        type="radio">
+                    </lightning-radio-group>
+                </div>
+
+                <!-- 장비정보 입력 (장비선택 옵션) -->
+                <template if:true={isAssetSelectOption}>
+                    <div class="slds-box slds-theme_default slds-m-around_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">장비정보 입력</div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">장비 검색</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    <div class={comboboxClass} aria-expanded={showAssetDropdown} aria-haspopup="listbox" role="combobox">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                            <input type="text"
+                                                class="slds-input slds-combobox__input"
+                                                id="asset-search"
+                                                value={assetSearchKey}
+                                                placeholder={searchPlaceholder}
+                                                onfocus={handleAssetSearchFocus}
+                                                onblur={handleAssetSearchBlur}
+                                                onkeyup={handleAssetSearch}
+                                                disabled={isAssetSearchDisabled}
+                                                autocomplete="off"
+                                            />
+                                            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                                                <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon-text-default"></lightning-icon>
+                                            </span>
+                                        </div>
+                                        <div if:true={showAssetDropdown} class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox">
+                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                <template if:true={assetOptions.length}>
+                                                    <template for:each={assetOptions} for:item="option">
+                                                        <li key={option.value} role="presentation" class="slds-listbox__item">
+                                                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-is-selected"
+                                                                role="option"
+                                                                data-value={option.value}
+                                                                onclick={handleAssetSelect}
+                                                                style="cursor: pointer;">
+                                                                <span class="slds-media__body">
+                                                                    <span class="slds-truncate" title={option.label}>{option.label}</span>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    </template>
+                                                </template>
+                                                <template if:true={assetMessage}>
+                                                    <li role="presentation" class="slds-listbox__item">
+                                                        <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                                                            <span class="slds-media__body">
+                                                                <span class="slds-truncate">{assetMessage}</span>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 제조번호 입력 -->
+                <template if:true={isSerialNumberOption}>
+                    <div class="slds-box slds-theme_default slds-m-around_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">제조번호 입력</div>
+                        <lightning-input 
+                            type="text" 
+                            label="제조번호" 
+                            value={serialNumber}
+                            onchange={handleSerialNumberChange}>
+                        </lightning-input>
+                        <!-- onblur={handleSerialNumberBlur} -->
+                    </div>
+                </template>
+
+                <!-- 명판사진 업로드 -->
+                <template if:true={isNameplatePhotoOption}>
+                    <div class="slds-box slds-theme_default slds-m-around_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">명판사진 업로드</div>
+                        <lightning-file-upload
+                            label="파일 선택"
+                            name="nameFileUploader"
+                            accept={acceptedImageFormats}
+                            record-id={recordId}
+                            onuploadfinished={handleNameplateUploadFinished}
+                            multiple>
+                        </lightning-file-upload>
+                        <template if:true={nameplateFiles.length}>
+                            <div class="slds-p-top_small">
+                                <template for:each={nameplateFiles} for:item="file">
+                                    <div key={file.contentVersionId} class="slds-p-bottom_x-small">
+                                        <lightning-pill label={file.title} onremove={handleNameplateDelete} data-id={file.contentVersionId}>
+                                            <lightning-icon icon-name="doctype:image" size="xx-small"></lightning-icon>
+                                        </lightning-pill>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </template>
+
+            <!-- 페이지 3: 요청정보 입력 -->
+            <template if:true={isRequestInfoSection}>
+                <!-- 고객정보 입력 -->
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">고객정보 [필수]</div>
+                    <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                        업체명 또는 장비위치가 다른 경우 반드시 수정 또는 1600-4522로 연락 부탁 드립니다.
+                    </div>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input 
+                                type="text" 
+                                label="이름" 
+                                value={contactName}
+                                name="contactName"
+                                required
+                                onchange={handleContactNameChange}>
+                            </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input 
+                                type="tel" 
+                                label="전화번호" 
+                                value={contactPhoneNumber}
+                                name="contactPhoneNumber"
+                                required
+                                onchange={handlePhoneNumberChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-form slds-m-top_small">
+                        <lightning-input 
+                            type="text" 
+                            label={equipmentNumberLabel}
+                            value={serialNo}
+                            readonly>
+                        </lightning-input>
+                        <lightning-input 
+                            type="text" 
+                            label="업체명" 
+                            value={accountName}
+                            onchange={handleAccountNameChange}
+                            required>
+                        </lightning-input>
+                        <div class="slds-grid slds-gutters slds-m-top_small">
+                            <div class="slds-col slds-size_1-of-3">
+                                <lightning-input 
+                                    type="text" 
+                                    label="우편번호" 
+                                    value={postalCode}
+                                    onchange={handlePostalCodeChange}>
+                                </lightning-input>
+                            </div>
+                        </div>
+                        <lightning-input 
+                            type="text" 
+                            label="기본주소" 
+                            value={address}
+                            onchange={handleAddressChange}
+                            required
+                            class="slds-m-top_small">
+                        </lightning-input>
+                        <lightning-input 
+                            type="text" 
+                            label="상세주소" 
+                            value={addressDetail}
+                            onchange={handleAddressDetailChange}
+                            class="slds-m-top_small">
+                        </lightning-input>
+                    </div>
+                </div>
+
+                <!-- 증상 입력 -->
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">증상입력 [필수]</div>
+                    <lightning-textarea 
+                        type="text" 
+                        label="증상" 
+                        value={symptom}
+                        onchange={handleSymptomChange}
+                        required>
+                    </lightning-textarea>
+                </div>
+
+                <!-- 서비스부품 입력 -->
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">서비스부품 [선택]</div>
+                    <lightning-input 
+                        type="text" 
+                        label="서비스부품" 
+                        value={servicePart}
+                        onchange={handleServicePartChange}>
+                    </lightning-input>
+                </div>
+
+                <!-- 요청사항 입력 -->
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">요청사항 [선택]</div>
+                    <lightning-textarea 
+                        label="요청사항" 
+                        value={request}
+                        onchange={handleRequestChange}>
+                    </lightning-textarea>
+                </div>
+
+                <!-- 진행방식 선택 -->
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">진행방식 선택</div>
+                    <lightning-radio-group
+                        name="progressMethod"
+                        label="진행방식"
+                        options={progressMethodOptions}
+                        value={selectedProgressMethod}
+                        onchange={handleProgressMethodChange}
+                        type="radio">
+                    </lightning-radio-group>
+                </div>
+
+                <!-- 요청시간 선택 (출동수리인 경우에만 표시) -->
+                <template if:true={isRepairService}>
+                    <div class="slds-box slds-theme_default slds-m-around_medium">
+                        <div class="slds-text-heading_small slds-m-bottom_small">요청시간 선택 [필수]</div>
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col">
+                                <lightning-input 
+                                    type="date" 
+                                    label="요청일자"
+                                    value={selectedDate}
+                                    onchange={handleDateChange}
+                                    min={today}
+                                    required>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col">
+                                <lightning-input 
+                                    type="time" 
+                                    label="요청시간"
+                                    value={selectedTime}
+                                    onchange={handleTimeChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- 서비스센터 선택 -->
+                <template if:true={isNightShift}>
+                    <!-- <template if:false={existEngineer}> -->
+                        <div class="slds-box slds-theme_default slds-m-around_medium">
+                            <div class="slds-text-heading_small slds-m-bottom_small">서비스센터 선택</div>
+                            <lightning-combobox
+                                name="serviceCenter"
+                                label="서비스센터"
+                                value={selectedServiceCenter}
+                                options={serviceCenters}
+                                onchange={handleServiceCenterChange}
+                                class="slds-m-top_x-small">
+                            </lightning-combobox>
+                        </div>
+                    <!-- </template> -->
+                </template>
+                
+                <!-- 사진/동영상 업로드 -->
+                <div class="slds-box slds-theme_default slds-m-around_medium">
+                    <div class="slds-text-heading_small slds-m-bottom_small">사진/동영상 [선택]</div>
+                    <lightning-file-upload
+                        label="파일 선택"
+                        name="fileUploader"
+                        accept={acceptedFormats}
+                        record-id={recordId}
+                        onuploadfinished={handleUploadFinished}
+                        multiple>
+                    </lightning-file-upload>
+                    
+                    <!-- 업로드된 파일 목록 -->
+                    <template if:true={uploadedFiles.length}>
+                        <div class="slds-p-top_small">
+                            <template for:each={uploadedFiles} for:item="file">
+                                <div key={file.contentVersionId} class="slds-p-bottom_x-small">
+                                    <lightning-pill label={file.title} onremove={handleDeleteFile} data-id={file.contentVersionId}>
+                                        <lightning-icon icon-name="doctype:image" size="xx-small"></lightning-icon>
+                                    </lightning-pill>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- 하단 버튼 -->
+            <div class="slds-m-top_medium slds-text-align_center">
+                <template if:false={isAccountInfoSection}>
+                    <lightning-button 
+                        label="이전" 
+                        onclick={handlePrevious} 
+                        class="slds-m-right_small">
+                    </lightning-button>
+                </template>
+                <lightning-button 
+                    variant="brand" 
+                    label={nextButtonLabel} 
+                    onclick={handleNext} 
+                    class="slds-m-left_x-small">
+                </lightning-button>
+            </div>
+        </div>
+    </template>
+
+    <!-- 접수 완료 후 check 컴포넌트 표시 -->
+    <template if:true={showCheckComponent}>
+        <c-as-register-check
+            phone-number={contactPhoneNumber}>
+        </c-as-register-check>
+    </template>
+
+    <c-custom-notification if:true={notification.show}
+        variant={notification.variant}
+        message={notification.message}
+        onclose={handleNotificationClose}>
+    </c-custom-notification>
+</template>

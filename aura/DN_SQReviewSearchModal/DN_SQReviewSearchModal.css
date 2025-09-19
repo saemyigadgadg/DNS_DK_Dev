@@ -1,0 +1,113 @@
+.THIS .slds-backdrop {
+    z-index: 9001;
+}
+
+.THIS .slds-modal {
+    z-index: 9002;
+}
+
+.THIS .slds-modal__container {
+    width: 74rem;
+    min-width: 24rem;
+    max-width: calc(100vw - 12rem);
+}
+
+.THIS .slds-modal__content {
+    position: relative;
+}
+
+.THIS .slds-p-around_medium {
+    padding: 0;
+}
+
+  /* Modal Body */
+
+.THIS .modal-body .top-card {
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS .modal-body .card-01 {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    background: #f3f3f3;
+    padding: 1.25rem 1.5rem;
+}
+
+.THIS .modal-body .card-01 .slds-form-element {
+    flex: auto;
+}
+
+.THIS .modal-body .card-02 {
+    padding: 1rem;
+}
+
+  /* Table Syles */
+
+.THIS .modal-body table {
+    table-layout: fixed;
+}
+
+.THIS .modal-body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.5rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .modal-body table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body table th+th,
+.THIS .modal-body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body table .slds-truncate {
+    font-size: 12px;
+}
+
+.THIS .modal-body table td.desc {
+    white-space: no-wrap;
+    text-overflow: ellipsis;
+    text-wrap: wrap;
+    word-break: break-all;
+    overflow: hidden;
+}
+
+  /* 체크박스 마진 제거 */
+.THIS .modal-body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+  /* 체크박스 라벨 제거 */
+.THIS .modal-body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+  /* 체크박스 어긋남 해결 */
+/* .THIS .modal-body table .slds-form-element__control .slds-checkbox {
+    height: 17px;
+    transform: translateY(-3px);
+  } */
+
+.THIS .hide {
+    display: none;
+}

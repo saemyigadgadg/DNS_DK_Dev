@@ -1,0 +1,50 @@
+.custom-container{
+	color : black;
+}
+
+.slds-dropdown:has(ul li) {
+	display: block;
+}
+
+.slds-dropdown {
+	display: none;
+}
+
+/* Combobox Input */
+
+.input-wrap .input-label{
+	position: relative;
+	max-width: calc(33% - 1.25rem);
+	float: left;
+	color: #444;
+	padding-top: 0.25rem;
+	margin-bottom: 0;
+	z-index: 1;
+}
+
+.input-wrap .slds-dropdown{
+	width: 66.1% !important;
+	left: unset;
+	right: 0.25rem;
+	transform: none;
+
+	max-height: 11rem;
+}
+
+/* Lookup Field Label Layout Issue_241121 */
+
+.input-field-wrap {
+	display: flex;
+}
+
+
+.input-field-wrap .input-label{
+	position: relative;
+	/* max-width: calc(33% - 1.25rem); */
+	width: 48%;
+	color: #444;
+	padding-top: 0.25rem;
+	padding-left: 0.25rem;
+	margin-bottom: 0;
+	z-index: 1;
+}

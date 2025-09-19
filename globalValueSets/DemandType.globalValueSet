@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>DF</fullName>
+        <default>false</default>
+        <label>Warranty Order</label>
+    </customValue>
+    <customValue>
+        <fullName>DS</fullName>
+        <default>false</default>
+        <label>Sales Order</label>
+    </customValue>
+    <masterLabel>DemandType</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

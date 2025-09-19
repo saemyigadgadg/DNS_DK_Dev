@@ -1,0 +1,32 @@
+.THIS .dnsa_option_only_modal {
+    position: relative;
+}
+
+.THIS .slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    position: relative;
+    height: 16rem;
+    overflow: hidden;
+}
+
+@media all and (max-width:767px) {
+    .THIS .slds-wrap .slds-size_6-of-12 {
+        width: 100%;
+    }
+
+    .THIS .modal_body_wrap {
+        height: calc(100vh - 12rem);
+    }
+
+    .THIS .modal_body_wrap .slds-input {
+        min-width: 100%;
+        width: 100% !important;
+        line-height: 100% !important;
+    }
+}

@@ -1,0 +1,271 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 05-13-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-31   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+    controller="DN_PortalServiceController"
+    description="서비스이력조회(CS)">
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="baseUrl"              type="String" /> <!-- Sandbox & Production url 구분 -->
+    <aura:attribute name="receiptDateFrom"      type="Date" />
+    <aura:attribute name="receiptDateTo"        type="Date" />
+    <aura:attribute name="orderNumber"          type="String" />
+    <aura:attribute name="customer"             type="String"   default="" />
+    <aura:attribute name="machineName"          type="String" />
+    <aura:attribute name="assetName"            type="String" />
+    <aura:attribute name="originWCId"           type="String" />
+    <aura:attribute name="customerInfo"         type="Object"   default="" />
+    <aura:attribute name="assetData"            type="Object" />
+    <aura:attribute name="workCenter"           type="Object"   default="{}" />
+    <aura:attribute name="worker"               type="object" />
+    <aura:attribute name="isBranch"             type="Boolean"  default="false" />
+    <aura:attribute name="isSearched"           type="Boolean"  default="false" />
+    <aura:attribute name="serviceHistoryList"   type="List"     default="[]" />
+    <aura:attribute name="ncTypeValue"          type="String"   default=""/>
+    <aura:attribute name="ncTypeOption"         type="List"     default="[]" />
+    <aura:attribute name="orderTypeOptions"     type="List"     default="[
+        {'label':'점검오더', 'value' : 'CS01'},
+        {'label':'필드서비스 오더', 'value' : 'CS02'},
+        {'label':'기타서비스 오더', 'value' : 'CS08'},
+        
+    ]" />
+    <aura:attribute name="plant"                type="String"   default=""/>
+    <aura:attribute name="orderTypeValue"       type="String"   default="" />
+    <aura:attribute name="headExcelData"        type="List"     default="[]" />
+    <aura:attribute name="excelData"            type="List"     default="[]" />
+    <aura:attribute name="excelName"            type="String"   default="Service_History" />
+
+    <!-- Handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- modal -->
+    <div aura:id="ModelSearchModal" />        <!--기종 모달-->
+    <div aura:id="customerSearchModal" />     <!--고객 모달-->
+    <div aura:id="dealerModal" />             <!--Work Center 모달-->
+    <div aura:id="serviceManModal" />         <!--서비스맨 모달-->
+
+
+    <!-- Body -->
+    <article class="slds-card">
+
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header test">
+            <div class="title">
+                <lightning:icon iconName="standard:identifier" size="small" alternativeText="" />
+                <h2>{!$Label.c.service_ttl_cs_service_history}</h2> <!--서비스 히스토리-->
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+                <c:DN_ExcelUtilButton excelData="{! v.excelData }" excelName="{! v.excelName }" />
+                <!-- <c:DN_DealerPortalExcelUtilButton headerData="{!v.headExcelData}" excelData="{! v.excelData }" excelName="{! v.excelName }" /> -->
+            </div>
+        </div>
+
+
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_received_date}<abbr class="slds-required" title="required">*</abbr></p><!--접수일-->
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="" value="{!v.receiptDateFrom}" onchange="{!c.handleDayCountCheck}" variant="label-hidden" aura:id="startDate" />
+                        ~
+                        <lightning:input type="date" name="" value="{!v.receiptDateTo}" onchange="{!c.handleDayCountCheck}" variant="label-hidden" aura:id="endDate" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_order_no}</p> <!--오더번호-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.orderNumber}" variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_account}</p> <!--고객사-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.customerInfo.Name}" variant="label-hidden" disabled="true"  readonly="true"/>
+                        <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="customer Name" onclick="{!c.clearCustomerName}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openCustomerSearchModal}" />
+                        <!-- <lightning:input type="text" name="" value="" variant="label-hidden" readonly="true" disabled="true" /> -->
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_model}</p> <!--기종--> 
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="{!$Label.c.service_lbl_model}" value="{!v.machineName}" variant="label-hidden" readonly="true"
+                            disabled="true" />
+                            <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine" 
+                            onclick="{!c.clearMachine}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openModelModal}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_serial_no}</p> <!--장비번호-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.assetName}" variant="label-hidden" readonly="true" disabled="true"/>
+                        <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"  
+                            onclick="{!c.clearAsset}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openSerialNumberModal}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_order_type}</p> <!--오더유형--> 
+                    <div class="input-wrap">
+                        <lightning:combobox name="orderTypeOption" value="{!v.orderTypeValue}"
+                            options="{!v.orderTypeOptions}" variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_work_center}</p> <!--work center-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.workCenter.Name}" variant="label-hidden" readonly="true" disabled="true"/>
+                        <aura:if isTrue="{!v.isBranch}">
+                            <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Clear Work Center" onclick="{!c.clearWorkCenter}" class="clear-btn"/>
+                            <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search" onclick="{!c.openDealerModal}" />
+                        </aura:if>
+                        <!-- <lightning:input type="text" name="" value="{!v.workCenterInfo.name}" variant="label-hidden" readonly="true"
+                            disabled="true" /> -->
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_worker}</p> <!--작업자-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.worker.Name}" variant="label-hidden" readonly="true" disabled="true"/>
+                        <lightning:buttonicon iconName="utility:close" size="medium" onclick="{!c.clearServiceMan}" class="clear-btn" alternativeText="serviceManClose"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openServiceManModal}" />
+                        <!-- <lightning:input type="text" name="" value="" variant="label-hidden" readonly="true"
+                            disabled="true" /> -->
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_nc_type}</p> <!--NC Type-->
+                    <div class="input-wrap">
+                        <lightning:combobox name="ncTypeOption" value="{!v.ncTypeValue}" options="{!v.ncTypeOption}"
+                            variant="label-hidden" />
+                    </div>
+                </div>
+                
+                <!-- <div class="field-wrap">
+                    <p>부품번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="" variant="label-hidden" />
+                    </div>
+                </div> -->
+
+            </div>
+
+            <!-- Table 01 -->
+            <div class="card-02 top-card">
+                <div class="table-wrap">
+                    <!-- Fixed : Left -->
+                    <div class="table-01 left-table" aura:id="leftTableDiv">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <thead>
+                                <tr>
+                                    <th>{!$Label.c.service_fld_account}</th> <!--고객사-->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!not(v.isSearched)}">
+                                    <tr>
+                                        <td class="center">{!$Label.c.service_lbl_no_data}</td> <!---->
+                                    </tr>
+                                </aura:if>
+
+                                <aura:if isTrue="{!v.isSearched}">
+                                    <aura:iteration items="{!v.serviceHistoryList}" var="service">
+                                        <tr>
+                                            <td>{!service.Account.Name}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </aura:if>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Scrollable : Right -->
+                    <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <thead>
+                                <tr>
+                                    <th>{!$Label.c.service_fld_order_type}</th> <!--오더타입-->
+                                    <th>{!$Label.c.service_fld_order_type2}</th><!--오더타입2-->
+                                    <th>{!$Label.c.service_fld_generation_date}</th><!--생성일자-->
+                                    <th>{!$Label.c.service_fld_confirmed_processing_date}</th><!--확정처리일시-->
+                                    <th>{!$Label.c.service_fld_warranty_divition}</th><!--보증 구분-->
+                                    <th>{!$Label.c.service_fld_work_center}</th><!--work center-->
+                                    <th>{!$Label.c.service_fld_counselor}</th><!--상담사-->
+                                    <th>{!$Label.c.service_fld_order_no}</th><!--오더번호-->
+                                    <th>{!$Label.c.service_fld_model}</th><!--기종-->
+                                    <th>{!$Label.c.service_fld_serial_no}</th><!--장비번호-->
+                                    <th>{!$Label.c.service_fld_received_desc}</th><!--접수내용-->
+                                    <th>{!$Label.c.service_fld_action_history}</th><!--조치내역-->
+                                    <th>{!$Label.c.service_fld_worker}</th><!--작업자-->
+                                    <th>{!$Label.c.service_fld_nc_type}</th><!--NC Type-->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!not(v.isSearched)}">
+                                    <tr>
+                                        <td colspan="14" class="center">{!$Label.c.service_lbl_no_data}</td> <!--데이터가 존재하지 않습니다.-->
+                                    </tr>
+                                </aura:if>
+                                <aura:if isTrue="{!v.isSearched}">
+                                    <aura:iteration items="{!v.serviceHistoryList}" var="service">
+                                        <tr>
+                                            <td class="center">{!service.PMActivityType__c}</td>
+                                            <td class="center">{!service.OrderType__c}</td>
+                                            <td class="center"><ui:outputDate value="{!service.Case.CreatedDate}"/></td>
+                                            <td class="center"><ui:outputDate value="{!service.ConfirmedDate__c}"/></td>
+                                            <td class="center">{!service.Asset.FM_EquipmentWarrantyEquipmentParts__c}</td>
+                                            <td class="center">{!service.ServiceTerritory.Name}</td>
+                                            <td class="center">{!service.Case.Owner.Name}</td>
+                                            <td class="center">
+                                                <div class="order-num" onclick="{!c.openOrderWrapper}" data-order-number="{!service.ServiceOrderNumber__c}">
+                                                    {!service.ServiceOrderNumber__c}
+                                                </div>
+                                            </td>
+                                            <td>{!service.Asset.MachineName__c}</td>
+                                            <td>{!service.Asset.Name}</td>
+                                            <td class="center">
+                                                <div class="reception-detail" title="{!service.Case.ReceptionDetails__c}">
+                                                    {!service.Case.ReceptionDetails__c}
+                                                </div>
+                                            </td>
+                                            <td>{!service.PendingOrCustomerMatters__c}</td>
+                                            <td>{!service.Worker__r.Name}</td>
+                                            <td>{!service.Asset.NCType__c}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </aura:if>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </article>
+
+</aura:component>

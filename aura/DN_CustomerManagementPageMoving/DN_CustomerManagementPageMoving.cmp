@@ -1,0 +1,8 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+access="global" controller="DN_CustomerManagementModalController">
+<!--page Reference -->
+<lightning:navigation aura:id="navService"/>
+<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+<aura:attribute name="recordId" type="String" />
+
+</aura:component>

@@ -1,0 +1,300 @@
+/* common */
+.THIS .slds-modal__container {
+    width: 60vw;
+    max-width: none;
+    min-width: 70rem;
+}
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    /* min-width: 12rem; */
+    font-size: 13px;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+.THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .slds-grid {
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body>div {
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+
+.THIS .body .card-01 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    padding: 1rem 1.25rem;
+}
+
+.THIS .body .card-01 .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.THIS .body .card-01 .input-wrap .slds-form-element {
+    flex: auto;
+}
+
+.THIS .body .card-01 p {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .body .card-01 .icon-wrap .slds-button_icon-x-small {
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid #C9C9C9;
+}
+
+/* .THIS .body .card-01 .icon-wrap .slds-button+.slds-button {
+    margin-left: 0 !important;
+} */
+
+/* Fake Input */
+
+.THIS .body .card-01 .input-wrap .fakeInput{
+    width: 100%;
+    min-height: 2rem;;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    line-height: 100%;
+    font-size: 13px;
+    border: 1px solid #c9c9c9;
+    background-color: #f3f3f3;
+    text-wrap: nowrap;
+    
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.THIS .body .card-01 .input-wrap .fakeInput span{
+    display: inline-block;
+    font-size: 13px;
+    color: #444;
+}
+.THIS .body .card-01 .input-wrap .fakeInput span:last-child{
+    font-size: 12px;
+    color: #989898;
+}
+
+.THIS .body .card-01 .field-wrap .input-wrap:has(.delete) {
+    position: relative;
+} 
+
+.THIS .body .card-01 .field-wrap .input-wrap .delete .slds-button {
+    position: absolute;
+    top: 0;
+    right: 40px;
+    border: none;
+}
+
+/* Accrodion */
+
+.THIS .body .accordion .slds-accordion__summary-heading {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.THIS .body .accordion .accordion-body {
+    padding: 0.5rem 1.5rem 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 1.75rem;
+    row-gap: 0.5rem;
+}
+
+
+.THIS .body .accordion .field-wrap {
+    padding: .5rem 0 0.25rem 0;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body .accordion .field-wrap .label {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.THIS .body .accordion .field-wrap .label.label-flex {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.THIS .body .accordion .field-wrap .label.label-flex lightning-primitive-icon {
+    line-height: 0;
+}
+
+.THIS .body .accordion .field-wrap .input-wrap {
+    min-height: 1.5rem;
+    padding: 0.25rem 0;
+}
+
+.THIS .body .accordion.accordion-02 .accordion-body {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+
+@media screen and (max-width: 676px) {
+    .THIS .body .accordion .accordion-body {
+        grid-template-columns: 1fr 1fr !important;
+    }
+}
+
+/* Card 02 */
+
+.THIS .body .card-02 {
+    padding: 1rem 1.25rem;
+}
+
+.THIS .body .card-02 .table-wrap{
+    display: flex;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body .card-02 table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 1rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body .card-02 table td {
+    height: 28px;
+    background-color: #fff;
+    padding: .25rem 1rem;
+    border: 1px solid #D9D9D9;
+    border-left: none;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.THIS .body .card-02 table tfoot td {
+    background-color: #eef4ff;
+    font-weight: 600;
+}
+
+/* Table 01 */
+
+.THIS .body .card-02 .table-01 {
+    flex: 2;
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+.THIS .body .card-02 .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+.THIS .body .card-02 .table-01 thead th:nth-of-type(1) {
+    width: 30%;
+}
+
+/* .THIS .body .card-02 .table-01 tr>th:first-child {
+    padding-left: 1.5rem;
+} */
+
+.THIS .body .card-02 .table-01 tr>th:last-child {
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .body .card-02 .table-01 tr>td:last-child {
+    border-right: 1px solid #D9D9D9;
+    font-size: 13px;
+}
+
+/* Table 02 */
+
+.THIS .body .card-02 .table-02 {
+    flex: 3;
+    overflow-x: scroll;
+}
+
+
+/* SLDS Customs */
+
+.THIS .card-01 .slds-input[disabled]{
+    color: #444;
+}
+
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (min-width:480px) and (max-width:767px) {
+    .THIS .body .card-01 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 모바일 세로 (해상도 ~ 479px)*/
+@media all and (max-width:479px) {
+    .THIS .body .card-01 {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}

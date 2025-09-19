@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Role xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseAccessLevel>Edit</caseAccessLevel>
+    <contactAccessLevel>Edit</contactAccessLevel>
+    <description>신한테크(주) 파트너 관리자</description>
+    <mayForecastManagerShare>false</mayForecastManagerShare>
+    <name>신한테크(주) 파트너 관리자</name>
+    <opportunityAccessLevel>None</opportunityAccessLevel>
+    <parentRole>SalesDept</parentRole>
+</Role>

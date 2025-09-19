@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>00</fullName>
+        <default>false</default>
+        <label>Assigned by the System (Internal)</label>
+    </customValue>
+    <customValue>
+        <fullName>MT</fullName>
+        <default>false</default>
+        <label>MT Parts Block</label>
+    </customValue>
+    <customValue>
+        <fullName>SM</fullName>
+        <default>false</default>
+        <label>Strategic Material</label>
+    </customValue>
+    <customValue>
+        <fullName>TJ</fullName>
+        <default>false</default>
+        <label>NAP Closed by Trader Joe</label>
+    </customValue>
+    <customValue>
+        <fullName>Y0</fullName>
+        <default>false</default>
+        <label>Sales Order deleted</label>
+    </customValue>
+    <customValue>
+        <fullName>Y1</fullName>
+        <default>false</default>
+        <label>Backorder canceled</label>
+    </customValue>
+    <customValue>
+        <fullName>Y2</fullName>
+        <default>false</default>
+        <label>Claim Request rejected</label>
+    </customValue>
+    <customValue>
+        <fullName>Y3</fullName>
+        <default>false</default>
+        <label>Closed by Credit Memo</label>
+    </customValue>
+    <customValue>
+        <fullName>Y4</fullName>
+        <default>false</default>
+        <label>Price missing blocking</label>
+    </customValue>
+    <customValue>
+        <fullName>Y5</fullName>
+        <default>false</default>
+        <label>DIEU FL Special Order Block</label>
+    </customValue>
+    <customValue>
+        <fullName>Y6</fullName>
+        <default>false</default>
+        <label>Not 48 hours part</label>
+    </customValue>
+    <customValue>
+        <fullName>Y7</fullName>
+        <default>false</default>
+        <label>Not a 48 hour Machine</label>
+    </customValue>
+    <customValue>
+        <fullName>Y8</fullName>
+        <default>false</default>
+        <label>Ordered in Error</label>
+    </customValue>
+    <customValue>
+        <fullName>Y9</fullName>
+        <default>false</default>
+        <label>Canceled for Interchange</label>
+    </customValue>
+    <customValue>
+        <fullName>YA</fullName>
+        <default>false</default>
+        <label>AM Migration</label>
+    </customValue>
+    <customValue>
+        <fullName>Z1</fullName>
+        <default>false</default>
+        <label>Stock Res. Ord. was mapped to Real.ord</label>
+    </customValue>
+    <customValue>
+        <fullName>Z2</fullName>
+        <default>false</default>
+        <label>Sales Order Canceled</label>
+    </customValue>
+    <customValue>
+        <fullName>Z3</fullName>
+        <default>false</default>
+        <label>Sales Order Rejected by HQ</label>
+    </customValue>
+    <customValue>
+        <fullName>Z4</fullName>
+        <default>false</default>
+        <label>Sales Order Rejected by Dealer</label>
+    </customValue>
+    <customValue>
+        <fullName>Z5</fullName>
+        <default>false</default>
+        <label>PM Order is settled</label>
+    </customValue>
+    <customValue>
+        <fullName>Z6</fullName>
+        <default>false</default>
+        <label>ZATP inq. Canceled</label>
+    </customValue>
+    <customValue>
+        <fullName>Z8</fullName>
+        <default>false</default>
+        <label>b/w BG Stock transfer completed</label>
+    </customValue>
+    <customValue>
+        <fullName>Z9</fullName>
+        <default>false</default>
+        <label>ZATP inq for IPDF Normal</label>
+    </customValue>
+    <customValue>
+        <fullName>Sales Order Rejected by HQ</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Sales Order Rejected by HQ</label>
+    </customValue>
+    <customValue>
+        <fullName>Sales Order Canceled</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Sales Order Canceled</label>
+    </customValue>
+    <customValue>
+        <fullName>Stock Res. Ord. was mapped to Real.ord</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Stock Res. Ord. was mapped to Real.ord</label>
+    </customValue>
+    <customValue>
+        <fullName>AM Migration</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>AM Migration</label>
+    </customValue>
+    <customValue>
+        <fullName>Canceled for Interchange</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Canceled for Interchange</label>
+    </customValue>
+    <customValue>
+        <fullName>Ordered in Error</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Ordered in Error</label>
+    </customValue>
+    <customValue>
+        <fullName>Not a 48 hour Machine</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Not a 48 hour Machine</label>
+    </customValue>
+    <customValue>
+        <fullName>Not 48 hours part</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Not 48 hours part</label>
+    </customValue>
+    <customValue>
+        <fullName>DIEU FL Special Order Block</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DIEU FL Special Order Block</label>
+    </customValue>
+    <customValue>
+        <fullName>Sales Order Rejected by Dealer</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Sales Order Rejected by Dealer</label>
+    </customValue>
+    <customValue>
+        <fullName>Closed by Credit Memo</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Closed by Credit Memo</label>
+    </customValue>
+    <customValue>
+        <fullName>Claim Request rejected</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Claim Request rejected</label>
+    </customValue>
+    <customValue>
+        <fullName>Backorder canceled</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Backorder canceled</label>
+    </customValue>
+    <customValue>
+        <fullName>Sales Order deleted</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Sales Order deleted</label>
+    </customValue>
+    <customValue>
+        <fullName>NAP Closed by Trader Joe</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>NAP Closed by Trader Joe</label>
+    </customValue>
+    <customValue>
+        <fullName>Strategic Material</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Strategic Material</label>
+    </customValue>
+    <customValue>
+        <fullName>MT Parts Block</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>MT Parts Block</label>
+    </customValue>
+    <customValue>
+        <fullName>Assigned by the System (Internal)</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Assigned by the System (Internal)</label>
+    </customValue>
+    <customValue>
+        <fullName>Price missing blocking</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Price missing blocking</label>
+    </customValue>
+    <customValue>
+        <fullName>PM Order is settled</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>PM Order is settled</label>
+    </customValue>
+    <customValue>
+        <fullName>ZATP inq. Canceled</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>ZATP inq. Canceled</label>
+    </customValue>
+    <customValue>
+        <fullName>b/w BG Stock transfer completed</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>b/w BG Stock transfer completed</label>
+    </customValue>
+    <customValue>
+        <fullName>ZATP inq for IPDF Normal</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>ZATP inq for IPDF Normal</label>
+    </customValue>
+    <masterLabel>Order Reject Reason</masterLabel>
+    <sorted>true</sorted>
+</GlobalValueSet>

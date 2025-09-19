@@ -1,0 +1,64 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-27-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   03-27-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    <lightning-card>
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <lightning-record-edit-form object-api-name="QnABoard__c" onsubmit={handleSubmit} onsuccess={handleSuccess}
+            onerror={handleError}>
+            <header class="slds-modal__header">
+                <div class="slds-text-heading_medium slds-modal__title slds-hyphenate">New QnA : {mHeader}</div>
+            </header>
+            <div class="slds-modal__body">
+                <div class="form-legend-desktop">
+                    <abbr class="slds-required">*</abbr>
+                    = Required Information
+                </div>
+                <div class="title">
+                    Information
+                </div>
+                <div class="contents">
+                    <template lwc:if={isNewMode}>
+                        <div class="input-wrap">
+                            <lightning-input-field field-name="Title__c" required="true"></lightning-input-field>
+                        </div>
+                        <div class="input-wrap">
+                            <lightning-input-field field-name="Category__c" required="true"></lightning-input-field>
+                        </div>
+                        <div class="input-wrap">
+                            <lightning-input-field field-name="IsPublic__c"></lightning-input-field>
+                        </div>
+                        <div class="input-wrap">
+                            <lightning-input-field field-name="Email__c" required="true"></lightning-input-field>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="input-wrap status">
+                            <lightning-input-field field-name="Status__c" value={status}></lightning-input-field>
+                        </div>
+                    </template>
+                    <div class="input-wrap">
+                        <lightning-input-field field-name="Contents__c" value={contents}></lightning-input-field>
+                    </div>
+                    <div class="input-wrap">
+                        <lightning-input-field field-name="Parent__c" value={parent} style="display:none"></lightning-input-field>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning-button variant="border" type="cancel" label="Cancel" onclick={handleCancel}></lightning-button>
+                <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+            </div>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

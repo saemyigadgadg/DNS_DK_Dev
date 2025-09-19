@@ -1,0 +1,244 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 04-27-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-22-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+  controller="DN_PortalSalesRequestEduController"
+  description="납품후교육요청">
+
+  <!-- URL 상태를 담을 속성 추가 -->
+  <aura:attribute name="pageReference" type="Object"/>
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="caseNo"    type="String"  default="" />
+  <aura:attribute name="dealerInfo" type="Object" />
+  <aura:attribute name="ticketInfo" type="Object" /> 
+  <aura:attribute name="dlUrl"      type="String"   default="{!$Label.c.Portal_Download}" />
+
+  <!-- URL 파라미터 수신 시 doInit 재실행 -->
+  <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
+  
+  <!-- Handler -->
+  <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+  <!-- navigation -->
+  <lightning:navigation aura:id="navTrainingList"/> <!--납품 후 교육 목록 페이지로 이동-->
+                                
+  <!-- Body -->
+  <article class="slds-card">
+
+    <!-- Loading Spinner  -->
+    <aura:if isTrue="{! v.isLoading}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="title">
+        <lightning:icon iconName="standard:record_update" size="small" />
+        <h2>납품 후 교육</h2>
+        <p>
+          <span>Ticket 번호 : </span>
+          <span>{!v.caseNo}</span>
+        </p>
+      </div>
+
+      <div class="button-wrap">
+        <lightning:button name="back" label="뒤로가기" iconName="utility:back" iconPosition="left" onclick="{!c.goBack}" />
+      </div>
+    </div>
+
+
+    <div class="body">
+      <!-- card 03 -->
+      <div class="card-03 top-card">
+        <div class="card-header">
+          <h2>장비정보</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-wrap">
+            <p>수주번호</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.SalesOrder__r.ERPPSONo__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>기종</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.FM_AssetMachineName__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>장비번호</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Asset.Name}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>설치완료일</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Asset.InstallationFinish__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>공임/부품 보증여부(Y/N)</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Asset.FM_EquipmentWarrantyEquipmentParts__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>NC종류</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Asset.NCType__c}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- card 02 -->
+      <div class="card-02 top-card">
+        <div class="card-header">
+          <h2>고객정보</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-wrap">
+            <p>고객사명</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Account.Name}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>판매대리점</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.SalesDealer__r.Name}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>접수자</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.InternalRequester__r.Name}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>접수자 전화번호</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.FM_ReceptionistMP__c}
+            </div>
+          </div>
+          <!-- <div class="field-wrap">
+            <p>고객사 담당자</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.ContactName__c}
+            </div>
+          </div> -->
+          <div class="field-wrap">
+            <p>고객사 담당자명</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.ContactName__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>고객사 연락처</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.ContactPhone__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>직책</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.ContactPosition__c}
+            </div>
+          </div>
+          <div class="field-wrap grid-long">
+          <!-- <div class="field-wrap"> -->
+            <p>고객사 주소</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Account.FM_Address__c}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- card 04 -->
+      <div class="card-04 top-card">
+        <div class="card-header">
+          <h2>요청정보</h2>
+        </div>
+        <div class="card-body">
+          <div class="field-wrap">
+            <p>교육종류</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.TrainingType__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>교육횟수</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.TrainingCount__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>피교육자수준</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.TraineeLevel__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>교육담당자</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.Owner.Name}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>교육요청일시(1)</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.TrainingDateTime1__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>교육요청일시(2)</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.TrainingDateTime2__c}
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>교육요청일시(3)</p>
+            <div class="input-wrap">
+              {!v.ticketInfo.TrainingDateTime3__c}
+            </div>
+          </div>
+          <div class="field-wrap grid-long">
+            <p>접수내용</p>
+            <div class="input-wrap">
+              <lightning:formattedText value="{!v.ticketInfo.ReceptionDetails__c}" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- card-05 -->
+      <div class="card-05 top-card">
+        <div class="card-header">
+          <h2>첨부파일</h2>
+        </div>
+        <div class="card-body"> 
+          <div class="file-wrap">
+            <aura:iteration items="{!v.ticketInfo.ContentDocumentLinks}" var="fId" indexVar="j">
+              <div class="file-name">
+                <lightning:button value="{!fId.ContentDocumentId}" accesskey="{!j}" onclick="{!c.doDownload}" title="{!fId.ContentDocument.Title}">
+                <lightning:icon iconName='doctype:attachment' alternativeText='attachment' size='x-small' title='attachment'></lightning:icon>
+                <span>{!fId.ContentDocument.Title}</span>
+              </lightning:button>
+              </div>
+            </aura:iteration>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </article>
+</aura:component>

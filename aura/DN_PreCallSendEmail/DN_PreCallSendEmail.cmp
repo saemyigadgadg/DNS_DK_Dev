@@ -1,0 +1,148 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 03-20-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   01-21-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="DNSA Pre-Call Send Email" access="global" controller="DN_ExecuteHappyCallController">
+
+    <!--Attribute-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="targetList" type="List" default="[]" />
+    <aura:attribute name="selectedEquipment" type="List" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_PreCallSendEmail) {
+            width: fit-content;
+            max-width: calc(100vw - 4rem);
+        }
+        .slds-modal__content:has(.cDN_PreCallSendEmail) {
+            height: auto !important;
+            max-height: unset !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_PreCallSendEmail) {
+        padding:0;
+        }
+    </aura:html>
+
+    <!-- <div aura:id="confirmModal" class="slds-modal slds-fade-in-open"> </div> -->
+    <div class="slds-modal__container slds-modal_large">
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">Send Email</h2>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content slds-p-around_medium">
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <div class="card-02 top-card">
+
+                <div class="table-02">
+                    <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                        <colgroup>
+                            <col width="1%" />
+                            <col width="11%" />
+                            <col width="10%" />
+                            <col width="10%" />
+                            <col width="16%" />
+                            <col width="10%" />
+                            <col width="5%" />
+                            <col width="37%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Serial Number</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Model</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Account</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Account Address</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Dealer</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Email Status</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="" style="text-align: center;">Email</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:if isTrue="{!empty(v.targetList)}" >
+                                <tr>
+                                    <td scope="row" colspan="8" style="text-align: center;"><p>No Target Equipment is registered.</p></td>
+                                </tr>
+                            </aura:if>        
+                            <aura:iteration items="{!v.targetList}" var="targetList" indexVar="j">
+                                <tr>
+                                    <td scope="row" class="center">
+                                        <lightning:input type="checkbox" aura:id="checkbox"
+                                            onchange="{! c.handleCheckboxChange }" accesskey="{!j}" />
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!targetList.SerialNumber}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!targetList.Model}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!targetList.Account}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!targetList.AccountAddress}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!targetList.Dealer}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!targetList.EmailStatus}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>
+                                            <lightning:input type="text" aura:id="text" accesskey="{!j}"
+                                            value="{!targetList.Email}" variant="label-hidden"
+                                            placeholder="ex) dn@dn.com" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Cancel}" title="Brand action" onclick="{!c.cancelSendEmail}" />
+            <lightning:button variant="brand" label="{!$Label.c.DNS_B_Confirm}" title="Brand action" onclick="{!c.sendEmail}" />
+        </footer>
+    </div>
+
+</aura:component>

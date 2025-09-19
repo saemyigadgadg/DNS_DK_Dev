@@ -1,0 +1,293 @@
+<!--
+  @author            : Jun-Hyo Hwang 
+  @Description       : 대리점별 수요조정 (Yeong-Deok Seo, Jun-Yeong Choi 작성 모듈 참고)
+  @last modified on  : 02-27-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-18   junhyo.hwang@concentrix.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="대리점별 수요조정" 
+  extends="c:DN_Helper"
+  controller="DN_DemandAdjPerAgencyController">
+   <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="materialCodeDate" type="String"  /> <!-- whereCondition-->
+  <aura:attribute name="selectedTd" type="Object" default="{!null}" />  
+  <aura:attribute name="selectedPart" type="Object"  />  
+  <!-- attribute -->
+  <aura:attribute name="yearMonthVal" type="String" default="" />
+  <aura:attribute name="matCodeVal" type="String" default="" />
+  <aura:attribute name="arrowDownBtnClicked" type="Boolean" default="false" />
+  <aura:attribute name="monthCnt" type="Integer" default="25"/>
+  <aura:attribute name="monthHeader" type="List" />
+  <aura:attribute name="itemAmtList" type="List" />
+  <aura:attribute name="materialListbyMonth" type="List" />
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+  <!-- 부품 멀티 등록 모달 -->
+  <div aura:id="RegisterMultiPartsModal"></div>
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      <!-- 📌 Body -->
+      <!-- <div class="body"> -->
+        <!-- Card 02 -->
+        <!-- <div class="card-02 top-card"> -->
+          <div class="table-wrap">
+            <!-- Left Data Table -->
+            <div class="table-01 left-table" aura:id="leftTableDiv">
+              <table aura:id="leftDataTable" id="leftTable" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="8%" />
+                  <col width="32%" />
+                  <col width="60%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Repl.</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Material</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Descr.</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody aura:id="leftDataTableBody" id="leftTableBody">
+                  <aura:iteration items="{!v.recordList}" var="material" indexVar="i">
+                    <tr>
+                      <td data-label="Repl.">
+                        <div class="slds-truncate center" title="Repl.">
+                          <!-- {!material.repl} -->
+                          <aura:if isTrue="{!material.repl=='RED'}">
+                            <lightning:icon iconName="utility:record" class="repl"  alternativeText="Repl" title="Repl" size="small"/>
+                          </aura:if>      
+                          
+                        </div>
+                      </td>
+                      <td data-label="Material">
+                        <div class="slds-truncate" title="Material">
+                          <!-- {!material.material} -->
+                          <lightning:input type="text" id="matnr" name="input2" variant="label-hidden" value="{!material.partCode}" readonly="false" />
+                        </div>
+                      </td>
+                      <td data-label="Descr.">
+                        <div class="slds-truncate" title="Desc.">
+                          <!-- {!material.descr} -->
+                          <lightning:input type="text" id="desc" name="input3" variant="label-hidden" value="{!material.partDetails}" readonly="false" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+            <!-- right Data Table-->
+            <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table aura:id="rightDataTable" id="rightTable" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead id="rightTableHead">
+                  <tr class="slds-line-height_reset">
+                    <aura:iteration items="{!v.materialListbyMonth}" var="mons" indexVar="is">
+                      <th class="" scope="col" id="">  <!--.substring(v.value.length - 2) }-->
+                        <div class="slds-truncate" title="02">{!mons}</div>
+                      </th>
+                    </aura:iteration>
+                    <!-- <th class="" scope="col" id=""> 
+                      materialListbyMonth<div class="slds-truncate" title="02">02</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="03">03</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="04">04</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="05">05</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="06">06</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="07">07</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="08">08</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="09">09</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="10">10</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="11">11</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="12">12</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="01">01</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="02">02</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="03">03</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="04">04</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="05">05</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="06">06</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="07">07</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="08">08</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="09">09</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="10">10</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="11">11</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="12">12</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="01">01</div>
+                    </th>
+                    <th class="" scope="col" id=""> 
+                      <div class="slds-truncate" title="02">02</div>
+                    </th> -->
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Unit</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">ABC</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">MRP Type</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody aura:id="rightDataTableBody" id="rightTableBody">
+                  <aura:iteration items="{!v.recordList}" var="material" indexVar="materialIndex">
+                    <tr class="slds-hint-parent">
+                      <aura:iteration items="{!material.monthlyList}" var="monthly" indexVar="monthIndex">
+                        <aura:if isTrue="{! 6 > monthIndex || (material.monthlyList.length-1) == monthIndex}">
+                          <td class="{!monthly.quantity ==0 ? 'cursor-event2 month-color' : 'cursor-event month-color' }"  
+                                data-part="{!material.partCode}" 
+                                data-yyyymm="{!monthly.yyyymm}" 
+                                data-name="{!material.lastParts}" 
+                                data-index="{!materialIndex}" 
+                                onclick="{!c.clickMatQty}">
+                            <div class="slds-truncate" title="monthly">
+                              <p class="{!monthly.isEdit? 'text-color' : ''}"> {!monthly.quantity}</p>
+                            </div>    
+                          </td>  
+                          <aura:set attribute="else">
+                            
+                            <td class="{!monthly.quantity ==0 ? 'cursor-event2' : 'cursor-event' }"
+                              data-part="{!material.partCode}" 
+                              data-yyyymm="{!monthly.yyyymm}" 
+                              data-name="{!material.lastParts}" 
+                              data-index="{!materialIndex}" 
+                              onclick="{!c.clickMatQty}">
+                              <div class="slds-truncate" title="monthly">
+                                <p class="{!monthly.isEdit? 'text-color' : ''}"> {!monthly.quantity}</p>
+                              </div>    
+                            </td>
+                          </aura:set>
+                        </aura:if>
+                      </aura:iteration>
+                      <td data-label="Unit">
+                        <div class="slds-truncate" title="Unit">
+                          <lightning:input type="text" name="input4" variant="label-hidden" value="{!material.unit}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="ABC">
+                        <div class="slds-truncate" title="ABC">
+                          <lightning:input type="text" name="input5" variant="label-hidden" value="{!material.aBC}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="MRP Type">
+                        <div class="slds-truncate" title="MRP Type">
+                          <lightning:input type="text" name="input6" variant="label-hidden" value="{!material.mrpType}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="table-03">
+            <div class="button-wrap">
+              <aura:if isTrue="{!not(empty(v.recordList))}">
+                <aura:if isTrue="{!v.arrowDownBtnClicked}">
+                <div class="icon-wrap" onclick="{!c.clickArrowBtn}">
+                    <lightning:icon iconName='utility:chevrondown' alternativeText='chevronup' size='x-small' title='chevrondown' ></lightning:icon>
+                  </div>
+                  <aura:set attribute="else">
+                    <div class="icon-wrap"  onclick="{!c.clickArrowBtn}">
+                      <lightning:icon iconName='utility:chevronup' alternativeText='chevrondown' size='x-small' title='chevronup'></lightning:icon>
+                    </div>
+                  </aura:set>
+                </aura:if>
+              </aura:if>
+              
+            </div>
+  
+            <!-- 자식 데이터테이블 -->
+            <div style="position: relative;">
+              <aura:if isTrue="{!!v.arrowDownBtnClicked}">
+                <aura:set attribute="else"> 
+                  <lightning:button iconName="utility:save" class="sava-btn" label="Save" onclick="{!c.handleSave}" />  
+                  <aura:expression value="{!v.materialCodeDate}" />  
+                  <c:DN_DemandAdjPerAgencyChild aura:id="DemandAdjPerAgencyChild" materialCodeDate="{!v.materialCodeDate}" lineItemList="{!v.itemAmtList}" >
+                  </c:DN_DemandAdjPerAgencyChild>
+                </aura:set>
+              </aura:if>
+            </div>
+          </div>
+        <!-- </div> -->
+
+      <!-- </div> -->
+    </article>
+  </div>
+</aura:component>

@@ -1,0 +1,37 @@
+<!--
+  @class             : DN_QuoteItemCreationController
+  @description       : Opty에서 OpportunityLineItem 생성 버튼
+  @author            : yeongju.yun
+  @last modified on  : 2024-12-17
+  @last modified by  : yeongju.yun
+-->
+<aura:component
+    controller="DN_QuoteItemCreationController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    access="global">
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.opty_Item_wrapper){
+            width: 70%;
+            max-width: calc(100vw - 8rem);
+            min-width: 480px;
+        }
+
+        .slds-modal__content:has(.opty_Item_wrapper){
+            padding: 0;
+            height:auto !important;
+            max-height:none !important;
+            overflow-y: clip;
+            border-radius: 0.25rem;
+        }
+
+        .forceChatterBasePublisher:not(.PHONE) .cuf-content:has(.opty_Item_wrapper){
+            padding: 0 !important;
+        }
+    </aura:html>
+
+    <div class="opty_Item_wrapper">
+        <c:dN_QuoteItemCreationModal recordId="{!v.recordId}" objName="Opportunity" onclosemodal="{!c.handleClose}"></c:dN_QuoteItemCreationModal>
+    </div>
+
+</aura:component>

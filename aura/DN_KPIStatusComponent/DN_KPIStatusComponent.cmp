@@ -1,0 +1,276 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-03-05
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-01-10   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_KPIStatusController"
+    >
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <!-- 월간 KPI -->
+    <!-- attribute -->
+    <aura:attribute name="monthlyStartDate" type="String" default="" />
+    <aura:attribute name="monthlyEndDate" type="String" default="" />
+
+    <!-- 관할지사 -->
+    <aura:attribute name="monthlyTopWorkcenter" type="String" default="all" />
+    <aura:attribute name="monthlyTopWorkcenterOptions" type="List" default="[]" />
+
+    <!-- 서비스W/C -->
+    <aura:attribute name="monthlyWorkcenter" type="String" default="all" />
+    <aura:attribute name="monthlyWorkcenterOptions" type="List" default="[]" />
+    
+    <!-- monthlyData -->
+    <aura:attribute name="monthlyData" type="List" default="[]" />
+
+
+    <!-- 주간 KPI -->
+    <!-- attribute -->
+    <aura:attribute name="weeklyStartDate" type="String" default="" />
+    <aura:attribute name="weeklyEndDate" type="String" default="" />
+
+    <!-- 관할지사 -->
+    <aura:attribute name="weeklyTopWorkcenter" type="String" default="all" />
+    <aura:attribute name="weeklyTopWorkcenterOptions" type="List" default="[]" />
+
+    <!-- 서비스W/C -->
+    <aura:attribute name="weeklyWorkcenter" type="String" default="all" />
+    <aura:attribute name="weeklyWorkcenterOptions" type="List" default="[]" />
+
+    <!-- weenklyData -->
+    <aura:attribute name="weenklyData" type="List" default="[]" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-card total-wrap">
+
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:performance' alternativeText='performance' size='small'
+                    title='performance'  />
+                </div>
+                <h2 class="slds-card__header-title">KPI 현황</h2>
+            </header>
+        </div>
+
+        <div>
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{!v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+            </aura:if>
+        </div>
+
+        <lightning:tabset>
+            <!-- 1. 월간 KPI 현황 -->
+            <lightning:tab label="월간KPI현황">
+                <div class="slds-card__body body">
+                    <!-- Card 01 -->
+                    <div class="card-01">
+                        <div class="field-container">
+                            <div class="field-wrap">
+                                <p>일자</p>
+                                <div class="input-wrap">
+                                    <lightning:input type="month" name="monthInput" value="{!v.monthlyStartDate}" variant="label-hidden" />
+                                        ~
+                                    <lightning:input type="month" name="monthInput" value="{!v.monthlyEndDate}" variant="label-hidden" />
+                                </div>
+                            </div>
+                            <div class="field-wrap">
+                                <p>관할지사</p>
+                                <div class="input-wrap">
+                                    <lightning:combobox variant="label-hidden" options="{!v.monthlyTopWorkcenterOptions}"
+                                            value="{!v.monthlyTopWorkcenter}" onchange="{!c.monthlyHandleChangeTopWorkcenter}">
+                                    </lightning:combobox>
+                                </div>
+                            </div>
+                            <div class="field-wrap">
+                                <p>서비스W/C</p>
+                                <div class="input-wrap">
+                                    <lightning:combobox variant="label-hidden" options="{!v.monthlyWorkcenterOptions}"
+                                            value="{!v.monthlyWorkcenter}" onchange="{!c.monthlyHandleChangeWorkcenter}">
+                                    </lightning:combobox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-wrap">
+                            <lightning:button label="조회" variant="brand" onclick="{!c.monthlyHandleSearchButton}" />
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-wrap">
+                        <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr>
+                                    <th>일자</th>
+                                    <th>클레임완료L/T</th>
+                                    <th>고객회신율</th>
+                                    <th>알림톡접수율</th>
+                                    <th>1일이내수리완료율</th>
+                                    <th>1회출동수리완료율</th>
+                                    <th>콜서비스처리율</th>
+                                    <th>수리만족도</th>
+                                    <th>설치만족도</th>
+                                    <th>고객예약율</th>
+                                    <th>고객예약준수율</th>
+                                    <th>직영배정율</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.monthlyData}" var="data" >
+                                    <tr>
+                                        <td>{!data.name}</td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.claimLT}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.replyRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.alarmtalkRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.completedIn24Rate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.completedIn1DispatchRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.callServiceRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.repairSatisfactionScore}" maximumFractionDigits="2"/>
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.installSatisfactionScore}" maximumFractionDigits="2"/>
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.customerReservationRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.customerReservationObeyRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.directWCAllotmentRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </lightning:tab>
+
+            <!-- 1. 주간 KPI 현황 -->
+            <lightning:tab label="주간KPI현황">
+                <div class="slds-card__body body">
+
+                    <!-- Card 01 -->
+                    <div class="card-01">
+                        <div class="field-container">
+                            <div class="field-wrap">
+                                <p>일자</p>
+                                <div class="input-wrap">
+                                    <lightning:input type="month" name="monthInput" value="{!v.weeklyStartDate}" variant="label-hidden" />
+                                        ~
+                                    <lightning:input type="month" name="monthInput" value="{!v.weeklyEndDate}" variant="label-hidden" />
+                                </div>
+                            </div>
+                            <div class="field-wrap">
+                                <p>관할지사</p>
+                                <div class="input-wrap">
+                                    <lightning:combobox variant="label-hidden" options="{!v.weeklyTopWorkcenterOptions}"
+                                            value="{!v.weeklyTopWorkcenter}" onchange="{!c.weeklyHandleChangeTopWorkcenter}">
+                                    </lightning:combobox>
+                                </div>
+                            </div>
+                            <div class="field-wrap">
+                                <p>서비스W/C</p>
+                                <div class="input-wrap">
+                                    <lightning:combobox variant="label-hidden" options="{!v.weeklyWorkcenterOptions}"
+                                            value="{!v.weeklyWorkcenter}" onchange="{!c.weeklyHandleChangeWorkcenter}">
+                                    </lightning:combobox>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="button-wrap">
+                            <lightning:button label="조회" variant="brand" onclick="{!c.weeklyHandleSearchButton}" />
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-wrap">
+                        <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr>
+                                    <th>일자</th>
+                                    <th>클레임완료L/T</th>
+                                    <th>고객회신율</th>
+                                    <th>알림톡접수율</th>
+                                    <th>1일수리완료율</th>
+                                    <th>1회출동수리완료율</th>
+                                    <th>콜서비스처리율</th>
+                                    <th>수리만족도</th>
+                                    <th>설치만족도</th>
+                                    <th>고객예약율</th>
+                                    <th>고객예약준수율</th>
+                                    <th>직영배정율</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.weenklyData}" var="data" >
+                                    <tr>
+                                        <td>{!data.name}</td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.claimLT}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.replyRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.alarmtalkRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.completedIn24Rate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.completedIn1DispatchRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.callServiceRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.repairSatisfactionScore}" maximumFractionDigits="2"/>
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.installSatisfactionScore}" maximumFractionDigits="2"/>
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.customerReservationRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.customerReservationObeyRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                        <td>
+                                            <lightning:formattedNumber value="{!data.directWCAllotmentRate}" maximumFractionDigits="2"/>%
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </lightning:tab>
+        </lightning:tabset>
+    </div>
+
+</aura:component>

@@ -1,0 +1,25 @@
+.resizable {
+	width: 200px;
+	height: 200px;
+	border: 2px solid #ccc;
+	padding: 10px;
+	resize: both;
+	overflow: auto;
+	position: relative;
+}
+
+.resizer {
+	width: 10px;
+	height: 10px;
+	background-color: #000;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	cursor: se-resize; /* 오른쪽 하단 방향 화살표 모양 */
+}
+.customDiv {
+	resize: both;  /* 크기 조절 가능 */
+	overflow: auto; /* 내용이 넘칠 경우 스크롤 표시 */
+	max-width: unset;
+	max-height: unset;
+}

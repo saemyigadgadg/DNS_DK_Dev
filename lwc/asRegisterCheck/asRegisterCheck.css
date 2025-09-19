@@ -1,0 +1,229 @@
+.slds-button_stretch {
+    width: 100%;
+}
+
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.media-item {
+    position: relative;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.media-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.media-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    background-color: #f3f3f3;
+}
+
+.media-title {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    background: rgba(255, 255, 255, 0.9);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-upload-zone {
+    border: 2px dashed #d8dde6;
+    border-radius: 0.25rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.file-upload-zone:hover {
+    border-color: #0070d2;
+    background-color: #f3f3f3;
+}
+
+.upload-icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+}
+
+.upload-text {
+    color: #706e6b;
+    font-size: 0.875rem;
+}
+
+.preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    max-height: calc(90vh - 120px);
+    background-color: #f3f3f3;
+    overflow: hidden;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: calc(90vh - 120px);
+    object-fit: contain;
+}
+
+.video-thumbnail {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f3f3f3;
+}
+
+.video-thumbnail lightning-icon {
+    --sds-c-icon-color-foreground-default: #706e6b;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 48em) {
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .media-item img,
+    .video-thumbnail {
+        height: 120px;
+    }
+}
+
+.slds-text-longform {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 0.5rem;
+    background-color: #f3f3f3;
+    border-radius: 0.25rem;
+}
+
+.slds-text-heading_small {
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 600;
+}
+
+.slds-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slds-card__header {
+    background-color: #f3f3f3;
+    padding: 1rem;
+}
+
+.slds-form-element__label {
+    font-size: 0.875rem;
+    color: #706e6b;
+}
+
+.slds-table {
+    font-size: 0.875rem;
+}
+
+.slds-table th {
+    background-color: #f3f3f3;
+    font-weight: 600;
+}
+
+.slds-table td {
+    vertical-align: middle;
+}
+
+.slds-text-color_success {
+    color: #2e844a;
+}
+
+.slds-text-title_caps {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem;
+}
+
+.file-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.delete-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+}
+
+.delete-button:hover {
+    background: #ffffff;
+}
+
+/* 2025-02-21 Hyerin Ro */
+
+.showMediaDialog {
+    z-index: 9000 !important;
+}
+
+.showMediaDialog+.slds-backdrop {
+    z-index: 8999 !important;
+}
+
+.table-wrap {
+    overflow: auto;
+}
+
+/* 2025-04-02 Hyerin Ro */
+
+.slds-theme_default {
+    max-width: 1400px;
+    margin: auto;
+}
+
+.button-section {
+    justify-content: center;
+    gap: 0.5rem;
+    align-items: center;
+    display: flex;
+
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    z-index: 9999;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,184 @@
+<!--
+  @description       : 
+  @author            : Junyeong, Choi
+  @group             : 
+  @last modified on  : 03-18-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-23-2024   Junyeong, Choi   Initial Version
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    description="등록한 고장 부위 테이블 데이터 출력"
+    controller="DN_TicketEscalationFailureDataController"
+>
+    <aura:attribute name="failureAreaList"             type="List"    default="[]" />
+    <aura:attribute name="isLoading"                   type="Boolean" default="false" />
+    <aura:attribute name="openRegisterFailureData"     type="Boolean" default="false" />
+    <aura:attribute name="objectTypeOptions"           type="Object" />
+    <aura:attribute name="selectedObjectType"          type="String"  default="" />
+    <aura:attribute name="failureMainOptions"          type="Object" />
+    <aura:attribute name="selectedFailureMain"         type="String"  default="" />
+    <aura:attribute name="failureMiddleOptions"        type="Object" />
+    <aura:attribute name="selectedFailureMiddle"       type="String"  default="" />
+    <aura:attribute name="failurePhenomenonOptions"    type="Object" />
+    <aura:attribute name="selectedFailurePhenomenon"   type="String"  default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card variant="Narrow">
+
+        <header class="header">
+            <div class="title">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:custom' alternativeText='custom' size='small' title='custom'></lightning:icon>
+                </div>
+                <h2>고장 부위</h2>
+            </div>
+            <lightning:button label="고장 부위 등록" title="고장 부위 등록" onclick="{! c.registerFailureData }" />
+        </header>
+
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+
+        <div class="card-02 top-card">
+            <div class="table-02">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                        <col width="20%" />
+                        <col width="25%" />
+                        <col width="25%" />
+                        <col width="25%" />
+                        <col width="5%" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">Object Type</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">고장부위(대)</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">고장부위(중)</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">고장현상</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title=""></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!empty(v.failureAreaList)}">
+                            <tr>
+                                <td scope="row" colspan="7" style="text-align: center;">
+                                    <p>등록된 추출 조건이 없습니다.</p>
+                                </td>
+                            </tr>
+                        </aura:if>
+                        <aura:iteration items="{!v.failureAreaList}" var="failureAreaList" indexVar="j">
+                            <tr>
+                                <td scope="row">
+                                    <div>{!failureAreaList.objectType}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!failureAreaList.failureAreaMajor}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!failureAreaList.failureAreaMiddle}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!failureAreaList.failurePhenomenon}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>
+                                        <lightning:buttonicon iconName="utility:delete" accesskey="{!j}"
+                                            onclick="{!c.failureDelete}" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning:card>
+
+    <!-- 📌 1. Failure Data 등록 모달 -->
+    <aura:if isTrue="{!v.openRegisterFailureData}">
+        <div class="FailureDataModal" aura:id="FailureDataModal">
+
+            <div aura:id="FailureDataModal" class="slds-modal slds-fade-in-open FailureDataModal">
+                <div class="slds-modal__container">
+                    <!-- Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">고장 부위 등록</h2>
+                    </header>
+    
+                    <!-- Modal -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <aura:if isTrue="{!v.isLoading}">
+                            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                        </aura:if>
+
+                        <div class="condition-content">
+                            <!-- Object Type -->
+                            <lightning:select name="ObjectType" label="Object Type" aura:id="ObjectType"
+                                value="{!v.selectedObjectType}" onchange="{!c.handleObjectTypeChange}">
+                                <option value="" selected="true"></option>
+                                <aura:iteration items="{!v.objectTypeOptions}" var="option">
+                                    <option text="{!option.label}" value="{!option.value}" />
+                                </aura:iteration>
+                            </lightning:select>
+    
+                            <!-- 고장부위(대) -->
+                            <aura:if isTrue="{!not(empty(v.selectedObjectType))}">
+                                <lightning:select name="FailureAreaMain" label="고장부위(대)" aura:id="FailureAreaMain"
+                                    value="{!v.selectedFailureMain}" onchange="{!c.handleFailureMainChange}">
+                                    <option value="" selected="true"></option>
+                                    <aura:iteration items="{!v.failureMainOptions}" var="main">
+                                        <option text="{!main.label}" value="{!main.value}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </aura:if>
+    
+                            <!-- 고장부위(중) -->
+                            <aura:if isTrue="{!not(empty(v.selectedFailureMain))}">
+                                <lightning:select name="FailureAreaMiddle" label="고장부위(중)" aura:id="FailureAreaMiddle"
+                                    value="{!v.selectedFailureMiddle}" onchange="{!c.handleFailureMiddleChange}">
+                                    <option value="" selected="true"></option>
+                                    <aura:iteration items="{!v.failureMiddleOptions}" var="middle">
+                                        <option text="{!middle.label}" value="{!middle.value}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </aura:if>
+    
+                            <!-- 고장 현상 -->
+                            <aura:if isTrue="{!not(empty(v.selectedFailureMiddle))}">
+                                <lightning:select name="FailurePhenomenon" label="고장현상" aura:id="FailurePhenomenon"
+                                    value="{!v.selectedFailurePhenomenon}" onchange="{!c.handleFailurePhenomenonChange}">
+                                    <option value="" selected="true"></option>
+                                    <aura:iteration items="{!v.failurePhenomenonOptions}" var="phenomenon">
+                                        <option text="{!phenomenon.label}" value="{!phenomenon.value}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </aura:if>
+                        </div>
+                    </div>
+    
+                    <!-- Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button label="취소" onclick="{!c.handleCancel}" class="slds-m-left_x-small" />
+                        <lightning:button variant="brand" label="저장" onclick="{!c.handleSave}"
+                            class="slds-m-left_x-small" />
+                    </footer>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+</aura:component>

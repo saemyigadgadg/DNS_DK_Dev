@@ -1,0 +1,91 @@
+.THIS .slds-modal__container {
+    width: 1024px;
+    padding: 0;
+    max-width: none;
+    min-width: none;
+}
+
+.THIS .slds-modal__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 60vh;
+    padding: 1rem;
+    background-color: #f3f3f3;
+}
+
+.THIS .top_card {
+    padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: .25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);    
+}
+
+.THIS .card_01{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 0.75rem;
+}
+
+.THIS .card_01 .slds-form-element__label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.THIS .card_01 lightning-datepicker .slds-form-element__label, .THIS .card_01 lightning-timepicker .slds-form-element__label {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.THIS .card_01 .input_wrap.grid-description {
+    grid-column: 2 / 3;
+    grid-row: 7 / 10;
+}
+
+.THIS .card_01 .input_wrap.grid_long {
+    grid-column: 1 /3;
+}
+
+.THIS .card_01 .input_wrap .slds-textarea {
+    min-height: 15rem;
+}
+
+.THIS .card_01 .input_wrap lightning-file-upload .slds-form-element__control {
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.THIS .card_01 .address {
+    position: relative;
+}
+
+.THIS .card_01 .address span {
+    position: absolute;
+    top: 4px;
+    left: 79px;
+    color: red;
+    font-size: 12px;
+}
+
+.THIS .file_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    row-gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.THIS .file_wrap .file_name {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10rem;
+    background-color: #d0ebff;
+}
+
+.THIS .file_wrap .file_name lightning-icon:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,1190 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 2025-04-22
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-28-2024   Hyerin Ro   Initial Version
+-->
+<template>
+    <div class="total-wrap">
+         <!-- Loading Spinner -->
+         <template if:true={isLoading}>
+            <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <!-- Sync Price Button -->
+        <div class="sync-button">
+            <template if:false={prevetSave}>
+                <template if:true={productDCZero}>
+                    <p class="message">{cLabel.DNS_M_ProductDiscountZero}</p>
+                </template>
+                <lightning-button variant="brand" label={cLabel.DNS_B_Save} title={cLabel.DNS_B_Save} onclick={handleSave} class="slds-m-left_x-small" disabled={handleSaveBtn}></lightning-button>
+                <lightning-button variant="brand" label={cLabel.DNS_B_SyncPrice} title={cLabel.DNS_B_SyncPrice} onclick={handleSyncPrice} class="slds-m-left_x-small"></lightning-button>
+            </template>            
+        </div>
+
+        <div class={dynamicBlurred} data-id="container">
+
+            <template if:false={prevetSave}>
+                <span class="instruction">{cLabel.DNS_M_DataActivateInstruction}</span>
+            </template>
+            
+            <!-- Section 01 - 장비 기본 선택사항 -->
+            <section class="section-01 standard-option">
+                <div class="header-table">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <colgroup>
+                            <col width="65%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="left" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_T_DefaultEquipmentSelection}>{cLabel.DNS_T_DefaultEquipmentSelection}</div>
+                                </th>
+                                <th class="right" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Amount}>
+                                        <lightning-formatted-number value={standardStdTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{priceInfo.currCode}</div>
+                                </th>
+                                <th class="" scope="col" >
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate}>
+                                        <lightning-icon icon-name='utility:chevronup' alternative-text='Unfold'
+                                            size='x-small' title='Unfold' onclick={toggleSection}></lightning-icon>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+    
+                <!-- Table Wrap -->
+                <div class="table-wrap" style="display: block;">
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="55%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Category}>{cLabel.DNS_C_Category}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Details}>{cLabel.DNS_C_Details}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Amount}>{cLabel.DNS_C_Amount}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{cLabel.DNS_C_Currency}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate}>{cLabel.DNS_C_DiscountRate}</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 1. 본체 Product -->
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Category} rowspan="2" class="no-left-bd">
+                                    <div class="slds-truncate" title={cLabel.DNS_F_Product}>{cLabel.DNS_F_Product}</div>
+                                </th>
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_StandardPrice}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.productStd}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0%</div>
+                                </td>
+                            </tr>
+    
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Category}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.productStd}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0.0%</div>
+                                </th>
+                            </tr>
+    
+                            <!-- 2. 선택 Option -->
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Category} rowspan="4" class="no-left-bd">
+                                    <div class="slds-truncate" title={cLabel.DNS_F_Option}>{cLabel.DNS_F_Option}</div>
+                                </th>
+                                
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_CVOption}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.cvStd}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0%</div>
+                                </td>
+                            </tr>
+
+                            <tr class="slds-hint-parent">
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_SQOption}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.sqStd}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0%</div>
+                                </td>
+                            </tr>
+
+                            <tr class="slds-hint-parent">
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_ACCOption}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.accStd}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0%</div>
+                                </td>
+                            </tr>
+
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardOptionTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0.0%</div>
+                                </th>
+                            </tr>
+    
+                            <!-- 3. 총 합 Total -->
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Details} colspan="2" class="no-left-bd">
+                                    <div class="slds-truncate">{cLabel.DNS_F_GrandTotal}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardStdTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">0.0%</div>
+                                </th>
+                            </tr>
+    
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+    
+            <!-- Section 02 - 정상 할인 -->
+            <section class="section-02 standard-discount">
+                <!-- Header Table -->
+                <div class="header-table">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <colgroup>
+                            <col width="65%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_T_StandardDiscount}>{cLabel.DNS_T_StandardDiscount}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate right" title={cLabel.DNS_C_Amount}>
+                                        <lightning-formatted-number value={standardDCTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{priceInfo.currCode}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate}>
+                                        <lightning-icon icon-name='utility:chevronup' alternative-text='Unfold'
+                                            size='x-small' title='Unfold' onclick={toggleSection}></lightning-icon>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+    
+                <!-- Table Wrap -->
+                <div class="table-wrap" style="display: block;">
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="55%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Category}>{cLabel.DNS_C_Category}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Details}>{cLabel.DNS_C_Details}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Amount}>{cLabel.DNS_C_Amount}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{cLabel.DNS_C_Currency}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate}>{cLabel.DNS_C_DiscountRate}</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 1. 본체 Product -->
+                            <tr class="slds-hint-parent" >
+                                <th data-label={cLabel.DNS_C_Category} rowspan="2" class="no-left-bd">
+                                    <div class="slds-truncate" title={cLabel.DNS_F_Product}>{cLabel.DNS_F_Product}</div>
+                                </th>
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{priceInfo.dcType}</div>
+                                    <!-- {cLabel.DNS_F_Discount} -->
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.productDC}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardDCRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </td>
+                            </tr>
+    
+                            <tr class="slds-hint-parent" >
+                                <th data-label={cLabel.DNS_C_Category}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.productDC}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardDCRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </th>
+                            </tr>
+    
+                            <!-- 2. 선택 Option -->
+    
+                            <tr class="slds-hint-parent" >
+                                <th data-label={cLabel.DNS_C_Category} rowspan="4" class="no-left-bd">
+                                    <div class="slds-truncate" title={cLabel.DNS_F_Option}>{cLabel.DNS_F_Option}</div>
+                                </th>
+                                
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_CVOptionDiscount}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.cvDC}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardCVRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="slds-hint-parent">
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_SQOptionDiscount}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.sqDC}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardSQRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <tr class="slds-hint-parent">
+                                <td data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_ACCOptionDiscount}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={priceInfo.accDC}></lightning-formatted-number>
+                                    </div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </td>
+                                <td data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardAccRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </td>
+                            </tr>
+    
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Details}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardDCOptionTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardORateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </th>
+                            </tr>
+    
+                            <!-- 3. 총 합 Total -->
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Details} colspan="2" class="no-left-bd">
+                                    <div class="slds-truncate">{cLabel.DNS_F_TotalDiscountAmount}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardDCTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={standardDCRateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </th>
+                            </tr>
+    
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+    
+            <!-- Section 03 - 추가 할인 -->
+            <section class="section-03 additional-discount">
+                <!-- Header Table -->
+                <div class="header-table">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <colgroup>
+                            <col width="65%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="추가 할인">추가 할인</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate right" title={cLabel.DNS_C_Amount}>
+                                        <lightning-formatted-number value={additionalDCTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{priceInfo.currCode}</div>
+                                </th>
+                                <th class="" scope="col" >
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate}>
+                                        <lightning-icon icon-name='utility:chevronup' alternative-text='Unfold' size='x-small' title='Unfold' onclick={toggleSection}></lightning-icon>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+    
+                <!-- Table Wrap -->
+                <div class="table-wrap" style="display: block;">
+                    <!-- 1. 특별공급 -->
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="3%" />
+                            <col width="52%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+    
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Category}>{cLabel.DNS_C_Category}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="선택"></div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Details}>{cLabel.DNS_C_Details}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Amount}>{cLabel.DNS_C_Amount}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{cLabel.DNS_C_Currency}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate}>{cLabel.DNS_C_DiscountRate}</div>
+                                </th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            <!-- 1. 특별공급 -->
+                            <template if:false={openWholesale}>
+                                <tr class="slds-hint-parent consignment">
+                                    <th data-label={cLabel.DNS_C_Category} class="no-left-bd" style="background: #fff !important;">
+                                        <div class="slds-truncate" title={segmentation}>{segmentation}</div>
+                                    </th>
+                                    
+                                    <td data-label="선택">
+                                        <div class="slds-truncate">
+                                            <lightning-input
+                                                type="checkbox"         
+                                                id="radio-01"
+                                                variant="label-hidden" 
+                                                value="consignment" 
+                                                tabindex="-1"
+                                                name="specialOptions"
+                                                onchange={handleSpecialCheckbox} 
+                                                data-index={index}
+                                                checked={isConsignment}
+                                                disabled={offConsignment}
+                                            ></lightning-input>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Details}>
+                                        <div class="slds-truncate">
+                                            <h5>{segmentation}</h5>
+                                            <div>
+                                                <p>&nbsp;- {cLabel.DNS_T_StandardDiscount}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_SpecialDiscount}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_ProductTotalBasedOnContract}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_OptionTotalBasedOnContract}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Amount}>
+                                        <div class="slds-truncate right">
+                                            <lightning-input 
+                                                type="number" 
+                                                variant="label-hidden" 
+                                                data-index="0"
+                                                disabled={isDisabled01}
+                                                value={inputPrice01}
+                                                onblur={handleInputChange}
+                                                >
+                                            </lightning-input>
+                                            <div>
+                                                <p>
+                                                    <lightning-formatted-number value={standardDCTotal}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialDCPrice01}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialBodyOfContract01}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialOptionOfContract}></lightning-formatted-number>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Currency}>
+                                        <div class="slds-truncate">
+                                            <h5>{priceInfo.currCode}</h5>
+                                            <div>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>                                                
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>                                                
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_DiscountRate}>
+                                        <div class="slds-truncate right">
+                                            <h5>
+                                                <lightning-formatted-number value={specialRate01} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                            </h5>
+                                            <div>
+                                                <p>
+                                                    <lightning-formatted-number value={specialStdRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialSpcRate01} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialBodyOfContractRate01} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialOptionOfContractRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+    
+                            <template if:true={openWholesale}>
+                                <tr class="slds-hint-parent wholesale">   
+                                    <th data-label={cLabel.DNS_C_Category} rowspan="2" class="no-left-bd" style="background: #fff !important;">
+                                        <div class="slds-truncate" title="도매특인">도매특인</div>
+                                    </th>                                                   
+                                    <td data-label="선택">
+                                        <div class="slds-truncate">
+                                            <lightning-input
+                                                type="checkbox"         
+                                                id="radio-02"
+                                                variant="label-hidden" 
+                                                value="wholesale"
+                                                tabindex="-1"
+                                                name="specialOptions"
+                                                onchange={handleSpecialCheckbox} 
+                                                data-index={index}
+                                                checked={isWholesale}
+                                                disabled={offWholesale}
+                                            ></lightning-input>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Details}>
+                                        <div class="slds-truncate">
+                                            <h5>{cLabel.DNS_F_FinalWholesaleContractPrice}</h5>
+                                            <div>
+                                                <p>&nbsp;- {cLabel.DNS_T_StandardDiscount}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_SpecialDiscount}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_ProductTotalBasedOnContract}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_OptionTotalBasedOnContract}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Amount}>
+                                        <div class="slds-truncate right">
+                                            <lightning-input 
+                                                type="number" 
+                                                variant="label-hidden" 
+                                                data-index="1"
+                                                disabled={isDisabled02}
+                                                value={inputPrice02}
+                                                onblur={handleInputChange}
+                                                >
+                                            </lightning-input>
+                                            <div>
+                                                <p>
+                                                    <lightning-formatted-number value={standardDCTotal}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialDCPrice02}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialBodyOfContract02}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialOptionOfContract}></lightning-formatted-number>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Currency}>
+                                        <div class="slds-truncate">
+                                            <h5>{priceInfo.currCode}</h5>
+                                            <div>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_DiscountRate}>
+                                        <div class="slds-truncate right">
+                                            <h5>
+                                                <lightning-formatted-number value={specialRate02} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                            </h5>
+                                            <div>
+                                                <p>
+                                                    <lightning-formatted-number value={specialStdRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialSpcRate02} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialBodyOfContractRate02} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialOptionOfContractRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr class="slds-hint-parent longterm">                                                      
+                                    <td data-label="선택">
+                                        <div class="slds-truncate">
+                                            <lightning-input
+                                                type="checkbox"         
+                                                id="radio-03"                           
+                                                variant="label-hidden" 
+                                                value="longterm"
+                                                tabindex="-1"
+                                                name="specialOptions"
+                                                onchange={handleSpecialCheckbox} 
+                                                data-index={index}
+                                                checked={isLongterm} 
+                                                disabled={offLongterm}
+                                             ></lightning-input>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Details}>
+                                        <div class="slds-truncate">
+                                            <h5>{cLabel.DNS_F_LongTermSales}</h5>
+                                            <div>
+                                                <p>&nbsp;- {cLabel.DNS_T_StandardDiscount}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_SpecialDiscount}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_ProductTotalBasedOnContract}</p>
+                                                <p>&nbsp;- {cLabel.DNS_F_OptionTotalBasedOnContract}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Amount}>
+                                        <div class="slds-truncate right">
+                                            <lightning-input 
+                                                type="number" 
+                                                variant="label-hidden" 
+                                                data-index="2"
+                                                disabled={isDisabled03}
+                                                value={inputPrice03}
+                                                onblur={handleInputChange}
+                                                >
+                                            </lightning-input>
+                                            <div>
+                                                <p>
+                                                    <lightning-formatted-number value={standardDCTotal}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialDCPrice03}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialBodyOfContract03}></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialOptionOfContract}></lightning-formatted-number>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Currency}>
+                                        <div class="slds-truncate">
+                                            <h5>{priceInfo.currCode}</h5>
+                                            <div>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>
+                                                <p>{priceInfo.currCode}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_DiscountRate}>
+                                        <div class="slds-truncate right">
+                                            <h5>
+                                                <lightning-formatted-number value={specialRate03} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                            </h5>
+                                            <div>
+                                                <p>
+                                                    <lightning-formatted-number value={specialStdRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialSpcRate03} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialBodyOfContractRate03} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                                <p>
+                                                    <lightning-formatted-number value={specialOptionOfContractRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            
+                            <!-- 합계 Total -->
+                            <tr class="slds-hint-parent">
+                                <th class="no-left-bd"></th>
+                                <th></th>
+                                <th data-label={cLabel.DNS_C_Category}>
+                                    <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={specialDCTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th> 
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={specialDCRateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+    
+                    <!-- 2. 프로모션 -->
+                    <template if:true={openWholesale}>
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover promotion">
+                            <colgroup>
+                                <col width="10%" />
+                                <col width="3%" />
+                                <col width="44%" />
+                                <col width="8%" />
+                                <col width="20%" />
+                                <col width="7%" />
+                                <col width="8%" />
+                            </colgroup>
+                            <tbody>
+                                <template for:each={promotion} for:item="option" for:index="index">
+                                    <tr class="slds-hint-parent" key={option.key} data-index={index}>
+                                        <template if:true={option.isFirstRow}>
+                                            <th data-label={cLabel.DNS_C_Category} rowspan={promotionCnt} class="no-left-bd">
+                                                <div class="slds-truncate" title="프로모션">프로모션</div>
+                                            </th>
+                                        </template>
+                                        <td data-label="선택">
+                                            <div class="slds-truncate">
+                                                <lightning-input
+                                                    type="checkbox" 
+                                                    variant="label-hidden" 
+                                                    name="Checkbox"
+                                                    value={index}
+                                                    onchange={handlePromotionCheck}
+                                                    data-index={index}
+                                                    checked={option.isChecked}
+                                                    data-name="promotionCheck"
+                                                ></lightning-input>
+                                            </div>
+                                        </td>
+                                        <td data-label={cLabel.DNS_C_Details}>
+                                            <div class="slds-truncate" title={option.title}>{option.title}</div>
+                                        </td>
+                                        <td data-label="">
+                                            <div class="slds-truncate right">
+                                                <template if:true={option.isFirstRow}>
+                                                    <lightning-helptext content={cLabel.DNS_M_PromotionStandardDCRate}></lightning-helptext>
+                                                </template>
+                                                <!-- <lightning-formatted-number value={option.rate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number> -->
+                                                {option.rate}%
+                                            </div>
+                                        </td>
+                                        <td data-label={cLabel.DNS_C_Amount}>
+                                            <div class="slds-truncate right" data-index={index}>
+                                                <template if:false={option.isAuto}>
+                                                    <!-- 음수만 입력 가능 -->
+                                                    <lightning-input 
+                                                        type="number" 
+                                                        name="input2" 
+                                                        variant="label-hidden"
+                                                        onblur={handlePromotionInput}
+                                                        value={option.price}
+                                                        data-index={index}
+                                                        class="promotion-input"
+                                                        data-name="promotionInput"
+                                                    ></lightning-input>
+                                                </template>
+                                                <template if:true={option.isAuto}>
+                                                    <lightning-formatted-number value={option.price} ></lightning-formatted-number>
+                                                </template>
+                                            </div>
+                                        </td>
+                                        <td data-label={cLabel.DNS_C_Currency}>
+                                            <div class="slds-truncate">{priceInfo.currCode}</div>
+                                        </td>
+                                        <td data-label={cLabel.DNS_C_DiscountRate}>
+                                            <div class="slds-truncate right">
+                                                <template if:true={option.isFirstRow}>
+                                                    <lightning-helptext content={cLabel.DNS_M_PromotionDefaultRate}></lightning-helptext>
+                                                </template>
+                                                <lightning-formatted-number value={option.dcRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+        
+                                <!-- 합계 -->
+                                <tr class="slds-hint-parent">
+                                    <td data-label="선택"></td>
+                                    <th data-label={cLabel.DNS_C_Details} colspan="2">
+                                        <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                    </th>
+                                    <th data-label={cLabel.DNS_C_Amount}>
+                                        <div class="slds-truncate right">
+                                            <lightning-formatted-number value={promotionPriceTotal}></lightning-formatted-number>
+                                        </div>
+                                    </th>
+                                    <th data-label={cLabel.DNS_C_Currency}>
+                                        <div class="slds-truncate">{priceInfo.currCode}</div>
+                                    </th>
+                                    <th data-label={cLabel.DNS_C_DiscountRate}>
+                                        <div class="slds-truncate right">
+                                            <lightning-formatted-number value={promotionRateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                        </div>
+                                    </th>
+                                </tr>
+        
+        
+                                <!-- 3. 총 합 Total -->
+                                <tr class="slds-hint-parent">
+                                    <th data-label={cLabel.DNS_C_Details} colspan="4" class="no-left-bd">
+                                        <div class="slds-truncate">{cLabel.DNS_F_TotalDiscountAmount}</div>
+                                    </th>
+                                    <th data-label={cLabel.DNS_C_Amount}>
+                                        <div class="slds-truncate right">
+                                            <lightning-formatted-number value={additionalDCTotal}></lightning-formatted-number>
+                                        </div>
+                                    </th>
+                                    <th data-label={cLabel.DNS_C_Currency}>
+                                        <div class="slds-truncate">{priceInfo.currCode}</div>
+                                    </th>
+                                    <th data-label={cLabel.DNS_C_DiscountRate}>
+                                        <div class="slds-truncate right">
+                                            <lightning-formatted-number value={additionalDCRateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+            </section>
+    
+            <!-- Section 04 - 인센티브 (수금완료 후) -->
+            <section class="section-04 incentive">
+                <!-- Header Table -->
+                <div class="header-table">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <colgroup>
+                            <col width="65%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="인센티브 (수금완료 후)">인센티브 (수금완료 후)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate right" title={cLabel.DNS_C_Amount}>
+                                        <lightning-formatted-number value={incentivePriceTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Currency}>{priceInfo.currCode}</div>
+                                </th>
+                                <th class="" scope="col" >
+                                    <div class="slds-truncate" title={cLabel.DNS_C_DiscountRate} >
+                                        <lightning-icon icon-name='utility:chevronup' alternative-text='Unfold'
+                                            size='x-small' title='Unfold' onclick={toggleSection}></lightning-icon>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+    
+                <!-- Table Wrap -->
+                <div class="table-wrap" style="display: block;">
+                    <table
+                        class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover incentive">
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="3%" />
+                            <col width="45%" />
+                            <col width="7%" />
+                            <col width="20%" />
+                            <col width="7%" />
+                            <col width="8%" />
+                        </colgroup>
+    
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Category}>{cLabel.DNS_C_Category}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="선택"></div>
+                                </th>
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Details}>{cLabel.DNS_C_Details}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title={cLabel.DNS_C_Amount}>{cLabel.DNS_C_Amount}</div>
+                                </th>
+                                <th class="" scope="col"  colspan="2">
+                                    <div class="slds-truncate left" title={cLabel.DNS_C_Currency}>{cLabel.DNS_C_Currency}</div>
+                                </th>
+                            </tr>
+                        </thead>
+    
+                        <tbody>
+                            <template for:each={incentive} for:item="option" for:index="index">
+                                <tr class="slds-hint-parent" key={option.key} data-index={index}>
+                                    <template if:true={option.isFirstRow}>
+                                        <th data-label={cLabel.DNS_C_Category} rowspan={incentiveCnt} class="no-left-bd">
+                                            <div class="slds-truncate" title="인센티브">인센티브</div>
+                                        </th>
+                                    </template>
+                                    <td data-label="선택">
+                                        <div class="slds-truncate">
+                                            <lightning-input
+                                                type="checkbox" 
+                                                variant="label-hidden" 
+                                                name="Checkbox"
+                                                value={index}
+                                                checked={option.isChecked}
+                                                onchange={handleIncentiveCheck}
+                                                data-index={index}
+                                                data-name="incentiveCheck"
+                                            ></lightning-input>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Details} class="helptext-td">
+                                        <div class="slds-truncate" title="">
+                                            <template if:true={option.isFirstRow}>
+                                                <lightning-helptext content={cLabel.DNS_M_IncentiveDetails}></lightning-helptext>
+                                            </template>
+                                            <div class="slds-truncate">{option.title}</div>
+                                        </div>                                            
+                                    </td>
+                                    <td data-label="">
+                                        <div class="slds-truncate right" title="">
+                                            <template if:true={option.isFirstRow}>
+                                                <lightning-helptext content={cLabel.DNS_M_IncentiveStandardDCRate}></lightning-helptext>
+                                            </template>
+                                            <!-- <lightning-formatted-number value={option.rate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number> -->
+                                            {option.rate}%
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Amount}>
+                                        <div class="slds-truncate right">
+                                            <template if:false={option.isAuto}>
+                                                <lightning-input 
+                                                type="number" 
+                                                name="input2" 
+                                                variant="label-hidden"
+                                                onblur={inputIncentivePrice}
+                                                value={option.price}
+                                                data-index={index}
+                                                data-name="incentiveInput"
+                                                ></lightning-input>
+                                            </template>
+                                            <template if:true={option.isAuto}>
+                                                <lightning-formatted-number value={option.price}></lightning-formatted-number>
+                                            </template>
+                                        </div>
+                                    </td>
+                                    <td data-label={cLabel.DNS_C_Currency}  colspan="2">
+                                        <div class="slds-truncate">{priceInfo.currCode}</div>
+                                    </td>
+                                </tr>
+                            </template>
+    
+                            <!-- 합계 -->
+                            <tr class="slds-hint-parent">
+                                <td data-label="선택"></td>
+                                <th data-label={cLabel.DNS_C_Details} colspan="2">
+                                    <div class="slds-truncate">{cLabel.DNS_F_Total}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={incentivePriceTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency} colspan="2">
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                            </tr>
+    
+    
+                            <!-- 3. 총 합 Total -->
+                            <tr class="slds-hint-parent">
+                                <th data-label={cLabel.DNS_C_Details} colspan="4" class="no-left-bd">
+                                    <div class="slds-truncate">{cLabel.DNS_F_TotalDiscountAmount}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Amount}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={incentivePriceTotal}></lightning-formatted-number>
+                                    </div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_Currency}>
+                                    <div class="slds-truncate">{priceInfo.currCode}</div>
+                                </th>
+                                <th data-label={cLabel.DNS_C_DiscountRate}>
+                                    <div class="slds-truncate right">
+                                        <lightning-formatted-number value={incentiveRateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                    </div>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+    
+            <!-- Total Order Price -->
+            <div class="total-price-wrap">        
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <colgroup>
+                        <col width="65%" />
+                        <col width="20%" />
+                        <col width="7%" />
+                        <col width="8%" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th data-label={cLabel.DNS_C_Details} colspan="4" class="no-left-bd">
+                                <div class="slds-truncate">{cLabel.DNS_T_FinalOrderAmount}</div>
+                            </th>
+                            <th data-label={cLabel.DNS_C_Amount}>
+                                <div class="slds-truncate right">
+                                    <lightning-formatted-number value={finalOrderPrice}></lightning-formatted-number>
+                                </div>
+                            </th>
+                            <th data-label={cLabel.DNS_C_Currency}>
+                                <div class="slds-truncate">{priceInfo.currCode}</div>
+                            </th>
+                            <th data-label={cLabel.DNS_C_DiscountRate}>
+                                <div class="slds-truncate right">
+                                    <lightning-formatted-number value={finalOrderRate} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label={cLabel.DNS_C_Details} colspan="4" class="no-left-bd">
+                                <div class="slds-truncate">+ 인센티브 지급 예정 (수금 완료 후)</div>
+                            </td>
+                            <td data-label={cLabel.DNS_C_Amount}>
+                                <div class="slds-truncate right">
+                                    <lightning-formatted-number value={incentivePriceTotal}></lightning-formatted-number>
+                                </div>
+                            </td>
+                            <td data-label={cLabel.DNS_C_Currency}>
+                                <div class="slds-truncate">{priceInfo.currCode}</div>
+                            </td>
+                            <td data-label={cLabel.DNS_C_DiscountRate}>
+                                <div class="slds-truncate right">
+                                    <lightning-formatted-number value={incentiveRateTotal} format-style="percent" maximum-fraction-digits="1"></lightning-formatted-number>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>        
+            </div>
+
+            <!-- <lightning-button variant="brand" label="Test Button" title={cLabel.DNS_B_Save} onclick={handleSave} class="slds-m-left_x-small"></lightning-button> -->
+            
+            <!-- Save Button -->
+            <template if:false={prevetSave}>
+                <div class="save-button">
+                    <lightning-button variant="brand" label={cLabel.DNS_B_Save} title={cLabel.DNS_B_Save} onclick={handleSave} class="slds-m-left_x-small"></lightning-button>
+                </div>
+            </template>
+        </div>
+
+    </div>
+
+</template>

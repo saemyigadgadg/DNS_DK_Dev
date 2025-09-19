@@ -1,0 +1,60 @@
+<aura:component controller="DN_SearchFilterComboboxController" implements="flexipage:availableForAllPageTypes,force:appHostable">
+    <aura:attribute name="searchKeyword" type="String" />
+    <aura:attribute name="opportunityOptions" type="List" />
+    <aura:attribute name="selectedOpportunity" type="String" />
+    <aura:attribute name="lookupValue" type="String" default=""/>
+    <aura:attribute name="isDropdownOpen" type="Boolean" default="false" />
+    <aura:attribute name="isSelect" type="Boolean" default="false" />
+
+    <div class="lookup-container">
+        <lightning:recordEditForm objectApiName="WorkOrder">
+            <lightning:inputField variant="label-inline" fieldName="ServiceTerritoryId" required="true"
+            value="{!v.lookupValue}"/>
+            <aura:if isTrue="{!v.isSelect}">
+                <lightning:inputField variant="label-inline" fieldName="Worker__c" required="true"
+                value="{!v.selectedOpportunity}" onchange="{!c.handleLower}"/>            
+            <aura:set attribute="else">
+                        <!-- Search Input with Lookup Icon -->
+        <div class="lookup-input">
+            <lightning:input
+                name="searchInput"
+                value="{!v.searchKeyword}"
+                onchange="{!c.handleSearch}"
+                class="lookup-search" required="true"/>
+            <lightning:icon
+                iconName="utility:search"
+                alternativeText="Search"
+                class="lookup-icon" />
+        </div>
+
+        <!-- Dropdown for Filtered Opportunities -->
+        <aura:if isTrue="{!v.isDropdownOpen}">
+            <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                    <aura:iteration items="{!v.opportunityOptions}" var="option">
+                        <li role="presentation" class="slds-listbox__item" key="{!option.value}" data-id="{!option.value}"
+                            onclick="{!c.handleOptionSelect}">
+                            <div id="option730"
+                                class="slds-media slds-listbox__option slds-listbox__option_entity slds-media_center"
+                                role="option">
+                                <span class="slds-media__figure slds-listbox__option-icon slds-listbox__option-icon-disabled">
+                                    <span class="slds-icon_container slds-icon-standard-account slds-icon_disabled">
+                                        <lightning:icon iconName="standard:account" alternativeText="Account" title="Account" size="small" />
+                                    </span>
+                                </span>
+                                <span class="slds-media__body">
+                                    <span class="slds-listbox__option-text slds-listbox__option-text_entity">{!option.label}</span>
+                                </span>
+                            </div>
+                        </li>
+                    </aura:iteration>
+                </ul>
+            </div>
+        </aura:if>
+
+            </aura:set>
+            </aura:if>
+
+                </lightning:recordEditForm>
+    </div>
+</aura:component>

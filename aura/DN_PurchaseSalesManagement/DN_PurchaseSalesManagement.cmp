@@ -1,0 +1,172 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 01-09-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PurchaseSalesManagementController"
+  description="매입매출 관리"
+  extends="c:DN_Helper">
+  <!--Attribute-->
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="psList" type="List" default="[]" />
+  <aura:attribute name="psCount" type="Integer" />
+  <aura:attribute name="salCount" type="Integer" />
+  <aura:attribute name="psTotal" type="Integer" />
+  <aura:attribute name="salTotal" type="Integer" />
+  <aura:attribute name="headerParams" type="Object" description=""/>
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+    onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+ 
+  <!--Handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <lightning:navigation aura:id="navService" />
+
+  <article class="slds-card">
+    <!--Spinner-->
+    <aura:if isTrue="{v.isLoading}">
+      <div class="exampleHolder">
+        <lightning:spinner alternativeText="Loading" size="large" />
+      </div>
+    </aura:if>
+
+    <!-- Excel -->
+  <!-- <ltng:require
+  scripts="{!join(',', $Resource.ExcelTest1 + '/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}"
+  afterScriptsLoaded="{!c.handleScriptsLoaded}" /> -->
+
+    <!-- Card 01 : 상세 모달 호출 -->
+    <div aura:id="grgiDetailModal"></div>
+    <div aura:id="PurchaseOrderDetail"></div> 
+
+    <!-- Card 02 : 조회 테이블 -->
+    <div class="table-wrap">
+      <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table slds-scrollable">
+        <colgroup>
+          <col width="10%" />
+          <col width="10%" />
+          <col width="14%" />
+          <col width="6%" />
+          <col width="6%" />
+          <col width="20%" />
+          <col width="20%" />
+          <col width="4%" />
+          <col width="10%" />
+        </colgroup>
+        <thead>
+          <tr class="slds-line-height_reset">
+            <th>
+              <div>입출고 구분</div>
+            </th>
+            <th>
+              <div>세부 분류</div>
+            </th>
+            <th>
+              <div>구매처/고객사명</div>
+            </th>
+            <th>
+              <div>입출고 문서번호</div>
+            </th>
+            <th>
+              <div>생성일자</div>
+            </th>
+            <th>
+              <div>입출고 수량</div>
+            </th>
+            <th>
+              <div>금액</div>
+            </th>
+            <th>
+              <div>통화</div>
+            </th>
+            <th>
+              <div>참고문서번호</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.psList}" var="psList" indexVar="j">
+            <tr class="slds-hint-parent">
+              <td class="center">
+                <div>{!psList.reordType}</div>
+              </td>
+              <td class="center">
+                <div>{!psList.reordDTName}</div>
+              </td>
+              <td class="left">
+                <div>{!psList.customerName}</div>
+              </td>
+              <td class="center">
+                <div>
+                  <a onclick="{!c.openDetailInfoModal}" value="{!j}">{!psList.giDocNumber}</a>
+                </div>
+              </td>
+              <td class="center">
+                <div>{!psList.createdDate}</div>
+              </td>
+              <td class="right">
+                <div><lightning:formattedNumber value="{!psList.quantity}"/></div>
+              </td>
+              <td class="right">
+                <div><lightning:formattedNumber value="{!psList.discountAmount}" /></div>
+              </td>
+              <td class="center">
+                <div>{!psList.currencyValue}</div>
+              </td>
+              <td class="center">
+                <div>
+                  <a onclick="{!c.openDetailInfoModal2}" accesskey="{j}" name="{!j}">{!psList.refDocNumber}</a>
+                </div>
+              </td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap tfoot-table">
+      <table>
+        <colgroup>
+          <col width="80%"/>
+          <col width="10%"/>
+          <col width="10%"/>
+          <col width="10%"/>
+        </colgroup>
+        <tfoot>
+          <tr>
+            <td class="right">
+              <div>입고 합계</div>
+            </td>
+            <td class="right">
+              <div><lightning:formattedNumber value="{!v.psCount}" /></div>
+            </td>
+            <td class="right">
+              <div>{!v.psTotal}</div>
+            </td>
+            <td class="center">
+              <div>KRW</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="right">
+              <div>출고 합계</div>
+            </td>
+            <td class="right">
+              <div><lightning:formattedNumber value="{!v.salCount}" /></div>
+            </td>
+            <td class="right">
+              <div>{!v.salTotal}</div>
+            </td>
+            <td class="center">
+              <div>KRW</div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </article>
+</aura:component>

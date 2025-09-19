@@ -1,0 +1,83 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2025-02-06
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2025-02-05   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId"
+    controller="DN_AssignManagerButtonController" description="Assign Manager for Message Group">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="managerInfo" type="Object" />
+    <aura:attribute name="groupInfo" type="Object" />
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_AssignManagerButton) {
+            overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_AssignManagerButton) {
+            width: 38rem;
+            max-width: calc(100vw - 8rem);
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDN_AssignManagerButton) {
+            padding: 0;
+            overflow-y: clip;
+            height: unset !important;
+            max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_AssignManagerButton) {
+            padding:0;
+        }
+    </aura:html>    
+
+    <div class="slds-modal__container">
+
+        <!-- 🚩Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="slds-modal__header">
+            <h1 class="slds-modal__title slds-hyphenate">Assign Manager to Message Group</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-modal__content">
+            <p class="message"> Are you sure you want to assign the manager to this Message Group? </p>
+            <div class="group-wrap">
+                <div class="group">
+                    <!-- <lightning:icon iconName='standard:groups' alternativeText='groups' size='small' title='groups'></lightning:icon> -->
+                    <lightning:avatar src="{! v.managerInfo.SmallPhotoUrl }" size="small" alternativeText="User Photo" />
+                    <p>{! v.managerInfo.Name }</p> &nbsp;&nbsp;&nbsp;&nbsp;
+                    <p>[ {! v.managerInfo.Email } ]</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" onclick="{! c.handleCloseModal }" />
+            <lightning:button variant="brand" label="Confirm" onclick="{! c.handleConfirm }" />
+        </div>
+
+
+    </div>
+
+
+
+</aura:component>

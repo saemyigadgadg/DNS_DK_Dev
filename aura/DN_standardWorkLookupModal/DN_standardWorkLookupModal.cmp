@@ -1,0 +1,152 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 02-12-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-15-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"  access="global"
+    controller="DN_PortalModalController"
+    description="표준공수 조회모달">
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading"        type="Boolean" default="false" />
+    <aura:attribute name="selectAll"        type="Boolean"  default="false" /> <!--checkbox 모두 선택-->
+    <aura:attribute name="standardWorkList" type="List"     default="[]"/> <!--standardwork List-->
+    <aura:attribute name="selectedItems"    type="List"     default="[]" />
+    <aura:attribute name="assetName"        type="String"   default="" />
+    <aura:attribute name="objectType"       type="String"   default="" />
+    <aura:attribute name="isBranch"         type="Boolean"  default="false" /> <!--직영 or WC-->
+    <aura:attribute name="modelManagerId"   type="String"   default="" />
+    <aura:attribute name="failureAreaList"  type="List"     default="[]" />
+    <aura:attribute name="failureArea"      type="String"   default="" />
+    <aura:attribute name="failureAreaLabel" type="String"   default="" />
+    <aura:attribute name="standardHourName" type="String"   default="" />
+
+    <!-- Event -->
+    <aura:registerEvent name="SelectedItemEvent" type="c:DN_SelectedItemEvent" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="standardWorkLookupModal">
+        <div aura:id="standardWorkLookupModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_medium">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <div class="header-wrap">
+                        <h2 class="slds-text-heading_medium">표준공수 조회</h2>
+                        <div class="button-wrap button-wrap-right">
+                            <lightning:button name="searchItems" label="표준공수없음" onclick="{!c.standardWorkNone}" />
+                            <lightning:button name="save" label="저장" iconName="utility:check" iconPosition="left" onclick="{!c.handleSave}" />
+                        </div>
+                    </div>
+
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='brand' size='small'
+                            title='close' name="closeModal" onclick="{!c.modalCancel}">
+                        </lightning:icon>
+                    </button>
+                </header>
+
+                <!-- Modal Content -->
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                    <div class="card-01 top-card">
+                        <div class="field-wrap">
+                            <div class="input-wrap">
+                                <lightning:combobox value="{!v.failureArea}" variant="label-hidden" options="{!v.failureAreaList}" placeholder="고장부위선택" onchange="{!c.handleFailureAreaChange}" />
+                                <lightning:input type="text" value="{!v.standardHourName}" variant="label-hidden" placeholder="표준공수명"/>
+                                <lightning:button label="검색" onclick="{!c.doSearch}" />
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-02 top-card">
+                        <div class="table-wrap">
+                            <table>
+                                <colgroup>
+                                    <col width="1%" />
+                                    <col width="19%" />
+                                    <col width="60%" />
+                                    <col width="10%" />
+                                    <col width="10%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">
+                                            <div class="input-wrap">
+                                                <lightning:input type="checkbox" checked="{!v.selectAll}"
+                                                    onchange="{!c.toggleAllCheckboxes}" />
+                                            </div>
+                                        </th>
+                                        <th rowspan="2">고장부위<abbr class="slds-required" title="required">*</abbr></th>
+                                        <th rowspan="2" style="border-right: 1px solid #d9d9d9;">표준공수명</th>
+                                        <th colspan="2">표준공수</th>
+                                    </tr>
+                                    <tr>
+                                        <th>시간</th>
+                                        <th>인원</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!v.standardWorkList.length == 0}">
+                                        <tr>
+                                            <td colspan="14" class="center">해당 모델의 표준공수 데이터가 존재하지 않습니다.</td>
+                                        </tr>
+                                        <aura:set attribute="else">
+                                            <aura:iteration items="{!v.standardWorkList}" var="sw" indexVar="j">
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox" value="{!sw.Id}"
+                                                                onchange="{!c.toggleSelectAll}" accesskey="{!j}" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap" accesskey="{!j}" value="{!sw.breakdownPart}">
+                                                            {!sw.FailureArea__c}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap" accesskey="{!j}" value="{!sw.standardWorkItem}">
+                                                            {!sw.StandardHourItem__c}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap center" accesskey="{!j}" value="{!sw.standardWorkTime}">
+                                                            {!sw.StandardWorkTime__c}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap center" accesskey="{!j}" value="{!sw.standardWorkPeople}">
+                                                            {!sw.StandardWorkForce__c}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </aura:set>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                        onclick="{!c.modalCancel}" />
+                </footer>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+
+</aura:component>

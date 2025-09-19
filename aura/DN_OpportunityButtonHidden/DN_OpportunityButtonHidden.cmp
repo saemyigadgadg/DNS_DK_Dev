@@ -1,0 +1,31 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-27-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-27-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global">
+
+    <aura:html tag="style">
+        <!-- Dealer Portal > Opportunity List -->
+        .comm-layout-column:has(.cDN_OpportunityButtonHidden .button-hidden) .forceListViewManager
+        .slds-page-header_object-home .slds-grid:first-child .slds-align-top ul li:nth-last-of-type(2) {
+            border-radius: 0 0.25rem 0.25rem 0 !important;
+        }
+        .comm-layout-column:has(.cDN_OpportunityButtonHidden .button-hidden) .forceListViewManager
+        .slds-page-header_object-home .slds-grid:first-child .slds-align-top ul li:last-child {
+            display: none;
+        }
+    </aura:html>
+
+    <div>
+        <div class="button-hidden" style="display: none;"></div>
+    </div>
+
+</aura:component>

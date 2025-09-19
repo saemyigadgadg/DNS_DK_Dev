@@ -1,0 +1,20 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-05-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    <template for:each={_displayButtonMdtList} for:item="mdt" for:index="i"> <!--buttonType-->
+      <template lwc:if={mdt.isPickList}>
+        <lightning-combobox key={mdt.buttonIndex} name={mdt.buttonLabel} variant="label-hidden" options={mdt.pickListValue} data-id={mdt.buttonIcon} value={mdt.modalComponent} onchange={handleChange}></lightning-combobox>
+      </template> 
+      <template lwc:else>
+        <lightning-button icon-name={mdt.buttonIcon} key={mdt.buttonIndex} label={mdt.buttonLabel} data-modal={mdt.modalComponent} data-param={mdt.modalParams} data-id={mdt.buttonType} title={mdt.buttonLabel} onclick={handleClick} ></lightning-button>
+      </template> 
+    </template>
+</template>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>B1D</fullName>
+        <default>false</default>
+        <label>B1D (12 Month)</label>
+    </customValue>
+    <customValue>
+        <fullName>E24</fullName>
+        <default>false</default>
+        <label>24-month Extended Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>E2D</fullName>
+        <default>false</default>
+        <label>E2D (24 Month)</label>
+    </customValue>
+    <customValue>
+        <fullName>E3D</fullName>
+        <default>false</default>
+        <label>E3D (36 Month)</label>
+    </customValue>
+    <customValue>
+        <fullName>B12</fullName>
+        <default>false</default>
+        <label>12-month Basic Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>E36</fullName>
+        <default>false</default>
+        <label>36-month Extended Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>E48</fullName>
+        <default>false</default>
+        <label>48-month Extended Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>B24</fullName>
+        <default>false</default>
+        <label>24-month Basic Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>I36</fullName>
+        <default>false</default>
+        <label>I36</label>
+    </customValue>
+    <customValue>
+        <fullName>M12</fullName>
+        <default>false</default>
+        <label>M12</label>
+    </customValue>
+    <customValue>
+        <fullName>M18</fullName>
+        <default>false</default>
+        <label>18 Months Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>M24</fullName>
+        <default>false</default>
+        <label>24 Months Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>M30</fullName>
+        <default>false</default>
+        <label>30 Months Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>M36</fullName>
+        <default>false</default>
+        <label>36 Months Warranty</label>
+    </customValue>
+    <customValue>
+        <fullName>S24</fullName>
+        <default>false</default>
+        <label>Standard 24 Months</label>
+    </customValue>
+    <customValue>
+        <fullName>X36</fullName>
+        <default>false</default>
+        <label>Extra 36 Months</label>
+    </customValue>
+    <customValue>
+        <fullName>X42</fullName>
+        <default>false</default>
+        <label>Extra 42 Months</label>
+    </customValue>
+    <customValue>
+        <fullName>X48</fullName>
+        <default>false</default>
+        <label>Extra 48 Months</label>
+    </customValue>
+    <customValue>
+        <fullName>X60</fullName>
+        <default>false</default>
+        <label>Extra 60 Months</label>
+    </customValue>
+    <customValue>
+        <fullName>E12</fullName>
+        <default>false</default>
+        <label>E12</label>
+    </customValue>
+    <customValue>
+        <fullName>A</fullName>
+        <default>false</default>
+        <label>A</label>
+    </customValue>
+    <description>warranty</description>
+    <masterLabel>warranty</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

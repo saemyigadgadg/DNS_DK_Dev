@@ -1,0 +1,173 @@
+/* Header */
+
+.THIS .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.THIS .title-wrap {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.THIS .title-wrap h1 {
+  color: #181818;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Table */
+
+.THIS table th {
+  padding: 0.5rem;
+}
+
+.THIS table th:hover {
+  background-color: #fff !important;
+}
+
+.THIS table th .slds-th__action {
+  height: unset !important;
+  padding: 0;
+}
+
+.THIS table th:not(:first-of-type),
+.THIS table th:not(:last-of-type) {
+  border-right: 1px solid #c9c9c9;
+}
+
+.THIS table td {
+  vertical-align: top;
+}
+
+/* Description Td */
+
+/* .THIS table td.desc .slds-truncate {
+  overflow: unset !important;
+  text-overflow: unset !important;
+  white-space: pre-line !important;
+} */
+
+/* More Actions */
+
+.THIS table td .slds-p-around_medium {
+  padding: 0;
+}
+
+.THIS table td .slds-button_icon-border-filled {
+  width: 1.35rem !important;
+  height: 1.35rem !important;
+  line-height: 1.25rem !important;
+}
+
+.THIS table td button .slds-button__icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.THIS table td .slds-dropdown_left {
+  right: 0.25rem;
+  left: unset !important;
+  top: -50% !important;
+  transform: translateY(-50%);
+}
+
+.THIS table td .slds-dropdown__item .slds-truncate {
+  color: #1B96FF;
+}
+
+.THIS table td:first-of-type .slds-button_icon-container {
+  height: 1.45rem !important;
+}
+
+/* Footer */
+
+.THIS .footer {
+  margin: 0;
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .footer .slds-button {
+  font-size: 13px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.THIS .footer .slds-button:hover {
+  text-decoration: underline;
+}
+
+.THIS .click-open {
+  overflow: unset !important;
+  text-overflow: unset !important;
+  white-space: pre-line !important;
+}
+
+/* Richtext wrap */
+
+.THIS .richtext-wrap {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #c9c9c9;
+  padding: 1rem 0;
+}
+
+.THIS .richtext-wrap .button-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+}
+
+
+/* Confirm Modal */
+
+.THIS.slds-modal__container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  height: 12rem;
+  max-height: calc(100vh - 20rem);
+}
+
+.THIS .slds-modal__content {
+  max-height: calc(100vh - 13rem);
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.THIS .modal-body .text {
+  font-size: 15px;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+}
+
+/* 2025 04 14 Hyerin Ro */
+
+.THIS .slds-modal__container .container {
+  position: relative;
+}
+
+.THIS.preAuthModal.slds-modal,
+.THIS.confirmModal.slds-modal {
+  z-index: 9071 !important;
+}
+
+.THIS.preAuthModal+.slds-backdrop,
+.THIS.confirmModal+.slds-backdrop {
+  z-index: 9070 !important;
+}

@@ -1,0 +1,673 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 2025-05-07
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-01-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes"
+                controller="DN_SQController" 
+                description="Requested SQ">
+
+    <!-- Attributes -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="isRichLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="isNewClick"           type="Boolean"  default="false" />
+    <aura:attribute name="isEditClick2"         type="Boolean"  default="false" />
+    <aura:attribute name="isPreAuthClick"       type="Boolean"  default="false" />
+    <aura:attribute name="isConfirmClick"       type="Boolean"  default="false" />
+    <aura:attribute name="isRefine"             type="Boolean"  default="false" />
+    <aura:attribute name="isSQ"                 type="Boolean"  default="false" />
+    <aura:attribute name="isOwnerDealer"        type="Boolean"  default="false" />
+    <aura:attribute name="isRepresentative"     type="Boolean"  default="false" />
+    <aura:attribute name="isWorker"             type="Boolean"  default="false" />
+    <aura:attribute name="checkPreAuth"         type="Boolean"  default="false" />
+    <aura:attribute name="checkGlobal"          type="Boolean"  default="false" />
+    <aura:attribute name="isQuoteLineItem"      type="Boolean"  default="false" />
+    <aura:attribute name="isDNSASalesTeam"      type="Boolean"  default="false" />
+    <aura:attribute name="isReqSend"            type="Boolean"  default="false" />
+    <aura:attribute name="IsRefineComplete"     type="Boolean"  default="false" />
+    <aura:attribute name="checkJisajang"        type="Boolean"  default="false" />
+    <aura:attribute name="checkRnd"             type="Boolean"  default="false" />
+    <aura:attribute name="recordId"             type="String" />
+    <aura:attribute name="rowId"                type="String"   default="" />
+    <aura:attribute name="size"                 type="String"   default="" />
+    <aura:attribute name="backgroundColor"      type="String"   default="background: #F9F9F9;"/>
+    <aura:attribute name="currentStage"         type="String"   default="" />
+    <aura:attribute name="doOpenDescription"    type="Boolean"  default="false" />
+    <aura:attribute name="seeMore"              type="Map"      default="{}"/>
+    <aura:attribute name="dataRows"             type="List"     default="[]"/>
+    <aura:attribute name="userFilter"           type="String"   default="" />
+    <aura:attribute name="sqProduct"           type="String"   default="" />
+
+    <aura:attribute name="isEditable"           type="Boolean"  default="false" />
+    <aura:attribute name="richTextContent"      type="String" />
+    <aura:attribute name="objectName"           type="String"   default="SQRegistration__c" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:navigation aura:id="navService" />
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <lightning:empApi aura:id="empApi" />
+
+    <aura:if isTrue="{! OR(v.currentStage == 'Drop', v.currentStage == 'Final Confirm') }">
+        <aura:html tag="style">
+            .comm-content-header:has(.cDN_RequestedSQ .button-hidden) .forceCommunityRecordHeadline .slds-button-group-list li:nth-of-type(1) {
+            display: none;
+            }
+
+            .comm-content-header:has(.cDN_RequestedSQ .button-hidden) .forceCommunityRecordHeadline .slds-button-group-list li:nth-of-type(2) {
+            display: none;
+            }
+        </aura:html>
+    </aura:if>
+
+    <aura:if isTrue="{! OR(v.currentStage == 'R&amp;D Confirm', v.currentStage == 'Sales Approval') }">
+        <aura:html tag="style">
+            .comm-content-header:has(.cDN_RequestedSQ .button-hidden) .forceCommunityRecordHeadline .slds-button-group-list li:nth-of-type(1) {
+            display: none;
+            }
+
+            .comm-content-header:has(.cDN_RequestedSQ .button-hidden) .forceCommunityRecordHeadline .slds-button-group-list li:nth-of-type(2) .slds-button {
+            border-radius: 0.25rem;
+            }
+        </aura:html>
+    </aura:if>
+
+    <aura:if isTrue="{! v.objectName == 'SQRegistration__c' }">
+        <!-- Dealer Portal > SQ Registration Detail > 단계 완료로 표시 버튼 숨김 -->
+        <aura:html tag="style">
+            .comm-content-header:has(.cDN_RequestedSQ .button-hidden) .pathOriginal .slds-path .slds-path__action {
+                display: none;
+            }
+        </aura:html>        
+    </aura:if>
+
+    <!-- <aura:if isTrue="{! !v.isWorker }"> -->
+        <div>
+            <div class="button-hidden" style="opacity: 0;">abc</div>
+        </div>
+        <div class="slds-card slds-card_boundary slds-card_related-list-fix">
+            <aura:if isTrue="{! v.isLoading }">
+                <div style="background-color: blue;"><lightning:spinner size="large" variant="brand" alternativeText="Loading" /></div>
+            </aura:if>
+            <!-- 🚩 Header -->
+            <div class="slds-page-header slds-page-header_record-home">
+                <div class="header">
+    
+                    <!-- Header Title -->
+                    <div class="title-wrap">
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='custom:custom92' alternativeText='Requested SQ' size='small' title='Requested SQ'></lightning:icon>
+                        </div>
+                        <h1>{!$Label.c.DNS_REQ_T_REQUESTEDSQ} {!v.size} / {!$Label.c.DNS_T_MainProduct} : {!v.sqProduct}</h1>
+                        <aura:if isTrue="{! AND(v.checkPreAuth, v.checkGlobal) }">
+                            <span style="color: red;">{!$Label.c.DNS_SQ_T_PREAUTH}</span>
+                        </aura:if>
+                    </div>
+    
+                    <!-- Header Button -->
+                    <div class="button-wrap">
+                        <aura:if isTrue="{! !v.checkJisajang }">
+                            
+                            <!-- Sales Team Filter -->
+                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                <aura:if isTrue="{! v.isRepresentative }">
+                                    <aura:if isTrue="{! v.currentStage != 'Drop'  }">
+                                        <aura:if isTrue="{! OR(v.currentStage == 'Request', v.currentStage == 'Sales Review')  }">
+                                            <lightning:button label="{!$Label.c.DNS_B_New}" title="{!$Label.c.DNS_B_New}" onclick="{! c.handleClickNew }" />
+                                            <aura:if isTrue="{! AND(!v.isSQ, v.checkGlobal) }">
+                                                <lightning:button label="{!$Label.c.DNS_SQR_B_PREAUTHORIZATION}" title="PreAuth" onclick="{! c.handleClickPreAuth }" />
+                                            </aura:if>
+                                            <aura:if isTrue="{! v.currentStage != 'Request' }">
+                                                <lightning:button variant="Brand" label="{!$Label.c.DNS_SQR_B_CONFIRM}" title="{!$Label.c.DNS_SQR_B_CONFIRM}" onclick="{! c.handleClickConfirm }" />
+                                            </aura:if>
+                                            <!-- <aura:if isTrue="{! !v.isSQ }">
+                                            </aura:if> -->
+                                        </aura:if>
+                                    </aura:if>
+                                </aura:if>
+    
+                                <!-- Sales Team Filter -->
+                                <aura:if isTrue="{! AND(v.isDNSASalesTeam, !v.isOwnerDealer) }">
+                                    <aura:if isTrue="{! v.currentStage != 'Drop'  }">
+                                        <aura:if isTrue="{! OR(v.currentStage == 'Request', v.currentStage == 'Sales Review')  }">
+                                            <lightning:button label="{!$Label.c.DNS_B_New}" title="{!$Label.c.DNS_B_New}" onclick="{! c.handleClickNew }" />
+                                        </aura:if>
+                                    </aura:if>
+                                </aura:if>
+        
+                                <!-- Dealer Filter -->
+                                <aura:if isTrue="{! AND(v.isOwnerDealer, AND(!v.isDNSASalesTeam, !v.isRepresentative)) }">
+                                    <aura:if isTrue="{! v.currentStage != 'Drop'  }">
+                                        <aura:if isTrue="{! OR(v.currentStage == 'Request', v.currentStage == 'Sales Review')  }">
+                                            <lightning:button label="{!$Label.c.DNS_B_New}" title="{!$Label.c.DNS_B_New}" onclick="{! c.handleClickNew }" />
+                                            <aura:if isTrue="{! AND(!v.isSQ, v.checkGlobal) }">
+                                                <lightning:button label="{!$Label.c.DNS_SQR_B_PREAUTHORIZATION}" title="PreAuth" onclick="{! c.handleClickPreAuth }" />
+                                            </aura:if>
+                                        </aura:if>
+                                    </aura:if>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{! AND(v.isDNSASalesTeam, v.isOwnerDealer) }">
+                                    <aura:if isTrue="{! v.currentStage != 'Drop'  }">
+                                        <aura:if isTrue="{! OR(v.currentStage == 'Request', v.currentStage == 'Sales Review')  }">
+                                            <aura:if isTrue="{! !v.isReqSend }">
+                                                <lightning:button label="{!$Label.c.DNS_B_New}" title="{!$Label.c.DNS_B_New}" onclick="{! c.handleClickNew }" />
+                                                <aura:if isTrue="{! v.currentStage == 'Sales Review' }">
+                                                    <lightning:button label="Send" title="Send" onclick="{! c.handleClicSend }" />
+                                                </aura:if>
+                                                <!-- <aura:if isTrue="{! v.currentStage != 'Request' }">
+                                                    <lightning:button variant="Brand" label="{!$Label.c.DNS_SQR_B_CONFIRM}" title="{!$Label.c.DNS_SQR_B_CONFIRM}" onclick="{! c.handleClickConfirm }" />
+                                                </aura:if> -->
+    
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{! v.currentStage == 'Sales Review' }">
+                                                        <lightning:button label="Send" title="Send" onclick="{! c.handleClicSend }" />
+                                                    </aura:if>
+                                                </aura:set>
+    
+                                            </aura:if>
+                                            <!-- <aura:if isTrue="{! !v.isSQ }">
+                                            </aura:if> -->
+                                        </aura:if>
+                                    </aura:if>
+                                </aura:if>
+                            </aura:if>
+    
+        
+                            <!-- Admin Filter -->
+                            <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                <lightning:button label="{!$Label.c.DNS_B_New}" title="{!$Label.c.DNS_B_New}" onclick="{! c.handleClickNew }" />
+                                <aura:if isTrue="{! AND(!v.isSQ, v.checkGlobal) }">
+                                    <lightning:button label="{!$Label.c.DNS_SQR_B_PREAUTHORIZATION}" title="PreAuth" onclick="{! c.handleClickPreAuth }" />
+                                </aura:if>
+                                <!-- <aura:if isTrue="{! v.currentStage == 'Sales Review' }">
+                                    <lightning:button label="Send" title="Send" onclick="{! c.handleClicSend }" />
+                                </aura:if> -->
+                                <lightning:button variant="Brand" label="{!$Label.c.DNS_SQR_B_CONFIRM}" title="{!$Label.c.DNS_SQR_B_CONFIRM}" onclick="{! c.handleClickConfirm }" />
+                                <!-- <aura:if isTrue="{! !v.isSQ }">
+                                </aura:if> -->
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- 🚩 Body -->
+            <div class="body">
+                <!-- 🚩 Body -->
+                <div class="table-wrap">
+                    <!-- 🚩Loading Spinner -->
+                    <!-- <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if> -->
+    
+                    <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+    
+                    <!-- Table Head -->
+                        <thead>
+                            <tr class="slds-line-height_reset">
+    
+                                <!-- Row Numbering -->
+                                <th class="slds-text-align_center" scope="col" style="width: 3.25rem">
+                                    <div class="slds-th__action slds-th__action_form"></div>
+                                </th>
+    
+                                <!-- Checkbox -->
+                                <!-- <th class="slds-text-align_center" scope="col" style="width: 2rem">
+                                    <div class="slds-th__action slds-th__action_form">
+                                    <div class="slds-checkbox">
+                                        <input type="checkbox" name="options" id="checkbox-unique-id-93"
+                                            value="checkbox-unique-id-93" tabindex="-1"
+                                            aria-labelledby="check-select-all-label column-group-header" />
+                                        <label class="slds-checkbox__label" for="checkbox-unique-id-93"
+                                            id="check-select-all-label">
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-form-element__label slds-assistive-text">Select All</span>
+                                        </label>
+                                    </div>
+                                    </div>
+                                </th> -->
+    
+                                <!-- Requested SQ Title -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width: 12%">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_T_REQTITLE}">{!$Label.c.DNS_SQR_T_REQTITLE}</div>
+                                </th>
+                                
+                                <!-- Category -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width: 12%">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_CATEGORY}">{!$Label.c.DNS_SQR_C_CATEGORY}</div>
+                                </th>
+    
+                                <!-- Initial Request -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width: 4%">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_L_INITIALREQUEST}">{!$Label.c.DNS_SQR_L_INITIALREQUEST}</div>
+                                </th>
+
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width: 6%">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_IsReview}">{!$Label.c.DNS_SQR_IsReview}</div>
+                                </th>
+    
+                                <!-- Description -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_DESCRIPTION}">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                                </th>
+    
+                                <!-- Reject Reason -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width: 12%">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_L_REJECTREASON}">{!$Label.c.DNS_SQR_L_REJECTREASON}</div>
+                                </th>
+    
+                                <!-- 판매가 -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col"  style="width: 5%">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_SALESPRICE}">{!$Label.c.DNS_SQR_C_SALESPRICE}</div>
+                                </th>
+    
+                                <!-- SQ Type -->
+                                <!-- <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col"  style="width: 10%">
+                                    <div class="slds-truncate" title="Sales SQ">SQ Type</div>
+                                    <button class="slds-button slds-button_icon slds-th__action-button slds-button_icon-x-small"
+                                    aria-haspopup="true" tabindex="-1" title="Show Requested SQ Title column actions">
+                                    <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small'
+                                        title='chevrondown'></lightning:icon>
+                                    <span class="slds-assistive-text">Show Requested SQ Title column actions</span>
+                                    </button>
+                                </th> -->
+    
+                                <!-- Sales SQ -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col"  style="width: 9%">
+                                    <div class="slds-truncate" title="Sales SQ">Sales SQ</div>
+                                </th>
+    
+                                <!-- R&D SQ -->
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col"  style="width: 9%">
+                                    <div class="slds-truncate" title="R&amp;D SQ">R&amp;D SQ</div>
+                                </th>
+    
+                                <th aria-sort="none" class="slds-has-button-menu slds-is-resizable slds-is-sortable" scope="col" style="width:3.25rem">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_SQR_T_ACTION}">{!$Label.c.DNS_SQR_T_ACTION}</div>
+                                </th>
+                            </tr>
+                        </thead>
+    
+                        <!-- Table Body -->
+                        <tbody>
+                            <aura:iteration items="{!v.dataRows}" var="row" indexVar="index">
+    
+                                <tr aria-selected="false" class="slds-hint-parent">
+        
+                                    <!-- Open Button -->
+                                    <td class="slds-text-align_center" role="gridcell">
+                                        <div class="slds-truncate" title="Row Numbering">
+    
+                                            <!-- <lightning:buttonIcon iconName="utility:chevronright" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" /> -->
+                                            <aura:if isTrue="{!row.isExpanded}">
+                                                <lightning:buttonIcon iconName="utility:chevrondown" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" />
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon iconName="utility:chevronright" name="{!index}"  variant="container" alternativeText="View More" title="View More" onclick="{!c.doOpenDescription}" />
+                                            </aura:set>
+                                        </aura:if>
+                                        </div>
+                                    </td>
+        
+                                    <!-- Checkbox -->
+                                    <!-- <td class="slds-text-align_center" role="gridcell">
+                                        <div class="slds-checkbox">
+                                            <input type="checkbox" name="options" id="checkbox-01" value="checkbox-01" tabindex="-1" />
+                                            <label class="slds-checkbox__label" for="checkbox-01" id="check-button-label-01">
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label slds-assistive-text">Select item 1</span>
+                                            </label>
+                                        </div>
+                                    </td> -->
+        
+                                    <!-- Requested SQ Title -->
+                                    <!-- <td scope="row" tabindex="0">
+                                        <div class="slds-truncate" title="Requested SQ Title">
+                                            {! row.Name }
+                                        </div>
+                                    </td> -->
+                                    <td class="desc" role="gridcell">
+                                        <aura:if isTrue="{!row.isExpanded}">
+                                            <div class="slds-truncate click-open" title="{!row.Name}">
+                                                {! row.Name }
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <div class="slds-truncate" title="{!row.Name}">
+                                                    {! row.Name }
+                                                </div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+    
+                                    <!-- Category -->
+                                    <td scope="row" tabindex="0">
+                                        <div class="slds-truncate" title="{! row.Category }">
+                                            {! row.Category }
+                                        </div>
+                                    </td>
+    
+                                    <!-- Category -->
+                                    <td scope="row" tabindex="0">
+                                        <div class="slds-truncate" title="{! row.initial }">
+                                            {! row.initial }
+                                        </div>
+                                    </td>
+
+                                    <td scope="row" tabindex="0">
+                                        <div class="slds-truncate" title="{! row.isReview }">
+                                            {! row.isReview }
+                                        </div>
+                                    </td>
+        
+                                    <!-- Description -->
+                                    <td class="desc" role="gridcell">
+                                        <aura:if isTrue="{!row.isExpanded}">
+                                            <div class="slds-truncate click-open" title="{! row.Description }">
+                                                <lightning:formattedRichText value="{! row.Description }"/>
+                                                    <!-- {! row.Description } -->
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <div class="slds-truncate" title="{! row.Description }">
+                                                    <lightning:formattedRichText value="{! row.Description }"/>
+                                                    <!-- {! row.Description } -->
+                                                </div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+    
+                                    <!-- Reject Request -->
+                                    <td class="desc" role="gridcell">
+                                        <aura:if isTrue="{!row.isExpanded}">
+                                            <div class="slds-truncate click-open" title="{! row.reject }">
+                                                    {! row.reject }
+                                            </div>
+                                            <aura:set attribute="else">
+                                                <div class="slds-truncate" title="{! row.reject }">
+                                                    {! row.reject }
+                                                </div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+        
+                                    <!-- 판매가  -->
+                                    <td role="gridcell">
+                                        <div class="slds-truncate" title="Price">{! row.Price }</div>
+                                    </td>
+    
+                                    <!-- SQ Type -->
+                                    <!-- <td role="gridcell">
+                                        <div class="slds-truncate" title="SQ Type">{! row.Type }</div>
+                                    </td> -->
+        
+                                    <!-- Sales SQ -->
+                                    <td role="gridcell">
+                                        <!-- <div class="slds-truncate" title="Sales SQ">{! row.Sales_SQ__r.Name }</div> -->
+                                        <aura:if isTrue="{!row.Sales}">
+                                            <div class="slds-truncate">
+                                                <lightning:formattedUrl value="{!'/' + row.Sales}" tooltip="{!row.SalesName}" label="{!row.SalesName}" target="_blank" />
+                                            </div>
+                                        </aura:if>
+                                    </td>
+    
+                                    <!-- R&D SQ -->
+                                    <td role="gridcell">
+                                        <aura:if isTrue="{!row.Rnd}">
+                                            <div class="slds-truncate">
+                                                <lightning:formattedUrl value="{!'/' + row.Rnd}" tooltip="{!row.RndName}" label="{!row.RndName}" target="_blank" />
+                                            </div>
+                                        </aura:if>
+                                        
+                                    </td>
+        
+                                    <!-- Actions -->
+                                    <td role="gridcell">
+                                        <aura:if isTrue="{! !v.checkJisajang }">
+
+                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                <!-- <aura:if isTrue="{! OR(v.isRepresentative, v.isOwnerDealer) }"> -->
+                                                <aura:if isTrue="{! v.isRepresentative }">
+                                                    <aura:if isTrue="{! OR(v.currentStage == 'Request', OR(v.currentStage == 'Sales Review', v.currentStage == 'R&amp;D Review')) }">
+                                                        <div class="slds-p-around_medium lgc-bg">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                <aura:if isTrue="{! v.userFilter == 'crm' }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_REFINE}" value="{! 'Refine-' + row.Id}" />
+                                                                </aura:if>
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                <aura:if isTrue="{! v.currentStage != 'R&amp;D Review' }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                                </aura:if>
+                                                            </lightning:buttonMenu>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+                                            
+                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                <aura:if isTrue="{! AND(v.isDNSASalesTeam, !v.isOwnerDealer) }">
+                                                    <aura:if isTrue="{! OR(v.currentStage == 'Request', OR(v.currentStage == 'Sales Review', v.currentStage == 'R&amp;D Review')) }">
+                                                        <div class="slds-p-around_medium lgc-bg">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                <aura:if isTrue="{! v.userFilter == 'crm' }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_REFINE}" value="{! 'Refine-' + row.Id}" />
+                                                                </aura:if>
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                <aura:if isTrue="{! v.currentStage != 'R&amp;D Review' }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                                </aura:if>
+                                                            </lightning:buttonMenu>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+    
+                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                <aura:if isTrue="{! AND(v.isOwnerDealer, AND(!v.isDNSASalesTeam, !v.isRepresentative)) }">
+                                                    <aura:if isTrue="{! OR(v.currentStage == 'Request', v.currentStage == 'Sales Review') }">
+                                                        <div class="slds-p-around_medium lgc-bg">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                <!-- <aura:if isTrue="{! v.userFilter == 'crm' }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_REFINE}" value="{! 'Refine-' + row.Id}" />
+                                                                </aura:if> -->
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                            </lightning:buttonMenu>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+    
+                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                <aura:if isTrue="{! AND(v.isOwnerDealer, AND(row.reject != null, AND(row.isReRequest, !v.isDNSASalesTeam))) }">
+                                                    <aura:if isTrue="{! v.currentStage == 'R&amp;D Review' }">
+                                                        <div class="slds-p-around_medium lgc-bg">
+                                                            <aura:if isTrue="{! !row.IsRefineComplete }">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_SQR_B}" value="{! 'Complete-' + row.Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:if>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+    
+                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                <aura:if isTrue="{! AND(v.isOwnerDealer, v.isDNSASalesTeam) }">
+                                                    <aura:if isTrue="{! OR(v.currentStage == 'Request', v.currentStage == 'Sales Review') }">
+                                                        <div class="slds-p-around_medium lgc-bg">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                <!-- <aura:if isTrue="{! v.userFilter == 'crm' }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_REFINE}" value="{! 'Refine-' + row.Id}" />
+                                                                </aura:if> -->
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                            </lightning:buttonMenu>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+    
+                                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                                <aura:if isTrue="{! AND(v.isOwnerDealer, AND(row.reject != null, AND(row.isReRequest, v.isDNSASalesTeam))) }">
+                                                    <aura:if isTrue="{! v.currentStage == 'R&amp;D Review' }">
+                                                        <aura:if isTrue="{! !row.IsRefineComplete }">
+                                                            <div class="slds-p-around_medium lgc-bg">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_SQR_B}" value="{! 'Complete-' + row.Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </div>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+        
+                                            <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleMenuSelect }">
+                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_REFINE}" value="{! 'Refine-' + row.Id}" />
+                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + row.Id}" />
+                                                    <lightning:menuItem label="{!$Label.c.DNS_REQ_B_DELETE}" value="{! 'Delete-' + row.Id}" />
+                                                </lightning:buttonMenu>
+                                            </aura:if>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+    
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    
+            <!-- 🚩 Footer -->
+            <!-- <div class="footer">
+                <lightning:button variant="base" label="View All" title="View All" onclick="{! c.handleClickViewAll }"/>
+            </div> -->
+            
+            <!-- 🚩Rich Text Area -->
+            <div class="richtext-wrap" style="{!v.backgroundColor}">
+    
+                <!-- Richtext Input -->
+                <div class="slds-p-around_medium input-wrap">
+                    <!-- 🚩Loading Spinner -->
+                    <aura:if isTrue="{! v.isRichLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+            
+                    <lightning:inputRichText    value="{! v.richTextContent }" 
+                                                placeholder="Enter your text here..." 
+                                                disabled="{! !v.isEditable }" />
+                </div>
+    
+                <!-- Save & New Button -->
+                <div class="slds-m-top_medium button-wrap">
+                    <aura:if isTrue="{! !v.checkJisajang }">
+                        <aura:if isTrue="{! AND(v.userFilter != 'admin', !v.checkRnd) }">
+                            <aura:if isTrue="{! AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm') }">
+                                <aura:if isTrue="{!v.isEditable}">
+                                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickSave }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! !v.isEditable}">
+                                    <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickEdit }"/>
+                                </aura:if>
+                            </aura:if>
+                        </aura:if>
+    
+                        <aura:if isTrue="{! AND(v.userFilter == 'admin', AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm')) }">
+                            <aura:if isTrue="{!v.isEditable}">
+                                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickSave }"/>
+                            </aura:if>
+                            <aura:if isTrue="{! !v.isEditable}">
+                                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickEdit }"/>
+                            </aura:if>
+                        </aura:if>
+                    </aura:if>
+                </div>
+                
+            </div>
+        </div>
+    
+        <aura:if isTrue="{!v.isNewClick}">
+            <c:DN_NewRequestedSQ recordId="{!v.recordId}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isEditClick2}">
+            <c:DN_EditRequestedSQ rowId="{!v.rowId}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isRefine}">
+            <c:DN_RefineRequirements recordId="{!v.recordId}" rowId="{!v.rowId}" />
+        </aura:if>
+        <aura:if isTrue="{!v.isPreAuthClick}">
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open preAuthModal">
+                <div class="slds-modal__container">
+                    
+        
+                    <!-- Header -->
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">{!$Label.c.DNS_SQR_B_PREAUTHORIZATION}</h2>
+                    </header>
+            
+                    <!-- Body -->
+                    <div class="container">
+
+                        <aura:if isTrue="{! v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+
+                        <div class="slds-modal__content">
+                            <div class="modal-body">
+                                <p class="text">{!$Label.c.DNS_REQ_M_CONFIRMMESSAGE}</p>
+                            </div>
+                        </div>
+                
+                        <!-- Footer -->
+                        <footer class="slds-modal__footer">
+                            <lightning:button class="slds-button slds-button_neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{! c.handleClickPreAuthClose }" />
+                            <lightning:button class="slds-button slds-button_neutral" variant="brand" label="{!$Label.c.DNS_B_Confirm}" onclick="{! c.handleClickPreAuthApply }" />
+                        </footer>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </aura:if>
+    
+        <aura:if isTrue="{!v.isConfirmClick}">
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open confirmModal">
+                <div class="slds-modal__container">
+        
+                    <!-- 🚩 Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">{!$Label.c.DNS_B_Confirm}</h2>
+                    </header>
+            
+                    <div class="container">
+                        <aura:if isTrue="{! v.isLoading }">
+                                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                            </aura:if>
+    
+
+                        <!-- 🚩 Modal Body -->
+                        <div class="slds-modal__content">
+                            <div class="modal-body">
+                                <p class="text">{!$Label.c.DNS_REQ_M_REQCONFIRMMESSAGE}</p>
+                            </div>
+                        </div>
+                
+                        <!-- 🚩Modal Footer -->
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick="{! c.handleClickConfirmClose }">{!$Label.c.DNS_B_Cancel}</button>
+                            <lightning:button class="slds-button slds-button_neutral" variant="brand" label="{!$Label.c.DNS_B_Confirm}" onclick="{! c.handleClickConfirmApply }" />
+                        </footer>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </aura:if>
+    <!-- </aura:if> -->
+
+</aura:component>

@@ -1,0 +1,69 @@
+<aura:component controller="DN_QuoteReviewController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="openModal" type="String" default="false"/>
+    <aura:attribute name="requestReason" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_QuoteReview) {
+        width: calc(100vw - 12rem);
+        max-width: 36rem;
+        margin: 0 auto;
+        }
+        .slds-modal__content:has(.cDN_QuoteReview) {
+        height:auto !important;
+        max-height:none !important;
+        padding: 0;
+        overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_QuoteReview) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_QuoteReview){
+        overflow: hidden;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.openModal}">
+        <div class="slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- 모달 헤더 -->
+                <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        {!$Label.c.DNS_T_QuoteReviewTitle}
+                    </h2>
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="닫기"
+                        onclick="{! c.handleClickClose }">
+                        <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+                    </button>
+                </div>
+
+                <!-- 모달 본문 -->
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <aura:if isTrue="{!v.isLoading}">
+                        <lightning:spinner alternativeText="Loading" variant="brand" />
+                    </aura:if>
+
+
+                    <p class="slds-text-body_regular slds-m-bottom_medium">
+                        
+                    </p>
+                    <!-- 취소 사유 입력 -->
+                    <lightning:textarea label="{!$Label.c.DNS_T_QuoteReviewSubtitle}" name="requestReason" placeholder="{!$Label.c.DNS_T_QuoteReviewReason}"
+                        value="{! v.requestReason }" class="slds-m-bottom_medium" />
+                </div>
+
+                <!-- 모달 푸터 -->
+                <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                    <lightning:button title="취소" onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_M_Cancel}" variant="neutral" />
+                    <lightning:button title="확인" label="{!$Label.c.DNS_M_Confirm}" variant="brand" onclick="{! c.requestReview}" />
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

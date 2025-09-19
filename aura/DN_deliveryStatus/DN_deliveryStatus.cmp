@@ -1,0 +1,311 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 2025-09-12
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-28   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+    controller="DN_PortalPartDeliveryStatusController"
+    description="배송상태 / IF에서 확인만 함. / CRM 적재 안함.">
+
+    <!--Attribute-->
+    <aura:attribute name="isLoading"            type="Boolean" default="false" />
+    <aura:attribute name="isSearched"           type="Boolean" default="false" />
+    <aura:attribute name="isDetailed"           type="Boolean" default="false" />
+    <aura:attribute name="deliveryDetailModal"  type="Boolean" default="false" />
+    <aura:attribute name="excelName"            type="String"  default="배송 상태" />
+    <aura:attribute name="excelData"            type="List"    default="[]" />
+    <aura:attribute name="detailExcelName"      type="String"  default="배송세부정보" />
+    <aura:attribute name="detailExcelData"      type="List"    default="[]" />
+
+    <aura:attribute name="dealerInfo"       type="Object" description="딜러 정보" />
+    <aura:attribute name="startDate"        type="Date"   description="시작 기간" />
+    <aura:attribute name="endDate"          type="Date"   description="종료 기간" />
+    <aura:attribute name="deliveryNo"       type="String" description="배송 번호" />
+    <aura:attribute name="orderNo"          type="String" description="주문 번호" />
+    <aura:attribute name="customerOrderNo"  type="String" description="고객 주문 번호" />
+    <aura:attribute name="partNo"           type="String" description="품번" />
+    <aura:attribute name="shippingState"    type="String" description="배송 상태" />
+
+    <aura:attribute name="waybillUrl"       type="String" default="{!$Label.c.Portal_Deli_Waybill}"/>
+    <aura:attribute name="searchTerms"      type="Object" description="검색 조건" />
+    <aura:attribute name="rowDetail"        type="List" description="배송상태 상세" />
+
+    <aura:attribute name="resultList"       type="List" default="[]" description="배송상태 목록" />
+    
+    <aura:attribute name="orderOptions" type="List" default="[
+        {'label': '전체선택', 'value': ''},
+        {'label': '출하대기', 'value': 'A'},
+        {'label': '탁송완료', 'value': 'B'},
+    ]" />
+
+    <!-- Event -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+
+    <!-- Body -->
+    <article class="slds-card">
+        <!-- modal -->
+        <div aura:id="deliveryNumberModal" />
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header test">
+            <div class="title">
+                <lightning:icon iconName="standard:fulfillment_order" size="small" />
+                <h2>{!$Label.c.DS_DeliveryStatus} <!-- 배송상태 --></h2>
+            </div>
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left"
+                    onclick="{!c.doSearch}" />
+                <c:DN_ExcelUtilButton excelData="{!v.excelData}" excelName="{!v.excelName}" />
+            </div>
+        </div>
+
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_UserId} <!-- 유저아이디 --><abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" value="{!v.dealerInfo.dealerName}" variant="label-hidden" readonly="true" disabled="true" required="true" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.ORI_Period} <!-- 기간 --> <abbr class="slds-required" title="required">*</abbr> </p>
+                    <div class="input-wrap">
+                        <lightning:input name="startDate" type="date" value="{!v.startDate}" onchange="{!c.handleChange}" variant="label-hidden" />
+                        <span>~</span>
+                        <lightning:input name="endDate" type="date" value="{!v.endDate}" onchange="{!c.handleChange}" variant="label-hidden" />
+                    </div>
+                </div>
+                <!-- <div class="field-wrap">
+                    <p>배송번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" value="{!v.deliveryNo}" variant="label-hidden" readonly="true" disabled="true" />
+                        <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Search"
+                            onclick="{!c.clearDeliveryNumber}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openDeliveyNumberModal}" />
+                    </div>
+                </div> -->
+                <div class="field-wrap">
+                    <p>{!$Label.c.DNS_C_OrderNum} <!-- 주문번호 --></p>
+                    <div class="input-wrap">
+                        <lightning:input name="orderNo" type="text" value="" variant="label-hidden" onchange="{!c.handleChange}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.RC_CustomerOrderNumber} <!-- 고객주문번호 --></p>
+                    <div class="input-wrap">
+                        <lightning:input name="customerOrderNo" type="text" value="" variant="label-hidden" onchange="{!c.handleChange}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.DNS_FSL_ProductNumber} <!-- 품번 --></p>
+                    <div class="input-wrap">
+                        <lightning:input name="partNo" type="text" value="" variant="label-hidden" onchange="{!c.handleChange}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.DNS_C_Status} <!-- 상태 --></p>
+                    <div class="input-wrap">
+                        <lightning:combobox name="shippingState" value="" options="{! v.orderOptions }" onchange="{!c.handleChange}"
+                            variant="label-hidden" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 02 -->
+            <div class="card-02 top-card">
+                <!-- Table -->
+                <div class="table-wrap">
+                    <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                        <colgroup>
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="4%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="4%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="40%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>{!$Label.c.RC_CustomerOrderNumber} <!-- 고객주문번호 --></th>
+                                <th>{!$Label.c.service_lbl_order_no} <!-- 오더번호 --></th>
+                                <th>{!$Label.c.DNS_C_Status} <!-- 상태 --></th>
+                                <th>{!$Label.c.DS_DeliveryNumber} <!-- 배송번호 --></th>
+                                <th>{!$Label.c.DNS_C_IssueNumber} <!-- 출하지시번호 --></th>
+                                <th>{!$Label.c.DS_TrackingNumber} <!-- 운송장 번호 --></th>
+                                <th>{!$Label.c.DS_NumberOfBoxes} <!-- 박스수량 --></th>
+                                <th>{!$Label.c.DS_TotalWeight} <!-- 총중량 --></th>
+                                <th>{!$Label.c.DNS_FSL_Unit} <!-- 단위 --></th>
+                                <th>{!$Label.c.DS_ShipmentType} <!-- 출하유형 --></th>
+                                <th>Shipping Origin</th>
+                                <th>{!$Label.c.DS_Carrier} <!-- 운송업자 --></th>
+                                <th>{!$Label.c.DS_DeparturDate} <!-- 출발일자 --></th>
+                                <th>{!$Label.c.DS_ArrivalDate} <!-- 도착일자 --></th>
+                                <th>{!$Label.c.DS_Destination} <!-- 도착지 --></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <aura:if isTrue="{!not(v.isSearched)}">
+                                <tr>
+                                    <td colspan="14" style="text-align: center;">No Data</td>
+                                </tr>
+                            </aura:if>
+
+                            <aura:if isTrue="{!v.isSearched}">
+                                <aura:iteration items="{!v.resultList}" var="rl" indexVar="rn">
+                                    <tr>
+                                        <td class="left">{!rl.customerOrderNo}</td>
+                                        <td class="center">{!rl.orderNo}</td>
+                                        <td class="center">{!rl.deliveryStatus}</td>
+                                        <td class="center delivery-number">
+                                            <span onclick="{!c.openDeliveryDetail}" data-deliveryno="{!rn}">{!rl.deliveryNo}</span>
+                                        </td>
+                                        <td class="center">{!rl.shippingInstructionNo}</td>
+                                        <td class="center">
+                                            <a href="javascript:void(0);" 
+                                            onclick="{!c.openPopup}" 
+                                            data-barcode="{!rl.waybillNo}">
+                                                {!rl.waybillNo}
+                                            </a>
+                                        </td>
+                                        <td class="center">{!rl.boxQty}</td>
+                                        <td class="right">{!rl.totalWeight}</td>
+                                        <td class="right">{!rl.unit}</td>
+                                        <td class="center">{!rl.shippingType}</td>
+                                        <td class="center">{!rl.sendTo}</td> <!-- 송부처 -->
+                                        <td class="center">{!rl.deliverer}</td>
+                                        <td class="center">{!rl.departureDate}</td>
+                                        <td class="center">{!rl.arrivalDate}</td>
+                                        <td class="left">
+                                            <div class="destination" title="{!rl.destination}">
+                                                {!rl.destination}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </aura:if>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- delivery detail modal -->
+        <aura:if isTrue="{! v.deliveryDetailModal }">
+            <div aura:id="deliveryDetailModal" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container slds-modal_large">
+                    <!-- Header -->
+                    <header class="slds-modal__header">
+                        <div class="header-wrap">
+                            <h2 class="slds-text-heading_medium">{!$Label.c.DS_DeliveryDetails} <!-- 배송세부정보 --></h2>
+                            <div class="button-wrap">
+                                <c:DN_ExcelUtilButton excelData="{!v.detailExcelData}" excelName="{!v.detailExcelName}" />
+                            </div>
+                        </div>
+                        
+                        <!-- Close Button -->
+                        <button class="close_button_template slds-modal__close">
+                            <lightning:icon iconName='utility:close' alternativeText='close'
+                                variant='inverse' size='small' title='close' name="closeModal"
+                                onclick="{!c.closeDeliveryDetail}"></lightning:icon>
+                        </button>
+                    </header>
+
+
+                    <div class="modal-body slds-modal__content slds-p-around_medium">
+                        <div class="card-01 top-card">
+                            <div class="table-wrap">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="12%" />
+                                        <col width="12%" />
+                                        <col width="12%" />
+                                        <col width="12%" />
+                                        <col width="12%" />
+                                        <col width="12%" />
+                                        <col width="5%" />
+                                        <col width="12%" />
+                                        <col width="5%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>{!$Label.c.DS_DeliveryOrderNumber} <!-- 탁송번호 --></th>
+                                            <th>{!$Label.c.service_lbl_order_no} <!-- 오더번호 --></th>
+                                            <th>{!$Label.c.RC_CustomerOrderNumber} <!-- 고객주문번호 --></th>
+                                            <th>{!$Label.c.ORC_OrderPartNumber} <!-- 주문품번 --></th>
+                                            <th>{!$Label.c.ORC_SupplyNumber} <!-- 공급품번 --></th>
+                                            <th>{!$Label.c.DS_Description} <!-- 설명 --></th>
+                                            <th>{!$Label.c.DNS_C_Quantity} <!-- 수량 --></th>
+                                            <th>{!$Label.c.DS_UnitPrice} <!-- 단위가격 --></th>
+                                            <th>{!$Label.c.DNS_C_Currency} <!-- 통화 --></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:if isTrue="{!v.isDetailed}">
+                                            <aura:iteration items="{!v.rowDetail}" var="item" indexVar="j">
+                                                <tr>
+                                                    <td class="center">{!item.deliveryNo}</td>
+                                                    <td class="center">{!item.orderNo}</td>
+                                                    <td class="left">{!item.customerOrderNo}</td>
+                                                    <td class="left">{!item.orderPartNo}</td>
+                                                    <td class="left">{!item.supplyPartNo}</td>
+                                                    <td class="center">
+                                                        <div title="{!item.description}">
+                                                            {!item.description}
+                                                        </div>
+                                                    </td>
+                                                    <td class="right">{!item.quantity}</td>
+                                                    <td class="right">
+                                                        <lightning:formattedNumber value="{!item.unitPrice}" minimumFractionDigits="0" />
+                                                    </td>
+                                                    <td class="center">{!item.ddCurrency}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                            <aura:set attribute="else">
+                                                <tr>
+                                                    <td colspan="9" style="text-align: center;">No Data</td>
+                                                </tr>
+                                            </aura:set>
+                                        
+                                        </aura:if>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                            onclick="{!c.closeDeliveryDetail}" />
+                    </footer>
+                </div>
+            </div>
+            <!-- 배경 -->
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </article>
+</aura:component>

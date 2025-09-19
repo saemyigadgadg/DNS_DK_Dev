@@ -1,0 +1,29 @@
+<!--
+ @description       : 
+ @author            : Sejin Kwon
+ @group             : 
+ @last modified on  : 04-24-2025
+ @last modified by  : Hyerin Ro
+ Modifications Log
+ Ver   Date         Author          Modification
+ 1.0   07-15-2024   Sejin Kwon     Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+                access="global"
+                description="Quote Excel Export_EN">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="recordId"     type="String"/>
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_QuotationExportEN) .slds-modal__content {
+            position: relative;
+        }
+        .slds-modal__container:has(.cDN_QuotationExportEN) .slds-modal__close {
+            display: none;
+        }
+    </aura:html>
+    
+    <c:dN_QuotationExport_EN recordId="{!v.recordId}" onloadingcomplete="{!c.handleLoadingComplete}" />
+
+</aura:component>

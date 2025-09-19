@@ -1,0 +1,58 @@
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="티켓과 연결된 대상 목록을 생성"
+    access="global" 
+    controller="DN_ExecuteHappyCallController"
+>
+    <!--Attribute-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_ExecuteHappyCall) {
+        width: 56rem;
+        max-width: calc(100vw - 5rem);
+        }
+        .slds-modal__content:has(.cDN_ExecuteHappyCall) {
+        height:auto !important;
+        max-height:none !important;
+        padding: 0;
+        overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_ExecuteHappyCall) {
+        padding:0;
+        }
+    </aura:html>
+
+    <div aura:id="confirmModal" class="slds-modal slds-fade-in-open">
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <div class="slds-modal__container slds-modal_large">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">해피콜 실행</h2>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='utility:check' alternativeText='download' size='Medium' title='download'>
+                    </lightning:icon>
+                </div>
+                <p>해피콜을 실행하시겠습니까?</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelHappyCall}" />
+                <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.executeHappyCall}" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

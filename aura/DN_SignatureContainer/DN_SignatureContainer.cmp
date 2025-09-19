@@ -1,0 +1,40 @@
+<!--
+  @description       : 
+  @author            : geonsang.park@sobetec.com
+  @group             : 
+  @last modified on  : 03-26-2025
+  @last modified by  : geonsang.park@sobetec.com
+-->
+<aura:component controller="SignatureContainerController" implements="forceCommunity:availableForAllPageTypes,force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome">
+    <aura:attribute name="recordId" type="Id" access="global"/>
+    <aura:attribute name="signatureType" type="String" access="global"/>
+    <aura:attribute name="bDisplay" type="Boolean" default="true" access="global"/> 
+    <aura:attribute name="showModalSpinner" type="Boolean" default="false" access="global"/> 
+    <aura:handler name="init" action="{!c.init}" value="{!this}"/>
+    <aura:registerEvent name="complete" type="c:DN_SignatureCompletedEvent"/>
+    <lightning:notificationsLibrary aura:id="notifLib"/>
+    <aura:if isTrue="{!v.bDisplay}">
+        <aura:if isTrue="{!v.showModalSpinner}">
+        <lightning:spinner />
+    </aura:if>
+        
+    <div class="slds-grid slds-grid_vertical" id = "div_wrapper" style="width:100%;">
+        
+        <div class="slds-col" >
+            <aura:if isTrue="{!v.signatureType == 'engineer'}">
+                <c:DN_Signature aura:id="signature_engineer" minWidth="0.5" maxWidth="1.5" id="engineer" />
+                <aura:set attribute="else">
+                    <c:DN_Signature aura:id="signature_customer" minWidth="0.5" maxWidth="1.5" id="customer" />
+                </aura:set>
+            </aura:if>
+        </div>
+        <div class="slds-col" style ="display:flex;justify-content:center; margin-top: 10px;">
+            <div>
+                <button class="slds-button slds-button_neutral" onclick="{!c.onClear}">Clear</button>
+                <button style="min-width:102px;" class="slds-button slds-button_brand"   onclick="{!c.acceptSignature}">Confirm</button>
+            </div>
+        </div >
+    </div>
+    </aura:if>
+    
+</aura:component>

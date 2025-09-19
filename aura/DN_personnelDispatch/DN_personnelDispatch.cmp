@@ -1,0 +1,255 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-04-14
+  @last modified by  : chungwoo.lee@sobetec.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-07-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_PortalServiceController" description="서비스 진행업무">
+
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- Aura Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="options" type="List" default="[
+    {'label': '확정전', 'value': 'notConfirm'},
+    {'label': '확정후', 'value': 'Confirm'},
+    {'label': '전체'  , 'value': ''}
+    ]" />
+    <aura:attribute name="baseUrl"          type="String" /> <!-- Sandbox & Production url 구분 -->
+    <aura:attribute name="workStatus"       type="String"   default="notConfirm" />
+    <aura:attribute name="workStartDate"    type="DATE"     default="" />
+    <aura:attribute name="workEndDate"      type="DATE"     default="" />
+    <aura:attribute name="workOrderNumber"  type="String"   default="" />
+    <aura:attribute name="orderType"        type="String"   default="" />
+    <aura:attribute name="hasWarranty"      type="Boolean"  default="true" />
+    <aura:attribute name="isTicket"         type="Boolean"  default="false" />
+    <aura:attribute name="isSearched"       type="Boolean"  default="false" />
+    <aura:attribute name="serviceList"      type="List"     default="[]" />
+    <aura:attribute name="headExcelData"    type="List"     default="[]" />
+    <aura:attribute name="excelData"        type="List"     default="[]" />
+    <aura:attribute name="excelName"        type="String"   default="Service_Progress_Status" />
+    <aura:attribute name="orderTypes"       type="List"     default="[
+    {'label': 'All', 'value': ''},
+    {'label': '점검오더', 'value': 'CS01'},
+    {'label': '필드서비스 오더', 'value': 'CS02'},
+    {'label': '기타서비스 오더', 'value': 'CS08'},
+    ]" />
+    <aura:attribute name="plant"            type="String"   default="184S" />
+    <aura:attribute name="isDNSA"           type="Boolean"  default="true" />
+
+    <article class="slds-card">
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title slds-grid">
+                <lightning:icon iconName="standard:service_resource" size="small" />
+                <!--서비스 진행업무-->
+                <h2 class="slds-truncate">{!$Label.c.service_ttl_service_progress}</h2>
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left"
+                    onclick="{!c.doSearch}" />
+                <c:DN_ExcelUtilButton excelData="{! v.excelData }" excelName="{! v.excelName }" />
+                <!-- <c:DN_DealerPortalExcelUtilButton headerData="{!v.headExcelData}" excelData="{! v.excelData }" excelName="{! v.excelName }" /> -->
+            </div>
+        </div>
+
+        <!-- body -->
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="{!v.isDNSA ? 'card-01 card-dnsa top-card' : 'card-01 top-card'}">
+
+                <div class="field-wrap radio-wrap">
+                    <!--작업 상태-->
+                    <p>{!$Label.c.service_btn_status}</p>
+                    <div class="input-wrap">
+                        <lightning:radioGroup name="radioGroup" variant="label-hidden" options="{! v.options }"
+                            value="{! v.workStatus }" type="radio" />
+                    </div>
+                </div>
+                <aura:if isTrue="{!not(v.isDNSA)}">
+                    <div class="field-wrap check-input">
+                        <!-- 본사 배정 -->
+                        <p>{!$Label.c.service_lbl_hq_assign}</p>
+                        <div class="input-wrap">
+                            <lightning:input type="checkbox" name="" checked="{!v.hasWarranty}" variant="label-hidden" />
+                        </div>
+                    </div>
+                </aura:if>
+                <div class="field-wrap">
+                    <!-- 출동 요청일 -->
+                    <p>{!$Label.c.service_lbl_dispatch_request_date}</p>
+                    <div class="input-wrap" >
+                        <lightning:input type="date" name="" aura:id="startDate" value="{! v.workStartDate }" onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+                        <span>~</span>
+                        <lightning:input type="date" name="" aura:id="endDate" value="{! v.workEndDate }" onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <!-- 오더번호 -->
+                    <p>{!$Label.c.service_lbl_order_no}</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{! v.workOrderNumber }" variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <!-- 오더 유형 -->
+                    <p>{!$Label.c.service_lbl_order_type}</p>
+                    <div class="input-wrap">
+                        <lightning:combobox value="{! v.orderType }" variant="label-hidden" options="{!v.orderTypes}" />
+                    </div>
+                </div>
+
+                <!-- <div class="field-wrap">
+                    <p>납품후 교육</p>
+                    <div class="input-wrap checkbox">
+                        <ui:inputCheckbox aura:id="checkbox" value="{! v.isTicket }" change="{!c.onCheck}" />
+                    </div>
+                </div> -->
+            </div>
+
+            <!-- Card 02 -->
+            <div class="card-02 top-card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <!-- 출동 요청일 -->
+                                <th>{!$Label.c.service_fld_dispatch_request_date}</th>
+                                <!-- 오더 유형 -->
+                                <th>{!$Label.c.service_fld_order_type}</th>
+                                <!-- 오더 유형2 -->
+                                <th>{!$Label.c.service_fld_order_type2}</th>
+                                <!-- 오더번호 -->
+                                <th>{!$Label.c.service_fld_order_no}</th>
+                                <!-- Work Center -->
+                                <th>{!$Label.c.service_fld_work_center}</th>
+                                <!-- 작업자 -->
+                                <th>{!$Label.c.service_fld_worker}</th>
+                                <!-- 고객사 -->
+                                <th>{!$Label.c.service_fld_account}</th>
+                                <!-- 기종 -->
+                                <th>{!$Label.c.service_fld_model}</th>
+                                <!-- 장비번호 -->
+                                <th>{!$Label.c.service_fld_serial_no}</th>
+                                <!-- 오더내역 -->
+                                <th>{!$Label.c.service_fld_order_details}</th>
+                                <!-- 설치완료일자 -->
+                                <th>{!$Label.c.service_fld_installation_completion_date}</th>
+                                <!-- 접수일 -->
+                                <th>{!$Label.c.service_fld_received_date}</th>
+                                <!-- 작업상태 -->
+                                <th>{!$Label.c.service_fld_status}</th>
+                                <aura:if isTrue="{!not(v.isDNSA)}">
+                                    <!-- 본사 배정 -->
+                                    <th>{!$Label.c.service_fld_hq_assignment}</th>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <aura:if isTrue="{!not(v.isSearched)}">
+                            <tbody>
+                                <tr>
+                                    <td colspan="14" class="center">No Data</td>
+                                </tr>
+                            </tbody>
+                        </aura:if>
+                        <aura:if isTrue="{!v.isSearched}">
+                            <tbody>
+                                <aura:iteration items="{!v.serviceList}" var="service">
+                                    <tr>
+                                        <td class="center">
+                                            <!-- <ui:outputDate value="{!service.FM_WorkPlanDateTime__c}" /> -->
+                                            <aura:if isTrue="{!service.HasWarrantyDirectManagement__c}">
+                                                    <ui:outputDate value="{!service.ReceiptDate__c}" />
+                                                <aura:set attribute="else">
+                                                    <ui:outputDate value="{!service.ScheduledDispatchTime__c}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="center">{!service.PMActivityType__c}</td>
+                                        <td class="center">{!service.OrderType__c}</td>
+                                        <td class="center">
+                                            <div class="order-num" onclick="{!c.openOrderWrapper}"
+                                                data-order-number="{!service.ServiceOrderNumber__c}">
+                                                {!service.ServiceOrderNumber__c}
+                                            </div>
+                                        </td>
+                                        <td class="center">{!service.ServiceTerritory.Name}</td>
+                                        <td class="center">{!service.Worker__r.Name}</td>
+                                        <td class="center">{!service.Account.Name}</td>
+                                        <td class="center">{!service.Asset.MachineName__c}</td>
+                                        <td class="center">{!service.Asset.Name}</td>
+                                        <td class="center">
+                                            <aura:if isTrue="{!service.HasWarrantyDirectManagement__c}">
+                                                <div class="reception-detail" title="{!service.FailurePhenomenonDetail__c}">
+                                                    {!service.FailurePhenomenonDetail__c}
+                                                </div>
+                                                <aura:set attribute="else">
+                                                    <div class="reception-detail" title="{!service.Case.ReceptionDetails__c}">
+                                                        {!service.Case.ReceptionDetails__c}
+                                                    </div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="center">
+                                            <ui:outputDate value="{!service.Asset.WarrantyStartDateWages__c}" />
+                                        </td>
+                                        <td class="center">
+                                            <aura:if isTrue="{!service.HasWarrantyDirectManagement__c}">
+                                                <ui:outputDate value="{!service.ReceiptDate__c}" />
+                                                <aura:set attribute="else">
+                                                    <ui:outputDate value="{!service.Case.ApplicationDateTime__c}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="center">
+                                            <aura:if isTrue="{!OR( AND(v.isDNSA, OR(service.Status == 'Confirm', service.Status == 'Completed')), AND(not(v.isDNSA), service.Status == 'Confirm') )}">
+                                                <!-- 확정 후 -->        
+                                                {!$Label.c.service_lbl_confirmed}
+                                                <aura:set attribute="else">
+                                                    <!-- 확정 전 -->
+                                                    {!$Label.c.service_lbl_pending}
+                                                </aura:set>
+                                            </aura:if>
+                                            <!-- <aura:if isTrue="{!service.Status == 'Confirm'}">
+                                                {!$Label.c.service_lbl_confirmed}
+                                                <aura:set attribute="else">
+                                                    {!$Label.c.service_lbl_pending}
+                                                </aura:set>
+                                            </aura:if> -->
+                                        </td>
+                                        <aura:if isTrue="{!not(v.isDNSA)}">
+                                            <td class="center">
+                                                <aura:if isTrue="{!service.HasWarrantyDirectManagement__c}">
+                                                    N
+                                                    <aura:set attribute="else">
+                                                        Y
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>
+                                        </aura:if>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </aura:if>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+</aura:component>

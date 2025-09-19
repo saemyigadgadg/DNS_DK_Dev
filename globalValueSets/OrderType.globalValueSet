@@ -1,0 +1,1620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>XCSQ</fullName>
+        <default>false</default>
+        <label>CS Quotation(Dealer)</label>
+    </customValue>
+    <customValue>
+        <fullName>XIN1</fullName>
+        <default>false</default>
+        <label>R&amp;D Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>XIN2</fullName>
+        <default>false</default>
+        <label>IPDF Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>YAC1</fullName>
+        <default>false</default>
+        <label>BP Credit Memo SDR</label>
+    </customValue>
+    <customValue>
+        <fullName>YAC2</fullName>
+        <default>false</default>
+        <label>BP Settle Comm. CR</label>
+    </customValue>
+    <customValue>
+        <fullName>YAC3</fullName>
+        <default>false</default>
+        <label>BP Trader Joe Credit</label>
+    </customValue>
+    <customValue>
+        <fullName>YAC4</fullName>
+        <default>false</default>
+        <label>Battery Core Return</label>
+    </customValue>
+    <customValue>
+        <fullName>YAD1</fullName>
+        <default>false</default>
+        <label>BP Debit Memo SDR</label>
+    </customValue>
+    <customValue>
+        <fullName>YAD2</fullName>
+        <default>false</default>
+        <label>BP Exide Sales</label>
+    </customValue>
+    <customValue>
+        <fullName>YAD3</fullName>
+        <default>false</default>
+        <label>BP Settle Comm. DR</label>
+    </customValue>
+    <customValue>
+        <fullName>YAI1</fullName>
+        <default>false</default>
+        <label>BP Inquiry Returns</label>
+    </customValue>
+    <customValue>
+        <fullName>YAI2</fullName>
+        <default>false</default>
+        <label>BP Inquiry Credit</label>
+    </customValue>
+    <customValue>
+        <fullName>YAI3</fullName>
+        <default>false</default>
+        <label>BP Inquiry Debit</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO0</fullName>
+        <default>false</default>
+        <label>BP Class 0</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO1</fullName>
+        <default>false</default>
+        <label>BP Class 1</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO2</fullName>
+        <default>false</default>
+        <label>BP Class 2</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO3</fullName>
+        <default>false</default>
+        <label>BP Class 3</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO4</fullName>
+        <default>false</default>
+        <label>BP Class 4</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO5</fullName>
+        <default>false</default>
+        <label>BP Trader Joe Sales</label>
+    </customValue>
+    <customValue>
+        <fullName>YAO7</fullName>
+        <default>false</default>
+        <label>BP Special IC- POSO</label>
+    </customValue>
+    <customValue>
+        <fullName>YAQT</fullName>
+        <default>false</default>
+        <label>BP Quotation</label>
+    </customValue>
+    <customValue>
+        <fullName>YAR1</fullName>
+        <default>false</default>
+        <label>BP Returns COR</label>
+    </customValue>
+    <customValue>
+        <fullName>YAR2</fullName>
+        <default>false</default>
+        <label>Battery Return</label>
+    </customValue>
+    <customValue>
+        <fullName>YARE</fullName>
+        <default>false</default>
+        <label>BP Returns</label>
+    </customValue>
+    <customValue>
+        <fullName>YBCC</fullName>
+        <default>false</default>
+        <label>SP Dom CNF Ret [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBCM</fullName>
+        <default>false</default>
+        <label>SP Dom CR</label>
+    </customValue>
+    <customValue>
+        <fullName>YBCO</fullName>
+        <default>false</default>
+        <label>SP Dom SVC Claim</label>
+    </customValue>
+    <customValue>
+        <fullName>YBCR</fullName>
+        <default>false</default>
+        <label>SP Dom ONF Ret [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBDI</fullName>
+        <default>false</default>
+        <label>SP Dom Commission</label>
+    </customValue>
+    <customValue>
+        <fullName>YBDM</fullName>
+        <default>false</default>
+        <label>SP Dom DR(YBDM)</label>
+    </customValue>
+    <customValue>
+        <fullName>YBDS</fullName>
+        <default>false</default>
+        <label>SP Dom Revenue [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBED</fullName>
+        <default>false</default>
+        <label>SP Dom EO [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBEO</fullName>
+        <default>false</default>
+        <label>SP Dom EO</label>
+    </customValue>
+    <customValue>
+        <fullName>YBFC</fullName>
+        <default>false</default>
+        <label>SP Dom Free of Chrg</label>
+    </customValue>
+    <customValue>
+        <fullName>YBID</fullName>
+        <default>false</default>
+        <label>SP Dom IPSO [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBIP</fullName>
+        <default>false</default>
+        <label>SP Dom IPSO</label>
+    </customValue>
+    <customValue>
+        <fullName>YBMD</fullName>
+        <default>false</default>
+        <label>SP Dom MO [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBMO</fullName>
+        <default>false</default>
+        <label>SP Dom MO</label>
+    </customValue>
+    <customValue>
+        <fullName>YBNP</fullName>
+        <default>false</default>
+        <label>SP Dom Non Mov Pro</label>
+    </customValue>
+    <customValue>
+        <fullName>YBPO</fullName>
+        <default>false</default>
+        <label>SP Dom PO Return</label>
+    </customValue>
+    <customValue>
+        <fullName>YBRC</fullName>
+        <default>false</default>
+        <label>SP Dom CNF Ret</label>
+    </customValue>
+    <customValue>
+        <fullName>YBRF</fullName>
+        <default>false</default>
+        <label>SP Dom FOC Ret</label>
+    </customValue>
+    <customValue>
+        <fullName>YBRR</fullName>
+        <default>false</default>
+        <label>SP Dom ONF Ret</label>
+    </customValue>
+    <customValue>
+        <fullName>YBRS</fullName>
+        <default>false</default>
+        <label>SP Dom Special Ret</label>
+    </customValue>
+    <customValue>
+        <fullName>YBSD</fullName>
+        <default>false</default>
+        <label>SP Dom SO [TRI]</label>
+    </customValue>
+    <customValue>
+        <fullName>YBSO</fullName>
+        <default>false</default>
+        <label>SP Dom SO</label>
+    </customValue>
+    <customValue>
+        <fullName>YBVO</fullName>
+        <default>false</default>
+        <label>SP Dom 3rd Party</label>
+    </customValue>
+    <customValue>
+        <fullName>YCEO</fullName>
+        <default>false</default>
+        <label>CBT_EMR Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YCMO</fullName>
+        <default>false</default>
+        <label>CBT_Mach. Down Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YCSO</fullName>
+        <default>false</default>
+        <label>CBT_Stock Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YCSQ</fullName>
+        <default>false</default>
+        <label>CS Quotation(YCSQ)</label>
+    </customValue>
+    <customValue>
+        <fullName>YCUS</fullName>
+        <default>false</default>
+        <label>CBT_Ordinary Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YD00</fullName>
+        <default>false</default>
+        <label>SP Dom. Price Report</label>
+    </customValue>
+    <customValue>
+        <fullName>YD01</fullName>
+        <default>false</default>
+        <label>SP Dom. Price Rep1</label>
+    </customValue>
+    <customValue>
+        <fullName>YD02</fullName>
+        <default>false</default>
+        <label>SP Dom. Price (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>YD03</fullName>
+        <default>false</default>
+        <label>SP Dom. Price(2012)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDAM</fullName>
+        <default>false</default>
+        <label>SP Dom AMP DIR</label>
+    </customValue>
+    <customValue>
+        <fullName>YDBF</fullName>
+        <default>false</default>
+        <label>SP Dom.BG.FOC Ord.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDCA</fullName>
+        <default>false</default>
+        <label>SP Dom. Recall</label>
+    </customValue>
+    <customValue>
+        <fullName>YDCM</fullName>
+        <default>false</default>
+        <label>SP Dom.CR.Memo.Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDCO</fullName>
+        <default>false</default>
+        <label>SP Dom.SVC.Claim</label>
+    </customValue>
+    <customValue>
+        <fullName>YDCR</fullName>
+        <default>false</default>
+        <label>Svc.Claim Ord.Return(YDCR)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDDL</fullName>
+        <default>false</default>
+        <label>SP Ord.Ty Sched.Ag.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDDM</fullName>
+        <default>false</default>
+        <label>SP Dom.DB.Memo.Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDEO</fullName>
+        <default>false</default>
+        <label>SP Domestic EO</label>
+    </customValue>
+    <customValue>
+        <fullName>YDFC</fullName>
+        <default>false</default>
+        <label>SP Dom.Free of Chrg.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIA</fullName>
+        <default>false</default>
+        <label>SP AMP DIR Ret Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIM</fullName>
+        <default>false</default>
+        <label>SP Reman Comp. Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIN</fullName>
+        <default>false</default>
+        <label>SP Domestic Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIP</fullName>
+        <default>false</default>
+        <label>SP Domestic IPSO</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIQ</fullName>
+        <default>false</default>
+        <label>DIG Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIR</fullName>
+        <default>false</default>
+        <label>SP Dom. Return Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDIS</fullName>
+        <default>false</default>
+        <label>SP Off Site</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKA</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Pick-up(YDKA)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKB</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Fill-up(YDKB)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKE</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Issue(YDKE)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKF</fullName>
+        <default>false</default>
+        <label>SP Cnsgmnt FillUP NA</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKK</fullName>
+        <default>false</default>
+        <label>SP Cnsgn.Warranty Rt(YDKK)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKR</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Return(YDKR)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDKS</fullName>
+        <default>false</default>
+        <label>SP Cnsgn.Warranty GI(YDKS)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDLR</fullName>
+        <default>false</default>
+        <label>[S.P] Return C-C STO</label>
+    </customValue>
+    <customValue>
+        <fullName>YDMA</fullName>
+        <default>false</default>
+        <label>SP Dom. Ordinary</label>
+    </customValue>
+    <customValue>
+        <fullName>YDMC</fullName>
+        <default>false</default>
+        <label>SP Dom.Milit.Cntrct.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDMI</fullName>
+        <default>false</default>
+        <label>MT_Parts Inq.(D)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDMO</fullName>
+        <default>false</default>
+        <label>SP Domestic MO</label>
+    </customValue>
+    <customValue>
+        <fullName>YDMP</fullName>
+        <default>false</default>
+        <label>SP Dom.DMP 3rd party</label>
+    </customValue>
+    <customValue>
+        <fullName>YDMR</fullName>
+        <default>false</default>
+        <label>SP Dom.Mil.Rel.Ord</label>
+    </customValue>
+    <customValue>
+        <fullName>YDNP</fullName>
+        <default>false</default>
+        <label>SP Non Moving Promo.(YDNP)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDOE</fullName>
+        <default>false</default>
+        <label>Dom OEM Parts Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YDOR</fullName>
+        <default>false</default>
+        <label>Dom Ordinary Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YDOW</fullName>
+        <default>false</default>
+        <label>DOM Direct SVC Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YDPO</fullName>
+        <default>false</default>
+        <label>SP Planning Order(YDPO)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDQT</fullName>
+        <default>false</default>
+        <label>SP Dom. Quotation</label>
+    </customValue>
+    <customValue>
+        <fullName>YDQU</fullName>
+        <default>false</default>
+        <label>SP Dom. Quotation[M]</label>
+    </customValue>
+    <customValue>
+        <fullName>YDRC</fullName>
+        <default>false</default>
+        <label>SP Dom.Claim Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDRF</fullName>
+        <default>false</default>
+        <label>SP Dom.FOC Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDRO</fullName>
+        <default>false</default>
+        <label>SP Dom.Return.Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YDRQ</fullName>
+        <default>false</default>
+        <label>SP Domestic RFQ</label>
+    </customValue>
+    <customValue>
+        <fullName>YDRS</fullName>
+        <default>false</default>
+        <label>SP Dom.Special Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YDSC</fullName>
+        <default>false</default>
+        <label>SP Dom.Subcntrct.Ord</label>
+    </customValue>
+    <customValue>
+        <fullName>YDSF</fullName>
+        <default>false</default>
+        <label>SP Dom. Sales Policy</label>
+    </customValue>
+    <customValue>
+        <fullName>YDSN</fullName>
+        <default>false</default>
+        <label>SP Dom.Spe Net Price</label>
+    </customValue>
+    <customValue>
+        <fullName>YDSO</fullName>
+        <default>false</default>
+        <label>SP Domestic SO</label>
+    </customValue>
+    <customValue>
+        <fullName>YDSP</fullName>
+        <default>false</default>
+        <label>SP Dom.Special Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YDSR</fullName>
+        <default>false</default>
+        <label>SP Reman Comp. Issue</label>
+    </customValue>
+    <customValue>
+        <fullName>YDTN</fullName>
+        <default>false</default>
+        <label>SP BG Transfer(NH)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDTO</fullName>
+        <default>false</default>
+        <label>SP BG Transfer(YDTO)</label>
+    </customValue>
+    <customValue>
+        <fullName>YDWR</fullName>
+        <default>false</default>
+        <label>DOM Direct SVC Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YE00</fullName>
+        <default>false</default>
+        <label>SP Exp. Price Report</label>
+    </customValue>
+    <customValue>
+        <fullName>YE01</fullName>
+        <default>false</default>
+        <label>SP Exp. Price Rep1</label>
+    </customValue>
+    <customValue>
+        <fullName>YE02</fullName>
+        <default>false</default>
+        <label>MT YVPP Simulation</label>
+    </customValue>
+    <customValue>
+        <fullName>YE03</fullName>
+        <default>false</default>
+        <label>SP Exp. Price(2012)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEBF</fullName>
+        <default>false</default>
+        <label>SP Exp.BG.FOC Ord.</label>
+    </customValue>
+    <customValue>
+        <fullName>YECM</fullName>
+        <default>false</default>
+        <label>SP Exp.CR.Memo.Req.(YECM)</label>
+    </customValue>
+    <customValue>
+        <fullName>YECO</fullName>
+        <default>false</default>
+        <label>SP Exp.SVC.Claim</label>
+    </customValue>
+    <customValue>
+        <fullName>YECR</fullName>
+        <default>false</default>
+        <label>Svc.Claim Ord.Return(YECR)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEDB</fullName>
+        <default>false</default>
+        <label>BWT. STO</label>
+    </customValue>
+    <customValue>
+        <fullName>YEDF</fullName>
+        <default>false</default>
+        <label>Free of Charge STO</label>
+    </customValue>
+    <customValue>
+        <fullName>YEDL</fullName>
+        <default>false</default>
+        <label>Order Type Sched.Ag.(YEDL)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEDM</fullName>
+        <default>false</default>
+        <label>SP Exp.DB.Memo.Req.(YEDM)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEDS</fullName>
+        <default>false</default>
+        <label>Ord.Type Sched.ag.SP</label>
+    </customValue>
+    <customValue>
+        <fullName>YEEO</fullName>
+        <default>false</default>
+        <label>SP Export EO</label>
+    </customValue>
+    <customValue>
+        <fullName>YEFC</fullName>
+        <default>false</default>
+        <label>SP Exp.Free of Chrg.(YEFC)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEIC</fullName>
+        <default>false</default>
+        <label>SP Exp.Iq(Sim-DICC)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEIN</fullName>
+        <default>false</default>
+        <label>SP Export Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>YEIP</fullName>
+        <default>false</default>
+        <label>SP Export IPSO</label>
+    </customValue>
+    <customValue>
+        <fullName>YEIQ</fullName>
+        <default>false</default>
+        <label>DIG Exp. Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>YEIR</fullName>
+        <default>false</default>
+        <label>SP Exp. Return Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YEIS</fullName>
+        <default>false</default>
+        <label>SP Exp.Inquiry(Simu)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEKA</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. PU EX</label>
+    </customValue>
+    <customValue>
+        <fullName>YEKB</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Fill-up(YEKB)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEKE</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Issue(YEKE)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEKK</fullName>
+        <default>false</default>
+        <label>SP Cnsgn.Warranty Rt(YEKK)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEKR</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Ret EX</label>
+    </customValue>
+    <customValue>
+        <fullName>YEKS</fullName>
+        <default>false</default>
+        <label>SP Cnsgn.Warranty GI(YEKS)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEMA</fullName>
+        <default>false</default>
+        <label>SP Exp. Ordinary</label>
+    </customValue>
+    <customValue>
+        <fullName>YEMI</fullName>
+        <default>false</default>
+        <label>MT_Parts Inq.(E)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEMO</fullName>
+        <default>false</default>
+        <label>SP Export MO</label>
+    </customValue>
+    <customValue>
+        <fullName>YEMP</fullName>
+        <default>false</default>
+        <label>SP Exp.DMP 3rd Party</label>
+    </customValue>
+    <customValue>
+        <fullName>YENP</fullName>
+        <default>false</default>
+        <label>SP Non Moving Promo.(YENP)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEOR</fullName>
+        <default>false</default>
+        <label>Exp Ordinary Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YEPO</fullName>
+        <default>false</default>
+        <label>SP Planning Order(YEPO)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEQN</fullName>
+        <default>false</default>
+        <label>SP Exp. Quotation(N)</label>
+    </customValue>
+    <customValue>
+        <fullName>YEQT</fullName>
+        <default>false</default>
+        <label>SP Exp. Quotation</label>
+    </customValue>
+    <customValue>
+        <fullName>YEQU</fullName>
+        <default>false</default>
+        <label>SP Exp. Quotation[M]</label>
+    </customValue>
+    <customValue>
+        <fullName>YERC</fullName>
+        <default>false</default>
+        <label>SP Exp.Claim Ret.(YERC)</label>
+    </customValue>
+    <customValue>
+        <fullName>YERO</fullName>
+        <default>false</default>
+        <label>SP Exp.Return.Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YERQ</fullName>
+        <default>false</default>
+        <label>SP Export RFQ</label>
+    </customValue>
+    <customValue>
+        <fullName>YERS</fullName>
+        <default>false</default>
+        <label>SP Exp.Special Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YESF</fullName>
+        <default>false</default>
+        <label>SP Exp. Sales Policy</label>
+    </customValue>
+    <customValue>
+        <fullName>YESN</fullName>
+        <default>false</default>
+        <label>SP Exp.Spe Net Price</label>
+    </customValue>
+    <customValue>
+        <fullName>YESO</fullName>
+        <default>false</default>
+        <label>SP Export SO</label>
+    </customValue>
+    <customValue>
+        <fullName>YESP</fullName>
+        <default>false</default>
+        <label>SP Exp.Special Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YFCM</fullName>
+        <default>false</default>
+        <label>SP Exp CR</label>
+    </customValue>
+    <customValue>
+        <fullName>YFCO</fullName>
+        <default>false</default>
+        <label>SP Exp SVC Claim</label>
+    </customValue>
+    <customValue>
+        <fullName>YFCX</fullName>
+        <default>false</default>
+        <label>SP Exp Currency Loss</label>
+    </customValue>
+    <customValue>
+        <fullName>YFDM</fullName>
+        <default>false</default>
+        <label>SP Exp DR</label>
+    </customValue>
+    <customValue>
+        <fullName>YFDX</fullName>
+        <default>false</default>
+        <label>SP Exp Currency Gain</label>
+    </customValue>
+    <customValue>
+        <fullName>YFEO</fullName>
+        <default>false</default>
+        <label>SP Exp EO</label>
+    </customValue>
+    <customValue>
+        <fullName>YFFC</fullName>
+        <default>false</default>
+        <label>SP Exp Free of Chrg</label>
+    </customValue>
+    <customValue>
+        <fullName>YFMO</fullName>
+        <default>false</default>
+        <label>SP Exp MO</label>
+    </customValue>
+    <customValue>
+        <fullName>YFNP</fullName>
+        <default>false</default>
+        <label>SP Exp Non Mov Pro</label>
+    </customValue>
+    <customValue>
+        <fullName>YFRF</fullName>
+        <default>false</default>
+        <label>SP Exp FOC Ret</label>
+    </customValue>
+    <customValue>
+        <fullName>YFSO</fullName>
+        <default>false</default>
+        <label>SP Exp SO</label>
+    </customValue>
+    <customValue>
+        <fullName>YFST</fullName>
+        <default>false</default>
+        <label>Stock transfer BR</label>
+    </customValue>
+    <customValue>
+        <fullName>YLDM</fullName>
+        <default>false</default>
+        <label>SP Loc.DB.Memo.Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YLEO</fullName>
+        <default>false</default>
+        <label>SP Local export EO</label>
+    </customValue>
+    <customValue>
+        <fullName>YLMC</fullName>
+        <default>false</default>
+        <label>SP Loc.Milit.Cntrct.</label>
+    </customValue>
+    <customValue>
+        <fullName>YLMO</fullName>
+        <default>false</default>
+        <label>SP Local Export MO</label>
+    </customValue>
+    <customValue>
+        <fullName>YLMR</fullName>
+        <default>false</default>
+        <label>SP Loc.Mil.Rel.Ord</label>
+    </customValue>
+    <customValue>
+        <fullName>YLSN</fullName>
+        <default>false</default>
+        <label>SP Loc.Spe Net Price</label>
+    </customValue>
+    <customValue>
+        <fullName>YLSO</fullName>
+        <default>false</default>
+        <label>SP Local SO</label>
+    </customValue>
+    <customValue>
+        <fullName>YLSP</fullName>
+        <default>false</default>
+        <label>SP Loc.Special Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YUCA</fullName>
+        <default>false</default>
+        <label>SP Recall</label>
+    </customValue>
+    <customValue>
+        <fullName>YUCM</fullName>
+        <default>false</default>
+        <label>SP Credit Memo Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YUCO</fullName>
+        <default>false</default>
+        <label>SP SVC.Claim(EU)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUDM</fullName>
+        <default>false</default>
+        <label>SP Debit Memo Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>YUEO</fullName>
+        <default>false</default>
+        <label>SP Emergency Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YUFC</fullName>
+        <default>false</default>
+        <label>SP Free of Chrg.</label>
+    </customValue>
+    <customValue>
+        <fullName>YUIP</fullName>
+        <default>false</default>
+        <label>SP IPSO</label>
+    </customValue>
+    <customValue>
+        <fullName>YUKA</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Pick-up(YUKA)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUKB</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Fill-up(YUKB)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUKE</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Issue(YUKE)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUKR</fullName>
+        <default>false</default>
+        <label>SP Cnsgnmnt. Return(YUKR)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUMO</fullName>
+        <default>false</default>
+        <label>SP Mach. Down Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YURC</fullName>
+        <default>false</default>
+        <label>SP Claim Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YURF</fullName>
+        <default>false</default>
+        <label>SP FOC Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YURO</fullName>
+        <default>false</default>
+        <label>SP Return.Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YURS</fullName>
+        <default>false</default>
+        <label>SP Special Ret.</label>
+    </customValue>
+    <customValue>
+        <fullName>YUSC</fullName>
+        <default>false</default>
+        <label>SP Special fr Cost</label>
+    </customValue>
+    <customValue>
+        <fullName>YUSN</fullName>
+        <default>false</default>
+        <label>SP Special Order(YUSN)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUSO</fullName>
+        <default>false</default>
+        <label>SP Stock Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YUSP</fullName>
+        <default>false</default>
+        <label>SP Special Order(YUSP)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUTE</fullName>
+        <default>false</default>
+        <label>SP BG Transfer (EM)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUTO</fullName>
+        <default>false</default>
+        <label>SP BG Transfer(YUTO)</label>
+    </customValue>
+    <customValue>
+        <fullName>YUUS</fullName>
+        <default>false</default>
+        <label>SP Rush Order</label>
+    </customValue>
+    <customValue>
+        <fullName>YXCM</fullName>
+        <default>false</default>
+        <label>SP Exp.CR.Memo.Req.(YXCM)</label>
+    </customValue>
+    <customValue>
+        <fullName>YXDM</fullName>
+        <default>false</default>
+        <label>SP Exp.DB.Memo.Req.(YXDM)</label>
+    </customValue>
+    <customValue>
+        <fullName>YXFC</fullName>
+        <default>false</default>
+        <label>SP Exp.Free of Chrg.(YXFC)</label>
+    </customValue>
+    <customValue>
+        <fullName>YXRC</fullName>
+        <default>false</default>
+        <label>SP Exp.Claim Ret.(YXRC)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZAT</fullName>
+        <default>false</default>
+        <label>Asset Transfer - EU</label>
+    </customValue>
+    <customValue>
+        <fullName>ZATP</fullName>
+        <default>false</default>
+        <label>ATP Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBBE</fullName>
+        <default>false</default>
+        <label>Back-to-back Ord BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBCD</fullName>
+        <default>false</default>
+        <label>Credit Memo Req. BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBCE</fullName>
+        <default>false</default>
+        <label>Exp. Credit Memo BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBCZ</fullName>
+        <default>false</default>
+        <label>Exp.Exchng.Loss BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBD</fullName>
+        <default>false</default>
+        <label>Domestic Order BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBDD</fullName>
+        <default>false</default>
+        <label>Debit Memo Req. BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBDE</fullName>
+        <default>false</default>
+        <label>Exp. Debit Memo BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBDY</fullName>
+        <default>false</default>
+        <label>Other Sales BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBDZ</fullName>
+        <default>false</default>
+        <label>Exp.Exchng.Gain BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBE</fullName>
+        <default>false</default>
+        <label>Export Order BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBRC</fullName>
+        <default>false</default>
+        <label>Returns Cust. NF BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBRO</fullName>
+        <default>false</default>
+        <label>Returns Own NF BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBRP</fullName>
+        <default>false</default>
+        <label>Rtn.Tri-Ship-Cust NF</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBRS</fullName>
+        <default>false</default>
+        <label>Rtn.Tri-Ship-Own NF</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBRY</fullName>
+        <default>false</default>
+        <label>Rtn.Tri-Sold-cust BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBRZ</fullName>
+        <default>false</default>
+        <label>Rtn.Tri-Sold-own BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBS</fullName>
+        <default>false</default>
+        <label>Service Sales BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBSD</fullName>
+        <default>false</default>
+        <label>Dom. Service Sales</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBSE</fullName>
+        <default>false</default>
+        <label>Exp. Service Sales</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBSY</fullName>
+        <default>false</default>
+        <label>Subcontract Sales BR</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBTP</fullName>
+        <default>false</default>
+        <label>Triangle - Sold-to</label>
+    </customValue>
+    <customValue>
+        <fullName>ZBTS</fullName>
+        <default>false</default>
+        <label>Triangle - Ship-to</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCF</fullName>
+        <default>false</default>
+        <label>Consignment Fill-up</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCFD</fullName>
+        <default>false</default>
+        <label>CKD Free of Charge</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCFE</fullName>
+        <default>false</default>
+        <label>Consign.Fill-up EX</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCFK</fullName>
+        <default>false</default>
+        <label>Consign.Fill-up CKD</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCI</fullName>
+        <default>false</default>
+        <label>Consignment Issue</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCIK</fullName>
+        <default>false</default>
+        <label>ConsignmentIssue CKD</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCKA</fullName>
+        <default>false</default>
+        <label>CKD Order (DIEU)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCKD</fullName>
+        <default>false</default>
+        <label>CKD Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCKE</fullName>
+        <default>false</default>
+        <label>CKD Order-Exp.Team</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCLM</fullName>
+        <default>false</default>
+        <label>CKD CLAIM</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCM</fullName>
+        <default>false</default>
+        <label>Credit Memo Request</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCMA</fullName>
+        <default>false</default>
+        <label>Credit Memo - EU</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCMC</fullName>
+        <default>false</default>
+        <label>CR Memo Req. (CMPT)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCMS</fullName>
+        <default>false</default>
+        <label>C.M-Wrty svc(DIA-MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCO</fullName>
+        <default>false</default>
+        <label>Customer Order(test)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCOB</fullName>
+        <default>false</default>
+        <label>DIA-Commission sales</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCP</fullName>
+        <default>false</default>
+        <label>Consignment Pick-up</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCRE</fullName>
+        <default>false</default>
+        <label>Consignment Returns</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCRI</fullName>
+        <default>false</default>
+        <label>Credit Memo for DICC</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCRK</fullName>
+        <default>false</default>
+        <label>Credit Memo for CKD</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCRM</fullName>
+        <default>false</default>
+        <label>CR.Memo.Req. for ME</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCS</fullName>
+        <default>false</default>
+        <label>Customer Service</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCSM</fullName>
+        <default>false</default>
+        <label>CS Credit Memo Req.</label>
+    </customValue>
+    <customValue>
+        <fullName>ZCSQ</fullName>
+        <default>false</default>
+        <label>CS Quotation(ZCSQ)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDCM</fullName>
+        <default>false</default>
+        <label>CR.Memo.for ME(test)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDCO</fullName>
+        <default>false</default>
+        <label>Special Ship&apos;g[DOM]</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDDL</fullName>
+        <default>false</default>
+        <label>Sched.Ag.for STO(ZDDL)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDL</fullName>
+        <default>false</default>
+        <label>Order Type Sched.Ag.(ZDL)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDM</fullName>
+        <default>false</default>
+        <label>Debit Memo Request</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDMA</fullName>
+        <default>false</default>
+        <label>Debit Memo - EU</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDMC</fullName>
+        <default>false</default>
+        <label>DB Memo Req. (CMPT)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDO</fullName>
+        <default>false</default>
+        <label>Domestic Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDOA</fullName>
+        <default>false</default>
+        <label>Domestic Order-EU</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDOB</fullName>
+        <default>false</default>
+        <label>Dom.Order_For Dealer</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDOC</fullName>
+        <default>false</default>
+        <label>Domestic Order_CE</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDOM</fullName>
+        <default>false</default>
+        <label>Domestic Order_ME</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDOS</fullName>
+        <default>false</default>
+        <label>Dom Ord_ME (PS Part)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDOT</fullName>
+        <default>false</default>
+        <label>OPTN Simulation_DOM</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDP</fullName>
+        <default>false</default>
+        <label>DICC Proposal Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDRI</fullName>
+        <default>false</default>
+        <label>PaymtTransfer(DICC)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDRK</fullName>
+        <default>false</default>
+        <label>Debit Memo for CKD</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDRM</fullName>
+        <default>false</default>
+        <label>DR.Memo.Req. for ME</label>
+    </customValue>
+    <customValue>
+        <fullName>ZDSM</fullName>
+        <default>false</default>
+        <label>S. Motor_ME</label>
+    </customValue>
+    <customValue>
+        <fullName>ZECO</fullName>
+        <default>false</default>
+        <label>Special Ship&apos;g[EXM]</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEDL</fullName>
+        <default>false</default>
+        <label>Sched.Ag.for STO(ZEDL)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEFD</fullName>
+        <default>false</default>
+        <label>Ex. Free of Charge</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEOT</fullName>
+        <default>false</default>
+        <label>OPTN Simulation_EXM</label>
+    </customValue>
+    <customValue>
+        <fullName>ZESM</fullName>
+        <default>false</default>
+        <label>Export Sub-Con SO_ME</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEUL</fullName>
+        <default>false</default>
+        <label>Sched.Ag.for EU STO</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEX</fullName>
+        <default>false</default>
+        <label>Export Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEXA</fullName>
+        <default>false</default>
+        <label>Export Order-EU</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEXB</fullName>
+        <default>false</default>
+        <label>Exp.Order_DI(CE)A</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEXD</fullName>
+        <default>false</default>
+        <label>Compact Trdng Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZEXM</fullName>
+        <default>false</default>
+        <label>Export Order_ME</label>
+    </customValue>
+    <customValue>
+        <fullName>ZFDR</fullName>
+        <default>false</default>
+        <label>FOC Against FOR RT</label>
+    </customValue>
+    <customValue>
+        <fullName>ZIN</fullName>
+        <default>false</default>
+        <label>Inquiry</label>
+    </customValue>
+    <customValue>
+        <fullName>ZINM</fullName>
+        <default>false</default>
+        <label>Inquiry_IPDF Normal</label>
+    </customValue>
+    <customValue>
+        <fullName>ZIPA</fullName>
+        <default>false</default>
+        <label>Inquiry_PS-A</label>
+    </customValue>
+    <customValue>
+        <fullName>ZIPS</fullName>
+        <default>false</default>
+        <label>Inquiry_IPDF PS</label>
+    </customValue>
+    <customValue>
+        <fullName>ZISQ</fullName>
+        <default>false</default>
+        <label>Inquiry_IPDF SQ</label>
+    </customValue>
+    <customValue>
+        <fullName>ZMV</fullName>
+        <default>false</default>
+        <label>Rental Contract-NA</label>
+    </customValue>
+    <customValue>
+        <fullName>ZOH</fullName>
+        <default>false</default>
+        <label>Overhaul Sales Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZOR1</fullName>
+        <default>false</default>
+        <label>FL Unfinish&apos;d Goods</label>
+    </customValue>
+    <customValue>
+        <fullName>ZOR2</fullName>
+        <default>false</default>
+        <label>Plan Dom. Order_FL</label>
+    </customValue>
+    <customValue>
+        <fullName>ZOR3</fullName>
+        <default>false</default>
+        <label>Ass&apos;t Transf._FL</label>
+    </customValue>
+    <customValue>
+        <fullName>ZPM</fullName>
+        <default>false</default>
+        <label>Promotion Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZPO</fullName>
+        <default>false</default>
+        <label>Customer PO</label>
+    </customValue>
+    <customValue>
+        <fullName>ZPOC</fullName>
+        <default>false</default>
+        <label>DISC Customer PO</label>
+    </customValue>
+    <customValue>
+        <fullName>ZPS</fullName>
+        <default>false</default>
+        <label>Customer PO (PS)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZPSA</fullName>
+        <default>false</default>
+        <label>PS Order - A Code</label>
+    </customValue>
+    <customValue>
+        <fullName>ZQPA</fullName>
+        <default>false</default>
+        <label>PS Quotation-A</label>
+    </customValue>
+    <customValue>
+        <fullName>ZQPS</fullName>
+        <default>false</default>
+        <label>PS Quotation-M</label>
+    </customValue>
+    <customValue>
+        <fullName>ZQSM</fullName>
+        <default>false</default>
+        <label>Spec. Management</label>
+    </customValue>
+    <customValue>
+        <fullName>ZQSQ</fullName>
+        <default>false</default>
+        <label>Special Quotation</label>
+    </customValue>
+    <customValue>
+        <fullName>ZQT</fullName>
+        <default>false</default>
+        <label>Quotation</label>
+    </customValue>
+    <customValue>
+        <fullName>ZQTM</fullName>
+        <default>false</default>
+        <label>IPDF_Quotation</label>
+    </customValue>
+    <customValue>
+        <fullName>ZRE</fullName>
+        <default>false</default>
+        <label>Returns</label>
+    </customValue>
+    <customValue>
+        <fullName>ZREA</fullName>
+        <default>false</default>
+        <label>Returns-EU</label>
+    </customValue>
+    <customValue>
+        <fullName>ZREB</fullName>
+        <default>false</default>
+        <label>Returns DISD/DISC</label>
+    </customValue>
+    <customValue>
+        <fullName>ZREC</fullName>
+        <default>false</default>
+        <label>Returns-EU (No Ref)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZRED</fullName>
+        <default>false</default>
+        <label>Returns (No Ref)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZREK</fullName>
+        <default>false</default>
+        <label>Returns for CKD</label>
+    </customValue>
+    <customValue>
+        <fullName>ZRES</fullName>
+        <default>false</default>
+        <label>Returns Sales Adjust</label>
+    </customValue>
+    <customValue>
+        <fullName>ZRFD</fullName>
+        <default>false</default>
+        <label>FOC RT for Replace</label>
+    </customValue>
+    <customValue>
+        <fullName>ZRT</fullName>
+        <default>false</default>
+        <label>Royalty Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSIM</fullName>
+        <default>false</default>
+        <label>Costing Simulation</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSM</fullName>
+        <default>false</default>
+        <label>Operating Exp. Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSQ</fullName>
+        <default>false</default>
+        <label>Customer SQ PO</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSQD</fullName>
+        <default>false</default>
+        <label>SQ Order_Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSQE</fullName>
+        <default>false</default>
+        <label>SQ Order_Export</label>
+    </customValue>
+    <customValue>
+        <fullName>ZST</fullName>
+        <default>false</default>
+        <label>Stock Res.Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSTA</fullName>
+        <default>false</default>
+        <label>Stock Res.Order_CBT</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSTB</fullName>
+        <default>false</default>
+        <label>Stock Res.S/O</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSVA</fullName>
+        <default>false</default>
+        <label>Service Revenue</label>
+    </customValue>
+    <customValue>
+        <fullName>ZSVP</fullName>
+        <default>false</default>
+        <label>Template Order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZTE</fullName>
+        <default>false</default>
+        <label>Cross com. order</label>
+    </customValue>
+    <customValue>
+        <fullName>ZTST</fullName>
+        <default>false</default>
+        <label>Export Order(test)</label>
+    </customValue>
+    <customValue>
+        <fullName>ZUSO</fullName>
+        <default>false</default>
+        <label>MT Option only</label>
+    </customValue>
+    <customValue>
+        <fullName>ZWAA</fullName>
+        <default>false</default>
+        <label>Compact  Warranty</label>
+    </customValue>
+    <masterLabel>Order Type</masterLabel>
+    <sorted>true</sorted>
+</GlobalValueSet>

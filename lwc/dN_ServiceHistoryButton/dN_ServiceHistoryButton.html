@@ -1,0 +1,76 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 2025-01-24
+  @last modified by  : suheon.ha@sobetec.com
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   01-09-2025   Hyerin Ro   Initial Version
+-->
+<template>
+    <div class="total-wrap">
+        <div class="body">
+            <template if:true={isLoading}>
+                <div>
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+            <ul>
+                <template for:each={searchData} for:item="data">
+                    <li key={data.index}>
+                        <div class="row">
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_C_OrderNumber}: </span>
+                                <p>{data.orderNumber}</p>
+                            </div>
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_FSL_ServiceType}: </span>
+                                <p>{data.ticketType_M}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_C_Model}: </span>
+                                <p>{data.model}</p>
+                            </div>
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_FSL_Equipment}: </span>
+                                <p>{data.equipment}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_C_DateOfReceipt}: </span>
+                                <p>{data.receptionDate}</p>
+                            </div>
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_FSL_RequestDate}: </span>
+                                <p>{data.requiredDate}</p>
+                            </div>
+                        </div>
+                        <div class="row more">
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_FSL_ReceptionDetail}: </span>
+                                <p class="value">{data.receptionDetail}</p>
+                            </div>
+                            <div class="button-wrap">
+                                <lightning-button label={cLabel.DNS_FSL_ViewDetail} title="상세보기" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                            </div>
+                        </div>
+                        <div class="row more">
+                            <div class="field">
+                                <span class="label">{cLabel.DNS_FSL_RepairDetail}: </span>
+                                <p class="value">{data.repairDetail}</p>
+                            </div>
+                            <div class="button-wrap">
+                                <lightning-button label={cLabel.DNS_FSL_ViewDetail} title="상세보기" onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+                            </div>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+        </div>
+    </div>
+
+</template>

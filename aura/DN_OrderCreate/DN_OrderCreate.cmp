@@ -1,0 +1,783 @@
+<!--
+  @description       : 포탈 부품 - 오더 생성
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-15
+  @last modified by  : KyongyunJung@dkbmc.com
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   10-25-2024   yoiujin shim   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_PortalPartOrderCreateController" 
+    access="global" 
+    description="오더생성">
+    
+    
+
+    <!-- navigation -->
+    <lightning:navigation aura:id="navOrderInquiry"/> <!--오더조회 페이지로 이동-->
+
+    <!--Attribute-->
+    <aura:attribute name="isLoading"        type="Boolean" default="false" /> <!--로딩-->
+    <aura:attribute name="isPirce"          type="Boolean" default="false" /> <!--가격정보 모달 오픈-->
+    <aura:attribute name="isError"          type="Boolean" default="false" /> <!--에러보고서 모달 오픈-->
+    <aura:attribute name="isTest"           type="Boolean" default="false" /> <!--인터페이스 테스트-->
+        
+    <aura:attribute name="infoChangeModal"  type="Boolean" default="false" /> <!--정보변경 모달-->
+    <aura:attribute name="costInfoModal"    type="Boolean" default="false" /> <!--가격정보 모달-->
+    <aura:attribute name="excelUploadModal" type="Boolean" default="false" /> <!--엑셀 업로드 모달-->
+    <aura:attribute name="isGPESModal"      type="Boolean" default="false" /> <!--GPES 모달-->
+    <aura:attribute name="errorReportModal" type="Boolean" default="false" /> <!--에러보고서 모달-->
+    
+    <aura:attribute name="isBTN"            type="Boolean" default="true" description="중복생성 방지 기능" /> 
+    <aura:attribute name="isYDEO"           type="Boolean" default="false" description="유형 긴급도 확인" />
+    <aura:attribute name="isSave"           type="Boolean" default="false" description="저장 전 시뮬레이션 작동 확인" />
+    <aura:attribute name="isInit"           type="Boolean" default="true" description="엑셀 초기화 용" />
+    <aura:attribute name="isExcel"          type="Boolean" default="false" description="엑셀 작동시만 true" />
+
+    <aura:attribute name="dealerInfo"       type="Object" /> <!--접속자 정보-->
+    <aura:attribute name="poName"           type="List" />
+    <aura:attribute name="qtyArray"         type="List" />
+
+    <!-- GPES 관련 속성 -->
+    <aura:attribute name="apexPageURL"      type="String" default="" /> <!--GPES Apex Page Url-->
+    <aura:attribute name="receivedData"     type="List" /> <!--GEPS 에서 선택한 부품의 정보(품번, qty(수량), lotSize(단위), salesPrice(단가))-->
+    <aura:attribute name="selectPartsNo"    type="List" /> <!--GPES 에서 선택한 부품의 번호(들)-->
+    <aura:attribute name="confirmParts"     type="List" /> <!--GPES 와 Product2 일치 확인된 부품-->
+
+    <aura:attribute name="partListLength"   type="String" />
+    <aura:attribute name="partsList"        type="List" /> <!--선택한 부품 레코드-->
+    <aura:attribute name="initsList"        type="List" description="엑셀 초기화용" />
+    <aura:attribute name="partsInfo"        type="List" /> 
+    <aura:attribute name="isSearched"       type="Boolean" default="false" />
+    <aura:attribute name="orderItems"       type="List" default="[]" /> <!--오더조회 테이블-->
+    <aura:attribute name="orderTypeList"    type="List" /> <!--주문 유형 Picklist-->
+    <aura:attribute name="options"          type="List" default="[
+                                                                    {'label': 'Yes', 'value': 'Yes'},
+                                                                    {'label': 'No' , 'value': 'No'}
+                                                                ]" /> <!--일괄배송여부-->
+
+    <aura:attribute name="shipInfo"         type="List" /> <!--배송정보 List-->
+    <aura:attribute name="costInfo"         type="Object"/> <!--가격정보 모달 값--> 
+
+    <!-- 히든 속성 -->
+    <aura:attribute name="buyerInfo"        type="Object" /> <!--부품 구매한 고객사-->
+    <aura:attribute name="managerInfo"      type="Object" />
+    <aura:attribute name="machineInfo"      type="Object" />
+    <aura:attribute name="machineRowNo"     type="Object" />
+    <aura:attribute name="newPartOrderNo"   type="String" />
+    <aura:attribute name="today"            type="String" />
+    <aura:attribute name="checkList"        type="List" default="[]" description="삭제할 row 모음" />
+
+    <!-- 사용자 입력 카드 01 -->
+    <aura:attribute name="orderType"            type="String" default="YDOR" /> <!--주문 유형-->
+    <aura:attribute name="customerOrderNo"      type="String" /> <!--고객주문번호-->
+    <aura:attribute name="consolidatedShipping" type="String" default="No" /> <!--일괄배송여부-->
+    <aura:attribute name="shippingLocation"     type="Object" /> <!--배송처-->
+    <aura:attribute name="inputShipTo"          type="String" /> <!--배송처-->
+
+    <!-- 사용자 입력 카드 02 = 배송정보 -->
+    <aura:attribute name="shippingInfo"           type="Object" /> <!--배송정보 obj-->
+
+    <!-- 시뮬레이션을 통한 가격 정보 -->
+    <aura:attribute name="credit"     type="String" />
+    <aura:attribute name="creditCurr" type="String" />
+    <aura:attribute name="tAmount"    type="String" />
+    <aura:attribute name="currency"   type="String" />
+
+    <aura:attribute name="totalAmount" type="Integer" />
+    <aura:attribute name="totalCredit" type="Integer" />
+
+    <aura:attribute name="priceData"  type="List" default="[]" description="시뮬레이션을 작동해야 값이 들어 옵니다." />
+
+    <aura:attribute name="errorList"  type="List" default="[]" description="에러 보고서 내용" />
+    <aura:attribute name="errorCount" type="Integer" default="0"/> <!--에러보고서 갯수--> 
+
+    <!-- parts Purchase List -->
+    <aura:attribute name="selectedPartsIndex"   type="Integer" />
+    <aura:attribute name="isDisabled"           type="Boolean" default="false" />
+    <!-- <aura:attribute name="selectedProducts"   type="List" default="false" /> -->
+
+    <!-- 버튼 - 엑셀 -->
+    <aura:attribute name="excelData" type="List" />
+    <aura:attribute name="columns" type="List" />
+    <aura:attribute name="fileName" type="String" />
+
+    <!-- Simulation -->
+    <aura:attribute name="oDKey" type="String" />
+    <aura:attribute name="simulstatus" type="String" />
+    <aura:attribute name="showCustomToast" type="Boolean" default="false"/>
+
+    <aura:html tag="style">.toastMessage.forceActionsText{white-space : pre-line !important;}</aura:html>
+    <!-- Event -->
+    <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+    <!-- Excel JS & Sheet JS -->
+    <ltng:require
+        scripts="{!join(',', $Resource.ExcelTest1 + '/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}" />
+
+
+
+    <!--handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <!--DNS2차CRM프로젝트 추가사항-->
+    <aura:attribute name="isDNSA"        type="Boolean" default="false" /> <!--해외법인용-->  
+    <aura:attribute name="declaredValue" type="String" default="No" /> <!--declared Value-->
+    <aura:attribute name="dOptions"      type="List" default="[{'label': 'Yes', 'value': 'Yes'}
+                                                              ,{'label': 'No' , 'value': 'No'}]" /> <!--declared Value-->
+
+    <article class="slds-card">
+        <!--modal-->
+        <div aura:id="AgencyCustomerShipToModal" /> <!--배송처 모달-->
+        <div aura:id="SearchProductNumber" /> <!--부품 모달-->
+        <div aura:id="ModelSearchModal" /> <!--기종/장비번호 모달-->
+
+        <!-- 🚩Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- 📌 Header -->
+        <header class="header">
+            <div class="title">
+                <lightning:icon iconName="standard:orders" size="small" alternativeText="오더생성" />
+                <h2>{!$Label.c.ORC_NewOrder}</h2> <!--오더생성-->
+            </div>
+
+            <!-- button -->
+            <div class="button-wrap">
+                <lightning:button name="save" label="{!$Label.c.DNS_B_Save}" onclick="{!c.doSave}" variant="brand" disabled="{!v.isBTN}" 
+                    iconName="utility:check" /><!--저장-->
+                <lightning:button name="back" label="Back" onclick="{!c.backPage}" variant="brand-outline"
+                    iconName="utility:back" />
+            </div>
+        </header>
+
+        <!-- 📌 Body -->
+        <div class="body">
+
+            <!-- Card-01 -->
+            <div class="{! v.isDNSA ? 'card-01A top-card' : 'card-01 top-card' }">
+                <div class="field-wrap">
+                    <p>{!$Label.c.DNS_C_OrderType}<abbr class="slds-required" title="required">*</abbr></p>  <!-- 주문유형 -->
+                    <div class="input-wrap">
+                        <lightning:combobox name="orderType" value="{!v.orderType}" variant="label-hidden"
+                            options="{!v.orderTypeList}" required="true" onchange="{!c.orderTypeChange}" disabled="{!c.isDNSA}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.RC_CustomerOrderNumber}<abbr class="slds-required" title="required">*</abbr></p>  <!-- 고객주문번호 -->
+                    <div class="input-wrap">
+                        <lightning:input name="customerOrderNo" aura:id="customerOrderNoId" variant="label-hidden"
+                            required="true" value="{!v.customerOrderNo}" onchange="{!c.commonTypeChange}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.ORC_ConsolidatedShipping}<abbr class="slds-required" title="required">*</abbr></p>  <!-- 일괄배송여부 -->
+                    <div class="input-wrap">
+                        <lightning:radioGroup name="consolidatedShipping" variant="label-hidden" aura:id="batchDelivery"
+                            options="{! v.options }" required="true" value="{! v.consolidatedShipping }"
+                            onchange="{!c.commonTypeChange}" />
+                    </div>
+                </div>
+                <!--DNSA 추가 요청사항 -->
+                <aura:if isTrue="{!v.isDNSA}">
+                    <div class="field-wrap">
+                        <p>Declared Value</p>  <!--신고가격표시여부? -->
+                        <div class="input-wrap">
+                            <lightning:radioGroup name="declaredValue" variant="label-hidden" aura:id="declaredValue"
+                                options="{! v.dOptions }" required="true" value="{! v.declaredValue }"
+                                onchange="{!c.commonTypeChange}" />
+                        </div>
+                    </div>                        
+                </aura:if>
+                
+                
+                <div class="field-wrap ">
+                    <p>{!$Label.c.ORC_ShippingAddress}<abbr class="slds-required" title="required">*</abbr></p>  <!-- 배송처 -->
+                    <div class="input-wrap address">
+                        <lightning:input value="{!v.inputShipTo}" type="text" variant="label-hidden" required="true"
+                            class="readonly-input" readonly="true" disabled="true" aura:id="inputShipToId" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openCustomerShipTo}" />
+                    </div>
+                </div>
+                
+            </div>
+
+            <!-- Card 02 -->
+            <div class="card-02 top-card">
+                <div class="card-header">
+                    <h2>{!$Label.c.ORC_ShippingInformation}<abbr class="slds-required" title="required">*</abbr></h2>  <!-- 배송정보 -->
+                    <div class="button-wrap">
+                        <lightning:button name="{!$Label.c.ORC_ChangeInformation}" label="{!$Label.c.ORC_ChangeInformation}" onclick="{!c.openInfoChangeModal}" 
+                            iconName="utility:search" /><!-- 정보변경-->
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>{!$Label.c.ORC_ShippingTerms}</th>   <!-- 선적조건 -->
+                                <th>{!$Label.c.ORC_PaymentTerms}</th>   <!-- 지급조건 --> 
+                                <th>{!$Label.c.ORC_TransportationCondition}1</th>  <!-- 운송조건1 -->
+                                <th>{!$Label.c.ORC_TransportationCondition}2</th>  <!-- 운송조건2 -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td class="center">{!v.shippingInfo.shippingTerm}</td> 
+                            <td class="center">{!v.shippingInfo.paymentTerm}</td>
+                            <td class="center">{!v.shippingInfo.transportationTermOne}</td>
+                            <td class="center">{!v.shippingInfo.transportationTermTwo}</td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- card-03 -->
+            <div class="card-03 top-card">
+                <div class="card-header">
+                    <div class="header-wrap">
+                        <h2>Parts List</h2>  <!-- 총액 -> 총 / 여신 -->
+                        <p>({!$Label.c.DNS_M_Total}: {!v.tAmount}&nbsp;{!v.currency} | {!$Label.c.ORC_Credit}: {!v.credit}&nbsp;{!v.creditCurr})</p>  <!-- 총액 | 여신-->
+                    </div>
+
+                    <div class="button-wrap">
+                        <lightning:button iconName="utility:ad_set" name="searchItems" label="GPES"
+                        onclick="{!c.openGPES}" /> 
+                        <lightning:button iconName="utility:add" name="searchItems" label="{!$Label.c.DNS_FSL_Add}"
+                            onclick="{!c.bulkAddPartsProduct}" />  <!-- 추가 -->
+                        <lightning:button iconName="utility:delete" name="searchItems" label="{!$Label.c.DNS_M_Delete}"
+                            onclick="{!c.deleteRow}" />  <!-- 삭제 -->
+                        <lightning:button iconName="utility:refresh" name="searchItems" label="Simulation"
+                            onclick="{!c.doSimulation}" /> 
+                        <div>
+                            <lightning:button iconName="utility:upload" name="searchItems" label="{!$Label.c.MPI_Upload}" 
+                                onclick="{!c.openUploadExcel}" />  <!-- 업로드 -->
+                            <!-- 엑셀 업로드 -->
+                            <aura:if isTrue="{!v.excelUploadModal}">
+                                <div aura:id="excelModal" class="slds-modal pop-up-modal slds-fade-in-open excelModal">
+                                    <div class="slds-modal__container slds-modal_large">
+                                        <!-- Header -->
+                                        <header class="slds-modal__header">
+                                            <h2 class="slds-text-heading_medium">{!$Label.c.MPI_ExcelUpload}</h2>  <!-- 엑셀 업로드 -->
+                                            <!-- Close Button -->
+                                            <button class="close_button_template slds-modal__close">
+                                                <lightning:icon iconName='utility:close' alternativeText='close'
+                                                    variant='inverse' size='small' title='close' name="closeModal"
+                                                    onclick="{!c.closeUploadExcel}"></lightning:icon>
+                                            </button>
+                                        </header>
+                                        <div class="modal-body slds-modal__content slds-p-around_medium">
+                                            <div class="txt-box">
+                                                <c:DN_DealerPortalExcelUploadTemplate buttonLabel="{!$Label.c.MPI_ExcelTemplateDown}" uploadName="PartsOrderCreateExcelUploadTemplate" />  <!-- 업로드 양식 다운로드 -->
+                                                <p>* Upload file form</p>
+                                                <p>- Use header information.</p>
+                                                <p>- {!$Label.c.ORC_MSG_1}</p> <!-- 주문품번과 주문수량은 필수 입력 값 입니다. -->
+                                            </div>
+                                            <div class="card-01 top-card">
+                                                <lightning:input type="file" label="Upload Excel File"
+                                                    onchange="{!c.uploadExcel}" accept=".xlsx, .xls" />
+                                            </div>
+                                        </div>
+                                        <footer class="slds-modal__footer">
+                                            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                                                onclick="{!c.closeUploadExcel}" />
+                                        </footer>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </div>
+                        <lightning:button iconName="utility:download" name="searchItems" label="Download"
+                            onclick="{!c.downloadExcel}" />
+                        <div class="errorReport">
+                            <aura:if isTrue="{!v.isError}">
+                                <lightning:button iconName="utility:multi_picklist" name="searchItems" label="{!$Label.c.ORC_ErrorReport+'(' + v.errorCount + ')'}" onclick="{!c.openErrorReport}" />  <!-- 에러 보고서 --> 
+                                <aura:set attribute="else">
+                                    <lightning:button iconName="utility:multi_picklist" name="searchItems" label="{!$Label.c.ORC_ErrorReport}" disabled="true" onclick="{!c.openErrorReport}" />         <!-- 에러 보고서 -->                             
+                                </aura:set>
+                            </aura:if>
+                            
+                            <!-- 에러보고서 -->
+                            <aura:if isTrue="{!v.errorReportModal}">
+                                <div aura:id="errorReportModal" class="slds-modal pop-up-modal slds-fade-in-open errorReportModal">
+                                    <div class="slds-modal__container slds-modal_large">
+                                        <!-- Header -->
+                                        <header class="slds-modal__header">
+                                            <h2 class="slds-text-heading_medium">{!$Label.c.ORC_ErrorReport}</h2>  <!-- 에러 보고서 -->
+                                            <!-- Close Button -->
+                                            <button class="close_button_template slds-modal__close">
+                                                <lightning:icon iconName='utility:close' alternativeText='close'
+                                                    variant='inverse' size='small' title='close' name="closeModal"
+                                                    onclick="{!c.closeErrorReport}"></lightning:icon>
+                                            </button>
+                                        </header>
+                                        <div class="modal-body slds-modal__content slds-p-around_medium">
+                                            <div class="card-01 top-card">
+                                                <div class="table-wrap">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>{!$Label.c.service_lbl_part_no}</th>    <!-- 부품번호 -->
+                                                                <th>{!$Label.c.ORC_Duplication}</th>       <!-- 중복 -->
+                                                                <th>Wrong Item</th> 
+                                                                <th>자재없음</th>    <!-- 자재없음 -->
+                                                                <th>{!$Label.c.ORC_ProductGroup}</th>    <!-- 제품군 -->
+                                                                <th>{!$Label.c.DNS_M_Price}</th>         <!-- 가격 -->
+                                                                <th>{!$Label.c.ORC_NonPurchase}</th>     <!-- 비구매 -->
+                                                                <th>{!$Label.c.ORC_NoCode}</th>          <!-- 코드 없음 -->
+                                                                <th>{!$Label.c.DNS_C_Details}</th>       <!-- 내용 -->
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <aura:iteration items="{!v.errorList}" var="er">
+                                                                <tr>
+                                                                    <td>{!er.partName}</td>
+                                                                    <td></td>
+                                                                    <td>{!er.wrongItem}</td>
+                                                                    <td>{!er.noMaterial}</td>
+                                                                    <td>{!er.products}</td>
+                                                                    <td>{!er.price}</td>
+                                                                    <td>{!er.nonPurchased}</td>
+                                                                    <td>{!er.noCode}</td>
+                                                                    <td>{!er.message}</td>
+                                                                </tr>
+                                                            </aura:iteration>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <footer class="slds-modal__footer">
+                                            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                                                onclick="{!c.closeErrorReport}" />
+                                        </footer>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </div>
+                        <div>
+                            <aura:if isTrue="{!v.isPirce}">
+                                <lightning:button iconName="utility:moneybag" name="searchItems" label="{!$Label.c.DNS_T_Pricing}" onclick="{!c.openCostInfoModal}" />  <!-- 가격정보 -->
+                                <aura:set attribute="else">
+                                    <lightning:button iconName="utility:moneybag" name="searchItems" label="{!$Label.c.DNS_T_Pricing}" disabled="true" onclick="" /> 
+                                  </aura:set>
+                            </aura:if>
+
+                            <!-- 가격정보 -->
+                            <aura:if isTrue="{!v.costInfoModal}">
+                                <div aura:id="costInfoModal" class="slds-modal pop-up-modal slds-fade-in-open cost-info-modal">
+                                    <div class="slds-modal__container slds-modal_large">
+
+                                        <!-- Header -->
+                                        <header class="slds-modal__header">
+                                            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_Pricing}</h2>  <!-- 가격정보 -->
+                                            <!-- Close Button -->
+                                            <button class="close_button_template slds-modal__close">
+                                                <lightning:icon iconName='utility:close' alternativeText='close'
+                                                    variant='inverse' size='small' title='close' name="closeModal"
+                                                    onclick="{!c.closeCostInfoModal}"></lightning:icon>
+                                            </button>
+                                        </header>
+                                        <div class="modal-body slds-modal__content slds-p-around_medium">
+                                            <div class="card-01 top-card">
+                                                <table
+                                                    class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                                    <colgroup>
+                                                        <col width="30%" />
+                                                        <col width="20%" />
+                                                        <col width="30%" />
+                                                        <col width="20%" />
+                                                    </colgroup>
+                                                    <tr>
+                                                        <th>Item Total(A)</th>
+                                                        <td>{!v.costInfo.itemTotal}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                        <th>Freight(B)</th>
+                                                        <td>{!v.costInfo.freight}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Insurance(C)</th>
+                                                        <td>{!v.costInfo.insurance}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                        <th>Handling Charge(D)</th>
+                                                        <td>{!v.costInfo.handlingCharge}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Output Tax(E)</th>
+                                                        <td>{!v.costInfo.outputTax}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                        <th>Total Amt(A+B+C+D+E)</th>
+                                                        <td>{!v.costInfo.totalAmt}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Item Total(DNS) (A-F)</th>
+                                                        <td>{!v.costInfo.itemTotalDoosan}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                        <th>Commission Value(F)</th>
+                                                        <td>{!v.costInfo.commissionValue}&nbsp;{!v.costInfo.priceCurrency}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <footer class="slds-modal__footer">
+                                            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                                                onclick="{!c.closeCostInfoModal}" />
+                                        </footer>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- <div>row : {!v.partListLength}</div> -->
+
+                <div class="table-wrap">
+                    <!--Table Left-->
+                    <div class="table-01 left-table" aura:id="leftTableDiv">
+                        <table aria-label="Example table of Opportunities with vertical borders">
+                            <colgroup>
+                                <!-- <col width="1%" /> -->
+                                <col width="1%" />
+                                <col width="8%" />
+                                <col width="55%" />
+                                <col width="35%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <!-- <th scope="col" class="add">
+                                        <div class="input-wrap">
+                                            <lightning:buttonIcon iconName="utility:add" alternativeText="Add"
+                                                title="Add" size="small" onclick="{!c.addPartsProduct}" />
+                                        </div>
+                                    </th> -->
+                                    <th scope="col" class="check-box">
+                                        <lightning:input type="checkbox" aura:id="headerCheckbox"
+                                            onchange="{! c.doCheckAll }" />
+                                    </th>
+                                    <th class="" scope="col">{!$Label.c.DNS_C_Item}</th>     <!-- 항목 -->
+                                    <th class="" scope="col">{!$Label.c.ORC_OrderPartNumber}</th>  <!-- 주문품번 -->
+                                    <th class="" scope="col">{!$Label.c.ORC_SupplyNumber}</th>  <!-- 공급품번 -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+                                    <tr>
+                                        <!-- <td data-label="delete center">
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{!parts.isDisabled}">
+                                                    <lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" disabled="true" value="{!parts.orderPartNo}" aura:id="dashId"
+                                                    title="Dash" size="small" accesskey="{!j}" />
+                                                    <aura:set attribute="else">
+                                                        <lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" value="{!parts.orderPartNo}" aura:id="dashId"
+                                                        title="Dash" size="small" accesskey="{!j}"
+                                                        onclick="{!c.deletePartsProduct}" />    
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </td> -->
+                                        <td class="check-box center">
+                                            <aura:if isTrue="{!parts.isDisabled}">
+                                                <lightning:input type="checkbox" aura:id="checkbox" value="{!parts.orderPartNo}" disabled="true" />
+                                                <aura:set attribute="else">
+                                                    <lightning:input type="checkbox" aura:id="checkbox" value="{!parts.orderPartNo}" accesskey="{!j}" 
+                                                    onchange="{! c.doCheck }" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td data-label="항목" class="center" name="itemNo" aura:id="itemNoId">
+                                            {!parts.hang}</td>
+                                        <td data-label="주문품번">
+                                            <div class="input-wrap order-product-number" title="주문품번">
+                                                    <aura:if isTrue="{!parts.isDisabled}">
+                                                        <lightning:input type="text" name="orderPartNo" variant="label-hidden" 
+                                                        value="{!parts.orderPartNo}" aura:id="partNoId" disabled="true" />
+                                                        <aura:set attribute="else">
+                                                            <div accesskey="{!j}" onkeyup="{!c.handleKeyPress}" tabindex="0" >
+                                                                <lightning:input type="text" name="orderPartNo" variant="label-hidden" 
+                                                                value="{!parts.orderPartNo}" aura:id="partNoId" accesskey="{!j}"
+                                                                onblur="{!c.orderPartsChange}" />
+                                                                <lightning:buttonicon iconName="utility:close" size="medium" 
+                                                                alternativeText="Close Product Number" onclick="{!c.clearOrderPart}" 
+                                                                accesskey="{!j}" name="orderPartNo" class="clear-btn" />                                                            
+                                                                <span
+                                                                    class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                                                                    <lightning:buttonicon iconName="utility:search" size="medium"
+                                                                        alternativeText="Search" onclick="{!c.openSearchProductNumber}"
+                                                                        accesskey="{!j}" />
+                                                                </span>
+                                                            </div>
+                                                        </aura:set>
+                                                    </aura:if>
+                                            </div>
+                                        </td>
+                                        <td data-label="공급품번" title="{!parts.supplyPartNo}">{!parts.supplyPartNo}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!--Table Right-->
+                    <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>{!$Label.c.DNS_C_Item}</th>          <!-- 품명 -->
+                                    <aura:if isTrue="{!v.isDNSA}">
+                                            <!--긴급도 사용안함 -->
+                                    </aura:if>
+                                    <aura:set attribute="else">
+                                        <th>{!$Label.c.DNS_F_Urgency}</th>       <!-- 긴급도 -->
+                                    </aura:set>
+                                    <th style="min-width:7rem;">{!$Label.c.ORC_OrderQuantity}</th>  <!-- 주문수량 -->
+                                    <th>{!$Label.c.ORC_SalesUnit}</th>    <!-- 판매단위 -->
+                                    <th>{!$Label.c.DNS_FSL_Unit}</th>       <!-- 단위 -->
+                                    <th>{!$Label.c.ORC_NetPrice}</th>       <!-- 단가 -->
+                                    <th>{!$Label.c.ORC_ListPrice}</th>       <!-- 금액 -->
+                                    <th>{!$Label.c.DNS_C_Currency}</th>       <!-- 통화 -->
+                                    <aura:if isTrue="{!v.isDNSA}">
+                                        <th>DMTA_WH1</th>   <!--미국_시카고_가용재고-->
+                                    </aura:if>
+                                    <aura:set attribute="else">
+                                        <th>HQ_WH1</th>     <!--창원_가용재고-->
+                                        <th>HQ_WH2</th>     <!--천안_가용재고-->
+                                    </aura:set>
+                                    <!-- <th>가용재고</th> -->
+                                    <th>TWP</th>         
+                                    <th>Bulletin</th>
+                                    <th>Note</th>
+                                    <th>{!$Label.c.DNS_C_Model}</th>        <!-- 기종 -->
+                                    <th>{!$Label.c.DNS_C_Equipment}</th>     <!-- 장비번호 -->   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+                                    <tr>
+                                        <td data-label="품명">{!parts.partName}</td>
+                                        <aura:if isTrue="{!v.isDNSA}">
+                                            <!--긴급도 사용안함 -->
+                                        </aura:if>
+                                        <aura:set attribute="else">
+                                            <td data-label="긴급도" class="center">
+                                                <div class="input-wrap">
+                                                    <lightning:input name="urgency" type="checkbox" variant="label-hidden"
+                                                        checked="{!parts.urgency}" onchange="{!c.urgencyCheck}"
+                                                        accesskey="{!j}" />
+                                                </div>
+                                            </td>
+                                        </aura:set>
+                                        
+                                        <td data-label="주문수량">
+                                            <div class="input-wrap" accesskey="{!j}" onkeyup="{!c.doEnter}">
+                                                <aura:if isTrue="{!parts.isDisabled}">
+                                                    <lightning:input name="quantity" type="text" aura:id="orderQtyId" variant="label-hidden" value="{!parts.quantity}"  accesskey="{!j}" disabled="true" />
+                                                    <aura:set attribute="else">
+                                                        <lightning:input name="quantity" type="text" aura:id="orderQtyId" variant="label-hidden" value="{!parts.quantity}"  accesskey="{!j}" onchange="{!c.orderPartsChange}" />
+                                                    </aura:set>
+                                                </aura:if>
+                                                
+                                            </div>
+                                        </td>
+                                        <td data-label="판매단위">{!parts.salesUnit}</td>
+                                        <td data-label="단위">{!parts.unit}</td>
+                                        <td data-label="단가" style="min-width: 5rem; text-align: right;">{!parts.unitPrice}</td>
+                                        <td data-label="금액">{!parts.partsAmount}</td>
+                                        <td data-label="통화">{!parts.piCurrency}</td>
+                                        <aura:if isTrue="{!v.isDNSA}">
+                                            <td data-label="DMTA_WH1">{!parts.availableStock1}</td> <!--미국시카고-->
+                                        </aura:if>
+                                        <aura:set attribute="else">
+                                            <td data-label="HQ_WH1">{!parts.availableStock1}</td><!--창원가용재고-->
+                                            <td data-label="HQ_WH2">{!parts.availableStock2}</td><!--천안가용재고-->
+                                        </aura:set>
+                                        <!-- <td data-label="가용재고">{!parts.availableStock}</td> -->
+                                        <td data-label="TWP">
+                                            <div class="twp-icon center">
+                                                <aura:if isTrue="{!not(empty(parts.twp))}">
+                                                    <div data-partno="{!parts.orderPartNo}" data-type="twp" onclick="{!c.openGPESInUrl}">
+                                                        <lightning:icon iconName="standard:attach" size="small"/>
+                                                    </div>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                        <td data-label="Bulletin">
+                                            <div class="bulletin-icon center">
+                                                <aura:if isTrue="{!not(empty(parts.bulletin))}">
+                                                    <div data-partno="{!parts.orderPartNo}" data-type="bulletin" onclick="{!c.openGPESInUrl}">
+                                                        <lightning:icon iconName="standard:attach" size="small"/>
+                                                    </div>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                        <td data-label="Note">
+                                            <div class="note-icon center">
+                                                <aura:if isTrue="{!not(empty(parts.note))}">
+                                                    <div data-partno="{!parts.orderPartNo}" data-type="note" onclick="{!c.openGPESInUrl}">
+                                                        <lightning:icon iconName="standard:attach" size="small"/>
+                                                    </div>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                        <td data-label="기종">
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{!parts.isDisabled}">
+                                                    <lightning:input type="text" name="machine" value="{!parts.machine}"
+                                                    variant="label-hidden" readonly="true" disabled="true" accesskey="{!j}"
+                                                    aura:id="machineId" style="min-width:8rem;"/>                                                    
+                                                    <aura:set attribute="else">
+                                                        <lightning:input type="text" name="machine" value="{!parts.machine}" onchange="{!c.commonTypeChange}"
+                                                        variant="label-hidden" accesskey="{!j}"
+                                                        aura:id="machineId" style="min-width:8rem;"/>                                                        
+                                                        <!-- <lightning:buttonicon iconName="utility:close" size="medium" 
+                                                        alternativeText="Close Machine" onclick="{!c.clearField}" 
+                                                        accesskey="{!j}" name="machine" class="clear-btn" />
+                                                        <lightning:buttonicon iconName="utility:search" size="medium"
+                                                            alternativeText="Search" accesskey="{!j}"
+                                                            onclick="{!c.openMachineModal}" /> -->
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                        <td data-label="장비번호">
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{!parts.isDisabled}">
+                                                    <lightning:input type="text" name="equipment" value="{!parts.equipment}"
+                                                    variant="label-hidden" readonly="true" disabled="true" accesskey="{!j}"
+                                                    aura:id="equipmentId" style="min-width:8rem;"/>
+                                                    <aura:set attribute="else">
+                                                        <lightning:input type="text" name="equipment" value="{!parts.equipment}" onchange="{!c.commonTypeChange}"
+                                                        variant="label-hidden" accesskey="{!j}"
+                                                        aura:id="equipmentId" style="min-width:8rem;"/>
+                                                        <!-- <lightning:buttonicon iconName="utility:close" size="medium" 
+                                                        alternativeText="Close Equipment" onclick="{!c.clearField}" 
+                                                    accesskey="{!j}" name="equipment" class="clear-btn" />
+                                                        <lightning:buttonicon iconName="utility:search" size="medium"
+                                                            alternativeText="Search" accesskey="{!j}"
+                                                            onclick="{!c.openEquipmentModal}" /> -->
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+
+    <!-- Modal  -->
+    <!-- 정보변경-->
+    <aura:if isTrue="{!v.infoChangeModal}">
+        <div aura:id="infoChangeModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_large">
+
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">{!$Label.c.ORC_ShippingInformation}</h2>   <!-- 배송정보 -->
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                            title='close' name="closeModal" onclick="{!c.closeInfoChangeModal}"></lightning:icon>
+                    </button>
+                </header>
+
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                    <div class="card-01 top-card">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="20%" />
+                                <col width="50%" />
+                                <col width="10%" />
+                                <col width="20%" />
+                            </colgroup>
+                            <tr>
+                                <th>{!$Label.c.ORC_ShippingTerms}</th>   <!-- 선적조건 -->
+                                <th>{!$Label.c.ORC_PaymentTerms}</th>   <!-- 지급조건 --> 
+                                <th>{!$Label.c.ORC_TransportationCondition}1</th>  <!-- 운송조건1 -->
+                                <th>{!$Label.c.ORC_TransportationCondition}2</th>  <!-- 운송조건2 -->
+                            </tr>
+                            <aura:iteration items="{!v.shipInfo}" var="si" indexVar="j">
+                                <tr class="slds-hint-parent" name="shipInfo" onclick="{!c.selectRow}"
+                                    data-record="{!j}">
+                                    <td>
+                                        <div class="slds-truncate" title="Shipping Term">{!si.shippingTerm}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="Payment Term">{!si.paymentTerm}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="Transportation Term 1">
+                                            {!si.transportationTermOne}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="Transportation Term 2">
+                                            {!si.transportationTermTwo}</div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                        onclick="{!c.closeInfoChangeModal}" />
+                </footer>
+            </div>
+        </div>
+        <!-- 배경 -->
+        <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <!-- GPES MODAL -->
+    <aura:if isTrue="{!v.isGPESModal}">
+        <section class="slds-modal slds-fade-in-open GPES-Modal" role="dialog">
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick="{!c.closeModal}">
+                        <lightning:icon iconName="utility:close" alternativeText="close" size="small"></lightning:icon>
+                        <span class="slds-assistive-text">{!$Label.c.DNS_B_Close}</span>  <!-- 닫기 -->
+                    </button>
+                    <h2 class="slds-text-heading_medium">GPES</h2>    
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <div class="container" style="height: 100%;">
+                        <iframe src="{!v.apexPageURL}" width="100%" height="100%"></iframe>
+
+                        <lightning:formattedText value="{!v.formData}" />
+                    </div>
+
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+                </footer>
+
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <aura:if isTrue="{!v.showCustomToast}">
+        <div class="slds-notify slds-notify_toast slds-theme_info" role="status"
+            style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000; padding: 20px;">
+            <span class="slds-assistive-text">Info</span>
+            <span class="slds-icon_container slds-icon-utility-info slds-m-right_small">
+                <lightning:icon iconName="utility:info" alternativeText="info" size="small"/>
+            </span>
+            <div class="slds-notify__content">
+                <h2 class="slds-text-heading_small">
+                    <!-- 파일 업로드 후 자동으로 시뮬레이션을 시작합니다. 그동안 본 화면을 유지해 주시기 바랍니다. 시뮬레이션 완료 후 저장버튼을 클릭해 주세요. -->
+                    {!$Label.c.ORC_MSG_2}
+                </h2>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,13 @@
+.related_wrapper{
+    position: relative;
+}
+
+.datatable_wrapper{
+    height: 200px;
+}
+
+.custom_tile{
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}

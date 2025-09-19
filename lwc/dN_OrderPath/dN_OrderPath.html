@@ -1,0 +1,33 @@
+<template>
+    <div class="order_path_wrapper">
+        <div class="slds-card">
+            <div class="slds-card__body slds-card__body_inner">
+
+                <template if:true={isGeneral}>
+                    <div class="general_path">
+                        <lightning-progress-indicator current-step={currentStatus} type="path" variant="base">
+                            <template for:each={statusOptions} for:item="status">
+                                <template if:true={status.isCurr} >
+                                    <lightning-progress-step label={status.label} value={status.value} key={status.value} class="general_curr"></lightning-progress-step>
+                                </template>
+                                <template if:false={status.isCurr}>
+                                    <lightning-progress-step label={status.label} value={status.value} key={status.value}></lightning-progress-step>
+                                </template>
+                            </template>
+                        </lightning-progress-indicator>
+                    </div>
+                </template>
+
+                <template if:false={isGeneral}>
+                    <div class="gray_path">
+                        <lightning-progress-indicator current-step={currentStatus} type="path">
+                            <template for:each={statusOptions} for:item="status">
+                                <lightning-progress-step label={status.label} value={status.value} key={status.value}></lightning-progress-step>
+                            </template>
+                        </lightning-progress-indicator>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>

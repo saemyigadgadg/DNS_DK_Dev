@@ -1,0 +1,48 @@
+<!--
+  @description       : 
+  @author            : Hyunwook Jin
+  @group             : 
+  @last modified on  : 01-12-2025
+  @last modified by  : Hyunwook Jin
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-12-2025   Hyunwook Jin   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:hasRecordId,force:hasSObjectName,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable"
+    description="거래명세서 다운로드"
+    extends="c:DN_Helper"
+    controller="DN_AgencyCustomerOrderCreateController">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="progressValue" type="String" default="0" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="change" value="{!v.isExcelJsLoading}" action="{!c.excelLoadingComplete}" />
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.DN_AgencyOrderInvoiceDetailsDownload) {
+            width: 100% !important;
+        }
+        .slds-modal__content:has(.DN_AgencyOrderInvoiceDetailsDownload) {
+            height: fit-content !important;
+            padding: 0;
+        }
+        .cuf-content:has(.DN_AgencyOrderInvoiceDetailsDownload) {
+            padding: 0 !important;
+        }
+    </aura:html>
+    <div class="slds-modal__container">
+        <!-- modal header -->
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">다운로드 중</h2>
+        </header>
+    
+        <!-- Modal Content -->
+        <div class="modal-body slds-modal__content">
+            <div>
+                <lightning:progressBar value="{!v.progressValue}" size="large" />
+            </div>
+        </div>
+    </div>
+
+</aura:component>

@@ -1,0 +1,10 @@
+::part(input) {
+    padding-left: 0.75rem !important;
+    
+}
+:host {
+    --lwc-input-text-transform: uppercase;
+}
+:host ::part(input), .uppercase-input input  {
+    text-transform: uppercase;
+}

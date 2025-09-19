@@ -1,0 +1,1411 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 04-28-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-11-13   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<template>
+   <div class="FieldDefectManagement">
+        <lightning-card>
+            <div>
+                <template if:true={isLoading}>
+                    <lightning-spinner size="x-small"></lightning-spinner>
+                </template>
+            </div>
+            <!-- ReadMode -->
+            <div class="listview-button">
+                <lightning-button label="리스트 전체보기" onclick={handleClickListview}></lightning-button>
+            </div>
+
+            <!-- Modal -->
+            <template lwc:if={isListview}>
+                <div class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 class="slds-text-heading_medium">진행사항관리 리스트</h2>
+                        </header>
+                
+                        <div class="slds-modal__content modal-body">
+
+                            <template if:true={isListviewLoading}>
+                                <lightning-spinner size="x-small"></lightning-spinner>
+                            </template>
+
+                            <div class="top-card card-01">
+                                <div class="field-wrap">
+                                    <p>조회기간</p>
+                                    <div class="input-wrap">
+                                        <lightning-input type="date" name="listviewStart" variant="label-hidden" value={listviewStart} onchange={changeListviewStartDate} ></lightning-input>
+                                        <span class="to">~</span>
+                                        <lightning-input type="date" name="listviewEnd" variant="label-hidden" value={listviewEnd} onchange={changeListviewEndDate} ></lightning-input>
+                                    </div>
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>완료구분</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewComple"
+                                            variant="label-hidden"
+                                            value={listviewCompleValue}
+                                            options={listviewCompleOption}
+                                            onchange={changeListviewComple} ></lightning-combobox>
+                                    </div>
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>오더번호</p>
+                                    <div class="input-wrap">
+                                        <lightning-input type="text" name="listviewOrderNumber" value={listviewOrderNumber} onchange={changeListviewOrderNumber} variant="label-hidden" ></lightning-input>
+                                        <!-- <input type="checkbox" id="checkbox">
+                                        <label for="checkbox">제어장치</label> -->
+                                    </div>        
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>Ticket종결</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewTicketComple"
+                                            variant="label-hidden"
+                                            value={listviewTicketCompleValue}
+                                            options={listviewTicketCompleOption}
+                                            onchange={changelistviewTicketComple} ></lightning-combobox>
+                                    </div>        
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>종결미결</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewPendding"
+                                            variant="label-hidden"
+                                            value={listviewPenddingvalue}
+                                            options={listviewPenddingOption}
+                                            onchange={changeListviewPendding} ></lightning-combobox>
+                                    </div>        
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>서비스W/C</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewWorkcenter"
+                                            variant="label-hidden"
+                                            value={listviewWorkcenterValue}
+                                            options={listviewWorkcenterOption}
+                                            onchange={changeListviewWorkcenter} ></lightning-combobox>
+                                    </div>
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>설치하자</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewInstDefect"
+                                            variant="label-hidden"
+                                            value={listviewInstDefectValue}
+                                            options={listviewInstDefectOption}
+                                            onchange={changeListviewInstDefect} ></lightning-combobox>
+                                    </div>        
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>기술검토</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewTechnicalReview"
+                                            variant="label-hidden"
+                                            value={listviewTechnicalReviewValue}
+                                            options={listviewTechnicalReviewOption}
+                                            onchange={changeListviewTechnicalReview} ></lightning-combobox>
+                                    </div>        
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>유상서비스</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewWarranty"
+                                            variant="label-hidden"
+                                            value={listviewWarrantyValue}
+                                            options={listviewWarrantyOption}
+                                            onchange={changeListviewWarranty} ></lightning-combobox>
+                                    </div>        
+                                </div>
+
+                                <div class="field-wrap">
+                                    <p>관할지사</p>
+                                    <div class="input-wrap">
+                                        <lightning-combobox
+                                            name="listviewTopWorkcenter"
+                                            variant="label-hidden"
+                                            value={listviewTopWorkcenterValue}
+                                            options={listviewTopWorkcenterOption}
+                                            onchange={changeListviewTopWorkcenter} ></lightning-combobox>
+                                    </div>        
+                                </div>
+
+                                <div class="button-wrap">
+                                    <lightning-button label="조회" title="Check" onclick={listviewSearch} class="slds-m-left_x-small"></lightning-button>
+                                </div>
+
+                            </div>
+
+                            
+                            <div class="top-card card-02">
+                                <div class="card-header">
+                                    <div class="icon-wrap">
+                                        <lightning-icon icon-name='standard:lead_list' alternative-text='lead_list' size='x-small' title='lead_list'></lightning-icon>
+                                    </div>
+                                    <h2>진행사항관리 리스트</h2>
+                                </div>
+
+                                <div class="table-wrap">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                        <thead>
+                                            <tr>
+                                                <th rowspan="2">Ticket상태</th>
+                                                <th rowspan="2">긴급/독촉</th>
+                                                <th rowspan="2">재발생</th>
+                                                <th rowspan="2">심각도</th>
+                                                <th rowspan="2">긴급도</th>
+                                                <th rowspan="2">경과일</th>
+                                                <th rowspan="2">지사</th>
+                                                <th rowspan="2">서비스W/C</th>
+                                                <th rowspan="2">판매자</th>
+                                                <th rowspan="2">설치자</th>
+                                                <th rowspan="2">접수번호</th>
+                                                <th rowspan="2">업체명</th>
+                                                <th rowspan="2">기종</th>
+                                                <th rowspan="2">호기</th>
+                                                <th rowspan="2">제어장치</th>
+                                                <th rowspan="2">출하일</th>
+                                                <th rowspan="2">설치완료일</th>
+                                                <th rowspan="2">접수일</th>
+                                                <th rowspan="2">상담원</th>
+                                                <th rowspan="2">출동일</th>
+                                                <th rowspan="2">예약상태</th>
+                                                <th rowspan="2">종결미결원인</th>
+                                                <th rowspan="2">고장내용(상담)</th>
+                                                <th rowspan="2">수리내용</th>
+                                                <th rowspan="2">향후대응방안</th>
+                                                <th colspan="2">출동계획</th>
+                                                <th colspan="4">미결하자관리</th>
+                                                <th colspan="2">CS</th>
+                                                <th colspan="3">협조부서</th>
+                                                <th colspan="2">부품</th>
+                                                <th colspan="2">수리</th>
+                                                <th colspan="6">장비기준 오더현황</th>
+                                                <th rowspan="2">설치W/C</th>
+                                                <th rowspan="2">공동작업자</th>
+                                            </tr>
+                                            <tr>
+                                                <th>출동자</th>
+                                                <th>출동예정일</th>
+                                                <th>상태</th>
+                                                <th>미결사유</th>
+                                                <th>고객불만</th>
+                                                <th>출동횟수</th>
+                                                <th>담당자</th>
+                                                <th>처리기한</th>
+                                                <th>팀</th>
+                                                <th>담당자</th>
+                                                <th>처리기한</th>
+                                                <th>상태</th>
+                                                <th>공급예정일/출고일자</th>
+                                                <th>담당자</th>
+                                                <th>수리요청일</th>
+                                                <th>설치경과일</th>
+                                                <th>전체오더건수</th>
+                                                <th>오더건수(30일)</th>
+                                                <th>오더건수(90일)</th>
+                                                <th>오더평균</th>
+                                                <th>긴급대응장비</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={listviewData} for:item="data">
+                                                <template lwc:if={data.isYellow}>
+                                                    <tr key={data.ticketNumber} class="yellowTr">
+                                                        <td>{data.ticketStatus}</td>
+                                                        <td>{data.urgencyNY}</td>
+                                                        <td>{data.reGenerateNY}</td>
+                                                        <td>{data.severity}</td>
+                                                        <td>{data.urgency}</td>
+                                                        <td>{data.elapsedDate}</td>
+                                                        <td class="left">{data.topWorkcenterName}</td>
+                                                        <td class="left">{data.workcenterName}</td>
+                                                        <td class="left">{data.dealerName}</td>
+                                                        <td>{data.installer}</td>
+                                                        <td>{data.ticketNumber}</td>
+                                                        <td class="left">{data.srWC}</td>
+                                                        <td class="left">{data.assetModelName}</td>
+                                                        <td class="left">{data.assetName}</td>
+                                                        <td class="left">{data.assetNcType}</td>
+                                                        <td>{data.assetStartUpDate}</td>
+                                                        <td>{data.installFinishDate}</td>
+                                                        <td>{data.createdDate}</td>
+                                                        <td>{data.ownerName}</td>
+                                                        <template lwc:if={data.isRed}>
+                                                            <td class="redTd">{data.lastDispatchDate}</td>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <td>{data.lastDispatchDate}</td>
+                                                        </template>
+                                                        <!-- <td class="redTd">{data.lastDispatchDate}</td> -->
+                                                        <td>{data.reservationNY}</td>
+                                                        <td class="left">{data.pendingProcessing}</td>
+                                                        <td class="left"><div class="slds-truncate">{data.receptionDetail}</div></td>
+                                                        <td class="left"><div class="slds-truncate">{data.ticketDetail}</div></td>
+                                                        <td class="left"><div class="slds-truncate">{data.countermeasure}</div></td>
+                                                        <td>{data.srName}</td>
+                                                        <template lwc:if={data.isRed}>
+                                                            <td class="redTd">{data.repairRequestDate}</td>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <td>{data.repairRequestDate}</td>
+                                                        </template>
+                                                        <!-- <td class="redTd">{data.repairRequestDate}</td> -->
+                                                        <td>{data.orderStatus}</td>
+                                                        <td class="left">{data.pendingStatus}</td>
+                                                        <td>{data.complaint}</td>
+                                                        <td>{data.dispatchedCount}</td>
+                                                        <td>{data.csMemberName}</td>
+                                                        <td>{data.csDueDate}</td>
+                                                        <td>{data.cooperationTeam}</td>
+                                                        <td>{data.cooperationPerson}</td>
+                                                        <td>{data.cooperationDate}</td>
+                                                        <td>{data.partState}</td>
+                                                        <td>{data.supplyDate}</td>
+                                                        <td>{data.orderSrName}</td>
+                                                        <td>{data.repairDate}</td>
+                                                        <td>{data.assetInstElapsedDate}</td>
+                                                        <td>{data.allOrderCount}</td>
+                                                        <td>{data.orderCount30}</td>
+                                                        <td>{data.orderCount90}</td>
+                                                        <td><lightning-formatted-number value={data.orderAverage} data-id="lightningTextField" maximum-fraction-digits="2"></lightning-formatted-number></td>
+                                                        <!-- <td>{data.orderAverage}</td> -->
+                                                        <td>{data.urgencyEquip}</td>
+                                                        <td class="left">{data.assetInstallWC}</td>
+                                                        <td>{data.collaboWorkerName}</td>
+                                                    </tr>
+                                                </template>
+                                                <template lwc:else>
+                                                    <tr key={data.ticketNumber}>
+                                                        <td>{data.ticketStatus}</td>
+                                                        <td>{data.urgencyNY}</td>
+                                                        <td>{data.reGenerateNY}</td>
+                                                        <td>{data.severity}</td>
+                                                        <td>{data.urgency}</td>
+                                                        <td>{data.elapsedDate}</td>
+                                                        <td class="left">{data.topWorkcenterName}</td>
+                                                        <td class="left">{data.workcenterName}</td>
+                                                        <td class="left">{data.dealerName}</td>
+                                                        <td>{data.installer}</td>
+                                                        <td>{data.ticketNumber}</td>
+                                                        <td class="left">{data.srWC}</td>
+                                                        <td class="left">{data.assetModelName}</td>
+                                                        <td class="left">{data.assetName}</td>
+                                                        <td class="left">{data.assetNcType}</td>
+                                                        <td>{data.assetStartUpDate}</td>
+                                                        <td>{data.installFinishDate}</td>
+                                                        <td>{data.createdDate}</td>
+                                                        <td>{data.ownerName}</td>
+                                                        <template lwc:if={data.isRed}>
+                                                            <td class="redTd">{data.lastDispatchDate}</td>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <td>{data.lastDispatchDate}</td>
+                                                        </template>
+                                                        <td>{data.reservationNY}</td>
+                                                        <td class="left">{data.pendingProcessing}</td>
+                                                        <td class="left"><div class="slds-truncate">{data.receptionDetail}</div></td>
+                                                        <td class="left"><div class="slds-truncate">{data.ticketDetail}</div></td>
+                                                        <td class="left"><div class="slds-truncate">{data.countermeasure}</div></td>
+                                                        <td>{data.srName}</td>
+                                                        <template lwc:if={data.isRed}>
+                                                            <td class="redTd">{data.repairRequestDate}</td>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <td>{data.repairRequestDate}</td>
+                                                        </template>
+                                                        <!-- <td class="redTd">{data.repairRequestDate}</td> -->
+                                                        <td>{data.orderStatus}</td>
+                                                        <td class="left">{data.pendingStatus}</td>
+                                                        <td>{data.complaint}</td>
+                                                        <td>{data.dispatchedCount}</td>
+                                                        <td>{data.csMemberName}</td>
+                                                        <td>{data.csDueDate}</td>
+                                                        <td>{data.cooperationTeam}</td>
+                                                        <td>{data.cooperationPerson}</td>
+                                                        <td>{data.cooperationDate}</td>
+                                                        <td>{data.partState}</td>
+                                                        <td>{data.supplyDate}</td>
+                                                        <td>{data.orderSrName}</td>
+                                                        <td>{data.repairDate}</td>
+                                                        <td>{data.assetInstElapsedDate}</td>
+                                                        <td>{data.allOrderCount}</td>
+                                                        <td>{data.orderCount30}</td>
+                                                        <td>{data.orderCount90}</td>
+                                                        <td><lightning-formatted-number value={data.orderAverage} data-id="lightningTextField" maximum-fraction-digits="2"></lightning-formatted-number></td>
+                                                        <!-- <td>{data.orderAverage}</td> -->
+                                                        <td>{data.urgencyEquip}</td>
+                                                        <td class="left">{data.assetInstallWC}</td>
+                                                        <td>{data.collaboWorkerName}</td>
+                                                    </tr>
+                                                </template>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div>ROW : {listviewData.length}</div>
+                            </div>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="닫기" onclick={handleClickListview}></lightning-button>
+                            <div>
+                                <lightning-button label="미결진행현황관리" onclick={downloadPendingExcel} ></lightning-button>
+                                <lightning-button label="엑셀" onclick={downloadExcel} ></lightning-button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+
+
+            <template lwc:if={readMode}>
+                <lightning-accordion allow-multiple-sections-open active-section-name={sectionColumns}>
+                    <!-- 접수내용 -->
+                    <lightning-accordion-section name="fieldSection" label={cLabel.DNS_FDM_ReceptionDetail_Section}>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <!-- Left -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- {!$Label.c.DNS_S_ServiceReception} -->
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Consultant}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.ownerName} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Urgency}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-input type="checkbox" data-id="lightningCheckBoxField" checked={ticketRecord.isUrgency} disabled></lightning-input>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Severity}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.severity} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Branch}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.srTopWC} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Dispatcher}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.srName} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <!-- <div class="field-container">
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_RequesterPhone}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.requesterPhone} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div> -->
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_WorkerPhone}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.srPhone} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_DefectType}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.middleType} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Installer}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.installer} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_InstallFinishDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.installFinishDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_PendingProcessing}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.pendingProcessingLabel} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Reservation}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.reservation} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_LastArrivalDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.lastArrivalDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Dealer}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.dealer} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ReceptionDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.createdDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ActionRepairDetails}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.ticketDetail} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right -->
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Requester}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.requester} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ReGenerate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-input type="checkbox" data-id="lightningCheckBoxField" checked={ticketRecord.isReGenerate} disabled></lightning-input>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_UrgencyLevel}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.urgency} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_OrderNumber}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.orderNumber} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_WorkCenter}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.srWC} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Address}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.address} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_InstallationDefect}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.installationDefect} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_InstallerWC}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.installerWC} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_TechnicalReview}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.technicalReview} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_PendingProcessingDetail}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.pendingProcessingDetail} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_LastDispatchDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.lastDispatchDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_LastCompletionDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.lastCompletionDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ProductCategory}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.productCategory} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ReceptionDetail}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.receptionDetail} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CountermeasureDetail}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.countermeasure} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <!-- 오더현황 -->
+                    <lightning-accordion-section name="OrderSection" label={cLabel.DNS_FDM_OrderStatus_Section}>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_PartState}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.partState} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ServiceResource}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.orderSrName} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_DispatchedDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.dispatchedDate} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_AllOrderCount}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-number value={ticketRecord.allOrderCount} data-id="lightningTextField"></lightning-formatted-number>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_OrderAverage}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-number value={ticketRecord.orderAverage} data-id="lightningTextField" maximum-fraction-digits="2"></lightning-formatted-number>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_SupplyDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.supplyDate} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_RepairDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.repairDate} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_DispatchedTime}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.dispatchedTime} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_OrderCount}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-number value={ticketRecord.orderCount} data-id="lightningTextField"></lightning-formatted-number>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_UrgencyEquip}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.urgencyEquip} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+                    <!-- 미결현황 -->
+                    <lightning-accordion-section name="PendingSection" label={cLabel.DNS_FDM_PendingManagement_Section}>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_DispatchedCount}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-number value={ticketRecord.dispatchedCount} data-id="lightningTextField"></lightning-formatted-number>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Complaint}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.complaint} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_ElapsedDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-number value={ticketRecord.elapsedDate} data-id="lightningTextField"></lightning-formatted-number>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section name="CSSection" label="CS">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CSMemberName}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.csMemberName} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CSMemberNameMig}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.csMemberMig} data-id="lightningTextField"></lightning-formatted-text>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CSDueDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.csDueDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section name="CooperationSection" label={cLabel.DNS_FDM_Cooperation_Section}>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CooperationTeam}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.cooperationTeam} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CooperationDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.cooperationDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_CooperationPerson}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.cooperationPerson} data-id="lightningTextField"></lightning-formatted-text>
+                                        <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <lightning-accordion-section name="DispatchSection" label={cLabel.DNS_FDM_DispatchPlan_Section}>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_Dispatcher}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.srName} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                <div class="field-container">
+                                    <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                    <label class="slds-form-element__label">{cLabel.DNS_FDM_RepairRequestDate}</label>
+                                    <div class="slds-form-element__control field-with-icon">
+                                        <lightning-formatted-text value={ticketRecord.repairRequestDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+                </template>
+
+                <!-- EditMode -->
+                <template lwc:else>
+                    <lightning-accordion allow-multiple-sections-open active-section-name={sectionColumns}>
+                        <lightning-accordion-section name="fieldSection" label={cLabel.DNS_FDM_ReceptionDetail_Section}>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Consultant}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.ownerName} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Urgency}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-input name="isUrgency" type="checkbox" data-id="lightningCheckBoxField" checked={ticketRecord.isUrgency} onchange={handleChangeChecked}></lightning-input>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Severity}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-combobox
+                                                name="severity"
+                                                value={editObject.severity}
+                                                options={severityPicklist}
+                                                onchange={handleChange} ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Branch}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.srTopWC} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Dispatcher}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.srName} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <!-- <div class="field-container">
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_RequesterPhone}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.requesterPhone} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div> -->
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_WorkerPhone}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.srPhone} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_DefectType}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.middleType} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Installer}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.installer} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_InstallFinishDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.installFinishDate} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_PendingProcessing}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-combobox
+                                                name="pendingProcessing"
+                                                value={editObject.pendingProcessing}
+                                                options={pendingProcessPicklist}
+                                                onchange={handleChange} ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Reservation}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.reservation} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_LastArrivalDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.lastArrivalDate} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Dealer}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.dealer} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ReceptionDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.createdDate} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ActionRepairDetails}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.ticketDetail} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Requester}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.requester} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ReGenerate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-input name="isReGenerate" type="checkbox" data-id="lightningCheckBoxField" checked={ticketRecord.isReGenerate} onchange={handleChangeChecked} ></lightning-input>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_UrgencyLevel}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-combobox
+                                                name="urgency"
+                                                value={editObject.urgency}
+                                                options={urgencyPicklist}
+                                                onchange={handleChange} ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_OrderNumber}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.orderNumber} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_WorkCenter}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.srWC} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Address}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.address} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_InstallationDefect}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-combobox
+                                                name="installationDefect"
+                                                value={editObject.installationDefect}
+                                                options={defectPicklist}
+                                                onchange={handleChange} ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_InstallerWC}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.installerWC} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_TechnicalReview}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-combobox
+                                                name="technicalReview"
+                                                value={editObject.technicalReview}
+                                                options={technicalReviewPicklist}
+                                                onchange={handleChange} ></lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_PendingProcessingDetail}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-input type="text" name="pendingProcessingDetail" value={editObject.pendingProcessingDetail} onchange={handleChange} ></lightning-input>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_LastDispatchDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.lastDispatchDate} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_LastCompletionDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.lastCompletionDate} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ProductCategory}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.productCategory} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ReceptionDetail}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.receptionDetail} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_CountermeasureDetail}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-textarea name="countermeasure" value={editObject.countermeasure} onchange={handleChange} ></lightning-textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+
+                        <lightning-accordion-section name="OrderSection" label={cLabel.DNS_FDM_OrderStatus_Section}>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_PartState}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.partState} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ServiceResource}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.orderSrName} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_DispatchedDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.dispatchedDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_AllOrderCount}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-number value={ticketRecord.allOrderCount} data-id="lightningTextField"></lightning-formatted-number>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_OrderAverage}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-number value={ticketRecord.orderAverage} data-id="lightningTextField"></lightning-formatted-number>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_SupplyDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.supplyDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_RepairDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.repairDate} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_DispatchedTime}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.dispatchedTime} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_OrderCount}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-number value={ticketRecord.orderCount} data-id="lightningTextField"></lightning-formatted-number>
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_UrgencyEquip}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.urgencyEquip} data-id="lightningTextField"></lightning-formatted-text>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+
+                        <lightning-accordion-section name="PendingSection" label={cLabel.DNS_FDM_PendingManagement_Section}>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_DispatchedCount}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-number value={ticketRecord.dispatchedCount} data-id="lightningTextField"></lightning-formatted-number>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;" lwc:if={isSalesOrderAndInternalRequesterFieldOpen} >*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Complaint}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-textarea name="complaint" value={editObject.complaint} onchange={handleChange} ></lightning-textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_ElapsedDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-number value={ticketRecord.elapsedDate} data-id="lightningTextField"></lightning-formatted-number>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+
+                        <lightning-accordion-section name="CSSection" label="CS">
+                            <lightning-record-edit-form record-id={recordId} object-api-name="Case">
+                                <div class="slds-grid slds-wrap slds-gutters">
+
+                                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                        <div class="field-container">
+                                            <!-- <label class="slds-form-element__label">담당자</label> -->
+                                            <label class="slds-form-element__label">{cLabel.DNS_FDM_CSMemberName}</label>
+                                            <lightning-input-field name="csMemberId" field-name="CSMember__c" data-id="lightningLookupEditField" variant="label-hidden" onchange={handleChange} ></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                        <div class="field-container">
+                                            <!-- <label class="slds-form-element__label">담당자</label> -->
+                                            <label class="slds-form-element__label">{cLabel.DNS_FDM_CSMemberNameMig}</label>
+                                            <lightning-input-field name="csMemberTextMig" field-name="CSMemberMig__c" data-id="lightningLookupEditField" variant="label-hidden" readonly ></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                        <div class="field-container">
+                                            <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                            <!-- <label class="slds-form-element__label">처리기한</label> -->
+                                            <lightning-input-field name="csDueDate" field-name="CSDueDate__c" data-id="lightningDateEditField" onchange={handleChange} ></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning-record-edit-form>
+                        </lightning-accordion-section>
+
+                        <lightning-accordion-section name="CooperationSection" label={cLabel.DNS_FDM_Cooperation_Section}>
+                            <lightning-record-edit-form record-id={recordId} object-api-name="Case">
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                        <div class="field-container">
+                                            <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                            <div class="slds-form-element__control field-with-icon">
+                                                <!-- <label class="slds-form-element__label">팀</label> -->
+                                                <lightning-input-field name="cooperationTeam" field-name="CooperationTeam__c" data-id="lightningLookupEditField" onchange={handleChange} ></lightning-input-field>
+                                            </div>
+                                        </div>
+                                        <div class="field-container">
+                                            <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                            <div class="slds-form-element__control field-with-icon">
+                                                <!-- <label class="slds-form-element__label">처리기한</label> -->
+                                                <lightning-input-field name="cooperationDate" field-name="CooperationDate__c" data-id="lightningDateEditField" onchange={handleChange} ></lightning-input-field>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+                                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                        <div class="field-container">
+                                            <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                            <div class="slds-form-element__control field-with-icon">
+                                                <!-- <label class="slds-form-element__label">담당자</label> -->
+                                                <lightning-input-field name="cooperationPerson" field-name="CooperationPerson__c" data-id="lightningLookupEditField" onchange={handleChange} ></lightning-input-field>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning-record-edit-form>
+                        </lightning-accordion-section>
+
+                        <lightning-accordion-section name="DispatchSection" label={cLabel.DNS_FDM_DispatchPlan_Section}>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_Dispatcher}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.srName} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                                    <div class="field-container">
+                                        <!-- <span style="color: red; margin-left: 2px;">*</span> -->
+                                        <label class="slds-form-element__label">{cLabel.DNS_FDM_RepairRequestDate}</label>
+                                        <div class="slds-form-element__control field-with-icon">
+                                            <lightning-formatted-text value={ticketRecord.repairRequestDate} data-id="lightningTextField"></lightning-formatted-text>
+                                            <!-- <lightning-icon icon-name="utility:edit" alternative-text="Edit" size="x-small" data-id="editMode" class="edit-icon" onclick={handleClickEditIcon}></lightning-icon> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+    
+                    <div class="footer">
+                        <!-- DNS_FDM_Save -->
+                        <!-- DNS_FDM_Cancel -->
+                        <button class="slds-button slds-button_brand" onclick={handleClickSaveButton} style="align-self: center;">{cLabel.DNS_FDM_Save}</button>
+                        <button class="slds-button slds-button_neutral" onclick={handleClickCancelButton} style="align-self: center;">{cLabel.DNS_FDM_Cancel}</button>
+                    </div>
+                </template>
+
+                <lightning-tabset>
+                    <lightning-tab label={cLabel.DNS_FDM_SecuringParts}>
+                        <div class="dt-wrap">
+                            <table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>{cLabel.DNS_FDM_MATNR}</th>
+                                        <th>{cLabel.DNS_FDM_MAKTX}</th>
+                                        <th>{cLabel.DNS_FDM_MENGE}</th>
+                                        <th>{cLabel.DNS_FDM_REQDAT}</th>
+                                        <th>{cLabel.DNS_FDM_MATNR_TXT}</th>
+                                        <th>{cLabel.DNS_FDM_APPROVAL}</th>
+                                        <th>{cLabel.DNS_FDM_DAREG}</th>
+                                        <th>{cLabel.DNS_FDM_DAYYN}</th>
+                                        <th>{cLabel.DNS_FDM_SDATE}</th>
+                                        <th>{cLabel.DNS_FDM_ODATE}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={oneData} for:item="data">
+                                        <tr key={data.MATNR}>
+                                            <td>{data.MATNR}</td>
+                                            <td>{data.MAKTX}</td>
+                                            <td style="text-align: center;">{data.MENGE}</td>
+                                            <td style="text-align: center;">{data.REQDAT}</td>
+                                            <td style="text-align: center;">{data.MATNR_TXT}</td>
+                                            <td style="text-align: center;">{data.APPROVAL}</td>
+                                            <td style="text-align: center;">{data.DAREG}</td>
+                                            <td style="text-align: center;">{data.DAYYN}</td>
+                                            <td style="text-align: center;">{data.SDATE}</td>
+                                            <td style="text-align: center;">{data.ODATE}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                            <!-- <lightning-datatable hide-checkbox-column="true" min-column-width=120 key-field="id"
+                                data={oneData} columns={oneColumns}>
+                            </lightning-datatable> -->
+                        </div>
+                        <div>ROW : {oneData.length}</div>
+                    </lightning-tab>
+                    <lightning-tab label={cLabel.DNS_FDM_ProgressParts}>
+                        <div class="dt-wrap">
+                            <table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>{cLabel.DNS_FDM_MATNR}</th>
+                                        <th>{cLabel.DNS_FDM_MAKTX}</th>
+                                        <th>{cLabel.DNS_FDM_MENGE}</th>
+                                        <th>{cLabel.DNS_FDM_PRETD}</th>
+                                        <th>{cLabel.DNS_FDM_QDATU}</th>
+                                        <th>{cLabel.DNS_FDM_Status}</th>
+                                        <th>{cLabel.DNS_FDM_DeliveryLocation}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={twoData} for:item="data">
+                                        <tr key={data.MATNR}>
+                                            <td>{data.MATNR}</td>
+                                            <td>{data.MAKTX}</td>
+                                            <td style="text-align: center;">{data.KWMENG}</td>
+                                            <td style="text-align: center;">{data.PRETD}</td>
+                                            <td style="text-align: center;">{data.QDATU}</td>
+                                            <td style="text-align: center;">{data.MATNR_TXT}</td>
+                                            <td>{data.SOLDTO}</td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>ROW : {twoData.length}</div>
+                    </lightning-tab>
+                </lightning-tabset>
+        </lightning-card>
+   </div>
+</template>

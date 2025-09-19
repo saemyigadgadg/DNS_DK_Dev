@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>지사별 클레임 미결현황판</description>
+    <label>지사별 클레임 미결현황(일간)</label>
+    <lwcComponent>dNS_CSPendingStatusBoard</lwcComponent>
+    <motif>Custom99: CRT TV</motif>
+</CustomTab>

@@ -1,0 +1,104 @@
+/* header */
+
+.THIS.slds-card .slds-card__header {
+    height: 65px;
+    background-color: #f3f3f3;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem 0.25rem 0 0;
+    border-bottom: 0;
+}
+
+.THIS.slds-card .slds-card__header .slds-media {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .field-02 .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* body */
+
+.THIS.slds-card .slds-card__body {
+    margin: 0;
+    max-height: 36rem;
+    min-height: 16rem;
+    overflow: auto;
+    border: 1px solid #c9c9c9;
+    border-top: 0;
+}
+
+/* body - table */
+
+.THIS.slds-card .slds-card__body table thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.THIS.slds-card .slds-card__body table tbody tr {
+    border: 1px solid #c9c9c9;
+    border-right: 0;
+    border-left: 0;
+}
+
+.THIS.slds-card .slds-card__body table tbody tr:last-child {
+    border-bottom: 0;
+}
+
+.THIS .card-02 .table-02 .slds-table th,
+.THIS .card-02 .table-02 .slds-table td {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .card-02 .table-02 .slds-table th:first-child,
+.THIS .card-02 .table-02 .slds-table td:first-child,
+.THIS .card-02 .table-02 .slds-table th:last-child,
+.THIS .card-02 .table-02 .slds-table td:last-child{
+    padding: 0.25rem 0.5rem !important;
+}
+
+.THIS .card-02 .table-02 .slds-table th:first-child {
+    border-left: 1px solid #c9c9c9;
+}
+
+/* body - button */
+.THIS .field-02-btn-wrap {
+    position: absolute;
+    display: flex;
+    z-index: 4;
+    align-items: flex-end;
+    gap: 0.5rem;
+    right: 0.5rem;
+    top: 0.5rem;
+}
+
+/* body - modal */
+.THIS.slds-modal .modal-bg {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    opacity: .2;
+}
+
+.THIS.slds-modal .modal-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 3rem 1rem;
+}
+
+.THIS.slds-modal .modal-body p {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.THIS.text-center {
+    text-align: center;
+}

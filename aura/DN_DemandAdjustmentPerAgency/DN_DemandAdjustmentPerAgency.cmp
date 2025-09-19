@@ -1,0 +1,372 @@
+<!--
+  @author            : Jun-Hyo Hwang 
+  @Description       : Yeong-Deok Seo님 대리점 자재 종합조회 참고
+  @last modified on  : 2024-06-18
+  @last modified by  : junhyo.hwang@concentrix.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-18   junhyo.hwang@concentrix.com   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="대리점별 수요조정">
+
+    <!-- attribute -->
+    <aura:attribute name="printDate" type="date" />
+    <aura:attribute name="partsNumber" type="String" default="" />
+    <aura:attribute name="replacePartsList" type="List" />
+    <aura:attribute name="IndicatorOptions" type="List" default='[    
+                                                                    {"label":"ALL", "value":"all"},
+                                                                    {"label":"A:HIGH STABLE DEMAND &amp;HIGH AMT", "value":"a"},
+                                                                    {"label":"B:HIGH STABLE DEMAND &amp; MID AMT", "value":"b"},
+                                                                    {"label":"C:HIGH STABLE DEMAND &amp; LOW AMT", "value":"c"},
+                                                                    {"label":"D:MID STABLE DEMAND &amp; HIGH AMT", "value":"d"},
+                                                                    {"label":"E:MID STABLE DEMAND &amp; MID AMT", "value":"e"},
+                                                                    {"label":"F:MID STABLE DEMAND &amp; LOW AMT", "value":"f"},
+                                                                    {"label":"G:NON-CONSTANT DEMAND &amp; HIGH AMT", "value":"g"},
+                                                                    {"label":"H:NON-CONSTANT DEMAND &amp; MID AMT", "value":"h"},
+                                                                    {"label":"I:NON-CONSTANT DEMAND &amp; LOW AMT", "value":"i"},
+                                                                    {"label":"M:NO DEMAND - SUBSTITUTED MAT", "value":"m"},
+                                                                    {"label":"N:NO DEMAND HISTORY(12M)", "value":"n"},
+                                                                    {"label":"R:INITIAl SERVICE PARTS - SUBSTITUTED MAT", "value":"r"},
+                                                                    {"label":"Z:SPP IrrelevantT", "value":"z"}
+                                                                ]'/>
+    <aura:attribute name="MRPTypeOptions" type="List" default="[
+                                                                    {'label': 'ALL', 'value': 'all'},
+                                                                    {'label': 'VB',  'value': 'vb'},
+                                                                    {'label': 'ND',  'value': 'nd'}
+                                                                ]"/>
+    <!-- handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <div class="total-wrap">
+        <article class="slds-card">
+    
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+            </aura:if>
+        
+            <!-- 📌 Header -->
+            <div class="header">
+                <div class="title">
+                    <lightning:icon iconName="custom:custom33" size="small" alternativeText="Indicates approval" />
+                    <h2>대리점별 수요조정</h2>
+                </div>
+        
+                <div class="button-wrap">
+                    <!-- <lightning:button iconName="standard:search" name="searchItems" label="저장" onclick=""/> -->
+                    <lightning:button name="Excel" label="EXCEL" onclick="" disabled="false" />
+                    <lightning:button name="Search" label="SEARCH" onclick="" disabled="false" />
+                </div>
+        
+            </div>
+        
+            <!-- 📌 Body -->
+            <div class="body">
+                <div class="card-01 top-card">
+                    <div class="field-wrap">
+                        <p>Material</p>
+                        <div class="input-wrap">
+                        <lightning:input type="text" value="100101-00427" name="MeterialNumber" variant="label-hidden" readonly="false" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.RegisterPartsByMulti}" accesskey="" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>ABC Indicator</p>
+                        <div class="input-wrap">
+                            <lightning:combobox 
+                                aura:id="indicator"
+                                name="indicator"
+                                value="ALL"
+                                onchange=""
+                                options="{!v.IndicatorOptions}"
+                                disabled="false"/>
+                        </div>            
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>MRP TYPE</p>
+                        <div class="input-wrap">
+                            <lightning:combobox 
+                                aura:id="mrptype"
+                                name="mrptype"
+                                value="ALL"
+                                onchange=""
+                                options="{!v.MRPTypeOptions}"
+                                disabled="false"/>
+                        </div>     
+                    </div>
+                </div>
+                <!-- Data Table -->
+                <div class="card-04 slds-table--header-fixed_container top-card">
+                    <div class="card-body slds-scrollable">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered IP-table">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Repl.</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Material</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Descr.</div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +0 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +1 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +2 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +3 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +4 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +5 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +6 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +7 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +8 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +9 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +10 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +11 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +12 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +13 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +14 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +15 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +16 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +17 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +18 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +19 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +20 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +21 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +22 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +23 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">    <!-- 현재 달로부터 +24 -->
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">Unit</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">ABC</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">MRP Type</div>
+                                </th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.replacePartsList}" var="parts" indexVar="i">
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Repl.">
+                                            <div class="slds-truncate" title="Repl.">
+                                            <lightning:input type="text" name="input1" variant="label-hidden" readonly="false" />
+                                            </div>
+                                        </td>
+                                        <td data-label="Material">
+                                            <div class="slds-truncate" title="Material">
+                                            <lightning:input type="text" name="input2" variant="label-hidden" readonly="false" />
+                                            </div>
+                                        </td>
+                                        <td data-label="Descr.">
+                                            <div class="slds-truncate" title="Desc.">
+                                            <lightning:input type="text" name="input3" variant="label-hidden" readonly="false" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +0 -->
+                                            <div class="slds-truncate" title="curMonth0">
+                                            <lightning:input type="text" name="inputMonth0" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +1 -->
+                                            <div class="slds-truncate" title="curMonth1">
+                                            <lightning:input type="text" name="inputMonth1" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +2 -->
+                                            <div class="slds-truncate" title="curMonth2">
+                                            <lightning:input type="text" name="inputMonth2" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +3 -->
+                                            <div class="slds-truncate" title="curMonth3">
+                                            <lightning:input type="text" name="inputMonth3" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +4 -->
+                                            <div class="slds-truncate" title="curMonth4">
+                                            <lightning:input type="text" name="inputMonth4" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +5 -->
+                                            <div class="slds-truncate" title="curMonth5">
+                                            <lightning:input type="text" name="inputMonth5" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +6 -->
+                                            <div class="slds-truncate" title="curMonth6">
+                                            <lightning:input type="text" name="inputMonth6" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +7 -->
+                                            <div class="slds-truncate" title="curMonth7">
+                                            <lightning:input type="text" name="inputMonth7" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +8 -->
+                                            <div class="slds-truncate" title="curMonth8">
+                                            <lightning:input type="text" name="inputMonth8" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +9 -->
+                                            <div class="slds-truncate" title="curMonth9">
+                                            <lightning:input type="text" name="inputMonth9" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +10 -->
+                                            <div class="slds-truncate" title="curMonth10">
+                                            <lightning:input type="text" name="inputMonth10" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +11 -->
+                                            <div class="slds-truncate" title="curMonth11">
+                                            <lightning:input type="text" name="inputMonth11" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +12 -->
+                                            <div class="slds-truncate" title="curMonth12">
+                                            <lightning:input type="text" name="inputMonth12" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +13 -->
+                                            <div class="slds-truncate" title="curMonth13">
+                                            <lightning:input type="text" name="inputMonth13" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +14 -->
+                                            <div class="slds-truncate" title="curMonth14">
+                                            <lightning:input type="text" name="inputMonth14" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +15 -->
+                                            <div class="slds-truncate" title="curMonth15">
+                                            <lightning:input type="text" name="inputMonth15" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +16 -->
+                                            <div class="slds-truncate" title="curMonth16">
+                                            <lightning:input type="text" name="inputMonth16" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +17 -->
+                                            <div class="slds-truncate" title="curMonth17">
+                                            <lightning:input type="text" name="inputMonth17" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +18 -->
+                                            <div class="slds-truncate" title="curMonth18">
+                                            <lightning:input type="text" name="inputMonth18" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +19 -->
+                                            <div class="slds-truncate" title="curMonth19">
+                                            <lightning:input type="text" name="inputMonth19" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +20 -->
+                                            <div class="slds-truncate" title="curMonth20">
+                                            <lightning:input type="text" name="inputMonth20" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +21 -->
+                                            <div class="slds-truncate" title="curMonth21">
+                                            <lightning:input type="text" name="inputMonth21" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +22 -->
+                                            <div class="slds-truncate" title="curMonth22">
+                                            <lightning:input type="text" name="inputMonth22" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +23 -->
+                                            <div class="slds-truncate" title="curMonth23">
+                                            <lightning:input type="text" name="inputMonth23" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="curMonth"> <!-- 현재 달로부터 +24 -->
+                                            <div class="slds-truncate" title="curMonth24">
+                                            <lightning:input type="text" name="inputMonth24" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="Unit">
+                                            <div class="slds-truncate" title="Unit">
+                                            <lightning:input type="text" name="input4" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="ABC">
+                                            <div class="slds-truncate" title="ABC">
+                                            <lightning:input type="text" name="input5" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                        <td data-label="MRP Type">
+                                            <div class="slds-truncate" title="MRP Type">
+                                            <lightning:input type="text" name="input6" variant="label-hidden" readonly="true" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+</aura:component>

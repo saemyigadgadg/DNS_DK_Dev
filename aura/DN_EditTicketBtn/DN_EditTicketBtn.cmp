@@ -1,0 +1,366 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 03-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-13-2024   Hayeong Min   Initial Version
+  2.0   12-26-2024   Hayeong Min   Account-Equipment Standard로 변경
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_NewTicketBtnController" description="Change Record Type Ticket Button">
+
+    <!--Attribute-->
+    <aura:attribute name="isLoading" type="Boolean" default="true" />
+    <aura:attribute name="isNext" type="Boolean" default="false" />
+    <aura:attribute name="country" type="String" default="" />
+    <aura:attribute name="isEdit" type="Boolean" default="true" />
+    <aura:attribute name="recordTypeId" type="String" />
+    <aura:attribute name="recordTypeOptions" type="List" default="[]" />
+    <aura:attribute name="radioValue" type="String" default="Ticket" />
+    <aura:attribute name="radioLabel" type="String" default="" />
+    <aura:attribute name="isTicket" type="Boolean" default="true" />
+    
+    <aura:attribute name="isFailureStatusRequired" type="Boolean" default="false" />
+    <aura:attribute name="isRequired" type="Boolean" default="true" />
+    <aura:attribute name="isFailure" type="Boolean" default="false" />
+    <aura:attribute name="closedReason" type="String" default="" />
+    <aura:attribute name="ticketInfo" type="Object[]"/>
+    
+    <aura:attribute name="majorOptions" type="List" />
+    <aura:attribute name="middleOptions" type="List" />
+    <aura:attribute name="phenomenonOptions" type="List" />
+    <aura:attribute name="majorLabel" type="String" default="" />
+    <aura:attribute name="middleLabel" type="String" default="" />
+    <aura:attribute name="phenomenonLabel" type="String" default="" />
+    <aura:attribute name="isMajorDisabled" type="Boolean" default="true" />
+    <aura:attribute name="isMiddleDisabled" type="Boolean" default="true" />
+    <aura:attribute name="isPhenomenonDisabled" type="Boolean" default="true" />
+    
+    <force:recordData recordId="{!$SObjectType.CurrentUser.Id}" fields="Profile.Name" targetFields="{!v.CurrentUser}"/>
+    <aura:attribute name="CurrentUser" type="Object"/>
+    
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    
+    <!--Toast & Navigation-->
+    <lightning:navigation aura:id="navService" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_EditTicketBtn .selectRecordType){
+            max-width: calc(100vw - 12rem);
+            width: 24rem;
+            margin: 0 auto;
+        }
+        .slds-modal__container:has(.cDN_EditTicketBtn .recordField){
+            width: calc(100vw - 8rem);
+            max-width: 82rem;
+            min-width: 20rem;
+            margin: 0 auto;
+        }
+        .slds-modal__content:has(.cDN_EditTicketBtn){
+            height: unset !important;
+            max-height: unset !important;
+            padding: 0;
+            margin: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_EditTicketBtn) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_EditTicketBtn) {
+        overflow-y: clip;
+        }
+    </aura:html>
+
+    <!--Container-->
+    <div class="slds-modal__container ExtractConditionModal">
+        <!-- <div class="slds-modal__container"> -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_ChangeRecordType}</h2>
+            </header>
+
+            <!-- 🚩 01. Select Record Type -->
+            <aura:if isTrue="{!!v.isNext }">
+                <div class="slds-modal__content selectRecordType">
+                    <!-- 🚩Loading Spinner -->
+                    <aura:if isTrue="{!v.isLoading}">
+                        <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                    </aura:if>
+                    <span class="record-label">Select a record type</span>
+                    <div class="slds-form slds-align_absolute-center">
+                        <lightning:radioGroup name="radioGroup" options="{! v.recordTypeOptions }"
+                            value="{! v.radioValue }" type="radio" disabled="true">
+                        </lightning:radioGroup>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral"
+                        onclick="{! c.handleCancel }">{!$Label.c.DNS_B_Cancel}</button>
+                    <button class="slds-button slds-button_brand"
+                        onclick="{! c.handleNext }">{!$Label.c.DNS_B_Next}</button>
+                </div>
+            </aura:if>
+
+            <!-- 🚩 02. Record Field  -->
+            <aura:if isTrue="{!v.isNext}">
+                <div class="form-container">
+                    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case" recordTypeId="{!v.recordTypeId}">
+                        <div class="slds-modal__content recordField">
+                            <!-- 🚩Loading Spinner -->
+                            <aura:if isTrue="{!v.isLoading}">
+                                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                            </aura:if>
+                            <aura:iteration items="{!v.ticketInfo}" var="t">
+                                <!-- 🚩Ticket -->
+                                <aura:if isTrue="{! v.isTicket }">
+    
+                                    <h2 class="infoTitle">{!$Label.c.ServiceReception}</h2>
+                                    <div class="field-wrap">
+                                        <div class="input-wrap">
+                                            <!--상태-->
+                                            <lightning:inputField fieldName="Status" required="true" value="{!t.Status}" />
+                                            <!--장비 & 고객사-->
+                                            <lightning:inputField fieldName="AccountId" value="{!t.AccountId}"/>
+                                            <lightning:inputField fieldName="AssetId" value="{!t.AssetId}" onchange="{!c.handleAsset}" required="{!v.isRequired}"/>                                            
+                                            <!--요청자-->
+                                            <lightning:inputField fieldName="Requester__c" value="{!t.Requester__c}" />
+                                            <lightning:inputField fieldName="Phone__c" value="{!t.Phone__c}" style="display: none;"/>
+
+                                            <!--알림톡알림(To.고객)-->
+                                            <lightning:inputField fieldName="isAlarmToCustomer__c"
+                                                onchange="{!c.handleAlarm}" />
+                                            <!--진행사항-->
+                                            <!-- <lightning:inputField fieldName="Progress__c" value="{!t.Progress__c}" /> -->
+                                            <!--접수내용-->
+                                            <div class="receptionDetails">
+                                                <lightning:inputField fieldName="ReceptionDetails__c"
+                                                    value="{!t.ReceptionDetails__c}" required="true"/>
+                                            </div>
+                                        </div>
+    
+                                        <div class="input-wrap">
+                                            <!--티켓유형(대)-->
+                                            <lightning:inputField fieldName="TicketType__c" value="{!t.TicketType__c}" required="true"/>
+                                            <!--티켓유형(중)-->
+                                            <lightning:inputField fieldName="InternalTicketType__c" value="{!t.InternalTicketType__c}" onchange="{!c.handleTicketType}" required="true"/>
+                                            <!--접수경로-->
+                                            <lightning:inputField fieldName="ReceptionPath__c"
+                                                value="{!t.ReceptionPath__c}" />
+                                            <!--종결사유-->
+                                            <aura:if isTrue="{! t.Status == 'Closed'}">
+                                                <lightning:inputField fieldName="EndOfReason__c"
+                                                    value="{!t.EndOfReason__c}" />
+                                                    <!--조치결과-->
+                                                    <aura:if
+                                                        isTrue="{! t.EndOfReason__c == 'Call Service'}">
+                                                        <lightning:inputField fieldName="ResultOfMeasure__c" value="{!t.ResultOfMeasure__c}" />
+                                                    </aura:if>
+
+                                                    <!--종결사유(상세)-->
+                                                    <aura:if isTrue="{! t.EndOfReason__c == 'Customer Cancellation' || t.EndOfReason__c == 'Call Service'}">
+                                                        <lightning:inputField fieldName="ClosedReasonDetails__c" value="{!t.ClosedReasonDetails__c}" />
+                                                    </aura:if>
+                                            </aura:if>
+                                            <!--배정보류사유-->
+                                            <aura:if isTrue="{! t.Status == 'Waiting (Assignment delay)'}">
+                                                <lightning:inputField fieldName="AssignHoldingReason__c"
+                                                    value="{!t.AssignHoldingReason__c}" />
+                                            </aura:if>
+                                            <!--캠패인-->
+                                            <aura:if
+                                                isTrue="{! t.InternalTicketType__c == 'Regular Inspections' || t.InternalTicketType__c == 'Pre-Call' || t.InternalTicketType__c == 'Service Campaign'}">
+                                                <lightning:inputField fieldName="Campaign__c" value="{!t.Campaign__c}" />
+                                            </aura:if>
+                                            <!--내부요청자-->
+                                            <aura:if
+                                                isTrue="{! t.TicketType__c == 'Internal request' &amp;&amp; t.InternalTicketType__c == 'Installation request'}">
+                                                <lightning:inputField fieldName="InternalRequester__c"
+                                                    value="{!t.InternalRequester__c}" />
+                                            </aura:if>
+                                            <!--접수일시-->
+                                            <lightning:inputField fieldName="ApplicationDateTime__c"
+                                                value="{!t.ApplicationDateTime__c}" />
+                                            <!--고장일시-->
+                                            <lightning:inputField fieldName="BreakdownDateTime__c"
+                                                value="{!t.BreakdownDateTime__c}" />
+                                            <!--Origin Ticket-->
+                                            <lightning:inputField fieldName="OriginTicket__c"
+                                                value="{!t.OriginTicket__c}" />
+                                            <!--Sales Order-->
+                                            <aura:if
+                                            isTrue="{!t.InternalTicketType__c == 'Installation request' || t.InternalTicketType__c == 'Post-delivery training'}">
+                                                <lightning:inputField fieldName="SalesOrder__c"
+                                                    value="{!t.SalesOrder__c}" />
+                                            </aura:if>
+                                            <!--고장상태-->
+                                            <lightning:inputField fieldName="FailureStatus__c" value="{!t.FailureStatus__c}" required="{!v.isFailure}" />
+                                            <!--긴급-->
+                                            <lightning:inputField fieldName="IsUrgency__c" onchange="{!c.handleUrgent}" />
+                                            <!--재발생-->
+                                            <lightning:inputField fieldName="IsReGenerate__c"
+                                                onchange="{!c.handleRegenerate}" />
+                                        </div>
+                                    </div>
+    
+                                    <!--기술상담-->
+                                    <aura:if
+                                        isTrue="{!(t.TicketType__c) &amp;&amp; !(t.TicketType__c == '' || t.TicketType__c == 'General inquiry')}">
+                                        <h2 class="infoTitle">{!$Label.c.TechnicalConsultation}</h2>
+                                        <div class="field-wrap">
+                                            <!--고장부위-->
+                                            <lightning:combobox label="{!$Label.c.DNS_F_FailureArea}" value="{!t.FailureArea__c}" 
+                                                                options="{! v.majorOptions }" variant="label-inline"
+                                                                onchange="{! c.handleMajor }" disabled="{!v.isMajorDisabled}" required="{!v.isFailure}"/>
+                                            <lightning:inputField fieldName="FailureAreaValue__c" value="{!t.FailureAreaValue__c}" style="display:none;"/>
+                                            <!--고장현상-->
+                                            <lightning:combobox label="{!$Label.c.DNS_F_Failurephenomenon}" value="{!t.FailurePhenomenon__c}" 
+                                                                options="{! v.phenomenonOptions }" variant="label-inline"
+                                                                onchange="{! c.handlePhenomenon }" disabled="{!v.isPhenomenonDisabled}" required="{!v.isFailure}"/>
+                                            <lightning:inputField fieldName="FailurePhenomenonValue__c" value="{!t.FailurePhenomenonValue__c}" style="display:none;"/>
+                                            <!--고장부위(상세)-->
+                                            <lightning:combobox label="{!$Label.c.DNS_F_FailureAreaDetail}" value="{!t.FailureAreaDetail__c}" 
+                                                                options="{! v.middleOptions }" variant="label-inline"
+                                                                onchange="{! c.handleMiddle }" disabled="{!v.isMiddleDisabled}" required="{!v.isFailure}"/>
+                                            <lightning:inputField fieldName="FailureAreaDetailValue__c" value="{!t.FailureAreaDetailValue__c}" style="display:none;"/>
+                                            <!--수리요청일시-->
+                                            <lightning:inputField fieldName="RepairRequestDateTime__c" value="{!t.RepairRequestDateTime__c}"/>
+                                        </div>
+                                    </aura:if>
+    
+                                    <!--미오후납관리9-->
+                                    <aura:if
+                                        isTrue="{! t.TicketType__c == 'Internal request' &amp;&amp; t.InternalTicketType__c == 'Missing Part, Wrong Part'}">
+                                        <h2 class="infoTitle">{!$Label.c.NonpaymentRatepaymentManagement}</h2>
+                                        <div class="field-wrap">
+                                            <!--설치업체-->
+                                            <lightning:inputField fieldName="InstallationWC__c"
+                                                value="{!t.InstallationWC__c}" />
+                                            <!--발생구분(선택)-->
+                                            <lightning:inputField fieldName="Occurrence_Classification_Select__c"
+                                            value="{!t.Occurrence_Classification_Select__c}" />
+                                            <!--생산처-->
+                                            <lightning:inputField fieldName="Producer__c"
+                                                value="{!t.Producer__c}" />
+                                            <!--발생구분-->
+                                            <lightning:inputField fieldName="Occurrence_Classification__c"
+                                                value="{!t.Occurrence_Classification__c}" />
+                                            <!--Noti No.-->
+                                            <lightning:inputField fieldName="NotiNO__c" value="{!t.NotiNO__c}" />
+                                            <!--SV Ord.No-->
+                                            <lightning:inputField fieldName="SVOrdNo__c" value="{!t.SVOrdNo__c}" />
+                                            <!--진행사항-->
+                                            <div class="progressDetail"><lightning:inputField fieldName="Progress__c" value="{!t.Progress__c}"/></div>
+                                            <!--회수품전달-->
+                                            <lightning:inputField fieldName="DeliveryOfRecoveredGoods__c"
+                                                value="{!t.DeliveryOfRecoveredGoods__c}" />
+                                        </div>
+                                    </aura:if>
+    
+                                    <!--납품후교육-->
+                                    <aura:if
+                                        isTrue="{! t.TicketType__c == 'Internal request' &amp;&amp; t.InternalTicketType__c == 'Post-delivery training'}">
+                                        <h2 class="infoTitle">{!$Label.c.DNS_P_PostDeliveryTraining}</h2>
+                                        <div class="field-wrap">
+                                            <lightning:inputField fieldName="TrainingSort__c"
+                                                value="{!t.TrainingSort__c}" />
+                                            <!--교육 요청 일시(1)-->
+                                            <lightning:inputField fieldName="TrainingDateTime1__c"
+                                                value="{!t.TrainingDateTime1__c}" />
+                                            <!--교육 요청 일시(2)-->
+                                            <lightning:inputField fieldName="TrainingDateTime2__c"
+                                                value="{!t.TrainingDateTime2__c}" />
+                                            <!--담당자-->
+                                            <lightning:inputField fieldName="Manager__c" value="{!t.Manager__c}" />
+                                            <!--교육 요청 일시(3)-->
+                                            <lightning:inputField fieldName="TrainingDateTime3__c"
+                                                value="{!t.TrainingDateTime3__c}" />
+                                        </div>
+                                    </aura:if>
+    
+                                    <h2 class="infoTitle">{!$Label.c.DNS_S_SystemInformation}</h2>
+                                    <div class="field-wrap">
+                                        <lightning:outputField fieldName="CreatedById" />
+                                        <lightning:outputField fieldName="LastModifiedById" />
+                                    </div>
+    
+                                </aura:if>
+    
+    
+                                <!-- 🚩VOC -->
+                                <aura:if isTrue="{!! v.isTicket}">
+    
+                                    <h2 class="infoTitle">Receptionist Information</h2>
+                                    <div class="field-wrap">
+                                        <lightning:inputField fieldName="AccountId" value="{!t.AccountId}"/>
+                                        <lightning:inputField fieldName="AssetId" value="{!t.AssetId}"/>
+                                        <lightning:inputField fieldName="Status" required="true" value="{!t.Status}" />
+                                        <lightning:inputField fieldName="Requester__c" value="{!t.Requester__c}" />
+                                        <aura:if isTrue="{! t.Status == 'Closed'}">
+                                            <lightning:inputField fieldName="EndOfReason__c" value="{!t.EndOfReason__c}" />
+                                        </aura:if>
+                                        <div class="input-wrap">
+                                            <lightning:outputField fieldName="OwnerId" />
+                                        </div>
+                                    </div>
+    
+                                    <h2 class="infoTitle">Receipt VOC</h2>
+                                    <div class="field-wrap">
+                                        <div class="input-wrap">
+                                            <lightning:inputField fieldName="ApplicationRoute__c" value="{!t.ApplicationRoute__c}"/>
+                                            <lightning:inputField fieldName="ApplicationRoute2__c" value="{!t.ApplicationRoute2__c}"/>
+                                            <lightning:inputField fieldName="VOCType__c" value="{!t.VOCType__c}"/>
+                                            <lightning:inputField fieldName="VOCTypeDetail__c" value="{!t.VOCTypeDetail__c}"/>
+                                            <lightning:inputField fieldName="VOCcategory3__c" value="{!t.VOCcategory3__c}"/>
+                                        </div>
+                                        <div class="input-wrap withBlank">
+                                            <lightning:inputField fieldName="ReplyMethod__c" value="{!t.ReplyMethod__c}"/>
+                                            <lightning:inputField fieldName="ReplyTo__c" value="{!t.ReplyTo__c}"/>
+                                            <lightning:inputField fieldName="DesiredConsultationTime__c" value="{!t.DesiredConsultationTime__c}"/>
+                                            <lightning:inputField fieldName="ProcessingDeadline__c" value="{!t.ProcessingDeadline__c}"/>
+                                        </div>
+                                    </div>
+    
+                                    <h2 class="infoTitle">VOC Content</h2>
+                                    <div class="field-wrap noGrid">
+                                        <!-- <lightning:inputField fieldName="Subject" value="{!t.Subject}"/> -->
+                                        <lightning:inputField fieldName="ReceptionDetails__c" value="{!t.ReceptionDetails__c}" required="true"/>
+                                    </div>
+    
+                                    <aura:if isTrue="{! t.TicketType__c == 'Technical inquiry'}">
+                                        <h2 class="infoTitle">Manage VOC</h2>
+                                        <div class="field-wrap">
+                                            <lightning:inputField fieldName="Description" value="{!t.Description}"/>
+                                            <lightning:inputField fieldName="Manager__c" value="{!t.Manager__c}"/>
+                                            <lightning:inputField fieldName="DeliveryMessage__c" value="{!t.DeliveryMessage__c}"/>
+                                            <lightning:inputField fieldName="PartManager__c" value="{!t.PartManager__c}"/>
+                                            <lightning:inputField fieldName="Issue__c" value="{!t.Issue__c}"/>
+                                            <lightning:inputField fieldName="ServiceResource__c" value="{!t.ServiceResource__c}"/>
+                                        </div>
+                                    </aura:if>
+    
+                                    <h2 class="infoTitle">{!$Label.c.DNS_S_SystemInformation}</h2>
+                                    <div class="field-wrap">
+                                        <lightning:outputField fieldName="CreatedById" />
+                                        <lightning:outputField fieldName="LastModifiedById" />
+                                    </div>
+                                </aura:if>
+                            </aura:iteration>
+                        </div>
+                    </lightning:recordEditForm>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral"
+                        onclick="{! c.handleCancel }">{!$Label.c.DNS_B_Cancel}</button>
+                    <button class="slds-button slds-button_brand"
+                        onclick="{! c.handleSave }">{!$Label.c.DNS_B_Save}</button>
+                </div>
+            </aura:if>
+        <!-- </div> -->
+    </div>
+</aura:component>

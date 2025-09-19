@@ -1,0 +1,187 @@
+<!--
+  @description       : 장비 상세화면에서 유상스핀들 정보 조회
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 10-29-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   10-30-2024   Hayeong Min   Initial Version
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CheckSpindleInfoController">
+    <aura:html tag="style">
+        section.bodyWrapper:has(.cDN_CheckSpindleInfo) {
+            position:relative;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CheckSpindleInfo) {
+            overflow-y: unset;
+        }
+        .modal-container:has(.cDN_CheckSpindleInfo) {
+            width: 54rem;
+            max-width: calc(100vw - 8rem);
+            min-width: 30rem;
+            margin: auto;
+        }
+        .slds-modal__content:has(.cDN_CheckSpindleInfo) {
+            height: fit-content !important;
+            max-height: none !important;
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CheckSpindleInfo) {
+            padding: 0;
+        }
+
+    </aura:html>
+
+    <!--Attribute-->
+    <aura:attribute name="isSpinner" type="Boolean" default="true"/>
+    <aura:attribute name="spindleInfo" type="List" default="[]"/>
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!--Container-->
+    <div class="SpindleModal">
+        <div class="slds-modal__container">
+
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_CheckSpindle}</h2>
+            </header>
+
+            <!-- Mdoal Body -->
+            <div class="slds-modal__content modalContent">
+
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{!v.isSpinner}">
+                    <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                </aura:if>
+
+                <div class="top-card">
+                    <div class="table-wrap">
+                        <table class="slds-table search-table">
+                            <colgroup>
+                                <col width="4%" />
+                                <col width="4%" />
+                                <col width="22%" />
+                                <col width="22%" />
+                                <col width="10%" />
+                                <col width="6%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                                <col width="8%" />
+                            </colgroup>
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col" colspan="2">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_Category}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_ProductNumber}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_ProductName}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_Sales}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_Currency}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_FSL_AvailableStock}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_Unit}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate">
+                                            {!$Label.c.DNS_C_EDD}
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>                                
+                            <tbody>
+                                <aura:iteration items="{!v.spindleInfo}" var="sp" indexVar="j">
+                                <tr class="slds-hint-parent">
+                                    <td scope="col">
+                                        <div class="slds-truncate">
+                                            {!j+1}
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate">
+                                            {!sp.ZTYPE}
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate">
+                                            {!sp.MATNR}
+                                        </div>
+                                    </td>
+                                    <td scope="col">
+                                        <div class="slds-truncate">
+                                            {!sp.MAKTX}
+                                        </div>
+                                    </td>
+                                    <td scope="col" style="text-align: right;">
+                                        <div class="slds-truncate">
+                                            <lightning:formattedNumber value="{!sp.NETWR}"/>
+                                        </div>
+                                    </td>
+                                    <td scope="col" style="text-align: center;">
+                                        <div class="slds-truncate">
+                                            {!sp.WAERS}
+                                        </div>
+                                    </td>
+                                    <td scope="col" style="text-align: right;">
+                                        <div class="slds-truncate">
+                                            {!sp.MENGE}
+                                        </div>
+                                    </td>
+                                    <td scope="col" style="text-align: center;">
+                                        <div class="slds-truncate">
+                                            {!sp.MEINS} 
+                                        </div>
+                                    </td>
+                                    <td scope="col" style="text-align: right;">
+                                        <div class="slds-truncate">
+                                            {!sp.PLIFZ} {!$Label.c.DNS_F_Days}
+                                        </div>
+                                    </td>
+                                </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Close}" onclick="{!c.handleClose}" class="slds-m-left_x-small" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

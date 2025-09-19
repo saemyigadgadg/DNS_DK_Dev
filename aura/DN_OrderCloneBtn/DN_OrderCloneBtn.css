@@ -1,0 +1,56 @@
+.THIS .order_clone_modal {
+    position: relative;
+}
+
+.THIS .slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    position: relative;
+    /* height: calc(100vh - 29.5rem); */
+    height: 16rem;
+    overflow: hidden;
+}
+
+.THIS .slds-modal__content .slds-wrap {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 100%;
+}
+
+.THIS .input-wrap {
+    padding: 1.5rem 1.25rem 1rem;
+}
+
+.THIS .table-wrap {
+    padding: 0;
+    border-top: 1px solid #c9c9c9;
+    overflow: hidden;
+    flex: auto;
+}
+
+.THIS .display_none {
+    display: none;
+}
+
+
+/* 📱 Responsive Media Query (해상도 ~ 767px) */
+@media all and (max-width:767px) {
+    .THIS .slds-wrap .slds-size_6-of-12 {
+        width: 100%;
+    }
+
+    .THIS .modal_body_wrap {
+        height: calc(100vh - 12rem);
+    }
+
+    .THIS .modal_body_wrap .slds-input {
+        min-width: 100%;
+        width: 100% !important;
+        line-height: 100% !important;
+    }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Customer Complaint</fullName>
+        <default>false</default>
+        <label>Customer Complaint</label>
+    </customValue>
+    <customValue>
+        <fullName>Customer Compliment</fullName>
+        <default>false</default>
+        <label>Customer Compliment</label>
+    </customValue>
+    <customValue>
+        <fullName>Customer Proposal</fullName>
+        <default>false</default>
+        <label>Customer Proposal</label>
+    </customValue>
+    <customValue>
+        <fullName>Cost Inquiry</fullName>
+        <default>false</default>
+        <label>Cost Inquiry</label>
+    </customValue>
+    <masterLabel>VOC 유형</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

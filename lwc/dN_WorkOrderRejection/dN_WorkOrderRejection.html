@@ -1,0 +1,94 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 2024-11-12
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <div class="common">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+        
+        <template if:true={isRejectionSelectVisible}>
+            <!-- Original Starts -->
+            <lightning-card>
+                <div class="card-01">
+                    <div class="total-wrap">
+                        <h3>{cLabel.DNS_FSL_AssignmentRejectionReason}</h3>
+                        <div class="input-wrap">
+                            <lightning-radio-group
+                                name="rejectionReason"
+                                options={rejectionReasons}
+                                value={rejectionReason}
+                                type="button"
+                                onchange={handleChange}
+                                variant="label-hidden"
+                            ></lightning-radio-group>
+                        </div>
+                        
+                        <div class="button-wrap">
+                            <lightning-button
+                                variant="brand"
+                                label={cLabel.DNS_FSL_AssignmentRejectionSave}
+                                onclick={handleSubmit}
+                                class="slds-m-top_medium"
+                                aria-label=""
+                            ></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </lightning-card>
+
+            <!-- Previous Version -->
+            <!-- <div class="total-wrap modal-01">
+                <div class="body">
+                    <div class="icon-wrap">
+                        <lightning-icon icon-name='utility:edit' alternative-text='edit' size='small' title='edit'></lightning-icon>
+                    </div>
+        
+                    <h3 class="title">{cLabel.DNS_FSL_AssignmentRejectionReason}</h3>
+                    
+                    <div class="input-wrap">
+                        <lightning-combobox
+                            name="rejectionReason"
+                            variant="label-hidden"
+                            value={rejectionReason}
+                            placeholder="거절사유를 선택해주세요."
+                            options={rejectionReasons}
+                            onchange={handleChange} >
+                        </lightning-combobox>
+                    </div>
+    
+                    <div class="input-wrap">
+                        <lightning-textarea label="배정거절내용" variant="label-hidden" value={receiptDetails} onchange={handleInputChange} placeholder="기타 거절사유 및 특이사항을 입력해 주세요." disabled={isReceiptDetailsDisabled}></lightning-textarea>
+                    </div>
+        
+                    <div class="button-wrap">
+                        <lightning-button variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button>
+                        <lightning-button variant="brand" label="Check" onclick={handleSubmit} disabled={isConfirmDisabled}></lightning-button>
+                    </div>
+                </div>            
+            </div> -->
+
+        </template>
+    
+        <!-- 배정거절 완료 화면 -->
+        <template if:true={isRejectionCompleteVisible}>
+            <div class="total-wrap modal-01">
+                <div class="body">
+                    <div class="icon-wrap">
+                        <lightning-icon icon-name='utility:check' alternative-text='check' size='small' title='edit'></lightning-icon>
+                    </div>
+    
+                    <h3 class="title">{cLabel.DNS_FSL_Alarm}</h3>
+                    <p class="message">{cLabel.DNS_FSL_AssignmentRejectionCompleted}</p>
+                    <div class="button-wrap">
+                        <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleCompleteClose}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+    
+</template>

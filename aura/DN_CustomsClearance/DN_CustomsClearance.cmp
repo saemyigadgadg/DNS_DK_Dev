@@ -1,0 +1,449 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 07-31-2024
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   07-11-2024   Hanyeong Choi   Initial Version
+  1.0   07-12-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+                description="Customs Clearance">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="isAllChecked"         type="Boolean"  default="false" />
+    <aura:attribute name="isSearched"           type="Boolean"  default="false" />
+    <aura:attribute name="isClickUpload"        type="Boolean"  default="false" />
+    <aura:attribute name="resultList"           type="List"     default="[]" />
+    <aura:attribute name="selectedList"         type="List"     default="[]" />
+    <aura:attribute name="radioOptions"         type="List"     default="[
+            {'label' : 'All',   'value' : 'All'},
+            {'label' : 'Yes',   'value' : 'Yes'},
+            {'label' : 'No',    'value' : 'No'}
+        ]" />
+    <aura:attribute name="certRadioOptions"     type="List"     default="[
+            {'label' : 'All',   'value' : 'All'},
+            {'label' : 'Yes',   'value' : 'Yes'},
+            {'label' : 'No',    'value' : 'No'}
+        ]" />
+    <aura:attribute name="startDate"            type="Date" />
+    <aura:attribute name="endDate"              type="Date" />
+    <aura:attribute name="uploadRadiovalue"     type="String"   default="No" />
+    <aura:attribute name="certRadiovalue"       type="String"   default="All" />
+    <aura:attribute name="plant"                type="String"   default="" />
+    <aura:attribute name="shipDocValue"         type="String"   default="" />
+    <aura:attribute name="invoiceValue"         type="String"   default="" />
+    <!-- Paging Attribute -->
+    <aura:attribute name="pagingResultList"     type="List"     default="[]" />
+    <aura:attribute name="dividePageCount"      type="Integer"  default="15" />
+    <aura:attribute name="allResultCount"       type="Integer"  default="0" />
+    <aura:attribute name="totalPage"            type="Decimal"  default="1" />
+    <aura:attribute name="pageAllCountList"     type="List" />
+    <aura:attribute name="pageCountListIndex"   type="Decimal"  default="0" />
+    <aura:attribute name="pageCountList"        type="List"     default="[0]" />
+    <aura:attribute name="currentPage"          type="Decimal"  default="1" />
+    <aura:attribute name="pageList"             type="List" />
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+
+    <div class="total-wrap">
+        <article class="slds-card">
+            <aura:if isTrue="{! v.isLoading}">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- 🚩Aura Modal -->
+            <div aura:id="ShipDocInvoiceModal"></div>
+            <div aura:id="PlantModal"></div>
+
+            <!-- 🚩Aura Header -->
+            <div class="header">
+                <div class="title slds-grid">
+                    <lightning:icon iconName="custom:custom40" size="small" alternativeText="Customs Clearance" />
+                    <h2 class="slds-truncate">Customs Clearance</h2>
+                </div>
+
+                <div class="button-wrap">
+                    <lightning:button   name="searchCustomsClearance" 
+                                        label="Search" 
+                                        iconName="utility:search" 
+                                        iconPosition="left"
+                                        onclick="{! c.handleSearch }" />
+
+                    <lightning:input type="file" variant="label-hidden" class="uploadBtn" onchange="{! c.handleFileSelected }" multiple="true" />
+                </div>
+            </div>
+
+            <!-- 🚩Aura Body -->
+            <div class="body">
+
+                <!-- Card 01 -->
+                <div class="card-01 top-card">
+                    <div class="field-wrap">
+                        <p>Ship Doc. Standardiztion No</p>
+                        <div class="input-wrap">
+                            <lightning:input    type="text" 
+                                                name="shipDocInput" 
+                                                variant="label-hidden" 
+                                                value="{! v.shipDocValue }"
+                                                readonly="true" 
+                                                disabled="true" />
+
+                            <lightning:buttonicon   iconName="utility:search" 
+                                                    size="medium" 
+                                                    alternativeText="Search"
+                                                    onclick="{!c.handleShipDocInvoiceModal}" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>Invoice No</p>
+                        <div class="input-wrap">
+                            <lightning:input    type="text" 
+                                                name="invoiceInput" 
+                                                variant="label-hidden" 
+                                                value="{! v.invoiceValue }"
+                                                readonly="true" 
+                                                disabled="true" />
+
+                            <lightning:buttonicon   iconName="utility:search" 
+                                                    size="medium" 
+                                                    alternativeText="Search"
+                                                    onclick="{!c.handleShipDocInvoiceModal}" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>Customs Clearance Req. Date</p>
+                        <div class="input-wrap">
+                            <lightning:input    type="date" 
+                                                name="startDateInput" 
+                                                value="{! v.startDate }" 
+                                                variant="label-hidden" />
+                            <span>~</span>
+                            <lightning:input    type="date" 
+                                                name="endDateInput" 
+                                                value="{! v.endDate }" 
+                                                variant="label-hidden" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>Upload</p>
+                        <div class="input-wrap">
+                            <lightning:radioGroup   type="radio" 
+                                                    name="uploadRadio" 
+                                                    variant="label-hidden" 
+                                                    options="{! v.radioOptions }"
+                                                    value="{! v.uploadRadiovalue }" 
+                                                    onchange="{! c.handleChangeUploadRadio }" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>Plant</p>
+                        <div class="input-wrap">
+                            <lightning:input    type="text" 
+                                                name="plantInput" 
+                                                variant="label-hidden" 
+                                                value="{! v.plant }" 
+                                                readonly="true"
+                                                disabled="true" />
+
+                            <lightning:buttonicon   iconName="utility:search" 
+                                                    size="medium" 
+                                                    alternativeText="Search"
+                                                    onclick="{!c.handlePlantModal}" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p>Cert.Upload</p>
+                        <div class="input-wrap">
+                            <lightning:radioGroup   type="radio" 
+                                                    name="certRadio" 
+                                                    variant="label-hidden"
+                                                    options="{! v.certRadioOptions }" 
+                                                    value="{! v.certRadiovalue }"
+                                                    onchange="{! c.handleChangeCertRadio }" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 02 -->
+                <div class="card-02 top-card slds-scrollable">
+                    <div class="table-wrap">
+
+                        <!-- Fixed : Left -->
+                        <div class="table-01 left-table" aura:id="leftTableDiv">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="5%" />
+                                    <col width="18%" />
+                                    <col width="18%" />
+                                    <col width="18%" />
+                                    <col width="19%" />
+                                    <col width="20%" />
+                                </colgroup>
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">
+                                                <lightning:input    aura:id="headerCheckbox" 
+                                                                    type="checkbox" 
+                                                                    variant="label-hidden"
+                                                                    onchange="{! c.handleSelectAll }" />
+                                            </div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Status</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Plant</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Cert.UpLoad</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Invoice No</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Employee Name</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!not(v.isSearched)}">
+                                        <tr>
+                                            <td colspan="6" class="center">No Data</td>
+                                        </tr>
+                                    </aura:if>
+
+                                    <aura:if isTrue="{!v.isSearched}">
+                                        <aura:iteration items="{! v.pagingResultList }" var="result" indexVar="index">
+                                            <tr class="slds-hint-parent">
+                                                <td scope="row">
+                                                    <div class="center">
+                                                        <lightning:input    aura:id="checkbox" 
+                                                                            type="checkbox" 
+                                                                            variant="label-hidden"
+                                                                            onchange="{! c.handleSelect }" />
+                                                    </div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.status}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.plant}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.certUpLoad}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.invoiceNo}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.employeeName}</div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Scrollable : Right -->
+                        <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                            <table aria-label="Example table of Opportunities with vertical borders" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="5%" />
+                                    <col width="2%" />
+                                    <col width="3%" />
+                                    <col width="2%" />
+                                    <col width="5%" />
+                                    <col width="2%" />
+                                    <col width="7%" />
+                                    <col width="2%" />
+                                    <col width="3%" />
+                                    <col width="11%" />
+                                    <col width="4%" />
+                                    <col width="6%" />
+                                    <col width="7%" />
+                                    <col width="5%" />
+                                    <col width="5%" />
+                                    <col width="2%" />
+                                    <col width="7%" />
+                                </colgroup>
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Amount</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Curr</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Qty</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Unit</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Gross Weight</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Unit</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Download Status</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Bond</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">No Draft</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Sold-to party</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">ETD</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Legal Action</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Declaration Date</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Vendor</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">CBM</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Unit</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="">Cert.No</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{! v.isSearched }">
+                                        <aura:iteration items="{! v.pagingResultList }" var="result" indexVar="index">
+                                            <tr class="slds-hint-parent">
+                                                <td scope="row">
+                                                    <div class="right">{!result.amount}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div class="center">{!result.curr}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.qty}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.unit1}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.grossWeight}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.unit2}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.downloadStatus}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.bond}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.noDraft}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.soldToParty}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.etd}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.legalAction}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div class="center">{!result.declarationDate}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.vendor}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.cbm}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.unit3}</div>
+                                                </td>
+                                                <td scope="row">
+                                                    <div>{!result.certNo}</div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 🚩Aura Page -->
+                    <div class="pagination-wrap">
+                        <div class="total">
+                            <p>
+                                총 건수 : <span style="font-weight: bold;">{!v.allResultCount}</span>
+                                ({!v.currentPage}/{!v.totalPage})
+                            </p>
+                        </div>
+                        <ul class="pagination">
+                            <li class="first">
+                                <a onclick="{!c.handleChangePage}" name="first" value="1">
+                                    <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small' title='jump_to_left'></lightning:icon>
+                                </a>
+                            </li>
+                            <li class="prev">
+                                <a onclick="{!c.handleChangePage}" name="previous" value="{!v.currentPage - 1}">
+                                    <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small' title='chevronleft'></lightning:icon>
+                                </a>
+                            </li>
+                            <li class="pages">
+                                <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                                    <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                                        <span class="here"> {!pageNumber + 1} </span>
+
+                                        <aura:set attribute="else">
+                                            <span>
+                                                <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber +1}</a>
+                                            </span>
+                                        </aura:set>
+                                    </aura:if>
+                                </aura:iteration>
+                            </li>
+                            <li class="next">
+                                <a onclick="{!c.handleChangePage}" name="next" value="{!v.currentPage + 1}">
+                                    <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small' title='chevronright'></lightning:icon>
+                                </a>
+                            </li>
+                            <li class="last">
+                                <a onclick="{!c.handleChangePage}" name="last" value="{!v.pageList.length}">
+                                    <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small' title='jump_to_right'></lightning:icon>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

@@ -1,0 +1,1019 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-25-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   04-25-2025   Hyerin Ro   Initial Version
+-->
+
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 04-25-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-01-03   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global" controller="DN_TicketDetailController">
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" /> <!-- 로딩 -->
+    <aura:attribute name="recordId" type="String" default="" />
+    <aura:attribute name="recordType" type="String" default="" />
+    <aura:attribute name="isDNSAGeneral" type="Boolean" default="true" />
+    <aura:attribute name="isReadMode" type="Boolean" default="true" />
+    <aura:attribute name="selectStatus" type="String" default="" />
+    <aura:attribute name="selectCloseReason" type="String" default="" />
+    <aura:attribute name="selectTicketMajor" type="String" default="" />
+    <aura:attribute name="selectTicketMiddle" type="String" default="" />
+    <aura:attribute name="assetAccountId" type="String" default="" />
+    <aura:attribute name="selectAccountId" type="String" default="" />
+    <aura:attribute name="TicketWrapper" type="DN_TicketDetailController.TicketWrapper" default="" />
+
+    <aura:attribute name="selectedFailureArea" type="String" default="" />
+    <aura:attribute name="selectedFailureAreaLabel" type="String" default="" />
+    <aura:attribute name="selectedFailureAreaDetail" type="String" default="" />
+    <aura:attribute name="selectedFailureAreaDetailLabel" type="String" default="" />
+    <aura:attribute name="selectedFailurePhenomenon" type="String" default="" />
+    <aura:attribute name="selectedFailurePhenomenonLabel" type="String" default="" />
+    <aura:attribute name="isFailureAreaDetail" type="Boolean" default="true" />
+    <aura:attribute name="isFailurePhenomenon" type="Boolean" default="true" />
+    <aura:attribute name="majorOptions" type="List" default="[]" />
+    <aura:attribute name="middleOptions" type="List" default="[]" />
+    <aura:attribute name="phenomenonOptions" type="List" default="[]" />
+    <aura:attribute name="failureRquired" type="Boolean" default="false" />
+    <aura:attribute name="isUserProfile" type="Boolean" default="false" />
+
+    <!--민하영 추가-->
+    <force:recordData recordId="{!$SObjectType.CurrentUser.Id}" fields="Profile.Name" targetFields="{!v.CurrentUser}" />
+    <aura:attribute name="CurrentUser" type="Object" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- Action -->
+    <aura:handler name="init" value="{!this }" action="{! c.doInit }" />
+
+    <!-- Loading Spinner -->
+    <aura:if isTrue="{!v.isLoading }">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+    </aura:if>
+
+    <aura:if isTrue="{! v.isReadMode}">
+        <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Case">
+            <!-- Service Reception Section -->
+            <div>
+                <lightning:layoutItem flexibility="auto" padding="around-small">
+                    <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                        <label>{!$Label.c.DNS_S_ServiceReception}</label>
+                    </div>
+                </lightning:layoutItem>
+            </div>
+
+            <div class="slds-grid slds-gutters slds-wrap">
+                <!-- Left Section-->
+                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                    <div class="field-container">
+                        <span style="color: red; margin-left: -4px;">*</span>
+                        <lightning:outputField fieldName="Status" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <aura:if isTrue="{! v.selectStatus  == 'Closed' }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="EndOfReason__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! AND(v.selectStatus  == 'Closed', v.selectCloseReason  == 'Call Service' )}">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="ResultOfMeasure__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if
+                        isTrue="{! AND(v.selectStatus  == 'Closed', OR(v.selectCloseReason  == 'Call Service', v.selectCloseReason  == 'Customer Cancellation'))}">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="ClosedReasonDetails__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! v.selectStatus  == 'Reject' }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="RejectReasonDetails__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! v.selectStatus  == 'Waiting (Assignment delay)' }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="AssignHoldingReason__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <div class="field-container">
+                        <aura:if isTrue="{!v.isDNSAGeneral}">
+                            <span style="color: red; margin-left: -4px;">*</span>
+                        </aura:if>
+                        <lightning:outputField fieldName="AssetId" />
+                        <aura:if isTrue="{!v.selectTicketMiddle != 'Installation request'}">
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </aura:if>
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="FM_EquipmentWarranty__c" />
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="AccountId" />
+                        <aura:if isTrue="{!v.selectTicketMiddle != 'Installation request'}">
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </aura:if>
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="Requester__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="RequesterManual__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                title='edit' onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <!-- <lightning:outputField fieldName="FM_PhoneNumber__c" /> -->
+                        <div class="phone-field slds-form-element slds-form-element_horizontal">
+                            <span class="slds-form-element__label">{!$Label.c.DNS_F_Phone}</span>
+                            <div class="slds-form-element__control">
+                                <lightning:clickToDial value="{!v.TicketWrapper.reception.phone}"
+                                    recordId="{!v.recordId}" />
+                            </div>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{! v.TicketWrapper.ticketRecordType  == 'Ticket_DNSA' }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Dealer__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="DealerContact__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Pendingprocessing__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="ActualEquipmentAddress__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! v.TicketWrapper.reception.ticketTypeMajor  == 'Internal request' }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="InternalRequester__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="isAlarmToCustomer__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <span style="color: red; margin-left: -4px;">*</span>
+                        <lightning:outputField fieldName="ReceptionDetails__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section -->
+                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                    <div class="field-container">
+                        <span style="color: red; margin-left: -4px;">*</span>
+                        <lightning:outputField fieldName="TicketType__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <span style="color: red; margin-left: -4px;">*</span>
+                        <lightning:outputField fieldName="InternalTicketType__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <aura:if isTrue="{! OR(v.selectTicketMiddle  == 'Service Campaign', OR( 
+                                     v.selectTicketMiddle  == 'Pre-Call',
+                                     v.selectTicketMiddle  == 'Regular Inspections')) }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Campaign__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="ReceptionPath__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <span style="color: red; margin-left: -4px;">*</span>
+                        <lightning:outputField fieldName="ApplicationDateTime__c" />
+
+                        <aura:if
+                            isTrue="{!OR(v.CurrentUser.Profile.Name == 'System Administrator', v.CurrentUser.Profile.Name == '시스템 관리자' , v.CurrentUser.Profile.Name == 'DNS CS Admin')}">
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </aura:if>
+                        <!-- <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                title='edit' onclick="{!c.editMode}" style="display:none" />
+                        </div> -->
+                    </div>
+                    <div class="field-container">
+                        <aura:if isTrue="{!v.failureRquired}">
+                            <span style="color: red; margin-left: -4px;">*</span>
+                        </aura:if>
+                        <lightning:outputField fieldName="BreakdownDateTime__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="OriginTicket__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <aura:if isTrue="{!v.failureRquired}">
+                            <span style="color: red; margin-left: -4px;">*</span>
+                        </aura:if>
+                        <lightning:outputField fieldName="FailureStatus__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="IsUrgency__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <div class="field-container">
+                        <lightning:outputField fieldName="IsReGenerate__c" />
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='edit'
+                                onclick="{!c.editMode}" />
+                        </div>
+                    </div>
+                    <aura:if
+                        isTrue="{! OR(v.TicketWrapper.reception.ticketTypeSub  == 'Installation request', v.TicketWrapper.reception.ticketTypeSub == 'Post-delivery training') }">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="SalesOrder__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+
+            <!-- Technical Consultation Section -->
+            <aura:if
+                isTrue="{! OR(v.TicketWrapper.reception.ticketTypeMajor  == 'Internal request', v.TicketWrapper.reception.ticketTypeMajor  == 'Technical inquiry') }">
+                <div>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_TechnicalConsultation}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </div>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Left Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <aura:if isTrue="{!v.failureRquired}">
+                                <span style="color: red; margin-left: -4px;">*</span>
+                            </aura:if>
+                            <lightning:outputField fieldName="FailureArea__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <aura:if isTrue="{!v.failureRquired}">
+                                <span style="color: red; margin-left: -4px;">*</span>
+                            </aura:if>
+                            <lightning:outputField fieldName="FailureAreaDetail__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <aura:if isTrue="{!v.failureRquired}">
+                                <span style="color: red; margin-left: -4px;">*</span>
+                            </aura:if>
+                            <lightning:outputField fieldName="FailurePhenomenon__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <aura:if isTrue="{!v.failureRquired}">
+                                <span style="color: red; margin-left: -4px;">*</span>
+                            </aura:if>
+                            <lightning:outputField fieldName="RepairRequestDateTime__c" id="repairRequestDatetime" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- Missing Part Section -->
+            <aura:if
+                isTrue="{! AND(v.TicketWrapper.reception.ticketTypeMajor  == 'Internal request', v.TicketWrapper.reception.ticketTypeSub  == 'Missing Part, Wrong Part') }">
+                <div>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_MissingPartWrongPartManagement}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </div>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Left Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <!-- <div class="field-container">
+                            <lightning:outputField fieldName="ModelCode__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div> -->
+                        <div class="field-container">
+                            <lightning:outputField fieldName="InstallationWC__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Producer__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="NotiNO__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Occurrence_Classification_Select__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Occurrence_Classification__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="SVOrdNo__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="DeliveryOfRecoveredGoods__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="Progress__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- Post Delivery Training Section -->
+            <aura:if
+                isTrue="{! AND(v.TicketWrapper.reception.ticketTypeMajor  == 'Internal request', v.TicketWrapper.reception.ticketTypeSub  == 'Post-delivery training') }">
+                <div>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_PostDeliveryTrainingSection}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </div>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Left Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="SalesDealer__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="ContactName__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="ContactPosition__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="ContactPhone__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <lightning:outputField fieldName="TrainingCount__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="TrainingType__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="TraineeLevel__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="TrainingDateTime1__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="TrainingDateTime2__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="TrainingDateTime3__c" />
+                            <div class="icon-wrap">
+                                <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small'
+                                    title='edit' onclick="{!c.editMode}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- System Information -->
+            <div>
+                <lightning:layoutItem flexibility="auto" padding="around-small">
+                    <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                        <label>{!$Label.c.DNS_T_OptyCloneSystemInfo}</label>
+                    </div>
+                </lightning:layoutItem>
+            </div>
+            <div class="slds-grid slds-gutters slds-wrap">
+                <!-- Left Section -->
+                <div class="slds-col slds-size_1-of-2 system-info-wrap slds-form-element_horizontal">
+                    <span class="slds-form-element__label">{!$Label.c.DNS_F_CreatedBy}</span>
+                    <div class="slds-form-element__control slds-form-element_horizontal slds-form-element_readonly"> 
+                        <div class="id-wrap slds-form-element__control slds-form-element__static">
+                            <!-- <lightning:icon iconName='utility:questions_and_answers' alternativeText='edit'
+                                size='xx-small' title='edit' /> -->
+                            <div class="slds-shrink-none">
+                                <span class="record-avatar-container slds-avatar slds-avatar_x-small slds-avatar--circle icon slds-m-right_xx-small slds-avatar_profile-image-small"></span>
+                            </div>
+                            <lightning:outputField fieldName="CreatedById" variant="label-hidden" />
+                            <span class="comma">,</span>
+                            <lightning:outputField fieldName="CreatedDate" variant="label-hidden" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Section -->
+                <div class="slds-col slds-size_1-of-2 system-info-wrap slds-form-element_horizontal">
+                    <span class="slds-form-element__label">{!$Label.c.DNS_F_LastModifiedBy}</span>
+                    <div class="slds-form-element__control slds-form-element_horizontal slds-form-element_readonly"> 
+                        <div class="id-wrap slds-form-element__control slds-form-element__static">
+                            <!-- <lightning:icon iconName='utility:questions_and_answers' alternativeText='edit'
+                                size='xx-small' title='edit' /> -->
+                            <div class="slds-shrink-none">
+                                <span class="record-avatar-container slds-avatar slds-avatar_x-small slds-avatar--circle icon slds-m-right_xx-small slds-avatar_profile-image-small"></span>
+                            </div>
+                            <lightning:outputField fieldName="LastModifiedById" variant="label-hidden" />
+                            <span class="comma">,</span>
+                            <lightning:outputField fieldName="LastModifiedDate" variant="label-hidden" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning:recordViewForm>
+
+
+
+        <aura:set attribute="else">
+            <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Case" onsubmit="{!c.handleSubmit}"
+                onsuccess="{!c.handleSuccess}" onerror="{!c.handleError}">
+                <!-- Service Reception Section -->
+                <div>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_S_ServiceReception}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </div>
+
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Left Section-->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <lightning:inputField id="status" fieldName="Status" onchange="{!c.handleStatusChange}"
+                                required="true" />
+                        </div>
+                        <aura:if isTrue="{! v.selectStatus  == 'Closed' }">
+                            <div class="field-container">
+                                <lightning:inputField id="endOfReason" fieldName="EndOfReason__c"
+                                    onchange="{!c.handleCloseReasonChange}" required="true" />
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{! AND(v.selectStatus  == 'Closed', v.selectCloseReason  == 'Call Service' )}">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="ResultOfMeasure__c" required="true" />
+                            </div>
+                        </aura:if>
+                        <aura:if
+                            isTrue="{! AND(v.selectStatus  == 'Closed', OR(v.selectCloseReason  == 'Call Service', v.selectCloseReason  == 'Customer Cancellation'))}">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="ClosedReasonDetails__c" required="true" />
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{! v.selectStatus  == 'Reject' }">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="RejectReasonDetails__c" required="true" />
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{! v.selectStatus  == 'Waiting (Assignment delay)' }">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="AssignHoldingReason__c" required="true" />
+                            </div>
+                        </aura:if>
+                        <div class="field-container">
+                            <lightning:inputField id="assetId" fieldName="AssetId" required="{!v.isDNSAGeneral}"
+                                onchange="{!c.handleChangeAsset}"
+                                disabled="{!v.selectTicketMiddle == 'Installation request'}" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="FM_EquipmentWarranty__c" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="AccountId" id="accountId" onchange="{!c.handleAccountId}"
+                                disabled="{!v.selectTicketMiddle == 'Installation request'}" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="Requester__c" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="RequesterManual__c" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:outputField fieldName="FM_PhoneNumber__c" />
+                        </div>
+                        <aura:if isTrue="{! v.TicketWrapper.ticketRecordType  == 'Ticket_DNSA' }">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Dealer__c" id="dealerId" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="DealerContact__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Pendingprocessing__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="ActualEquipmentAddress__c" />
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{! v.selectTicketMajor  == 'Internal request' }">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="InternalRequester__c" />
+                            </div>
+                        </aura:if>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="isAlarmToCustomer__c" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="ReceptionDetails__c" id="receptionDetails"
+                                required="true" />
+                        </div>
+                    </div>
+                    <!-- Right Section -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                        <div class="field-container">
+                            <lightning:inputField id="ticketType" fieldName="TicketType__c"
+                                onchange="{!c.handleTypeMajorChange}" required="true" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField id="ticketMiddleType" fieldName="InternalTicketType__c"
+                                onchange="{!c.handleTypeMiddleChange}" required="true" />
+                        </div>
+                        <aura:if isTrue="{! OR(v.selectTicketMiddle  == 'Service Campaign', OR( 
+                                     v.selectTicketMiddle  == 'Pre-Call',
+                                     v.selectTicketMiddle  == 'Regular Inspections')) }">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Campaign__c" />
+                            </div>
+                        </aura:if>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="ReceptionPath__c" />
+                        </div>
+                        <div class="field-container">
+                            <aura:if
+                            isTrue="{!OR(v.CurrentUser.Profile.Name == 'System Administrator', v.CurrentUser.Profile.Name == '시스템 관리자' , v.CurrentUser.Profile.Name == 'DNS CS Admin')}">
+                                <lightning:inputField fieldName="ApplicationDateTime__c" id="applicationDatetime"
+                                    required="true" />
+                                <aura:set attribute="else">
+                                    <lightning:inputField fieldName="ApplicationDateTime__c" id="applicationDatetime"
+                                        required="true" disabled="true" />
+                                </aura:set>
+                            </aura:if>
+
+                            <!-- <lightning:inputField fieldName="ApplicationDateTime__c" id="applicationDatetime" required="true" disabled="true"/> -->
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="BreakdownDateTime__c" id="breakdownDatetime"
+                                required="{!v.failureRquired}" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="OriginTicket__c" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="FailureStatus__c" required="{!v.failureRquired}" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField fieldName="IsUrgency__c" id="isUrgency"
+                                onchange="{!c.handleUrgencyChange}" />
+                        </div>
+                        <div class="field-container">
+                            <lightning:inputField id="isReGenerate" fieldName="IsReGenerate__c"
+                                onchange="{!c.handleReGenerateChange}" />
+                        </div>
+                        <aura:if
+                            isTrue="{! OR(v.selectTicketMiddle  == 'Installation request', v.selectTicketMiddle  == 'Post-delivery training') }">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="SalesOrder__c" />
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+
+                <!-- Technical Consultation Section -->
+                <aura:if
+                    isTrue="{! OR(v.selectTicketMajor  == 'Internal request', v.selectTicketMajor  == 'Technical inquiry') }">
+                    <div>
+                        <lightning:layoutItem flexibility="auto" padding="around-small">
+                            <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                                <label>{!$Label.c.DNS_S_TechnicalConsultation}</label>
+                            </div>
+                        </lightning:layoutItem>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- Left Section -->
+                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="FailureArea__c" value="{!v.selectedFailureAreaLabel}"
+                                    style="display:none;" required="{!v.failureRquired}" />
+                                <lightning:inputField id="failureAreaValue" fieldName="FailureAreaValue__c"
+                                    value="{!v.selectedFailureArea}" style="display:none;"
+                                    required="{!v.failureRquired}" />
+                                <lightning:combobox id="failureArea" name="FailureArea"
+                                    label="{!$Label.c.DNS_F_FailureArea}" value="{!v.selectedFailureArea}"
+                                    options="{!v.majorOptions}" onchange="{!c.handleFailureAreaChange}"
+                                    class="slds-form-element_horizontal slds-form-element" variant="label-inline"
+                                    required="{!v.failureRquired}"></lightning:combobox>
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="FailureAreaDetail__c"
+                                    value="{!v.selectedFailureAreaDetailLabel}" style="display:none;"
+                                    required="{!v.failureRquired}" />
+                                <lightning:inputField id="failureAreaDetailValue" fieldName="FailureAreaDetailValue__c"
+                                    value="{!v.selectedFailureAreaDetail}" style="display:none;"
+                                    required="{!v.failureRquired}" />
+                                <lightning:combobox id="failureAreaDetail" name="FailureAreaDetail"
+                                    label="{!$Label.c.DNS_F_FailureAreaDetail}" value="{!v.selectedFailureAreaDetail}"
+                                    options="{!v.middleOptions}" onchange="{!c.handleFailureAreaDetailChange}"
+                                    class="slds-form-element_horizontal slds-form-element" variant="label-inline"
+                                    disabled="{!v.isFailureAreaDetail}" required="{!v.failureRquired}">
+                                </lightning:combobox>
+                            </div>
+                        </div>
+                        <!-- Right Section -->
+                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="FailurePhenomenon__c"
+                                    value="{!v.selectedFailurePhenomenonLabel}" style="display:none;"
+                                    required="{!v.failureRquired}" />
+                                <lightning:inputField id="failurePhenomenonValue" fieldName="FailurePhenomenonValue__c"
+                                    value="{!v.selectedFailurePhenomenon}" style="display:none;"
+                                    required="{!v.failureRquired}" />
+                                <lightning:combobox id="failurePhenomenon" name="FailurePhenomenon"
+                                    label="{!$Label.c.DNS_F_Failurephenomenon}" value="{!v.selectedFailurePhenomenon}"
+                                    options="{!v.phenomenonOptions}" onchange="{!c.handleFailurePhenomenonChange}"
+                                    class="slds-form-element_horizontal slds-form-element" variant="label-inline"
+                                    disabled="{!v.isFailurePhenomenon}" required="{!v.failureRquired}">
+                                </lightning:combobox>
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="RepairRequestDateTime__c" id="repairRequestDatetime"
+                                    required="{!v.failureRquired}" />
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+
+                <!-- Missing Part Section -->
+                <aura:if
+                    isTrue="{! AND(v.selectTicketMajor  == 'Internal request', v.selectTicketMiddle  == 'Missing Part, Wrong Part') }">
+                    <div>
+                        <lightning:layoutItem flexibility="auto" padding="around-small">
+                            <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                                <label>{!$Label.c.DNS_S_MissingPartWrongPartManagement}</label>
+                            </div>
+                        </lightning:layoutItem>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- Left Section -->
+                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                            <!-- <div class="field-container">
+                                <lightning:inputField fieldName="ModelCode__c" />
+                            </div> -->
+                            <div class="field-container">
+                                <lightning:inputField fieldName="InstallationWC__c" id="instWorkcenter" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Producer__c" id="producer" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="NotiNO__c" />
+                            </div>
+                        </div>
+                        <!-- Right Section -->
+                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Occurrence_Classification_Select__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Occurrence_Classification__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="SVOrdNo__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="DeliveryOfRecoveredGoods__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="Progress__c" />
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+
+                <!-- Post Delivery Training Section -->
+                <aura:if
+                    isTrue="{! AND(v.selectTicketMajor  == 'Internal request', v.selectTicketMiddle  == 'Post-delivery training') }">
+                    <div>
+                        <lightning:layoutItem flexibility="auto" padding="around-small">
+                            <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                                <label>{!$Label.c.DNS_S_PostDeliveryTrainingSection}</label>
+                            </div>
+                        </lightning:layoutItem>
+                    </div>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <!-- Left Section -->
+                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="SalesDealer__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="ContactName__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="ContactPosition__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="ContactPhone__c" />
+                            </div>
+                        </div>
+                        <!-- Right Section -->
+                        <div class="slds-col slds-size_1-of-2 slds-p-horizontal_x-small">
+                            <div class="field-container">
+                                <lightning:inputField fieldName="TrainingCount__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="TrainingType__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="TraineeLevel__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="TrainingDateTime1__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="TrainingDateTime2__c" />
+                            </div>
+                            <div class="field-container">
+                                <lightning:inputField fieldName="TrainingDateTime3__c" />
+                            </div>
+                        </div>
+                    </div>
+                </aura:if>
+
+                <!-- System Information -->
+                <div>
+                    <lightning:layoutItem flexibility="auto" padding="around-small">
+                        <div class="slds-p-around_x-small slds-section__title slds-theme_shade">
+                            <label>{!$Label.c.DNS_T_OptyCloneSystemInfo}</label>
+                        </div>
+                    </lightning:layoutItem>
+                </div>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <!-- Left Section -->
+                    <!-- <div class="slds-col slds-size_1-of-2 system-info-wrap edit-mode">
+                        <div class="field-container">
+                            <span class="slds-form-element__label">{!$Label.c.DNS_F_CreatedBy}</span>
+                            <div class="id-wrap">
+                                <lightning:icon iconName='utility:questions_and_answers' alternativeText='edit'
+                                    size='xx-small' title='edit' />
+                                <lightning:outputField fieldName="CreatedById" variant="label-hidden" />
+                            </div>
+                            <lightning:outputField fieldName="CreatedDate" variant="label-hidden" />
+                        </div>
+
+                    </div> -->
+
+                    <div class="slds-col slds-size_1-of-2 system-info-wrap slds-form-element_horizontal edit-mode">
+                        <span class="slds-form-element__label">{!$Label.c.DNS_F_CreatedBy}</span>
+                        <div class="slds-form-element__control slds-form-element_horizontal slds-form-element_readonly"> 
+                            <!-- ㄴ .field-container -->
+                            <div class="id-wrap slds-form-element__control slds-form-element__static">
+                                <!-- <lightning:icon iconName='utility:questions_and_answers' alternativeText='edit'
+                                    size='xx-small' title='edit' /> -->
+                                <div class="slds-shrink-none">
+                                    <span class="record-avatar-container slds-avatar slds-avatar_x-small slds-avatar--circle icon slds-m-right_xx-small slds-avatar_profile-image-small"></span>
+                                </div>
+                                <lightning:outputField fieldName="CreatedById" variant="label-hidden" />
+                                <span class="comma">,</span>
+                                <lightning:outputField fieldName="CreatedDate" variant="label-hidden" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Section -->
+                    <!-- <div class="slds-col slds-size_1-of-2 system-info-wrap edit-mode">
+                        <div class="field-container">
+                            <span class="slds-form-element__label">{!$Label.c.DNS_F_LastModifiedBy}</span>
+                            <div class="id-wrap">
+                                <lightning:icon iconName='utility:questions_and_answers' alternativeText='edit'
+                                    size='xx-small' title='edit' />
+                                <lightning:outputField fieldName="LastModifiedById" variant="label-hidden" />
+                            </div>
+                            <lightning:outputField fieldName="LastModifiedDate" variant="label-hidden" />
+                        </div>
+                    </div> -->
+
+                    <div class="slds-col slds-size_1-of-2 system-info-wrap slds-form-element_horizontal edit-mode">
+                        <span class="slds-form-element__label">{!$Label.c.DNS_F_LastModifiedBy}</span>
+                        <div class="slds-form-element__control slds-form-element_horizontal slds-form-element_readonly"> 
+                            <!-- ㄴ .field-container -->
+                            <div class="id-wrap slds-form-element__control slds-form-element__static">
+                                <!-- <lightning:icon iconName='utility:questions_and_answers' alternativeText='edit'
+                                    size='xx-small' title='edit' /> -->
+                                <div class="slds-shrink-none">
+                                    <span class="record-avatar-container slds-avatar slds-avatar_x-small slds-avatar--circle icon slds-m-right_xx-small slds-avatar_profile-image-small"></span>
+                                </div>
+                                <lightning:outputField fieldName="LastModifiedById" variant="label-hidden" />
+                                <span class="comma">,</span>
+                                <lightning:outputField fieldName="LastModifiedDate" variant="label-hidden" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <lightning:button variant="brand" label="{!$Label.c.DNS_FDM_Save}" type="submit"
+                        onclick="{!c.handleClickSaveButton}" class="slds-m-right_x-small">
+                    </lightning:button>
+                    <lightning:button variant="neutral" label="{!$Label.c.DNS_FDM_Cancel}" onclick="{!c.handleCancel}"
+                        class="slds-m-left_x-small">
+                    </lightning:button>
+                </div>
+            </lightning:recordEditForm>
+        </aura:set>
+    </aura:if>
+</aura:component>

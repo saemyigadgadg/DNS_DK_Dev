@@ -1,0 +1,111 @@
+@media print {
+    .slds-global-header,
+    .slds-page-header,
+    .slds-footer,
+    nav,
+    header,
+    aside,
+    .forceVisualMessageQueue,
+    .branding-actions,
+    .search,
+    .slds-icon-waffle_container,
+    .siteforcePrmBody,
+    .cHeaderWrapper,
+    .cHeaderWrapper--fixed,
+    .forceSkipLink,
+    .cCenterPanel,
+    .slds-m-top--x-large,
+    .slds-p-horizontal--medium--fixed,
+    .wrap {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-spacing: 0;
+    }
+
+    /* .page-break {  //
+        page-break-after: always;  class="siteforcePrmBod
+        page-break-inside: avoid !important;
+        page-break-before: avoid !important;
+    } */
+
+    .printArea {
+        display: block !important;
+        page-break-after: always; /* 각 섹션마다 새로운 페이지 */
+        page-break-inside: avoid !important;
+        page-break-before: avoid !important;
+        margin: 0;
+        padding: 0;
+        border-spacing: 0;
+        width: 100%; /* 화면 전체 사용 */
+    }
+
+    .printArea:last-child {
+        margin: 0 !important;
+        padding: 0 !important;
+        page-break-after: avoid !important; /* 빈 페이지 방지 */
+    }
+    
+    .printAreaPO {
+        display: block !important;
+        page-break-after: always; /* 각 섹션마다 새로운 페이지 */
+        page-break-inside: avoid !important;
+        page-break-before: avoid !important;
+        font-family: Arial Unicode MS;
+        font-size: 12px;
+    }
+
+    .printAreaPO .header {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .printAreaPO .header h1 {
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 1.25;
+    }
+
+    .printAreaPO .header h2 {
+        font-size: 16px;
+        line-height: 1.25;
+    }
+
+    .printAreaPO:last-child {
+        margin: 0 !important;
+        padding: 0 !important;
+        page-break-after: avoid !important; /* 빈 페이지 방지 */
+    }
+
+    .printAreaPO table, .printAreaPO tr, .printAreaPO td, .printAreaPO th {
+        border: 1px solid #c9c9c9;
+    }
+
+    .printAreaPO th {
+        -webkit-print-color-adjust: #dee2e6;
+        color: #444;
+        font-weight: 700;
+        line-height: normal;
+        text-align: center;
+        text-wrap: nowrap;
+        padding: .25rem .75rem;
+        border-top: 1px solid #d9d9d9;
+        border-bottom: 1px solid #d9d9d9;
+        text-wrap: nowrap;
+    }
+
+    .printAreaPO td {
+        background-color: #fff;
+        padding: .25rem .75rem;
+        line-height: normal;
+        color: #444;
+        text-wrap: nowrap;
+    }
+
+   
+
+    
+}
+.dueOut {
+    display: none;
+}

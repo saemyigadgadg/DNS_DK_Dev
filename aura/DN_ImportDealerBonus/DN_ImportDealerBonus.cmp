@@ -1,0 +1,117 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 02-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-17   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="ImportDealerBonusController" description="Excel Import for Dealer Bonus">
+
+  <!-- Excel JS & Sheet JS -->
+  <ltng:require
+    scripts="{!join(',', $Resource.ExcelTest1 + '/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}" />
+
+
+
+  <!-- Attribute -->
+  <aura:attribute name="accept" type="String" default=".xls, .xlsx" />
+  <aura:attribute name="year" type="String" />
+  <aura:attribute name="isFileUpload" type="Boolean" default="false" />
+  <aura:attribute name="fileName" type="String" default="fileName.xlsx" />
+  <aura:attribute name="isLoading" type="boolean" default="false" />
+  <aura:attribute name="excelData" type="Object[]" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- Toast Notification -->
+  <lightning:notificationsLibrary aura:id="notifLib" />
+
+  <div class="total-wrap">
+
+    <div class="slds-modal__container slds-modal_large">
+
+      <!-- 📌 Header -->
+      <header class="slds-modal__header">
+        <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_DealerBonusExcelImport}</h2>
+        <!-- <h2 class="slds-text-heading_medium">Dealer Bonus Excel Import</h2> -->
+      </header>
+
+      <!-- 📌 Body -->
+      <div class="modal-body slds-modal__content">
+
+        <!-- ⏳ Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <div class="content">
+          <div class="card-wrap">
+            <!-- 🐳 Year Input -->
+            <div class="card-01 top-card">
+              <p><span style="color:red;">*</span>{!$Label.FSL.Year}</p>
+              <!-- <p><span style="color:red;">*</span>Year</p> -->
+  
+              <div class="slds-form-element__control">
+                <lightning:input type="text" name="year" variant="label-hidden" value="{!v.year}" required="true"
+                  pattern="[1-9][0-9]{3}" maxlength="4" messageWhenPatternMismatch="{!$Label.c.DNS_M_ValidYear}" />
+  
+              </div>
+  
+              <!-- <div>
+                <lightning:input type="text" name="year" value="{!v.year}" variant="label-hidden" required="true" />
+              </div> -->
+            </div>
+  
+          </div>
+  
+          <!-- 🐳 Upload -->
+          <div class="card-03 top-card">
+            <aura:if isTrue="{!not(v.isFileUpload)}">
+              <label class="slds-form-element__label"
+                for="horizontal-form-element-id-14">{!$Label.c.DNS_C_FileUpload}</label>
+              <lightning:input aura:id="excelBtn" type="file" accept="{!v.accept}" multiple="false"
+                onchange="{!c.handleUpload}" />
+              <!-- <lightning:input aura:id="excelBtn" type="file" label="Upload" accept="{!v.accept}" multiple="false"
+                onchange="{!c.handleUpload}" /> -->
+              <aura:set attribute="else">
+                <div class="uploaded">
+                  <div class="icon-wrap">
+                    <lightning:icon iconName='doctype:excel' alternativeText='Excel' size='Small' title='Excel'>
+                    </lightning:icon>
+                  </div>
+                  <p class="file-name">{!v.fileName}</p>
+                  <!-- 취소 아이콘 추가 -->
+                  <div class="icon-wrap">
+                    <lightning:icon iconName="utility:close" alternativeText="Cancel" size="x-small" title="Cancel"
+                      onclick="{!c.doCancel}" />
+                  </div>
+                </div>
+              </aura:set>
+            </aura:if>
+          </div>
+        </div>
+
+        <!-- 📌 Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Close" onclick="{!c.doClose}" />
+          <lightning:button variant="brand" label="Import" onclick="{!c.doImport}" />
+        </footer>
+
+      </div>
+
+
+
+    </div>
+
+    <!-- Modal Background -->
+    <div id="modal-bg"></div>
+
+  </div>
+
+
+</aura:component>

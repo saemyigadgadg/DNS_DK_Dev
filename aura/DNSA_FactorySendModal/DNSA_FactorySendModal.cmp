@@ -1,0 +1,55 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-06-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   02-17-2025   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+                controller="DN_CommodityController">
+
+    <aura:attribute type="Boolean"      name="isLoading" default="false"/>
+    <aura:attribute type="String"       name="recordId" />
+    <aura:attribute name="isStatus" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+
+    <aura:html tag="style">
+        <!-- Modal Frame Settings -->
+        .slds-modal__container:has(.cDNSA_FactorySendModal) {
+            width: 34rem;
+            max-width: calc(100vw - 5rem);
+            margin: 0 auto;
+        }
+        .slds-modal__content:has(.cDNSA_FactorySendModal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_FactorySendModal) {
+            padding:0;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.isStatus}">
+        <div class="modal_wrapper slds-modal__container">
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="medium" alternativeText="Loading" />
+            </aura:if>
+    
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Sales Support</h2>
+            </header>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}"/>
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Confirm}" onclick="{!c.handleClickConfirm}"/>
+            </footer>
+        </div>
+    </aura:if>
+    
+
+</aura:component>

@@ -1,0 +1,53 @@
+.total-wrap {
+  padding: 1rem;
+  background-color: #fff;
+  width: 100%;
+  /* height: 100vh; */
+  height: 100vh;
+}
+
+.total-wrap .body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 85%;
+}
+
+/* Icon Image */
+
+.total-wrap .icon-wrap {
+  padding: 1rem;
+  border-radius: 50%;
+  border: 3px solid #0176D3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.total-wrap .icon-wrap .slds-icon {
+  fill: #0176D3 !important;
+}
+
+/* Title */
+
+.total-wrap .title {
+  font-size: 1.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+/* Message */
+
+.total-wrap .message {
+  text-align: center;
+  /* "설정한 시간으로 도착 예정 시간을 등록하시겠습니까?" 폰트 크기 부여 */
+  font-size: 1.125rem;
+}
+
+.total-wrap .button-wrap {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+}

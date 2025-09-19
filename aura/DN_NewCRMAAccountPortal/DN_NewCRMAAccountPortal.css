@@ -1,0 +1,156 @@
+.THIS .slds-card {
+    height: auto;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+    padding: 0.75rem;
+    padding-bottom: 1.25rem;
+}
+
+.THIS .body .top-card {
+    width: 100%;
+    padding: 1.75rem;
+    padding-top: 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS .body .top-card h3{
+    font-weight: 600;
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+.THIS .button-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.75rem 0 0;
+}
+
+/* Card 01 */
+
+.THIS .body .card-01 .field-wrap{
+    display: grid;
+    grid-template-columns: repeat( 2, 1fr);
+    column-gap: 0.75rem;
+}
+
+/* card-02 */
+
+
+/* Card Wrap */
+
+.THIS .body .card-wrap {
+    display: flex;
+    gap: 1rem;
+}
+
+
+/* SLDS : Accordion */
+
+.THIS .slds-form-element_horizontal .slds-form-element__label {
+    float: none !important;
+    margin-bottom: .25rem;
+    font-weight: normal;
+    max-width: unset;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__control {
+    padding-left: 0 !important;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__icon {
+    float: none !important;
+}
+
+.THIS .card-01 .slds-form-element_horizontal:not(.slds-form-element_readonly) {
+    margin-bottom: 0;
+}
+
+.THIS .slds-form-element_horizontal .slds-form-element__help {
+    margin-left: 0 !important;
+}
+
+.THIS .card-03 .slds-form-element_compound .slds-form-element__row .slds-form-element__label {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+@media (min-width: 48em) {
+    .THIS .slds-form-element_horizontal .slds-form-element__label {
+        float: none !important;
+        margin-bottom: .25rem;
+        font-weight: normal;
+        max-width: unset;
+    }
+
+    .THIS .slds-form-element_horizontal .slds-form-element__control {
+        padding-left: 0 !important;
+    }
+
+    .THIS .slds-form-element_horizontal .slds-form-element__icon {
+        float: none !important;
+    }
+
+    .THIS .card-01 .slds-form-element_horizontal:not(.slds-form-element_readonly) {
+        margin-bottom: 0;
+    }
+}
+
+/* SLDS : Dueling List  */
+
+.THIS .card-01 .slds-dueling-list__column_responsive .slds-dueling-list__options {
+    height: 17rem !important;
+}
+
+.THIS .card-01 .slds-dueling-list__column {
+    justify-content: center;
+}
+
+.THIS .card-01 .slds-dueling-list .slds-form-element__label {
+    font-weight: 400 !important;
+}
+
+.THIS .community-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.THIS .hide {
+    display: none;
+}
+
+.THIS .noneHelp lightning-helptext {
+    display: none;
+}

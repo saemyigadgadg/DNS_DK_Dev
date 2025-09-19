@@ -1,0 +1,51 @@
+<template>
+
+    <lightning-spinner lwc:if={isSpinner} alternative-text="Loading" size="large"></lightning-spinner>
+    <!-- <template lwc:if={_isDisable} >
+    </template>
+    <template lwc:else> -->
+        <div class="pagination-wrap">
+            <div class="total">
+                <p>총 조회 건수 : <span style="font-weight: bold;">{totalRecordSize}</span> 
+                   (<span>{currentPage}</span> / <span>{totalPage}</span>)</p>
+                <p style="color : red;"><span style="font-weight: bold;">*최대 2000 까지 조회가 가능합니다. </span> <!--2000건 기준 조회가능한 페이지--></p>
+                <p style="color : red; ">총 건수: <span style="font-weight: bold;">{_totalRecordSize}</span> </p>
+            </div>
+            
+            <ul class="pagination"> 
+                <li class="first">
+                    <a onclick={handleFirstPage} name="first" data-page={firstPage} data-id="first">
+                        <lightning-icon icon-name='utility:jump_to_left' alternative-text='jump_to_left' size='x-small'
+                          title='jump_to_left'></lightning-icon>
+                    </a>
+                </li>
+                <li class="prev" >
+                    <a onclick={handlePrevPage} name="previous" data-page={prevPage} data-id="prev">
+                    <lightning-icon icon-name='utility:chevronleft' alternative-text='chevronleft' size='x-small'
+                      title='chevronleft'></lightning-icon>
+                  </a>
+                </li>
+                <li class="pages">
+                    <template for:each={pageNumbers} for:item="page">
+                        <span key={page.number}>
+                            <a class={page.className} onclick={handlePageClick} data-page={page.number}>{page.number}</a>
+                        </span>
+                    </template>
+                </li>
+                <li class="next" >
+                    <a onclick={handleNextPage} name="next" data-page={nextPage} data-id="next">
+                        <lightning-icon icon-name='utility:chevronright' alternative-text='chevronright' size='x-small'
+                          title='chevronright'></lightning-icon>
+                    </a>
+                </li>
+                <li class="last">
+                    <a onclick={handleLastPage} name="last" data-page={lastPage} data-id="last">
+                        <lightning-icon icon-name='utility:jump_to_right' alternative-text='jump_to_right' size='x-small'
+                          title='jump_to_right'></lightning-icon>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    <!-- </template> -->
+    
+</template>

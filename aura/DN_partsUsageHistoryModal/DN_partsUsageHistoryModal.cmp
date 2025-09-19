@@ -1,0 +1,160 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-24-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-24-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global" description="부품 사용내역 모달">
+
+  <!-- attribute -->
+  <aura:attribute name="returnTargetOptions"          type="List" default="[ 
+  {'label': '예', 'value': 'Y'},
+  {'label': '아니오', 'value': 'N'}, ]"/>
+  <aura:attribute name="returnTargetValue"            type="String" />
+
+  <aura:attribute name="returnCategoryOptions"          type="List" default="[ 
+  {'label': '신품', 'value': '신품'},
+  {'label': '폐품', 'value': '폐품'}, ]"/>
+
+  <aura:attribute name="firstReasonOptions"          type="List" default="[ 
+  {'label': '이종품', 'value': '이종품'},
+  {'label': '불량품', 'value': '불량품'},
+  {'label': '수량차이', 'value': '수량차이'},
+  {'label': '청구착오', 'value': '청구착오'}, ]"/>
+
+  <aura:attribute name="secondReasonOptions"          type="List" default="[ 
+  {'label': '이종품', 'value': '이종품'},
+  {'label': '불량품', 'value': '불량품'},
+  {'label': '수량차이', 'value': '수량차이'},
+  {'label': '청구착오', 'value': '청구착오'}, ]"/>
+
+  <aura:attribute name="secondReasonOptions1"          type="List" default="[ 
+  {'label': '이종품', 'value': '이종품'},
+  {'label': '불량품', 'value': '불량품'},
+  {'label': '수량차이', 'value': '수량차이'},
+  {'label': '청구착오', 'value': '청구착오'},
+  {'label': '이종품', 'value': '1'},
+  {'label': '불량품', 'value': '2'},
+  {'label': '수량차이', 'value': '3'},
+  {'label': '청구착오', 'value': '4'}]"/>
+
+
+  <!-- Handler -->
+  <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
+
+  <!-- Event -->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+
+    <div class="partsUsageHistoryModal">
+      <div aura:id="partsUsageHistoryModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_medium">
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">부품사용내역 콤보박스</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='border-filled' size='small'
+                title='close' name="closeModal" onclick="{!c.modelModalCancel}"></lightning:icon>
+            </button>
+
+          </header>
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>반납대상</p>
+                <ul class="input-wrap">
+                  <li>예</li>
+                  <li>아니오</li>
+                </ul>
+              </div>
+              <div class="field-wrap">
+                <p>반납구분</p>
+                <ul class="input-wrap">
+                  <li>신품</li>
+                  <li>폐품</li>
+                </ul>
+              </div>
+              <div class="field-wrap">
+                <p>Reason1</p>
+                <ul class="input-wrap">
+                  <li>이종품</li>
+                  <li>불량품</li>
+                  <li>수량차이</li>
+                  <li>청구착오</li>
+                  <li>이종품</li>
+                  <li>불량품</li>
+                  <li>수량차이</li>
+                  <li>청구착오</li>
+                </ul>
+              </div>
+              <div class="field-wrap">
+                <p>Reason2</p>
+                <ul class="input-wrap">
+                  <li>이종품</li>
+                  <li>불량품</li>
+                  <li>수량차이</li>
+                  <li>청구착오</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card-02 top-card">
+              <div class="field-wrap">
+                <p>반납대상</p>
+                <div class="input-wrap">
+                  <lightning:radioGroup name="radioGroup"
+                          variant="label-hidden"
+                          options="{! v.returnTargetOptions }"
+                          type="radio"/>
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>반납구분</p>
+                <div class="input-wrap">
+                  <lightning:radioGroup name="radioGroup"
+                          variant="label-hidden"
+                          options="{! v.returnCategoryOptions }"
+                          type="radio"/>
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>Reason1</p>
+                <div class="input-wrap">
+                  <lightning:radioGroup name="radioGroup"
+                          variant="label-hidden"
+                          options="{! v.firstReasonOptions }"
+                          type="radio"/>
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>Reason2</p>
+                <div class="input-wrap">
+                  <lightning:radioGroup name="radioGroup"
+                          variant="label-hidden"
+                          options="{! v.secondReasonOptions1 }"
+                          type="radio"/>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.modelModalCancel}" />
+          </footer>
+        </div>
+      </div>
+
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

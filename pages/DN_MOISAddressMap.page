@@ -1,0 +1,52 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @last modified on  : 12-12-2024
+  @last modified by  : Hyerin Ro
+-->
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+        <title>주소 Map</title>
+
+        <!-- jQuery 추가 -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <style type="text/css">
+            html {
+                overflow: hidden !important;
+            }
+            .mapWrap {
+                width: 100%;
+                height: 100%;
+                border-left: 1px solid #ddd;
+            }
+        </style>
+
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                var confmKey = "{!$Label.MOIS_Map_Key}";
+
+                if (!confmKey) {
+                    alert('confmKey가 설정되지 않았습니다.');
+                } else {
+                    var admCd       = "{!$CurrentPage.parameters.admCd}";
+                    var rnMgtSn     = "{!$CurrentPage.parameters.rnMgtSn}";
+                    var udrtYn      = "{!$CurrentPage.parameters.udrtYn}";
+                    var buldMnnm    = "{!$CurrentPage.parameters.buldMnnm}";
+                    var buldSlno    = "{!$CurrentPage.parameters.buldSlno}";
+                    var script      = document.createElement('script');
+                    script.type     = 'text/javascript';
+                    script.src      = 'https://business.juso.go.kr/juso_support_center/js/addrlink/map/jusoro_map_api.min.js?confmKey=' + confmKey + '&searchType=2&skinType=1' + '&admCd=' + admCd + '&rnMgtSn=' + rnMgtSn + '&udrtYn=' + udrtYn + '&buldMnnm=' + buldMnnm + '&buldSlno=' + buldSlno;
+                    document.head.appendChild(script);
+                }
+            });
+        </script>
+    </head>
+    <body>
+        <div id="mapWrap" class="mapWrap"></div>
+    </body>
+    </html>
+</apex:page>

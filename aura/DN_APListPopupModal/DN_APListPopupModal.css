@@ -1,0 +1,148 @@
+.THIS .slds-modal__container {
+    width: 60vw;
+    max-width: 1400px;
+    min-width: 1240px;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* Modal Body */
+
+.THIS .slds-modal__content {
+    background-color: #F3F3F3;
+}
+
+.THIS .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    flex: none !important;
+}
+
+.THIS .top-card .table-wrap th {
+    text-align: center;
+    background-color: #f3f3f3;
+    color: #444;
+}
+
+.THIS .top-card tfoot td {
+    border-top: 1px solid #d4d4d4;
+    background-color: #eef4ff;
+    font-weight: 600;
+}
+
+/* Card Body */
+
+.THIS .card-body {
+    overflow-x: auto;
+}
+
+.THIS .body .card-01 {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+.THIS .body .card-01 .card-body {
+    width: 30%;
+}
+
+.THIS .body .card-01 .button-wrap {
+    place-self: baseline;
+}
+
+.THIS .body .card-02 {
+    overflow: hidden;
+}
+
+.THIS .body .card-02 .button-wrap,
+.THIS .body .card-03 .button-wrap {
+    margin-bottom: 1rem;
+    text-align: right;
+}
+
+/* Table Design */
+
+.THIS .body table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .5rem 1rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table td {
+    background-color: #fff;
+    padding: .5rem 1rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+    border-left: none;
+}
+
+.THIS .card-02 table td:nth-of-type(4) {
+    border-right: none;
+}
+
+.THIS .card-02 table td .slds-input,
+.THIS .card-02 table td .slds-form-element{
+    width: 100% !important;
+}
+
+.THIS .body table td:first-of-type .slds-form-element__control {
+    width: fit-content;
+}
+
+.THIS .body table td .slds-input {
+    min-width: unset !important;
+}
+
+.THIS .body table td:first-of-type .slds-form-element__control{
+    width: unset;
+}
+
+
+/* Modal 2 */
+
+.THIS .modal-2 .card-01 .card-body {
+    width: unset !important;
+    display: flex;
+    gap: 1.5rem;
+    flex: auto;
+}
+
+.THIS .modal-2 .card-01 .card-body .button-wrap {
+    place-self: auto;
+}
+
+.THIS .modal-2 .card-01 .card-body .field-wrap {
+    flex: 1;
+}

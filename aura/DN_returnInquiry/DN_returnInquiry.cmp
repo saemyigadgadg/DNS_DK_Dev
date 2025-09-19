@@ -1,0 +1,309 @@
+<!--
+  @description       : 포탈 부품 - 반품 조회
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-12
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+  controller="DN_PortalPartsReturnController"
+  description="반품조회">
+  
+  <!-- navigation -->
+  <lightning:navigation aura:id="navReturnCreate"/> <!--반품생성 페이지로 이동-->
+
+  <!-- attribute -->
+  <aura:attribute name="isLoading"         type="Boolean" default="false" />
+  <aura:attribute name="returnDetailModal" type="Boolean" default="false" /> <!--반품 상세 모달-->
+  <aura:attribute name="pdfModalOpen"      type="Boolean" default="false" /> <!--프린트 모달-->
+  <aura:attribute name="pdfUrl"            type="String"  default="/partners/apex/DN_returnDetailPrintPDF" />
+
+  <!-- 기본 정보 -->
+  <aura:attribute name="dealerInfo"        type="Object" description="딜러정보" />
+  <aura:attribute name="complaintType1"    type="List" description="반품사유1" />
+  <aura:attribute name="complaintType2"    type="List" description="반품사유2" />
+
+  <!-- 검색 조건 속성 값 -->
+  <aura:attribute name="returnOrderNo"     type="String" /> <!-- 반품번호 -->
+  <aura:attribute name="referenceNo"       type="String" /> <!-- reference No -->
+  <aura:attribute name="orderPartNo"       type="String" /> <!-- (주문)품번 -->
+  <aura:attribute name="startDate"         type="String" /> <!-- 시작 기간 -->
+  <aura:attribute name="endDate"           type="String" /> <!-- 종료 기간 -->
+
+  <!-- 검색 결과 -->
+  <aura:attribute name="refundList"        type="List" default="[]" />
+  <aura:attribute name="refundDetail"      type="List" />
+  <aura:attribute name="isChecked"         type="Boolean" default="false" />
+
+  <!-- 선택값  -->
+  <aura:attribute name="selectedRows" type="List" default="[]" /> <!-- 반품 대상 purchase order items 선택 List -->
+  <aura:attribute name="pdfLabelUrl"  type="String" default="{!$Label.c.Portal_Return_Print}" />
+  <aura:attribute name="backUrl"      type="String" default="{!$Label.c.Portal_Return_Back}" />
+  <aura:attribute name="dlUrl"      type="String"   default="{!$Label.c.Portal_Download}" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+  <!-- Body -->
+  <article class="slds-card">
+
+    <!-- Loading Spinner  -->
+    <aura:if isTrue="{! v.isLoading}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+
+    <!-- Header -->
+    <div class="header test">
+      <div class="title">
+        <lightning:icon iconName="standard:return_order" size="small" />
+        <h2>{!$Label.c.RI_ReturnInquiry} <!-- 반품조회 --></h2>
+      </div>
+
+      <div class="button-wrap">
+        <!-- 검색 필터 및 기능 추가 필요 -->
+        <lightning:button name="delete" label="{!$Label.c.DNS_FSL_Create}" iconName="utility:add"    onclick="{!c.doReturnCreate}" />
+        <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left"
+          onclick="{!c.doSearch}" />
+        <lightning:button name="delete" label="{!$Label.c.DNS_M_Delete}" iconName="utility:delete" iconPosition="left" onclick="{!c.doDelete}" />
+        
+      </div>
+    </div>
+
+
+    <div class="body">
+      <!-- Card 01 -->
+      <div class="card-01 top-card">
+        <div class="field-wrap">
+          <p>{!$Label.c.RI_ReturnNumber} <!-- 반품번호 --></p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="returnOrderNo" value="{!v.returnOrderNo}" variant="label-hidden" aura:id="returnOrderNoId" onchange="{!c.inputAttribute}" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>Reference No</p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="referenceNo" value="{!v.referenceNo}" variant="label-hidden" aura:id="referenceNoId" onchange="{!c.inputAttribute}" />
+          </div>
+        </div>
+        <div class="field-wrap">
+          <p>{!$Label.c.DNS_FSL_ProductNumber} <!-- 품번 --></p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="orderPartNo" value="{!v.orderPartNo}" variant="label-hidden" aura:id="orderPartNoId" onchange="{!c.inputAttribute}" />
+          </div>
+        </div>
+        <div class="field-wrap date">
+          <p> {!$Label.c.ORI_Period} <!-- 기간 --><abbr class="slds-required" title="required">*</abbr></p>
+          <div class="input-wrap">
+            <lightning:input type="Date" variant="label-hidden" value="{!v.startDate}"  onchange="{!c.inputAttribute}" />
+            <span class="to">~</span>
+            <lightning:input type="Date" variant="label-hidden" value="{!v.endDate}"  onchange="{!c.inputAttribute}" />
+          </div>
+        </div>
+      </div>
+      <!-- card-02 -->
+      <div class="card-02 top-card">
+        <div class="table-wrap">
+          <table>
+            <colgroup>
+              <col width="1%"/>
+              <col width="8%"/>
+              <col width="8%"/>
+              <col width="5%"/>
+              <col width="8%"/>
+              <col width="8%"/>
+              <col width="8%"/>
+              <col width="8%"/>
+              <col width="5%"/>
+              <col width="40%"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col" class="check-box">
+                  <lightning:input type="checkbox" name="" value="" variant="label-hidden" aura:id="headerCheckboxId" 
+                  onchange="{! c.mainSelectAll }" />
+                </th>
+                <th>{!$Label.c.RI_ReturnNumber} <!-- 반품번호 --></th>
+                <th>{!$Label.c.DNS_C_OrderNum} <!-- 주문번호 --></th>
+                <th>{!$Label.c.RI_Sequence} <!-- 순서 --></th>
+                <th>{!$Label.c.RI_ReturnReason} <!-- 반품사유 --></th>
+                <th>{!$Label.c.RI_DocumentDate} <!-- 문서일자 --></th>
+                <th>{!$Label.c.RI_HeadOfficeReferenceNumber} <!-- 본사접수번호 --></th>
+                <th>{!$Label.c.RI_TotalAmount} <!-- 총액 --></th>
+                <th>{!$Label.c.RI_CurrencyPayment} <!-- 통화(결제화폐) --></th>
+                <th>{!$Label.c.DNS_C_Status} <!-- 상태 --></th>
+              </tr>
+            </thead>
+            
+              <aura:if isTrue="{!v.isChecked}">
+                <aura:iteration items="{!v.refundList}" var="item" indexVar="j">
+                    <tbody>
+                    <tr>
+                      <td class="center"> 
+                        <lightning:input type="checkbox" name="" value="{!item.returnOrderNo}" variant="label-hidden" aura:id="checkboxId"
+                        onchange="{! c.mainCheckboxChange }" />
+                      </td>
+                      <td class="center return-num" onclick="{!c.openReturnDetailModal}" data-returnOrderNo="{!item.returnOrderNo}">{!item.returnOrderNo}</td>
+                      <td class="center">{!item.customerOrderNo}</td>
+                      <td class="center">{!item.orderNo}</td>
+                      <td class="center">{!item.returnReason1}</td>
+                      <td class="center">{!item.docDate}</td>
+                      <td class="center">{!item.hqOrderNo}</td>
+                      <td class="right">
+                        <lightning:formattedNumber value="{!item.totalAmount}" maximumFractionDigits="0"/>
+                      </td>
+                      <!-- <td class="right">{!item.totalAmount}</td> -->
+                      <td class="center">{!item.poiCurrency}</td>
+                      <td class="left">{!item.status}</td>
+                    </tr>
+                  </tbody>
+                </aura:iteration>
+                <aura:set attribute="else">
+                  <tbody>
+                  <tr>
+                    <td class="center"> 
+                      <lightning:input type="checkbox" aura:id="bodyCheckbox" disabled="true" onchange="" />
+                    </td>
+                    <td class="center" colspan="9">No Data</td>
+                  </tr>
+                  </tbody>
+                </aura:set>
+              </aura:if>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- return detail modal -->
+    <aura:if isTrue="{!v.returnDetailModal}">
+      <div class="returnDetailModal">
+        <div aura:id="returnDetailModal" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container slds-modal_medium">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">{!$Label.c.RI_ReturnDetails} <!-- 반품 상세 --></h2>
+              <div class="button-wrap">
+                <lightning:button name="print" label="{!$Label.c.PES_Print}" onclick="{!c.openPrintPDF}" />
+              </div>
+
+              <!-- Close Button -->
+              <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' variant='border-filled' size='small' onclick="{!c.modalCancel}"/>
+              </button>
+  
+            </header>
+            <!-- Modal Content -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+              <div class="card-01 top-card">
+                <div class="field-wrap">
+                  <p>{!$Label.c.RI_ReturnNumber} <!-- 반품번호 --></p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.refundDetail[0].returnOrderNo}" disabled="true" variant="label-hidden"/>
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>{!$Label.c.RI_DocumentDate} <!-- 문서일자 --></p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.refundDetail[0].docDate}" disabled="true" variant="label-hidden"/>
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>Item Count</p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.refundDetail.length}" disabled="true" variant="label-hidden"/>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="card-02 top-card">
+                <div class="table-wrap">
+                  <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th>{!$Label.c.RI_Sequence} <!-- 순서 --></th>
+                        <th>Reference No</th>
+                        <th>{!$Label.c.DNS_FSL_ProductNumber} <!-- 품번 --></th>
+                        <th>{!$Label.c.DNS_C_Quantity} <!-- 수량 --></th>
+                        <th>{!$Label.c.RI_Return} <!-- 반품 --></th>
+                        <th>{!$Label.c.RI_ReturnReason} <!-- 반품사유 --></th>
+                        <th>{!$Label.c.DNS_C_Details} <!-- 내용 --></th>
+                        <th>{!$Label.c.Files} <!-- 파일 --></th>
+                        <th>Origin Doc Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.refundDetail}" var="poi" indexVar="j">
+                        <tr>
+                          <td>{!j+1}</td>
+                          <td>{!poi.referenceNo}</td>
+                          <td>{!poi.orderPartNo}</td>
+                          <td>{!poi.orderQuantity}</td>
+                          <td>{!poi.returnReason1}</td>
+                          <td>{!poi.returnReason2}</td>
+                          <td>{!poi.note}</td>
+                          <td>
+                            <div class="file-wrap">
+                              <aura:iteration items="{!poi.fileId}" var="fId" indexVar="k">
+                              <lightning:button value="{!fId.ContentDocument.Id}" accesskey="{!j}" onclick="{!c.doDownload}" title="{!fId.ContentDocument.Title}">
+                              <lightning:icon iconName='doctype:attachment' alternativeText="{!fId.ContentDocument.Title}" size='x-small' title="{!fId.ContentDocument.Title}"></lightning:icon>
+                                <span>{!fId.name}</span>
+                                <!-- <lightning:buttonIcon iconName="utility:dash" alternativeText="{!fId.name}" title="{!fId.name}" size="small"  value="{!fId.Id}" 
+                                  accesskey="{!j}" onclick="{!c.doDownload}" /> -->
+                              </lightning:button>
+                            </aura:iteration>
+                            </div>
+                          </td>
+                          <td>{!poi.orgDate}</td>
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                  </table>
+                </div>
+                
+              </div>
+            </div>
+  
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.modalCancel}" />
+            </footer>
+          </div>
+        </div>
+  
+        <!-- 배경 -->
+        <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+      </div>
+    </aura:if>
+
+    <!-- 프린트 PDF -->
+    <aura:if isTrue="{!v.pdfModalOpen}">
+      <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+          <!-- 모달 헤더 -->
+          <header class="slds-modal__header">
+            <lightning:buttonIcon iconName="utility:close" onclick="{!c.modalCancel}" alternativeText="Close"
+              class="slds-modal__close" />
+            <h2 class="slds-text-heading_medium">{!$Label.c.PES_Print} <!-- 프린트 --></h2>
+          </header>
+  
+          <!-- 모달 바디 -->
+          <div class="slds-modal__content slds-p-around_medium">
+            <!-- <iframe src="/partners/apex/DN_returnDetailPrintPDF" width="100%;" height="500px;"></iframe> -->
+            <iframe src="{!v.pdfUrl}" width="100%;" height="500px;"></iframe>
+          </div>
+  
+          <!-- 모달 푸터 -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Close}" onclick="{!c.modalCancel}" />
+          </footer>
+        </div>
+      </section>
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+  </article>
+</aura:component>

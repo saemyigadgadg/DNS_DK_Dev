@@ -1,0 +1,18 @@
+tfoot td {
+  background-color: #eef4ff;
+}
+
+.scroll-y {
+  overflow-y: auto;
+  height: 50vh;
+}
+
+table .customerOrerNumber {
+  max-width: 240px;
+}
+
+table .customerOrerNumber div {
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

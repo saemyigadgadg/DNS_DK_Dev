@@ -1,0 +1,40 @@
+<!--
+  @description       : 
+  @author            : geonsang.park@sobetec.com
+  @group             : 
+  @last modified on  : 03-27-2025
+  @last modified by  : geonsang.park@sobetec.com
+-->
+<aura:component controller="SignatureContainerController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="signatureData" type="string" default=""/>
+    <aura:attribute name="isLoaded" type="Boolean" default="false"/>
+    <aura:attribute name="hasSign" type="Boolean" default="false"/>
+    <aura:attribute name="isFixed" type="Boolean" default="false"/>
+    <aura:attribute name="signatureType" type="String" access="global"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="complete" type="c:DN_SignatureCompletedEvent"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.hasSign}">
+        <div class="mb-signature-container slds-box">
+            <div class="mb-signature-pad-readonly">
+                <aura:if isTrue="{!v.isLoaded}">
+                    
+                    <img alt="Signature - None" src="{!v.signatureData}"/>
+                    
+                    <aura:set attribute="else">
+                        <lightning:spinner />
+                    </aura:set>
+                </aura:if>
+            </div>
+        </div>
+        <aura:if isTrue="{!!v.isFixed}">
+            <div class="slds-col" style ="display:flex;justify-content:center; margin-top: 10px;">
+                <div>
+                    <button style="min-width:102px;" class="slds-button slds-button_destructive"   onclick="{!c.deleteSign}">Delete Signature</button>
+                </div>
+            </div >
+        </aura:if>
+    </aura:if>
+</aura:component>

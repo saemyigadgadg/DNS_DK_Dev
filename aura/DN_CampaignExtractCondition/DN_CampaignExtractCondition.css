@@ -1,0 +1,25 @@
+.THIS .slds-modal__container {
+    width: 100%;
+    padding:0;
+    z-index: 1;
+  }
+
+  .THIS .date {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .THIS .date>.slds-form-element {
+    width: 47%;
+  }
+  .THIS .date p {
+    width: 4%;
+    font-size: 16px;
+    font-weight: ;
+    text-align: center;
+  }
+
+  .THIS .date-label {
+    display: inline-block;
+    margin-bottom: 0.125rem;
+  }

@@ -1,0 +1,225 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-16-2024   Hyerin Ro   Initial Version
+-->
+<apex:page standardController="WorkOrder" extensions="DN_LaunchingExcellenceBtnController">  
+    <style>
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.01);
+        z-index: 100; /* spinner 위에 배치 */
+    }
+    .slds-spinner {
+        z-index: 2; /* 스피너를 overlay 위로 */
+        position: relative;
+    }
+    </style>
+    <script>
+        // 페이지 로드 시 실행
+        window.onload = function() {
+            loadIframeContent();
+        };
+
+        window.addEventListener("message", (event) =>{
+            console.log("event:", event);         
+            console.log('event.data', event.data);
+            console.log('event.origin', event.origin);
+            
+            // if(event.origin == 'https://dn-solutions.my.site.com'){
+            if(event.origin == '{!$Label.DNS_U_LaunchingExcellenceURL}'){
+                //검사버튼은 필수값 입력여부를 확인 => event.data를 true/false 반환
+                if(Array.isArray(event.data)){//저장, 임시저장 버튼
+                    saveDocInfo(event.data[0]);
+                }else{
+                    console.log('검사버튼 Click');
+                }
+            }
+        });
+
+        function loadIframeContent() {
+            const urlParams = new URLSearchParams(window.parent.location.search);
+            const chName = urlParams.get('chName');
+            const woId = urlParams.get('recordId');
+            const userId = urlParams.get('userId');
+            const device = urlParams.get('device');
+
+            console.log('chName',chName);
+            console.log('recordId',woId);
+            console.log('userId',userId);
+            console.log('device',device);
+
+            var paramJSON = {
+                chName : chName,
+                woId : woId,
+                userId : userId,
+                device : device
+            };
+            var paramData = JSON.stringify(paramJSON);
+
+            console.log('paramData',paramData);
+
+            DN_LaunchingExcellenceBtnController.getHtmlContent(paramData, function(result, event) {
+                console.log('result ', result);
+                console.log('result.requestBody ', result.requestBody);
+                console.log('event ', event);
+                if(result.isSuccess){
+                    if (event.status) {
+                        // iframe의 document 객체에 접근하여 HTML 삽입
+                        var iframe = document.getElementById('myIframe');
+                        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        var decodedHtml = decodeHtmlEntity(result.returnValue);
+                        console.log('decodedHtml : ', decodedHtml);
+                        iframeDoc.open();
+                        iframeDoc.write(decodedHtml);
+                        iframeDoc.close();
+                        document.getElementById('spinnerDiv').classList.add('slds-hide');
+                    } else {
+                        console.error('Error loading content: ', event.message);
+                        document.getElementById('spinnerDiv').classList.add('slds-hide');
+                    }
+                }else{
+                    if(device != 'Large'){
+                        window.alert(result.errMessage+" 창을 닫아주세요.");
+                    }
+                    this.showToast('ERROR', result.errMessage, 'error');
+                    document.getElementById('spinnerDiv').classList.add('slds-hide');
+                }
+            });
+
+        }
+        
+        function decodeHtmlEntity(encodedStr) {
+            var textArea = document.createElement('textarea');
+            textArea.innerHTML = encodedStr;
+            return textArea.value;
+        }
+
+        function saveDocInfo(data){
+            const urlParams = new URLSearchParams(window.parent.location.search);
+            // Get a specific parameter value
+            const woId = urlParams.get('recordId');
+            const chName = urlParams.get('chName');
+            const userId = urlParams.get('userId');
+            const device = urlParams.get('device');
+
+            var paramJSON = {
+                chName : chName,
+                woId : woId,
+                userId : userId,
+                device : device
+            };
+            var paramData = JSON.stringify(paramJSON);
+            console.log('paramData',paramData);
+
+            if(device == 'IOS'){
+                // window.close();
+                document.getElementById('spinnerDiv').classList.remove('slds-hide');
+            }else{
+                notifyParent('startSpinner');
+            }
+            var data = event.data[0];
+            console.log('data',data);
+            var jsonData = data.Input;
+            console.log('jsonData',jsonData);
+            var jsonStr = JSON.stringify(jsonData);
+            console.log('jsonStr',jsonStr);
+            // var recordId = '{!recordId}';            
+
+            DN_LaunchingExcellenceBtnController.saveDocContent(jsonStr,paramData, function(result, event) {
+                console.log('result ', result);
+                console.log('event ', event);
+                if (event.statusCode == 200 && result.isSuccess) {
+                    //toast success msg        
+                    console.log('device :: '+device);            
+                    if(device == 'Large'){
+                        notifyParent('closeIframe');
+                    }else if(device == 'Android'){
+                        // this.showToast('SUCCESS', '저장되었습니다.', 'success');
+                        window.alert("저장되었습니다.");
+                        notifyParent('closeIframe');
+                        
+                    }else{//ios
+                        document.getElementById('spinnerDiv').classList.add('slds-hide');
+                        this.showToast('SUCCESS', '저장되었습니다. 창을 닫아주세요.', 'success');
+                    }
+                    
+                } else {
+                    //toast error msg
+                    if(device == 'Large'){
+                        notifyParent('error');  
+                    }else{
+                        this.showToast('ERROR', '문서 내용을 저장하는데 문제가 발생했습니다', 'error');
+                    }
+                    document.getElementById('spinnerDiv').classList.add('slds-hide');
+                }
+            });
+        }
+
+        function showToast(title, msg, type) {
+            sforce.one.showToast({
+                "title": title,
+                "message": msg,
+                "type": type
+            });
+        }
+
+        function notifyParent(status) {
+            // 부모 프레임(LWC 포함)으로 메시지 전송
+            if(status == 'startSpinner'){
+                window.top.postMessage(
+                    JSON.stringify({ action: 'startSpinner' }),
+                    '*' // 신뢰할 수 있는 도메인을 명시할 경우 여기에 도메인을 입력하세요.
+                );
+            }else if(status == 'stopSpinner'){
+                window.top.postMessage(
+                    JSON.stringify({ action: 'stopSpinner' }),
+                    '*' // 신뢰할 수 있는 도메인을 명시할 경우 여기에 도메인을 입력하세요.
+                );
+            }else if(status == 'closeIframe'){
+                window.top.postMessage(
+                    JSON.stringify({ action: 'closeIframe' }),
+                    '*' // 신뢰할 수 있는 도메인을 명시할 경우 여기에 도메인을 입력하세요.
+                );
+            }else if(status == 'error'){
+                window.top.postMessage(
+                    JSON.stringify({ action: 'toastErrMsg' }),
+                    '*' // 신뢰할 수 있는 도메인을 명시할 경우 여기에 도메인을 입력하세요.
+                );
+            }
+           
+        }
+
+
+    </script>
+    
+    <apex:slds />
+    <apex:form id="form" >
+        <div class="slds-scope">
+        <!-- SPINNER -->
+        <div class="spinner-overlay-container" id="spinnerDiv">
+            <!-- 흐릿한 배경 -->
+            <div class="overlay"></div>
+            <!-- 스피너 -->
+            <div class="slds-spinner_container">
+                <div id="spinner" role="status" class="slds-spinner slds-spinner--large slds-spinner--brand">
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+        <!-- / SPINNER -->
+        <iframe id="myIframe" width="100%" height="590px"/>
+        <!-- height="590px" -->
+        </div>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,56 @@
+<template>
+    <!-- <div class="popUpAlert">
+        {notice.name}
+        {notice.contents}
+    
+    </div> -->
+    <lightning-record-view-form
+        object-api-name="Board__c"
+        record-id={recordId}
+    >
+        <div class="tb_layout">
+            <div class="layout">
+                <!-- Title -->
+                <table width="100%" class="pop1_title">
+                    <tbody><tr>
+                        <td class="pop1_title_text">{notice.name}</td>
+                    </tr>
+                </tbody></table>
+                <!-- /Title -->
+                <br style="line-height:10px;">
+                <!-- content -->
+                <table width="100%" height="305px" class="pop1_content">
+                    <tbody>
+                        <tr>
+                            <td class="pop1_content_text">
+                                <lightning-formatted-rich-text value={notice.contents} ></lightning-formatted-rich-text>
+                                <!-- <template lwc:if={notice.isContents}>
+                                    <lightning-formatted-rich-text value={notice.contents} ></lightning-formatted-rich-text>
+                                    <lightning-output-field variant="label-hidden" field-name="ContentTextarea__c"> </lightning-output-field>
+                                </template>
+                                <template lwc:else>
+                                    
+                                    <lightning-formatted-rich-text value={notice.contents} ></lightning-formatted-rich-text>
+                                    <lightning-output-field variant="label-hidden" field-name="Contents__c"> </lightning-output-field>
+                                </template> -->
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!--파일 목록-->
+                <div>
+                    <template for:each={notice.fileInfo} for:item="item" for:index="index">
+                         <p key={item.fileId}><a  href={item.distributionPublicUrl} target="_blank">{item.name}</a></p>
+                    </template>
+                </div>
+                <!-- /content -->
+            </div>
+        </div>
+    </lightning-record-view-form>
+    <div>
+        
+        <lightning-input lwc:if={notice.isTodayView} type="checkbox" label="Don’t show me for a day" name="isToday" style="float: left;" onclick={handleTodayClose}></lightning-input>
+        <lightning-icon icon-name="utility:close" style="float: right;" alternative-text="close" title="close" onclick={handleClose}  size="small">Close</lightning-icon>
+    </div>
+    
+</template>

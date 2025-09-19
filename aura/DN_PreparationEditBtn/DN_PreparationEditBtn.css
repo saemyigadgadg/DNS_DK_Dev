@@ -1,0 +1,16 @@
+.THIS .slds-modal__content.outer {
+    overflow: hidden;
+    border-radius: 0.25rem;
+}
+
+@media all and (max-width: 479px) {
+    .THIS .slds-table_header-fixed_container {
+        padding-top: 0px;
+    }
+    .THIS .slds-table_header-fixed {
+        padding-top: 2rem;
+    }
+    .THIS .search-btn .slds-button {
+        width: 100%;
+    }
+}

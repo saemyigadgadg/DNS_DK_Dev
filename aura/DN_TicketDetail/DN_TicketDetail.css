@@ -1,0 +1,129 @@
+/* .THIS .slds-modal__container {
+    width: 72rem;
+    margin: 0 auto;
+    max-width: calc(100vw - 6rem);
+    padding: 1rem 0;
+}
+
+.THIS .slds-modal__content {
+    padding: 0.5rem;
+} */
+
+.THIS .slds-p-around_x-small {
+    padding: 0.5rem 1rem;
+}
+
+.THIS .slds-gutters {
+    margin: 0;
+    padding: 0 0.5rem;
+}
+
+.THIS .field-container {
+    border-bottom: 1px solid #C9C9C9;
+    padding: 0.25rem 0;
+    margin: 0.25rem 0;
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    width: 100%;
+}
+
+.THIS .field-container .slds-form-element {
+    width: auto;
+}
+
+.THIS .field-container .slds-form-element:has(.slds-combobox_container) .slds-form-element__label {
+    display: inline-block;
+}
+
+.THIS .icon-wrap {
+    padding: 0 0.5rem;
+    cursor: pointer;
+}
+
+/* Phone Field - Read Mode */
+
+.THIS .phone-field {
+    width: 100%;
+    position: relative;
+    align-items: center;
+}
+
+.THIS .phone-field.slds-form-element_horizontal .slds-form-element__control {
+    padding-left: calc(33% - 0.5rem);
+}
+
+.THIS .phone-field .slds-form-element__control a {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* footer */
+
+.THIS .footer {
+    position: sticky;
+    bottom: 2.5rem;
+    background: white;
+    border-top: 1px solid #d8dde6;
+    padding: 1rem;
+    text-align: center;
+    z-index: 98;
+    margin: 2.5rem -0.75rem 0;
+    font-size: 13px;
+}
+
+.THIS .footer .slds-button {
+    margin-left: 0.5rem;
+}
+
+/* 2025-04-25 Hyerin Ro : CreatedBy, ModifiedBy Field Corruption */
+
+/* non icon field */
+/* .THIS .field-container:not(:has(.icon-wrap))  .slds-form-element__control {
+    padding-left: 31.5%;
+} */
+
+.THIS .system-info-wrap .id-wrap {
+    /* display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap; */
+    display: inline-block;       /* flex 제거 */
+    word-break: break-all;       /* 단어 중간에서 줄바꿈 허용 */
+    white-space: normal;      
+}
+
+.THIS .id-wrap > *,
+.THIS .id-wrap .slds-form-element__control {
+    display: inline !important;
+}
+
+.THIS .id-wrap * {
+    word-break: break-all !important;
+    white-space: pre !important;
+}
+
+.THIS .id-wrap .slds-form-element__static {
+    width: unset !important;
+}
+
+
+.THIS .id-wrap .comma {
+    display: inline-block;
+    margin-right: 0.25rem;
+    line-height: 1.5rem;
+}
+
+.THIS .id-wrap .slds-form-element:first-of-type a {
+    text-decoration-line: underline;
+    text-decoration-thickness: var(--slds-g-sizing-border-1, var(--lwc-borderWidthThin, 1px));
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+
+
+
+/* .THIS .field-container .id-wrap a {
+    white-space: nowrap;
+} */

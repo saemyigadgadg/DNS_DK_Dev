@@ -1,0 +1,138 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-27-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   03-20-2025   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable" access="global"
+    controller="DN_AccountLayoutController" description="New Account Trade Customer">
+
+
+    <!-- Aura Attribute -->
+    <aura:attribute name="objectName" type="String" default="Account" />
+
+    <!-- Prospect Layout -->
+    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }">
+
+        <!-- Section 01 :: Account Information -->
+        <ul class="slds-accordion">
+            <li class="slds-accordion__list-item section-container">
+                <section class="slds-accordion__section slds-is-open">
+                    <!-- Header -->
+                    <div class="slds-accordion__summary">
+                        <h2 class="slds-accordion__summary-heading">
+                            <p class="slds-button slds-button_reset slds-accordion__summary-action">Account Information</p>
+                        </h2>
+                    </div>
+                    <!-- Body -->
+                    <div class="slds-accordion__content">
+                        <!-- Left -->
+                        <div class="slds-form__col">
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="Name" required="true" />
+                            </div>
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="Representative__c" required="true" />
+                            </div>
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="CustomerCharacteristics__c" />
+                            </div>
+                        </div>
+
+                        <!-- Right -->
+                        <div class="slds-form__col">
+                            <div class="slds-form__item bsNum">
+                                <lightning:inputField aura:id="recordField" fieldName="BusinessNumber__c" />
+                            </div>
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="CountryLookup__c" required="true" />
+                            </div>
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="RegionLookup__c" required="true" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </li>
+        </ul>
+
+        <!-- Section 02 :: Additional Information -->
+        <ul class="slds-accordion">
+            <li class="slds-accordion__list-item section-container">
+                <section class="slds-accordion__section slds-is-open">
+                    <!-- Header -->
+                    <div class="slds-accordion__summary">
+                        <h2 class="slds-accordion__summary-heading">
+                            <p class="slds-button slds-button_reset slds-accordion__summary-action">Additional Information</p>
+                        </h2>
+                    </div>
+                    <!-- Body -->
+                    <div class="slds-accordion__content">
+                        <!-- Left -->
+                        <div class="slds-form__col">
+                            <div class="slds-form__item vertical-label-container">
+                                <lightning:inputAddress
+                                    aura:id             ="shippingAddress"
+                                    addressLabel        ="Shipping Address"
+                                    streetLabel         ="Shipping Street"
+                                    cityLabel           ="Shipping City"
+                                    countryLabel        ="Shipping Country"
+                                    provinceLabel       ="Shipping State/Province"
+                                    postalCodeLabel     ="Shipping Zip/Postal Code"
+                                    showAddressLookup   ="true"
+                                    addressLookupPlaceholder ="Search Address">
+                                </lightning:inputAddress>
+                            </div>
+                        </div>
+
+                        <!-- Right -->
+                        <div class="slds-form__col">
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="Website__c" />
+                            </div>
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="Language__c"/>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </li>
+        </ul>
+
+        <!-- Section 04 :: CS Information -->
+        <ul class="slds-accordion">
+            <li class="slds-accordion__list-item section-container">
+                <section class="slds-accordion__section slds-is-open">
+                    <!-- Header -->
+                    <div class="slds-accordion__summary">
+                        <h2 class="slds-accordion__summary-heading">
+                            <p class="slds-button slds-button_reset slds-accordion__summary-action">CS Informations</p>
+                        </h2>
+                    </div>
+                    <!-- Body -->
+                    <div class="slds-accordion__content">
+                        <!-- Left -->
+                        <div class="slds-form__col">
+                            <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="Phone" required="true" />
+                            </div>
+                        </div>
+
+                        <!-- Right -->
+                        <div class="slds-form__col">
+                            <!-- <div class="slds-form__item">
+                                <lightning:inputField aura:id="recordField" fieldName="Phone" required="true" />
+                            </div> -->
+                        </div>
+                    </div>
+                </section>
+            </li>
+        </ul>
+
+    </lightning:recordEditForm>
+
+</aura:component>

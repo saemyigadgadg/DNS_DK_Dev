@@ -1,0 +1,65 @@
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.THIS .title-wrap {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.THIS .title-wrap h1 {
+    color: #181818;
+    font-size: 14px;
+    font-weight: 700;
+}  
+
+.THIS .section-header{
+    padding: 0.25rem;
+    padding-left: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.THIS .section-header h2 {
+    font-size: 1rem;
+    line-height: 1.875rem;
+}
+
+.THIS .slds-align_absolute-center {
+    display: unset !important;
+}
+
+.THIS .section-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+    padding: 1rem;
+    overflow: hidden;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.THIS .section-container table {
+    table-layout: fixed;
+}
+
+.THIS .section-container .col {
+    padding: 0.25rem 0.5rem;
+    width: 49%;
+    border-bottom: 1px solid #C9C9C9;
+}
+
+.THIS .section-container .oneRow {
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}

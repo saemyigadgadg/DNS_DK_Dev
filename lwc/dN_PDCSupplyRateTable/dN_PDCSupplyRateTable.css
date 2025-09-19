@@ -1,0 +1,14 @@
+.hidden {
+  display: none;
+}
+
+.table-wrap thead {
+  position: sticky;
+  top: -1px;
+  z-index: 3;
+}
+
+.table-wrap:not(.tfoot-table) {
+  overflow: scroll;
+  height: calc(100vh - 27rem);
+}

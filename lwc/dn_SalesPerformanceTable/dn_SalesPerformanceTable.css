@@ -1,0 +1,70 @@
+.table-wrapper {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.table-quarter {
+  flex: 3;
+}
+
+.table-month {
+  flex: 7;
+}
+.vertical-header {
+  writing-mode: vertical-tb;
+  transform: nont;
+  text-align: center;
+}
+.table-container {
+  overflow-x: auto;
+  margin: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #dcdcdc;
+  background-color: #ffffff !important; /* 흰 배경 강제 적용 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 500px;
+}
+.left-footer-link {
+    background-color: white;
+    padding: 8px;
+    text-align: center;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    height: 103px; /* 필요시 고정 높이 예: height: 200px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Arial', sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+  background-color: white !important;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  color: #333;
+  background-color: #ffffff !important; /* 셀 배경 흰색 */
+}
+
+.custom-table thead th {
+  background-color: #f4f6f9 !important;
+  color: #1a1a1a;
+  font-weight: bold;
+}
+
+.custom-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9 !important;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #eef4fc !important;
+}

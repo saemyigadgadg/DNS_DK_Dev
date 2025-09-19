@@ -1,0 +1,287 @@
+.THIS .slds-card {
+  height: auto;
+  overflow: hidden;
+  background-color: #F3F3F3;
+  box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+.THIS .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #c9c9c9;
+  background-color: #fff;
+}
+.THIS .header .title {
+  display: flex;
+  align-items: center;
+}
+.THIS .header .button-wrap .slds-button {
+  padding: 0 0.75rem;
+}
+.THIS .header .button-wrap .slds-button__icon_left {
+  margin-right: 0.25rem;
+}
+.THIS .header h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-left: 0.5rem;
+}
+
+/* Body */
+.THIS .body {
+  background-color: #F3F3F3;
+}
+.THIS .body .button-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0.75rem;
+}
+.THIS .body .top-card {
+  padding: 1rem 1.25rem;
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* card-header */
+.THIS .card-header {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.THIS .card-header h2 {
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+}
+
+.THIS .card-header p { 
+  color: rgb(208, 23, 23);
+}
+
+/* Card 01 */
+.THIS .card-01 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 1.5rem;
+  row-gap: 1rem;
+}
+.THIS .card-01 .field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+.THIS .card-01 .field-wrap p {
+  font-weight: 600;
+  width: 5rem;
+  margin-bottom: .25rem;
+  text-wrap: nowrap;
+}
+.THIS .card-01 .field-wrap .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+/* card-02 */
+.THIS .card-02 .table-wrap td {
+  text-align: center;
+}
+
+.THIS .card-02 .table-wrap .Inquiry-No {
+  color: #0E63AC;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.THIS .card-02 .table-wrap .Inquiry-No.visited {
+  color: #5b3586;
+}
+
+/* Table Design */
+
+.THIS .body table tr, 
+.THIS.slds-modal table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+.THIS .body table th, 
+.THIS.slds-modal table th  {
+    height: 33px;
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+.THIS .body table td, 
+.THIS.slds-modal table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+.THIS .body table th+th,
+.THIS .body table td+td, 
+.THIS.slds-modal table th+th,
+.THIS.slds-modal table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Table Class */
+.THIS .center,
+.THIS .center .slds-input {
+    text-align: center !important;
+}
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+.THIS .green .slds-icon-text-default {
+  --slds-c-icon-color-foreground: green;
+}
+
+.THIS .yellow .slds-icon-text-default {
+  --slds-c-icon-color-foreground: yellow;
+}
+
+.THIS .red .slds-icon-text-default {
+  --slds-c-icon-color-foreground: red;
+}
+
+/* Pagination */
+
+.THIS .pagination-wrap .total {
+  padding: 0.25rem 0;
+  text-align: left;
+  margin-bottom: 0.25rem;
+}
+
+.THIS .pagination-wrap .slds-icon_container {
+  pointer-events: none;
+}
+
+.THIS .pagination-wrap .pagination {
+  display: flex;
+  border: 1px solid #C9C9C9;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  width: fit-content;
+  margin: auto;
+  width: fit-content;
+}
+
+.THIS .pagination-wrap .pagination a {
+  text-decoration: none;
+}
+
+.THIS .pagination-wrap .pagination li+li {
+  border-left: 1px solid #C9C9C9;
+}
+
+.THIS .pagination-wrap .pagination li:not(.pages) a {
+  padding: 0.5rem 0.75rem;
+  background-color: #fff;
+  color: #706E6B;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.THIS .pagination-wrap .pagination li a:hover {
+  background-color: #F3F3F3;
+}
+
+.THIS .pagination-wrap .pagination .pages a {
+  min-width: 2.25rem;
+  text-align: center;
+  display: inline-block;
+  padding: 0.5rem;
+  border-left: 1px solid #c9c9c9;
+}
+
+.THIS .pagination-wrap .pagination .pages span:first-child a {
+  border-left: none;
+}
+
+.THIS .pagination-wrap .pagination .pages .here {
+  display: inline-block;
+  text-align: center;
+  min-width: 2.25rem;
+  padding: 0.5rem;
+  background-color: #0176D3;
+  color: #fff;
+  cursor: unset;
+}
+
+.THIS .pagination-wrap .slds-icon_container {
+  pointer-events: none;
+}
+
+/* SLDS Custom */
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+}
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+.THIS .slds-form-element {
+  width: 100%;
+}
+
+/* print modal */
+.THIS .slds-modal__container {
+  width: 80vw;
+  max-width: 1440px;
+}
+
+/* SLDS Table datepicker */
+.THIS .slds-datepicker__month td,
+.THIS.slds-modal .slds-datepicker__month td {
+    border: none !important;
+    background-color: #fff !important;
+    padding: .25rem !important;
+    font-size: .75rem !important;
+}
+
+.THIS .slds-datepicker__month th,
+.THIS.slds-modal .slds-datepicker__month th {
+    padding: .5rem !important;
+    font-weight: 400 !important;
+    background-color: #fff !important;
+    border: none !important;
+}
+
+.THIS .slds-datepicker__month tr,
+.THIS.slds-modal .slds-datepicker__month tr {
+    border-bottom: none !important;
+}

@@ -1,0 +1,126 @@
+<!--
+  @description       : 
+  @author            : daewook.kim@sbtglobal.com
+  @last modified on  : 04-08-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-09-2025   daewook.kim@sbtglobal.com   Initial Version
+-->
+<template>
+    <div class="">
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+        </template>
+        <table class=""> <!--table-01 slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table-->
+            <colgroup>
+                <col width="15%" />
+                <col width="15%" />
+                <col width="15%" />
+                <col width="10%" />
+                <col width="7%" />
+                <col width="15%" />
+                <col width="7%" />
+                <col width="7%" />
+                <col width="20%" />
+            </colgroup>
+            <thead>
+                <tr class=""> <!--slds-line-height_reset-->
+                    <th class="left" scope="col">
+                        <div class="slds-truncate" title="">주문번호</div>
+                    </th>
+                    <th class="left" scope="col">
+                        <div class="slds-truncate" title="">구매처</div>
+                    </th>
+                    <th class="left" scope="col">
+                        <div class="slds-truncate" title="">고객주문번호</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="">주문일</div>
+                    </th>
+                    <th class="right" scope="col">
+                        <div class="slds-truncate" title="">품목 수</div>
+                    </th>
+                    <th class="right" scope="col">
+                        <div class="slds-truncate" title="">구매금액</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="">통화</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="">상태</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="">Cust. Order No</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={dataList} for:item="poOrder" for:index="i">
+                    <tr class="slds-hint-parent" key={poOrder.poId}>
+                        <td>
+                            <a accesskey={i} onclick={navigateToDetail}>{poOrder.poSeq}</a>
+                        </td>
+                        <td >
+                            <div>{poOrder.customerName}</div>
+                        </td>
+                        <td class="customerOrerNumber" title={poOrder.customerOrerNumber}>
+                            <div>{poOrder.customerOrerNumber}</div>
+                        </td>
+                        <td class="center">
+                            <div>{poOrder.orderDate}</div>
+                        </td>
+                        <td class="right">
+                            <div>
+                                
+                                <lightning-formatted-number value={poOrder.totalItemCount}></lightning-formatted-number>
+                                <!-- <lightning-formatted-number value="KWMENG" ></lightning-formatted-number> -->
+                            </div>
+                        </td>
+                        <td class="right">
+                            <div>
+                                <lightning-formatted-number value={poOrder.totalItemAmount}></lightning-formatted-number>
+                                
+                                <!-- <lightning-formatted-number value="DMBTR" ></lightning-formatted-number> -->
+                            </div>
+                        </td>
+                        <td class="center">
+                            <div>{poOrder.currencyCode}</div>
+                        </td>
+                        <td class="center" >
+                            <a accesskey={i} onclick={openOrderStatusModal}>
+                                <div>{poOrder.statusLabel}</div>
+                            </a>
+                        </td>
+                        <td>
+                            <div>{poOrder.customerOrderSeq}</div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+            <!-- 합계 정보 -->
+            <tfoot>
+                <tr class="slds-hint-parent">
+                    <td colspan="3"></td>
+                    <td class="right">
+                        <div>합계</div>
+                    </td>
+                    <td class="right">
+                        <div>
+                            <lightning-formatted-number value={totalItemCount}></lightning-formatted-number>
+                        </div>
+                    </td>
+                    <td class="right">
+                        <div>
+                            <lightning-formatted-number value={totalItemAmount}></lightning-formatted-number>
+                        </div>
+                    </td>
+                    <td class="center">
+                        <div>KRW</div>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</template>

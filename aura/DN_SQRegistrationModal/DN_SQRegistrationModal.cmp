@@ -1,0 +1,239 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 04-16-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-27-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="New SQ Registration Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="isSearch"         type="Boolean"  default="false" />
+    <aura:attribute name="isPlaceholderActive" type="Boolean" default="true" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="objectName"       type="String"   default="SQRegistration__c" />
+    <aura:attribute name="fieldList"        type="List"     default="[]" />
+    <aura:attribute name="picklistValue"    type="List"     default="[]" />
+    <aura:attribute name="searchDataList"   type="List"     default="[]" />
+    <aura:attribute name="categoryValue"    type="String"   default="기타" />
+    <aura:attribute name="productModel"     type="String"   default="" />
+    <aura:attribute name="productModelId"   type="String"   default="" />
+    <aura:attribute name="productCode"      type="String"   default="" />
+    <aura:attribute name="ownerId"          type="String"   default="" />
+    <aura:attribute name="dealerId"         type="String"   default="" />
+    <aura:attribute name="accValue"         type="String"   default="" />
+    <aura:attribute name="opptyValue"       type="String"   default="" />
+    <aura:attribute name="stageValue"       type="String"   default="" />
+    <aura:attribute name="currencyValue"    type="String"   default="" />
+    <aura:attribute name="modelValue"       type="String"   default="" />
+    <aura:attribute name="productValue"     type="String"   default="" />
+    <aura:attribute name="recordTypeId"     type="String"   default="" />
+    <aura:attribute name="groupId"          type="String"   default="" />
+    <aura:attribute name="language"         type="String"   default="" />
+    <aura:attribute name="recordTypeName"   type="String"   default="" />  <!-- 25.08.12 추가 -->
+    <aura:attribute name="richTextValue"    type="String" default="{!$Label.c.DNS_SQR_P_PLACE}" />
+    <aura:attribute name="lineItemList"     type="List" />
+    <aura:attribute name="rowDataList"      type="List"     default="[]"/>
+
+    <aura:attribute name="placeholderCleared" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        .slds-template_default:has(.cDN_SQRegistrationModal){
+            overflow: hidden;
+        }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+        class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            <!-- 🚩Aura Header -->
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_SQR_T_TITLE}</h1>
+
+                <button class="slds-button slds-button_icon slds-modal__close" onclick="{! c.handleClose }">
+                    <div class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                        <lightning:icon iconName='utility:close' alternativeText='close' size='small' title='close'></lightning:icon>
+                    </div>
+                </button>
+            </div>
+
+            <!-- 🚩Aura Body -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+                <!-- Aura Layout -->
+                <div class="slds-form slds-align_absolute-center">
+
+                    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }" onsubmit="{! c.handleClickSubmit }" onsuccess="{! c.handleSubmitSuccess }" onerror="{! c.handleSubmitError }" >
+
+                       <div class="body">
+                            <!-- 🚩 1. SQ Information -->
+                            <div class="section-header">
+                                <h2 class="section-title">{!$Label.c.DNS_SQR_S_SectionInfo}</h2>
+                            </div>
+                            <div class="section-container">
+                                <aura:iteration items="{!v.fieldList}" var="field">
+                                    <aura:if isTrue="{! field == 'Owner__c' }">
+                                        <div class="col">
+                                            <lightning:inputField aura:id="recordField" fieldName="{! field }" value="{!v.ownerId}" required="true" />
+                                        </div>
+                                    </aura:if>
+    
+                                    <aura:if isTrue="{! field == 'Message_Group__c' }">
+                                        <div class="col">
+                                            <lightning:inputField aura:id="recordField" fieldName="{! field }" value="{!v.groupId}" required="true" />
+                                            <!-- <aura:if isTrue="{! v.recordTypeName != 'Korea' }">
+                                                <span class="slds-text-color_error slds-text-heading_small" >* 한국 → 영업지원 / 글로벌 → Global Sales (Italy)</span>
+                                            </aura:if> -->
+                                        </div>
+                                    </aura:if>
+    
+                                    <!-- 25-08-12 [GSR]CRM SQ 개선요청건 글로벌일 경우에만 해당 딜러의 Account 값  -->
+                                    <aura:if isTrue="{! field == 'Dealer__c' }">
+                                        <div class="col">
+                                            <lightning:inputField aura:id="recordField" fieldName="{! field }" value="{!v.dealerId}" />
+                                        </div>
+                                    </aura:if>
+
+                                    <!-- 25-08-12 [GSR]CRM SQ 개선요청건 으로 recordTypeName 이 Korea 일 경우에만 노출  -->
+                                    <aura:if isTrue="{! v.recordTypeName == 'Korea' }">
+                                        <aura:if isTrue="{! field == 'Environment__c' }">
+                                            <div class="oneRow" onfocusin="{!c.handleRemovePlaceholder}" onfocusout ="{!c.handleResetPlaceholder}">
+                                                <lightning:inputField aura:id="recordField" fieldName="{! field }" value="{! v.richTextValue }" />
+                                            </div>
+                                        </aura:if>
+                                    </aura:if>
+    
+                                    <aura:if isTrue="{! AND(field != 'Environment__c', AND(field != 'Dealer__c', AND(field != 'Owner__c', field != 'Message_Group__c'))) }">
+                                        <div class="col">
+                                            <lightning:inputField aura:id="recordField" fieldName="{! field }" value="" required="true" />
+                                        </div>
+                                    </aura:if>
+                                </aura:iteration>
+    
+                                <div class="oneRow">
+                                    <lightning:inputField aura:id="recordField" fieldName="RecordTypeId" value="{! v.recordTypeId }" style="display: none;" />
+                                </div>
+    
+                                <lightning:inputField aura:id="recordField" class="none" fieldName="Account__c"     value="{!v.accValue}" />
+                                <lightning:inputField aura:id="recordField" class="none" fieldName="Opportunity__c" value="{!v.opptyValue}" />
+                                <lightning:inputField aura:id="recordField" class="none" fieldName="Stage__c"       value="{!v.stageValue}" />
+                                <lightning:inputField aura:id="recordField" class="none" fieldName="CurrencyIsoCode" value="{!v.currencyValue}" />
+                                <lightning:inputField aura:id="recordField" class="none" fieldName="Model__c"       value="{!v.modelValue}" />
+                                <lightning:inputField aura:id="recordField" class="none" fieldName="BaseCode__c"    value="{!v.productValue}" />
+                            </div>
+    
+                            <!-- 🚩 2. Requested SQ -->
+                            <div class="section-header">
+                                <h2 class="section-title">{!$Label.c.DNS_SQR_S_SectionReqInfo}
+                                    <aura:if isTrue="{! v.recordTypeName != 'Korea' }">
+                                        <span class="section-title slds-text-color_error slds-text-heading_small"> Please press ‘+’ to add additional SQ options</span>
+                                    </aura:if>
+                                </h2>
+                                
+                                <div class="button-wrap">
+                                    <lightning:button label="{!$Label.c.DNS_SQR_B_SEARCH}" title="Search SQ" onclick="{! c.handleSearchClick }"/>
+                                </div>
+                            </div>
+                            <div class="section-container">
+                               
+                                <div class="table-wrap">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered first-table"
+                                        aria-label="Example table of Opportunities with vertical borders">
+                                        <colgroup>
+                                            <col width="4%" />
+                                            <col width="20%" />
+                                            <col width="23%" />
+                                            <col width="53%" />
+                                        </colgroup>
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="add" scope="col" style="width: 4%">
+                                                    <div class="slds-truncate addBtn" title="">
+                                                        <lightning:buttonIcon iconName="utility:add" size="x-small"
+                                                            alternativeText="Add" title="Add"
+                                                            onclick="{!c.handleClickAddButton}" />
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate title listPrice" title="Category">{!$Label.c.DNS_SQR_C_CATEGORY}</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate title" title="SQ Title">{!$Label.c.DNS_SQR_C_TITLE}</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate title" title="Description">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.rowDataList}" var="row" indexVar="j">
+                                                <tr class="slds-hint-parent" aura:id="recordFieldRow">
+                                                    <td data-label="Delete" class="add">
+                                                        <div class="slds-truncate" title="Delete">
+                                                            <lightning:buttonIcon iconName="utility:dash" alternativeText="Delete" title="Delete" size="x-small" onclick="{!c.handleClickdeleteButton}" accesskey="{!j}" />
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Category">
+                                                        <div class="slds-truncate">
+                                                            <lightning:combobox aura:id="sqCategory" id="sqCategory" value="{! row.sqCategory }" options="{! v.picklistValue }" accesskey="{!j}" onchange="{! c.handleChangeCategory }" variant="label-hidden" />
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Title">
+                                                        <div class="slds-truncate" title="Title">
+                                                            <lightning:input aura:id="sqTitle" id="sqTitle" value="{!row.sqTitle}" accesskey="{!j}" variant="label-hidden" required="true" />
+                                                        </div>
+                                                    </td>
+                                                    <td data-label="Description">
+                                                        <lightning:inputRichText aura:id="description" 
+                                                        formats="['font', 'size', 'bold', 'italic', 'underline', 'strike', 'list', 'indent', 'align', 'clean', 'table', 'header', 'color', 'link', 'image']" 
+                                                        value="{!row.descriptionHtml}" accesskey="{!j}" variant="label-hidden" placeholder="{!$Label.c.DNS_SQR_C_PLACEHOLDER}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                       </div>
+                       
+                        <div class="slds-modal__footer">
+                            <lightning:button onclick="{! c.handleClose }" label="{!$Label.c.DNS_B_Cancel}" />
+                            <lightning:button variant="brand" type="submit" label="{!$Label.c.DNS_B_Save}" />
+                        </div>
+                    </lightning:recordEditForm>
+                </div>
+            </div>
+
+            <!-- 🚩Aura Footer -->
+            <!-- <div class="slds-modal__footer">
+                <lightning:button onclick="{! c.handleClose }" label="Cancel" />
+                <lightning:button variant="brand" onclick="{! c.handleSaveRecord }" label="Save" />
+            </div> -->
+        </div>
+    </section>
+
+    <!-- SQ SearchModal -->
+    <aura:if isTrue="{! v.isSearch }">
+        <c:DN_SQSearchModal recordId="{! v.recordId }" lineItemList="{! v.lineItemList }" productModel="{! v.productModel }" searchDataList="{! v.searchDataList }" productCode="{!v.productCode}" />
+    </aura:if>
+
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

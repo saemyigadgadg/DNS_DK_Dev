@@ -1,0 +1,136 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 05-26-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-06-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="New Requested SQ Modal">
+
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="isPick"           type="Boolean"  default="false" />
+    <aura:attribute name="initialValue"     type="Boolean"  default="true" />
+    <aura:attribute name="dnsa"             type="Boolean"  default="false" />
+    <aura:attribute name="isReviewCheck"    type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="language"         type="String"   default="" />
+    <aura:attribute name="objectName"       type="String"   default="RequestedSQ__c" />
+    <aura:attribute name="fieldList"        type="List"     default="[]" />
+    <aura:attribute name="categoryValues"   type="List"     default="[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.modalInit}" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            <!-- 🚩Aura Header -->
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_REQ_T_REQUESTEDSQ}</h1>
+            </div>
+
+            <!-- 🚩Aura Body -->
+            <lightning:recordEditForm   aura:id="recordEditForm" 
+                                        objectApiName="{! v.objectName }" 
+                                        onsubmit="{! c.handleSubmit }"
+                                        onsuccess="{! c.handleSuccess }" 
+                                        onerror="{! c.handleError }">
+                <lightning:messages />
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+                    <!-- Aura Layout -->
+                    <div class="slds-form slds-align_absolute-center">
+
+
+                        <!-- 🚩 1. SQ Information -->
+                        <div class="section-header">
+                            <h2 class="section-title">{!$Label.c.DNS_REQ_T_REQUESTEDSQSECTION}</h2>
+                        </div>
+                        <div class="section-container">
+                            <aura:if isTrue="{! v.isReviewCheck }">
+                                <div class="one-column">
+                                    <lightning:inputField aura:id="recordField" fieldName="IsReview__c" />
+                                </div>
+                            </aura:if>
+                            
+                            <div class="one-column">
+                                <lightning:inputField aura:id="categoryField" fieldName="Category__c" onchange="{! c.handleChangeCategory }" />
+                            </div>
+
+                            <!-- 😶 -->
+                            <div class="one-column slds-form-element slds-form-element_horizontal slds-is-editing">
+                                <div class="label-wrap slds-form-element__label">
+                                    <label>{!$Label.c.DNS_REQ_L_REQUESTEDSQNAME}</label>
+                                    <lightning:helptext content="{!$Label.c.DNS_REQ_M_PLACEHOLDER}" />
+                                </div>
+                                
+                                <div class="slds-form-element__control">
+                                    <lightning:inputField aura:id="nameField" fieldName="Name" variant="label-hidden" />
+                                </div>
+                            </div>
+                            
+                            <div class="one-column">
+                                <lightning:inputField aura:id="descriptionField" fieldName="Description__c" />
+                            </div>
+                            <div class="one-column">
+                                <lightning:inputField fieldName="Price__c" value="0" aura:id="priceField" />
+                            </div>
+                            <div class="one-column">
+                                <lightning:inputField fieldName="IsInitialRequest__c" value="{v.initialValue}" style="display: none;" aura:id="initialField" />
+                            </div>
+
+                            <div class="one-column">
+                                <lightning:inputField aura:id="SQRegistrationField" fieldName="SQRegistration__c" style="display: none;" />
+                            </div>
+                            <!-- <aura:if isTrue="{! v.isPick }">
+                                <aura:iteration items="{!v.fieldList}" var="field">
+                                    <aura:if isTrue="{! field != 'SQRegistration__c'}">
+                                        <div class="one-column">
+                                            <lightning:inputField aura:id="recordField" fieldName="{! field }" />
+                                        </div>
+                                    </aura:if>
+                                </aura:iteration>
+                            </aura:if> -->
+                        </div>
+
+                        <!-- 🚩 2. Information -->
+                        <!-- <div class="section-header">
+                            <h2 class="section-title">Information</h2>
+                        </div>
+                        <div class="section-container">
+                            <aura:if isTrue="{! v.isPick }">
+                                <div class="col">
+                                    <lightning:inputField aura:id="SQRegistrationField" fieldName="SQRegistration__c" />
+                                </div>
+                                <aura:iteration items="{!v.fieldList}" var="field">
+                                    <aura:if isTrue="{! field != 'SQRegistration__c'}">
+                                        <div class="col">
+                                            <lightning:inputField aura:id="recordField" fieldName="{! field }" />
+                                        </div>
+                                    </aura:if>
+                                </aura:iteration>
+                            </aura:if>
+                        </div> -->
+                    </div>
+                </div>
+                
+                    <!-- 🚩Aura Footer -->
+                <div class="slds-modal__footer">
+                    <lightning:button onclick="{! c.handleClose }" label="{!$Label.c.DNS_B_Cancel}" />
+                    <lightning:button variant="brand" type="submit" label="{!$Label.c.DNS_B_Save}" />
+                </div>
+            </lightning:recordEditForm>
+        </div>
+    </section>
+
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

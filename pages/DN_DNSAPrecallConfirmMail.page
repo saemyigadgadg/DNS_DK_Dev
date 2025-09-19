@@ -1,0 +1,130 @@
+<apex:page controller="DN_DNSAPreCallConfirmController" cache="false" standardStylesheets="false" contentType="text/html;charset=UTF-8">
+	<apex:form >
+
+		<head>
+			<meta charset="UTF-8" />
+			<link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+			<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"
+			/>
+			<style type="text / css">
+				@page { padding: 0; margin: 0; @bottom-center { content: counter(page); } } body,html { } .page-break{ /* display:table-row;
+				*/ page-break-after:always; } body{ font-family: Arial Unicode MS; font-weight: 600; font-size: 12px; } .desc{ font-family:
+				Arial, sans-serif; }
+			</style>
+			<script type="text/javascript">
+            function saveReject() {
+                var Reason = document.getElementById('reasonTxtArea').value;
+                console.log('Reason', Reason);
+                saveReasonMethod(Reason);
+            }
+
+            function updateRec() {
+                var Reason = document.getElementById('reasonTxtArea').value;
+                console.log('Reason', Reason);
+                updateRecMethod(Reason);
+            }
+			</script>
+			<apex:actionFunction name="saveReasonMethod" action="{!saveReject}" immediate="true" rerender="rerenderAction">
+				<apex:param name="parameters" value="" assignTo="{!Reason}" />
+			</apex:actionFunction>
+            <apex:actionFunction name="updateRecMethod" action="{!updateRec}" immediate="true" rerender="rerenderAction">
+				<apex:param name="parameters" value="" assignTo="{!Reason}" />
+			</apex:actionFunction>
+		</head>
+		<div class="container" style="display:flex; flex-direction:column; justify-content:space-evenly; width:1400px; margin:0 auto;">
+			<header style="margin: 36px 0;">
+				<!-- <div class="logo">
+					<img style="width: 120px; height:auto; object-fit: contain;" src="{!URLFOR($Resource.Thankyouimg, 'Thankyouimg/Semics_Logo.png')}"
+					 alt="Image" />
+				</div> -->
+
+			</header>
+			<main style="{!IF(OR(hasResponse,isDelete), 'display:none', '') }">
+				<div class="contents" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+					<!-- Image -->
+					<!-- <img src="{!URLFOR($Resource.Thankyouimg, 'Thankyouimg/Thank-you.png')}" alt="Image" style="width: 540px;
+										height: auto;
+										object-fit: contain;" /> -->
+					<div id="">
+						<!-- Title -->
+						<h1 style="text-align:center; margin-bottom:8px; color:#0080FF; font-size:48px; font-weight:600; font-family:'Poppins', sans-serif;">Confirm Request</h1>
+						<!-- Textarea -->
+                        <apex:outputPanel id="rerenderAction">
+                            <div style="{!IF(isCompleted, 'display:none', '') }">
+                                <textarea id="reasonTxtArea" placeholder="Please enter the reason for approval and reject." style="width: 600px; height: 125px; padding: 16px; border: 1px solid #bbb; border-radius: 4px; margin: 24px; font-family: 'Poppins';"
+                                          value=""></textarea>
+
+                                <!-- Send Button -->
+																<div style="display:flex; justify-content:center; gap: 5rem; margin-top:2rem;">
+																	<div class="button" style="padding: 0.75rem 2.5rem;
+																                                                           border-radius: 0.25rem;
+																                                                           width: fit-content;
+																                                                           color: #fff;
+																                                                           font-size: 14px;
+																                                                           background-color: #5da6e8;
+																                                                           cursor: pointer;" onclick="updateRec();">Completed</div>
+																	<div class="button" style="padding: 0.75rem 2.5rem;
+																                                                           border-radius: 0.25rem;
+																                                                           width: fit-content;
+																                                                           color: #fff;
+																                                                           font-size: 14px;
+																                                                           background-color: #f26363;
+																                                                           cursor: pointer;" onclick="saveReject();">Not Completed</div>
+
+
+																	<!--<apex:commandButton value="Submit" action="{!saveReason}" rerender="thePageBlock"/> -->
+																</div>
+
+                            </div>
+							<div style="{!IF(!isCompleted, 'display:none', '') }">
+								<span style="
+									display: block; 
+									text-align: center; 
+									margin-top: 24px; 
+									font-family: 'Poppins', sans-serif; 
+									color: #666; 
+									font-size: 16px; 
+									font-weight: 500; 
+									letter-spacing: 0.5px;">
+									Thank you.
+								</span>
+							</div>
+							
+                        </apex:outputPanel>
+					</div>
+					<!-- Subtext -->
+					<!-- <span style="margin-top: 24px; text-align:center; font-family:'Poppins', sans-serif; color:#999999; font-size:15px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.</span> -->
+				</div>
+
+			</main>
+
+			<main style="{!IF(!hasResponse, 'display:none', '') }">
+				<div class="contents" style="
+					display: flex; 
+					flex-direction: column; 
+					align-items: center; 
+					justify-content: center; 
+					height: 100vh; 
+					text-align: center; 
+					padding: 20px;">
+					<h1 style="
+						color: #007BFF; 
+						font-size: 42px; 
+						font-weight: 700; 
+						font-family: 'Poppins', sans-serif; 
+						line-height: 1.4;
+						max-width: 80%;">
+						The response has already been completed or was handled processed.
+					</h1>
+				</div>
+			</main>            
+			<main style="{!IF(!isDelete, 'display:none', '') }">
+				<div class="contents" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+					<h1 style="color:#0080FF; font-size:48px; font-weight:600; font-family:'Poppins', sans-serif;">This is an expired request.</h1>
+				</div>
+			</main>
+
+		</div>
+
+	</apex:form>
+</apex:page>

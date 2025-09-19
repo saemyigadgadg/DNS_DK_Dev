@@ -1,0 +1,269 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : (포탈) 영업 > 채권관리 > 기간별 수금실적
+  @last modified on  : 03-24-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-04   yuhyun.park@sbtglobal.com   Initial Version
+  1.1   2024-11-21   youjin.shim@sbtglobal.com   화면 변경
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  access="global" 
+  controller="DN_PortalSalesBondsController"
+  description="기간별 수금실적">
+  
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="isSearched" type="Boolean" default="false" />
+
+  <aura:attribute name="dealerInfo" type="Object" default="" />
+  <aura:attribute name="customerInfo" type="Object" default="" />
+  <aura:attribute name="startDate" type="Date" />
+  <aura:attribute name="endDate" type="Date" />
+
+  <aura:attribute name="bizAreaFrom" type="Object" default="" />
+  <aura:attribute name="bizAreaTo" type="Object" default="" />
+  <aura:attribute name="customerTo" type="Object" default="" />
+  <aura:attribute name="isChecked" type="Boolean" default="true" />
+  <aura:attribute name="clearedARList" type="List" default="[]" />
+  <aura:attribute name="salesOfficeInfo" type="Object" default="" />
+
+  <aura:attribute name="totalTotal" type="Decimal" default="0" /> <!--품목수량 총합-->
+  <aura:attribute name="totalAmount" type="Decimal" default="0" /> <!--주문금액 총합-->
+  <aura:attribute name="totalInterest" type="Decimal" default="0" /> <!--주문금액 총합-->
+  <aura:attribute name="currenyKey" type="String" /> <!--통화-->
+
+  <aura:attribute name="excelName" type="String" default="기간별 수금실적" />
+  <aura:attribute name="excelHead" type="List" default="[]" />
+  <aura:attribute name="excelData" type="List" default="[]" />
+
+  <!-- Handler -->
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- Excel -->
+  <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />  
+
+  <!-- Body -->
+  <article class="slds-card">
+
+    <!-- Loading Spinner  -->
+    <aura:if isTrue="{! v.isLoading}">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+
+    <!-- 사업영역 조회 모달 -->
+    <div aura:id="BizAreaListModal"></div>
+    <!-- 판매부서 조회 모달 -->
+    <div aura:id="SalesOfficeListModal"></div>
+    <!-- 고객 조회 모달 -->
+    <div aura:id="CustomerListModal"></div>
+
+
+    <!-- Header -->
+    <div class="header test">
+      <div class="title">
+        <lightning:icon iconName="standard:partner_fund_claim" size="small" alternativeText="Cleared AR" />
+        <h2>기간별 수금실적</h2>
+      </div>
+
+      <div class="button-wrap">
+        <!-- 검색 필터 및 기능 추가 필요 -->
+        <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+        <lightning:button name="Excel"  label="Excel" iconName="doctype:excel"  iconPosition="left" onclick="{!c.downloadExcel}" />
+        
+      </div>
+    </div>
+
+
+    <div class="body">
+      <!-- Card 01 -->
+      <div class="card-01 top-card">
+        <div class="field-wrap">
+          <p>고객</p>
+          <div class="input-wrap">
+            <lightning:input type="text" name="customerFrom" value="{!v.customerInfo.customerName}" variant="label-hidden"
+              readonly="true" disabled="true" aura:id="customerFrom" />
+            <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close"
+              onclick="{!c.clesrCustomerFrom}" class="clear-btn" />
+            <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+              onclick="{!c.openCustomerFromList}" />
+          </div>
+        </div>
+        <div class="field-wrap postingDate">
+          <p>반제일자 <abbr class="slds-required" title="required">*</abbr> </p>
+          <div class="input-wrap">
+            <lightning:input type="date" name="startDate" value="{!v.startDate}" onchange="{!c.handleChange}"
+              variant="label-hidden" />
+            <span>~</span>
+            <lightning:input type="date" name="endDate" value="{!v.endDate}" onchange="{!c.handleChange}"
+              variant="label-hidden" />
+            <!-- <div class="local">
+              <span>Local</span>
+              <lightning:input type="checkbox" name="isLocal" checked="{!v.isChecked}" onchange="{!c.handleChange}" />
+            </div> -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Card 02 -->
+      <div class="card-02 top-card">
+
+        <div class="table-wrap">
+          <!-- Fixed : Left -->
+          <div class="table-01 table-left">
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <thead>
+                <tr>
+                  <th>판매부서</th>
+                  <th>고객코드</th>
+                  <th>수금처</th>
+                  <th>대표자명</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <aura:if isTrue="{!v.isSearched}">
+                  <aura:iteration items="{!v.clearedARList}" var="ar">
+                    <tr>
+                      <td>
+                        <div>{!ar.salesOffice}</div>
+                      </td>
+                      <td>
+                        <div>{!ar.customerCode}</div>
+                      </td>
+                      <td>
+                        <div>{!ar.customerName}</div>
+                      </td>
+                      <td>
+                        <div>{!ar.ceoName}</div>
+                      </td>                
+                    </tr>
+                  </aura:iteration>    
+                <aura:set attribute="else">
+                  <tr>
+                    <td colspan="4" style="text-align: center;">No Data</td>
+                  </tr>
+                </aura:set>
+                </aura:if>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Scrollable : Right -->
+          <div class="table-02 table-right">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="10%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+                <col width="6%" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>실출하처</th>
+                  <th>판매일</th>
+                  <th>오더번호</th>
+                  <th>수금예정일</th>
+                  <th>발행일</th>
+                  <th>반제일자</th>
+                  <th>지급조건</th>
+                  <th>총액</th>
+                  <th>금액</th>
+                  <th>연체이자</th>
+                  <th>타입</th>
+                  <th>문서번호</th>
+                  <th>유저 ID</th>
+                  <th>유저명</th>
+                  <th>통화</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <aura:if isTrue="{!v.isSearched}">
+                  <aura:iteration items="{!v.clearedARList}" var="ar">
+                    <tr>
+                      <td>{!ar.shipToParty}</td>
+                      <td class="center">{!ar.saleDate}</td>
+                      <td>{!ar.orderNo}</td>
+                      <td class="center">{!ar.netDueDate}</td>
+                      <td class="center">{!ar.issueDate}</td>
+                      <td class="center">{!ar.postingDate}</td>
+                      <td>{!ar.paymentTerm}</td>
+                      <td class="right">
+                        <div>
+                          <lightning:formattedNumber value="{!ar.recTotal}" />
+                        </div>
+                      </td>
+                      <td class="right">
+                        <div>
+                          <lightning:formattedNumber value="{!ar.recAmount}" />
+                        </div>
+                      </td>
+                      <td class="right">
+                        <div>
+                          <lightning:formattedNumber value="{!ar.overdueInterest}" />
+                        </div>
+                      </td>
+                      <td>{!ar.bondType}</td>
+                      <td>{!ar.docNo}</td>
+                      <td>{!ar.userId}</td>
+                      <td>{!ar.userName}</td>
+                      <td class="center">{!ar.currenyKey}</td>                
+                    </tr>
+                  </aura:iteration>
+                  <aura:set attribute="else">
+                    <tr>
+                      <td colspan="15" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:set>
+                </aura:if>
+              </tbody>
+              <tfoot>
+                <aura:if isTrue="{!v.isSearched}">
+                  <tr>
+                    <td colspan="7" class="right">
+                      Total
+                    </td>
+                    <td class="right">
+                      <div>
+                        <lightning:formattedNumber value="{!v.totalTotal}" />
+                      </div>
+                    </td>
+                    <td class="right">
+                      <div>
+                        <lightning:formattedNumber value="{!v.totalAmount}" />
+                      </div>
+                    </td>
+                    <td class="right">
+                      <div>
+                        <lightning:formattedNumber value="{!v.totalInterest}" />
+                      </div>
+                    </td>
+                    <td colspan="4"></td>
+                    <td>{!v.clearedARList[0].currenyKey}</td>
+                  </tr>  
+                </aura:if>                
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</aura:component>

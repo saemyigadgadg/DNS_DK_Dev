@@ -1,0 +1,5 @@
+<apex:page standardController="Order">
+    <apex:form >
+        <apex:iframe src="/s/flow/DN_OrderChangeCreate?recordId={!$CurrentPage.parameters.recordId}" width="100%" height="600px"/>
+    </apex:form>
+</apex:page>

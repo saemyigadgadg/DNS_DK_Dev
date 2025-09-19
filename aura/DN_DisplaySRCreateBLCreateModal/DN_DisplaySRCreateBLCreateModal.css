@@ -1,0 +1,275 @@
+.THIS .slds-modal__container {
+  max-width: 60rem;
+  width: 80%;
+  max-height: 100%;
+  height: 100%;
+}
+
+/* Modal Header */
+
+.THIS .slds-modal__header {
+  position: relative;
+}
+
+.THIS .slds-modal__header .button-wrap {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+  opacity: 0.75;
+}
+
+/* Card Header */
+
+.THIS .modal-body .slds-icon-text-default .slds-icon {
+  fill: #0176D3 !important;
+}
+
+.THIS .modal-body .slds-accordion__summary-content {
+  color: #0176D3;
+}
+
+/* Modal Body */
+
+.THIS .slds-p-around_large,
+.THIS .slds-p-around_medium {
+  padding: 0;
+}
+
+.THIS .modal-body {
+  background-color: #F3F3F3;
+  display: flex;
+  flex-direction: column;
+}
+
+.THIS .modal-body .top-card {
+  /* padding: 1rem 1.25rem; */
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+  display: flex;
+  flex-direction: column;
+}
+
+.THIS .card-01 .slds-accordion__content .accordion-body {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.THIS .card-01 .field-wrap p {
+  font-weight: 600;
+  width: 5rem;
+  margin-bottom: .25rem;
+  text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+  width: 100%;
+}
+
+.THIS .card-01 .to {
+  margin: 0 0.5rem;
+}
+
+.THIS .card-01 .fakeInput {
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  min-height: 1.875rem;
+  background-color: #f3f3f3;
+  display: inline-block;
+}
+
+/* Card 02 */
+
+.THIS .modal-body .card-02 .accordion-body {
+  overflow: auto;
+  max-height: 15rem;
+}
+
+.THIS .modal-body .card-02 td .input-wrap {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Card 03 */
+
+.THIS .modal-body .card-03 {
+  position: relative;
+}
+
+.THIS .modal-body .card-03 .button-wrap {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+}
+
+/* Table Design */
+
+.THIS .modal-body table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-top: 1px solid #D9D9D9;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .modal-body table td {
+  background-color: #fff;
+  padding: .25rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body table th+th,
+.THIS .modal-body table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+
+.THIS .modal-body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+  display: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+  text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+  text-align: right !important;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .modal-body .card-02 table .slds-input[readonly] {
+  border: none;
+  background: none;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+  border: 1px solid #C9C9C9;
+  /* min-width: 12rem; */
+}
+
+.THIS .slds-button_icon-border {
+  border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+  border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+  line-height: 100% !important;
+  padding: .25rem 0.5rem !important;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .modal-body .card-03 .table-wrap {
+  display: flex;
+  margin-top: 1rem;
+}
+
+/* Sticky : Table 01 */
+
+.THIS .modal-body .card-03 .table-01 {
+  flex: 2;
+  border-right: 1px solid #d9d9d9
+}
+
+/* Sticky : Table 02 */
+
+.THIS .modal-body .card-03 .table-02 {
+  flex: 3;
+  overflow-x: scroll;
+}
+
+.THIS .modal-body .card-03 .table-02 th,
+.THIS .modal-body .card-03 .table-02 td {
+  padding: 0.3rem 0.75rem;
+}
+
+
+/* SLDS Table datepicker */
+
+.THIS .modal-body .slds-datepicker__month td {
+  border: none;
+  background-color: #fff;
+  padding: .25rem;
+  font-size: .75rem;
+}
+
+.THIS .modal-body .slds-datepicker__month th {
+  padding: .5rem;
+  font-weight: 400;
+  background-color: #fff;
+  border: none;
+}
+
+.THIS .modal-body .slds-datepicker__month tr {
+  border-bottom: none;
+}

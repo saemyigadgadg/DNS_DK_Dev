@@ -1,0 +1,439 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 03-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2025-01-17   Hayeong Min   Initial Version
+  1.0   2025-02-26   Hayeong Min   TicketInfo 수정
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:hasPageReference,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CloneTicketToVOCController">
+    
+    <aura:html tag="style">
+        section.bodyWrapper:has(.cDN_CloneVOCToTicket) {
+            position:relative;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CloneVOCToTicket) {
+            overflow-y: unset;
+        }
+        .modal-container:has(.cDN_CloneVOCToTicket) {
+            margin: auto;
+            width: calc(100vw - 8rem);
+            max-width: 82rem;
+            min-width: 20rem;
+            padding-top: 4rem;
+            padding-bottom: 2rem;
+        }
+        .cDN_CloneVOCToTicket .slds-modal__container {
+            max-width:none;
+            width:auto;
+            padding:0;
+        }
+        .slds-modal__content:has(.cDN_CloneVOCToTicket) {
+            height: fit-content !important;
+            max-height: none !important;
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CloneVOCToTicket) {
+            padding: 0;
+        }
+        *:has(.cDN_CloneVOCToTicket .slds-modal__container) {
+            overflow: visible;
+        }
+    </aura:html>
+
+    <aura:attribute name="isLoading" type="Boolean" default="true" />
+    <aura:attribute name="isFailureStatusRequired" type="Boolean" default="false" />
+    <aura:attribute name="isRequired" type="Boolean" default="true" />
+    <aura:attribute name="isFailure" type="Boolean" default="false" />
+    <aura:attribute name="closedReason" type="String" default="" />
+    <aura:attribute name="ticketInfo" type="Object" default="{}"/>
+    
+    <aura:attribute name="majorOptions" type="List" />
+    <aura:attribute name="middleOptions" type="List" />
+    <aura:attribute name="phenomenonOptions" type="List" />
+    <aura:attribute name="majorLabel" type="String" default="" />
+    <aura:attribute name="middleLabel" type="String" default="" />
+    <aura:attribute name="phenomenonLabel" type="String" default="" />
+    <aura:attribute name="isMajorDisabled" type="Boolean" default="true" />
+    <aura:attribute name="isMiddleDisabled" type="Boolean" default="true" />
+    <aura:attribute name="isPhenomenonDisabled" type="Boolean" default="true" />
+    
+    <aura:attribute name="ticketModalAccountId" type="String" default="" />
+    <aura:attribute name="isSearchEquipment" type="Boolean" default="false" />
+    <aura:attribute name="isSearchContact" type="Boolean" default="false" />
+    <aura:attribute name="resultList" type="List" default="[]" />
+    <aura:attribute name="checkIndex" type="Decimal" default="" />
+    <aura:attribute name="selectEquipId" type="String" default="" />
+    <aura:attribute name="selectContactId" type="String" default="" />
+
+    <aura:attribute name="isAddContact" type="Boolean" default="false" />
+    <aura:attribute name="newConName" type="String" default="" />
+    <aura:attribute name="newConMobilePhone" type="String" default="" />
+
+    <force:recordData recordId="{!$SObjectType.CurrentUser.Id}" fields="Profile.Name" targetFields="{!v.CurrentUser}"/>
+    <aura:attribute name="CurrentUser" type="Object"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast & Navigation-->
+    <lightning:navigation aura:id="navService" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <div class="TicketModal">
+        <div class="slds-modal__container">
+
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_NewTicket}</h2>
+                <div class="button-wrap">
+                    <button class="slds-button slds-button_neutral"
+                        onclick="{! c.handleModalEquipment }">{!$Label.c.DNS_SearchEquipment}</button>
+                    <button class="slds-button slds-button_neutral"
+                        onclick="{! c.handleModalContact }">{!$Label.c.DNS_SearchContact}</button>
+                </div>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="slds-modal__content modalContent">
+
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{!v.isLoading}">
+                    <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                </aura:if>
+
+                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case" recordTypeId="{!v.ticketInfo.RecordTypeId}">
+                    <h2 class="infoTitle">{!$Label.c.ServiceReception}</h2>
+                    <div class="field-wrap">
+                        <div class="input-wrap">
+                            <!--상태-->
+                            <lightning:inputField fieldName="Status" required="true" value="{!v.ticketInfo.Status}"/>
+                            <!--배정보류사유-->
+                            <aura:if isTrue="{! v.ticketInfo.Status == 'Waiting (Assignment delay)'}">
+                                <lightning:inputField fieldName="AssignHoldingReason__c"  value="{!v.ticketInfo.AssignHoldingReason__c}"/>
+                            </aura:if>
+                            <!--종결사유-->
+                            <aura:if isTrue="{! v.ticketInfo.Status == 'Closed'}">
+                                <lightning:inputField fieldName="EndOfReason__c"
+                                    value="{!v.ticketInfo.EndOfReason__c}" />
+                                    <!--조치결과-->
+                                    <aura:if
+                                        isTrue="{! v.ticketInfo.EndOfReason__c == 'Call Service'}">
+                                        <lightning:inputField fieldName="ResultOfMeasure__c" value="{!v.ticketInfo.ResultOfMeasure__c}" />
+                                    </aura:if>
+
+                                    <!--종결사유(상세)-->
+                                    <aura:if isTrue="{! v.ticketInfo.EndOfReason__c == 'Customer Cancellation' || v.ticketInfo.EndOfReason__c == 'Call Service'}">
+                                        <lightning:inputField fieldName="ClosedReasonDetails__c" value="{!v.ticketInfo.ClosedReasonDetails__c}" />
+                                    </aura:if>
+                            </aura:if>
+                            <!--장비 & 고객사-->
+                            <lightning:inputField id="ticketAssetId" fieldName="AssetId" value="{!v.ticketInfo.AssetId}" required="{!v.isRequired}" disabled="false"/>
+                            <lightning:inputField id="ticketAccountId" fieldName="AccountId" value="{!v.ticketInfo.AccountId}" disabled="false"/>
+                            <!--요청자-->
+                            <lightning:inputField id="ticketContactId" fieldName="Requester__c" value="{!v.ticketInfo.Requester__c}" disabled="false"/>
+                            <!--Origin Ticket-->
+                            <lightning:inputField fieldName="OriginTicket__c" value="{!v.ticketInfo.OriginTicket__c}" disabled="true"/>
+                            <!--알림톡알림(To.고객)-->
+                            <lightning:inputField fieldName="isAlarmToCustomer__c" onchange="{!c.handleAlarm}"/>
+                            <!--접수내용-->
+                            <div class="receptionDetails"><lightning:inputField fieldName="ReceptionDetails__c" required="true" value="{!v.ticketInfo.ReceptionDetails__c}"/></div>
+                        </div>
+
+                        <div class="input-wrap">
+                            <!--티켓유형(대)-->
+                            <lightning:inputField fieldName="TicketType__c" value="{!v.ticketInfo.TicketType__c}" required="true"/>
+                            <!--티켓유형(중)-->
+                            <lightning:inputField fieldName="InternalTicketType__c" value="{!v.ticketInfo.InternalTicketType__c}" onchange="{!c.handleTicketType}" required="true"/>
+                            <!--접수경로-->
+                            <lightning:inputField fieldName="ReceptionPath__c" value="{!v.ticketInfo.ReceptionPath__c}" />
+                            <!--캠패인-->
+                            <aura:if
+                                isTrue="{! v.ticketInfo.InternalTicketType__c == 'Regular Inspections' || v.ticketInfo.InternalTicketType__c == 'Pre-Call' || v.ticketInfo.InternalTicketType__c == 'Service Campaign'}">
+                                <lightning:inputField fieldName="Campaign__c" value="{!v.ticketInfo.Campaign__c}"/>
+                            </aura:if>
+                            <!--내부요청자-->
+                            <aura:if
+                                isTrue="{! v.ticketInfo.TicketType__c == 'Internal request' &amp;&amp; v.ticketInfo.InternalTicketType__c == 'Installation request'}">
+                                <lightning:inputField fieldName="InternalRequester__c" value="{!v.ticketInfo.InternalRequester__c}"/>
+                            </aura:if>
+                            <!--접수일시-->
+                            <lightning:inputField fieldName="ApplicationDateTime__c" value="{!v.ticketInfo.ApplicationDateTime__c}"/>
+                            <!--고장일시-->
+                            <lightning:inputField fieldName="BreakdownDateTime__c" value="{!v.ticketInfo.BreakdownDateTime__c}" required="{!v.isFailure}" />
+                            <!--Sales Order-->
+                            <aura:if
+                            isTrue="{!v.ticketInfo.InternalTicketType__c == 'Installation request' || v.ticketInfo.InternalTicketType__c == 'Post-delivery training'}">
+                                <lightning:inputField fieldName="SalesOrder__c" value="{!v.ticketInfo.SalesOrder__c}"/>
+                            </aura:if>
+                            <!--고장상태-->
+                            <lightning:inputField fieldName="FailureStatus__c" value="{!v.ticketInfo.FailureStatus__c}"/>
+                            <!--긴급-->
+                            <lightning:inputField fieldName="IsUrgency__c" onchange="{!c.handleUrgent}"/>
+                            <!--재발생-->
+                            <lightning:inputField fieldName="IsReGenerate__c" onchange="{!c.handleRegenerate}"/>
+                        </div>
+                    </div>
+
+                    <!--기술상담-->
+                    <aura:if isTrue="{!(v.ticketInfo.TicketType__c) &amp;&amp; !(v.ticketInfo.TicketType__c == '' || v.ticketInfo.TicketType__c == 'General inquiry')}">
+                    <h2 class="infoTitle">{!$Label.c.TechnicalConsultation}</h2>
+                    <div class="field-wrap">
+                        <div class="input-wrap">
+                            <!--고장부위-->
+                            <lightning:combobox label="{!$Label.c.DNS_F_FailureArea}" value="{!v.ticketInfo.FailureArea__c}" 
+                                                options="{! v.majorOptions }" variant="label-inline"
+                                                onchange="{! c.handleMajor }" disabled="{!v.isMajorDisabled}" required="{!v.isFailure}"/>
+                            <lightning:inputField fieldName="FailureAreaValue__c" value="{!v.ticketInfo.FailureAreaValue__c}" style="display:none;"/>
+                            <!--고장부위(상세)-->
+                            <lightning:combobox label="{!$Label.c.DNS_F_FailureAreaDetail}" value="{!v.ticketInfo.FailureAreaDetail__c}" 
+                                                options="{! v.middleOptions }" variant="label-inline"
+                                                onchange="{! c.handleMiddle }" disabled="{!v.isMiddleDisabled}" required="{!v.isFailure}"/>
+                            <lightning:inputField fieldName="FailureAreaDetailValue__c" value="{!v.ticketInfo.FailureAreaDetailValue__c}" style="display:none;"/>
+                        </div>
+                        <div class="input-wrap">
+                            <!--고장현상-->
+                            <lightning:combobox label="{!$Label.c.DNS_F_Failurephenomenon}" value="{!v.ticketInfo.FailurePhenomenon__c}" 
+                                                options="{! v.phenomenonOptions }" variant="label-inline"
+                                                onchange="{! c.handlePhenomenon }" disabled="{!v.isPhenomenonDisabled}" required="{!v.isFailure}"/>
+                            <lightning:inputField fieldName="FailurePhenomenonValue__c" value="{!v.ticketInfo.FailurePhenomenonValue__c}" style="display:none;"/>
+                            <!--수리요청일시-->
+                            <lightning:inputField fieldName="RepairRequestDateTime__c" value="{!v.ticketInfo.RepairRequestDateTime__c}"/>
+                        </div>
+                    </div>
+                    </aura:if>
+
+                    <!--미오후납관리-->
+                    <aura:if
+                    isTrue="{! v.ticketInfo.TicketType__c == 'Internal request' &amp;&amp; v.ticketInfo.InternalTicketType__c == 'Missing Part, Wrong Part'}">
+                    <h2 class="infoTitle">{!$Label.c.NonpaymentRatepaymentManagement}</h2>
+                    <div class="field-wrap">
+                        <div class="input-wrap">
+                            <!--설치업체-->
+                            <lightning:inputField fieldName="InstallationWC__c" value="{!v.ticketInfo.InstallationWC__c}"/>
+                            <!--생산처-->
+                            <lightning:inputField fieldName="Producer__c" value="{!v.ticketInfo.Producer__c}"/>
+                            <!-- Noti No.-->
+                            <lightning:inputField fieldName="NotiNO__c" value="{!v.ticketInfo.NotiNO__c}"/>
+                            <!--진행사항-->
+                            <div class="progressDetail"><lightning:inputField fieldName="Progress__c" value="{!v.ticketInfo.Progress__c}"/></div>
+                        </div>
+                        <div class="input-wrap">
+                            <!--발생구분(선택)-->
+                            <lightning:inputField fieldName="Occurrence_Classification_Select__c"
+                            value="{!v.ticketInfo.Occurrence_Classification_Select__c}" />
+                            <!--발생구분-->
+                            <lightning:inputField fieldName="Occurrence_Classification__c" value="{!v.ticketInfo.Occurrence_Classification__c}"/>
+                            <!--SV Ord.No-->
+                            <lightning:inputField fieldName="SVOrdNo__c" value="{!v.ticketInfo.SVOrdNo__c}"/>                          
+                            <!--회수품전달-->
+                            <lightning:inputField fieldName="DeliveryOfRecoveredGoods__c" value="{!v.ticketInfo.DeliveryOfRecoveredGoods__c}"/>
+                        </div>                            
+                    </div>
+                    </aura:if>
+                    <!--납품후교육-->
+                    <aura:if
+                        isTrue="{! v.ticketInfo.TicketType__c == 'Internal request' &amp;&amp; v.ticketInfo.InternalTicketType__c == 'Post-delivery training'}">
+                    <h2 class="infoTitle">{!$Label.c.DNS_P_PostDeliveryTraining}</h2>
+                    <div class="field-wrap">
+                        <div class="input-wrap">
+                            <!--판매 대리점-->
+                            <lightning:inputField fieldName="SalesDealer__c" value="{!v.ticketInfo.SalesDealer__c}"/>
+                            <!--고객사 담당자 이름-->
+                            <lightning:inputField fieldName="ContactName__c" value="{!v.ticketInfo.ContactName__c}"/>
+                            <!--직책-->
+                            <lightning:inputField fieldName="ContactPosition__c" value="{!v.ticketInfo.ContactPosition__c}"/>
+                            <!--고객사 담당자 전화-->
+                            <lightning:inputField fieldName="ContactPhone__c" value="{!v.ticketInfo.ContactPhone__c}"/>
+                        </div>
+                        <div class="input-wrap">
+                            <!--교육 횟수-->
+                            <lightning:inputField fieldName="TrainingCount__c" value="{!v.ticketInfo.TrainingCount__c}"/>
+                            <!--교육 종류-->
+                            <lightning:inputField fieldName="TrainingType__c" value="{!v.ticketInfo.TrainingType__c}"/>
+                            <!--피교육자 수준-->
+                            <lightning:inputField fieldName="TraineeLevel__c" value="{!v.ticketInfo.TraineeLevel__c}"/>
+                            <!--교육 요청 일시(1)-->
+                            <lightning:inputField fieldName="TrainingDateTime1__c" value="{!v.ticketInfo.TrainingDateTime1__c}"/>
+                            <!--교육 요청 일시(2)-->
+                            <lightning:inputField fieldName="TrainingDateTime2__c" value="{!v.ticketInfo.TrainingDateTime2__c}"/>
+                            <!--교육 요청 일시(3)-->
+                            <lightning:inputField fieldName="TrainingDateTime3__c" value="{!v.ticketInfo.TrainingDateTime3__c}"/>
+                        </div>
+                    </div>
+                    </aura:if>
+
+                    <h2 class="infoTitle">{!$Label.c.DNS_S_SystemInformation}</h2>
+                    <div class="field-wrap">
+                        <lightning:outputField fieldName="CreatedById" />
+                        <lightning:outputField fieldName="LastModifiedById" />
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}"
+                    onclick="{!c.handleCancel}" class="slds-m-left_x-small" />
+                <lightning:button variant="Brand" label="{!$Label.c.DNS_B_Save}" onclick="{!c.handleSave}" class="slds-m-left_x-small" />
+            </footer>
+
+            <!-- 장비 검색 모달 -->
+            <aura:if isTrue="{!v.isSearchEquipment}">
+                <div class="slds-backdrop slds-backdrop_open inner"></div>
+                <div class="slds-modal slds-fade-in-open inner">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_SearchEquipment}</h1>
+                        </div>
+                        <div class="slds-modal__content">
+                            <div class="card-01">
+                                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case"
+                                    recordTypeId="{!v.ticketInfo.RecordTypeId}">
+                                    <lightning:inputField id="ticketModalAccountId" fieldName="AccountId" value="" />
+                                    <!-- <lightning:inputField fieldName="AccountId" value="{!v.ticketModalAccountId}" /> -->
+                                </lightning:recordEditForm>
+                                <lightning:button variant="brand" onclick="{! c.handleSearch }" label="Search" />
+                            </div>
+                            <div class="table-wrap">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width=" " />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" style="width: 13%;">{!$Label.c.DNS_B_Select}</th>
+                                            <th>{!$Label.c.DNS_C_Equipment}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.resultList}" var="equipment" indexVar="i">
+                                            <tr>
+                                                <td>{!i + 1}</td>
+                                                <td>
+                                                    <lightning:input name="{!i}" type="checkbox" variant="label-hidden"
+                                                        aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                </td>
+                                                <td>{!equipment.Name}</td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button onclick="{! c.handleModalCancel }" label="Cancel" />
+                            <lightning:button variant="brand" onclick="{! c.handleSelect }" label="Select" />
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- 연락처 검색 모달 -->
+            <aura:if isTrue="{!v.isSearchContact}">
+                <div class="slds-backdrop slds-backdrop_open inner"></div>
+                <div class="slds-modal slds-fade-in-open inner">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">
+                                {!$Label.c.DNS_SearchContact}
+                            </h1>
+                            <div class="button-wrap">
+                                <lightning:button  onclick="{! c.addContact }" label="{!$Label.c.DNS_B_NewContact}" />
+                            </div>
+                        </div>
+                        <div class="slds-modal__content">
+                            <div class="card-01">
+                                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case"
+                                    recordTypeId="{!v.ticketInfo.RecordTypeId}">
+                                    <lightning:inputField id="ticketModalAccountId" fieldName="AccountId" value="" />
+                                    <!-- <lightning:inputField fieldName="AccountId" value="{!v.ticketModalAccountId}" /> -->
+                                </lightning:recordEditForm>
+                                <lightning:button variant="brand" onclick="{! c.handleSearch }" label="Search" />
+                            </div>
+
+                            <!--New Contact-->
+                            <aura:if isTrue="{!v.isAddContact}">
+                                
+                                <div class="add-table">
+                                    <!-- <lightning:button  onclick="{! c.addContact }" label="{!$Label.c.DNS_B_NewContact}" /> -->
+                                     <div class="table-header">
+                                        <div class="icon-wrap">
+                                            <lightning:icon iconName='standard:record_create' alternativeText='record_create' size='x-small' title='record_create'></lightning:icon>
+                                        </div>
+                                        <div class="title">{!$Label.c.DNS_B_NewContact}</div>
+                                     </div>
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{!$Label.c.DNS_C_ContactName}</th>
+                                                <th>{!$Label.c.DNS_C_Phone}</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <lightning:input name="Name" variant="label-hidden"
+                                                        value="{!v.newConName}"/>
+                                                </td>
+                                                <td>
+                                                    <lightning:input name="MobilePhone" variant="label-hidden"
+                                                        value="{!v.newConMobilePhone}"/>
+                                                </td>
+                                                <td>
+                                                    <lightning:button  onclick="{! c.createContact }" label="{!$Label.c.DNS_B_Save}" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </aura:if>
+
+                            <div class="table-wrap">
+                                <div class="table-header">
+                                    <div class="icon-wrap">
+                                        <lightning:icon iconName='standard:contact' alternativeText='contact' size='x-small' title='contact'></lightning:icon>
+                                    </div>
+                                    <div class="title">{!$Label.c.DNS_S_ContactList}</div>
+                                 </div>
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" style="width: 13%;">{!$Label.c.DNS_B_Select}</th>
+                                            <th>{!$Label.c.DNS_C_ContactName}</th>
+                                            <th>{!$Label.c.DNS_C_Phone}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.resultList}" var="contact" indexVar="i">
+                                            <tr>
+                                                <td>{!i + 1}</td>
+                                                <td>
+                                                    <lightning:input name="{!i}" type="checkbox" variant="label-hidden"
+                                                        aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                </td>
+                                                <td>{!contact.Name}</td>
+                                                <td>{!contact.MobilePhone}</td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button onclick="{! c.handleModalCancel }" label="Cancel" />
+                            <lightning:button variant="brand" onclick="{! c.handleSelect }" label="Select" />
+                        </div>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

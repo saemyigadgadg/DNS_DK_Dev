@@ -1,0 +1,32 @@
+.THIS .slds-card__header {
+    display: none;
+}
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    padding-top: 0;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.THIS .header .title h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #181818;
+}
+
+.THIS .header .title .icon-wrap .slds-icon_container {
+    background-color: #67a5e7 !important;
+}
+
+.THIS .modal-body .card-02 {
+    padding: 1rem;
+}

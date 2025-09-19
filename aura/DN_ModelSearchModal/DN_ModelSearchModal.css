@@ -1,0 +1,171 @@
+.THIS .slds-modal__container {
+  position: relative;
+  top: 50%;
+  bottom: 50%;
+  transform: translateY(-50%);
+  width: 50vw;
+  min-width: 340px;
+  max-width: 690px;
+  margin: 0 auto;
+  height: fit-content;
+  padding: 0;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  border: none;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+  opacity: 0.75;
+}
+
+/* Modal Body */
+
+.THIS .slds-p-around_medium {
+  padding: 0;
+}
+
+.THIS .modal-body {
+  background-color: #F3F3F3;
+}
+
+.THIS .modal-body .top-card {
+  display: block;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS.serialListModal .modal-body .card-01 {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media screen and (max-width: 740px) {
+  .THIS .card-01 {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+  }
+
+  .THIS.serialListModal .modal-body .card-01 {
+    flex-direction: column;
+  }
+}
+
+.THIS .card-01 .field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  width: 100%;
+}
+
+.THIS .card-01 .field-wrap p {
+  font-weight: 600;
+  width: 5rem;
+  margin-bottom: .25rem;
+  text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+  width: 100%;
+}
+
+.THIS .card-01 .to {
+  margin: 0 0.5rem;
+}
+
+.THIS .card-02 .table-wrap {
+  overflow: hidden;
+  overflow-y: scroll;
+  max-height: calc(100vh - 30rem);
+}
+
+.THIS .card-02 .table-wrap thead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+/* Table Design */
+
+.THIS .modal-body .card-02 table tr {
+  /* w/o .slds-table_bordered */
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body .card-02 table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-top: 1px solid #D9D9D9;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .modal-body .card-02 table td {
+  background-color: #fff;
+  padding: .5rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  /*border-bottom: 1px solid #D9D9D9;*/
+}
+
+.THIS .modal-body .card-02 table th+th,
+.THIS .modal-body .card-02 table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body .card-02 table th:first-of-type {
+  text-align: left;
+}
+
+/* Table Class */
+
+.THIS .center {
+  text-align: center !important;
+}
+
+.THIS .left {
+  text-align: left !important;
+}
+
+.THIS .right {
+  text-align: right !important;
+}
+
+/* SLDS Customs */
+.THIS .slds-button_neutral {
+  text-wrap: nowrap;
+}

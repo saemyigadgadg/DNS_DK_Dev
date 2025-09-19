@@ -1,0 +1,55 @@
+<!--
+  @related           : DN_OrderApprovalController
+  @description       : Order 내부 승인 버튼
+  @author            : yeongju.yun
+  @last modified on  : 2025-02-18
+  @last modified by  : yeongju.yun 
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2025-02-18   yeongju.yun   Initial Version
+-->
+<aura:component
+    controller="DN_OrderApprovalController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes">
+
+    <aura:attribute type="Boolean" name="isLoading"/>
+    <aura:attribute type="String" name="comments"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- Modal Frame Settings -->
+        .slds-modal__container:has(.cDN_OrderApprovalBtn) {
+            width: 34rem;
+            max-width: calc(100vw - 5rem);
+            margin: 0 auto;
+        }
+        .slds-modal__content:has(.cDN_OrderApprovalBtn) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_OrderApprovalBtn) {
+          padding:0;
+        }
+    </aura:html>
+
+    <div class="modal_wrapper slds-modal__container">
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="medium" alternativeText="Loading" />
+        </aura:if>
+
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.DNS_H_InternalApproval}</h2>
+        </header>
+
+        <div class="slds-modal__content">
+            <lightning:textarea label="{!$Label.c.DNS_F_Comments}" value="{!v.comments}" rows="10"/>
+        </div>
+
+        <footer class="slds-modal__footer">
+            <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}"/>
+            <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{!c.handleSave}"/>
+        </footer>
+    </div>
+</aura:component>

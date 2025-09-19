@@ -1,0 +1,86 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+}
+
+.THIS .closeModal {
+    float: right;
+}
+
+.THIS .slds-modal__content{
+    padding: 1.25rem 1.75rem;
+}
+
+.THIS .modal_body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.THIS .modal_body-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.THIS .main-content {
+    font-size: large;
+    font-weight: bold;
+}
+
+.THIS .main-content-e {
+    font-size: large;
+    font-weight: bold;
+    white-space: pre-line;
+}
+
+.THIS .info-container{
+    margin-top: 1.5rem;
+}
+
+.THIS .field-container {
+    display: flex;
+}
+
+.THIS .field-content {
+    min-width: 300px;
+    border-bottom: 1px solid black;
+}
+
+.THIS table {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 1rem;
+    min-width: 8rem;
+    border: 1px solid #D9D9D9;
+}
+
+.THIS table td {
+    background-color: #fff;
+    padding: .25rem .5rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border: 1px solid #D9D9D9;
+}
+
+.THIS .input-wrap {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.THIS .businessNumberBtn {
+    margin-bottom: -20px;
+}

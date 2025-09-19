@@ -1,0 +1,9 @@
+<aura:component access="global">
+    <aura:method name="redirectPage" action="{!c.doRedirect}">
+        <aura:attribute name="redirectType" type="String" access="global" />
+        <aura:attribute name="navigationType" type="String" access="global" />
+        <aura:attribute name="recordId" type="String" access="global" />
+    </aura:method>
+    <!-- Navigation -->
+    <lightning:navigation aura:id="navService"/>
+</aura:component>

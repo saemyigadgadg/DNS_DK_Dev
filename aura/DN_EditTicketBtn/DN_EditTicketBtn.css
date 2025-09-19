@@ -1,0 +1,84 @@
+/* Common */
+
+.THIS.slds-modal__container {
+  width: 100%;
+  max-width: none !important;
+  min-width: none !important;
+  margin: 0;
+  padding: 0;
+}
+
+
+.THIS .slds-modal__content {
+  padding: 1.75rem 1.25rem;
+  max-height: calc(100vh - 16rem);
+}
+
+.THIS .infoTitle{
+  padding: 0.75rem 0.5rem;
+  background: #f3f3f3;
+  border-radius: 0.25rem;    
+  font-size: 14px;
+}
+
+/* Step 01 - Select Record Type*/
+
+
+.THIS .selectRecordType .record-label{
+  font-weight: 600;
+}
+
+.THIS .selectRecordType .slds-align_absolute-center{
+  justify-content: start !important;
+}
+
+.THIS .selectRecordType .slds-form-element__control{
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0.25rem;
+}
+
+/* Step 02 - Record Field */
+
+
+.THIS .form-container{
+  width: 100%;
+}
+
+.THIS .form-container .infoTitle{
+  padding: 0.75rem 0.5rem;
+  background: #f3f3f3;
+  border-radius: 0.25rem;    
+  font-size: 14px;
+}
+
+.THIS .form-container .field-wrap{
+  padding: 0.5rem 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 1.5rem;
+}
+
+.THIS .form-container .field-wrap .input-wrap.withBlank{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.THIS .form-container .noGrid{
+  grid-template-columns: 1fr;
+}
+
+/* Removing Serch Filter Combobx Label */
+
+.THIS .input-field-wrap .slds-form-element__label {
+	display: none !important;
+}
+
+/* 2025-03-14 Hyerin Ro */
+
+.THIS .receptionDetails .slds-textarea,
+.THIS .progressDetail .slds-input {
+  height: 12rem;
+}

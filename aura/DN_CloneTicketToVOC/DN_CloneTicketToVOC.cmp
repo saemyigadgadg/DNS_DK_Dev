@@ -1,0 +1,139 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 10-30-2024
+  @last modified by  : Hayeong Min
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   10-29-2024   Hayeong Min   Initial Version
+  1.0   10-30-2024   Hayeong Min   기능 추가
+  1.0   02-26-2025   Hayeong Min   기능 수정
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,lightning:hasPageReference,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CloneTicketToVOCController">
+    <aura:html tag="style">
+        section.bodyWrapper:has(.cDN_CloneTicketToVOC) {
+            position:relative;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CloneTicketToVOC) {
+            overflow-y: unset;
+        }
+        .modal-container:has(.cDN_CloneTicketToVOC) {
+            width: 63rem;
+            max-width: calc(100vw - 8rem);
+            min-width: 30rem;
+            margin: auto;
+        }
+        .cDN_CloneTicketToVOC .slds-modal__container {
+            max-width:none;
+            width:auto;
+            padding:0;
+        }
+        .slds-modal__content:has(.cDN_CloneTicketToVOC) {
+            height: fit-content !important;
+            max-height: none !important;
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CloneTicketToVOC) {
+            padding: 0;
+        }
+
+    </aura:html>
+
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <aura:attribute name="ticketInfo" type="Object" default="{}" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:navigation aura:id="navService" />
+
+    <div class="VOCModal">
+        <div class="slds-modal__container">
+
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_NewVOC}</h2>
+            </header>
+
+            <!-- Mdoal Body -->
+            <div class="slds-modal__content modalContent">
+
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{!v.isSpinner}">
+                    <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                </aura:if>
+
+                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case" recordTypeId="{!v.ticketInfo.RecordTypeId}">
+
+                        <!-- 🚩 1. Receptionist Information -->
+                        <h2 class="infoTitle">{!$Label.c.DNS_S_ReceptionistInformation}</h2>
+                        <div class="fieldContainer">
+                            <div class="col">
+                                <lightning:inputField fieldName="AccountId" value="{!v.ticketInfo.AccountId}" disabled="true"/>
+                                <lightning:inputField fieldName="Requester__c" value="{!v.ticketInfo.Requester__c}" disabled="true"/>
+                                <lightning:inputField fieldName="OriginTicket__c" value="{!v.ticketInfo.OriginTicket__c}" disabled="true"/>
+                            </div>
+                            <div class="col">
+                                <lightning:inputField fieldName="AssetId" value="{!v.ticketInfo.AssetId}" disabled="true" required="true"/>
+                                <lightning:inputField fieldName="Status" required="true" value="{!v.ticketInfo.Status}" />
+                                <aura:if isTrue="{! v.ticketInfo.Status == 'Closed'}">
+                                    <lightning:inputField fieldName="EndOfReason__c" value="{!v.ticketInfo.EndOfReason__c}" />
+                                </aura:if>
+                            </div>
+                        </div>
+
+                        <!-- 🚩 2. Receipt VOC -->
+                        <h2 class="infoTitle">{!$Label.c.DNS_S_ReceiptVOC}</h2>
+                        <div class="fieldContainer">
+                            <div class="col">
+                                <lightning:inputField fieldName="ApplicationRoute__c" value="{!v.ticketInfo.ApplicationRoute__c}" />
+                                <lightning:inputField fieldName="ApplicationRoute2__c" value="{!v.ticketInfo.ApplicationRoute2__c}" />
+                                <lightning:inputField fieldName="VOCType__c" value="{!v.ticketInfo.VOCType__c}" />
+                                <lightning:inputField fieldName="VOCTypeDetail__c" value="{!v.ticketInfo.VOCTypeDetail__c}" />
+                                <lightning:inputField fieldName="VOCcategory3__c" value="{!v.ticketInfo.VOCcategory3__c}" />
+                            </div>
+                            <div class="col">
+                                <lightning:inputField fieldName="ReplyMethod__c" value="{!v.ticketInfo.ReplyMethod__c}" />
+                                <lightning:inputField fieldName="ReplyTo__c" value="{!v.ticketInfo.ReplyTo__c}" />
+                                <lightning:inputField fieldName="DesiredConsultationTime__c"
+                                value="{!v.ticketInfo.DesiredConsultationTime__c}" />
+                                <lightning:inputField fieldName="ProcessingDeadline__c"
+                                value="{!v.ticketInfo.ProcessingDeadline__c}" />
+                            </div>
+                        </div>
+
+                        <!-- 🚩 3. VOC Content -->
+                        <h2 class="infoTitle">{!$Label.c.DNS_S_VOCContent}</h2>
+                        <div class="fieldContainer">
+                            <div class="col">
+                                <lightning:inputField fieldName="ReceptionDetails__c" value="{!v.ticketInfo.ReceptionDetails__c}" required="true"/>
+                            </div>
+                        </div>
+                        
+                        <!-- 🚩 5. System Information -->
+                        <h2 class="infoTitle">{!$Label.c.DNS_S_SystemInformation}</h2>
+                        <div class="fieldContainer">
+                            <div class="col">
+                                <lightning:outputField fieldName="CreatedById" />
+                            </div>
+                            <div class="col">
+                                <lightning:outputField fieldName="LastModifiedById" />
+                            </div>
+                        </div>
+                </lightning:recordEditForm>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}"
+                    onclick="{!c.handleCancel}" class="slds-m-left_x-small" />
+                <lightning:button variant="Brand" label="{!$Label.c.DNS_B_Save}" onclick="{!c.handleSave}" class="slds-m-left_x-small" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

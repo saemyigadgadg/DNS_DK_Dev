@@ -1,0 +1,117 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 02-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-11-08   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+   implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+   controller="DN_ImportLeadController" description="Excel Import for Lead">
+
+   <!-- Excel JS & Sheet JS -->
+   <ltng:require
+      scripts="{!join(',', $Resource.ExcelTest1 + '/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}" />
+
+   <!-- Attribute -->
+   <aura:attribute name="isLoading"       type="boolean" default="false"         />
+   <aura:attribute name="type"            type="String"  default="Event Visitor" />
+   <aura:attribute name="typeOptions"     type="List"                            />
+   <aura:attribute name="accept"          type="String"  default=".xls, .xlsx"   />
+   <aura:attribute name="isFileUpload"    type="Boolean" default="false"         />
+   <aura:attribute name="fileName"        type="String"  default="fileName.xlsx" />
+   <aura:attribute name="excelData"       type="Object[]"                        />
+   <aura:attribute name="expectedHeaders" type="List"                            />
+   <aura:attribute name="templateType"    type="String"                          />
+   <aura:attribute name="isDNSA"          type="boolean" default="false"         />
+
+
+   <!-- Handler -->
+   <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+   <div class="total-wrap">
+      <div class="slds-modal__container">
+         <!-- 📌 Header -->
+         <div class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_LeadExcelImport}</h2>
+            <!-- <h2 class="slds-text-heading_medium">Lead Excel Import</h2> -->
+         </div>
+   
+         <!-- 📌 Body -->
+         <div class="modal-body slds-modal__content">
+
+            <!-- Toast Notification -->
+            <lightning:notificationsLibrary aura:id="notifLib" />
+   
+            <!-- ⏳ Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading}">
+               <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+   
+            <div class="slds-form content">
+               <!-- 1. Type Select -->
+               <div class="slds-form__row">
+                  <div class="slds-form__item" role="listitem">
+                     <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                        <label class="slds-form-element__label" for="horizontal-form-element-id-01">{!$Label.c.DNS_C_Type}</label>
+                        <!-- <label class="slds-form-element__label" for="horizontal-form-element-id-01">Type</label> -->
+                        <div class="slds-form-element__control">
+                           <lightning:radioGroup name="type" variant="label-hidden" options="{! v.typeOptions }" value="{! v.type }"
+                              type="radio" disabled="{! v.isFileUpload}" />
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <!-- 2. Upload Files -->
+               <div class="slds-form__row">
+                  <div class="slds-form__item" role="listitem">
+                     <div class="slds-form-element slds-form-element_horizontal slds-is-editing slds-form-element_1-col">
+                        <label class="slds-form-element__label" for="horizontal-form-element-id-14">{!$Label.c.DNS_C_FileUpload}</label>
+                        <div class="slds-form-element__control">
+                           <aura:if isTrue="{!not(v.isFileUpload)}">
+                              <lightning:input aura:id="excelBtn" type="file" variant="label-hidden" accept="{!v.accept}"
+                                 multiple="false" onchange="{!c.handleUpload}" />
+                              <aura:set attribute="else">
+                                 <div class="uploaded">
+                                    <div class="icon-wrap">
+                                       <lightning:icon iconName='doctype:excel' alternativeText='Excel' size='Small'
+                                          title='Excel'>
+                                       </lightning:icon>
+                                    </div>
+                                    <p class="file-name">{!v.fileName}</p>
+                                    <!-- 취소 아이콘 추가 -->
+                                    <div class="icon-wrap">
+                                       <lightning:icon iconName="utility:close" alternativeText="Cancel" size="x-small"
+                                          title="Cancel" onclick="{!c.doCancel}" />
+                                    </div>
+                                 </div>
+                              </aura:set>
+                           </aura:if>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+               <!-- 📌 Footer -->
+            <footer class="slds-modal__footer">
+               <lightning:button variant="neutral" label="Close" onclick="{!c.doClose}" />
+               <lightning:button variant="brand" label="Import" onclick="{!c.doImport}" />
+            </footer>
+   
+   
+         </div>
+   
+         
+      </div>
+
+      <!-- Modal Background -->
+      <div id="modal-bg"></div>
+
+   </div>
+
+
+</aura:component>

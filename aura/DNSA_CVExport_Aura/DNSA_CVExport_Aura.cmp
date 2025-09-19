@@ -1,0 +1,27 @@
+<!--
+ @description       : 
+ @author            : Sejin Kwon
+ @group             : 
+ @last modified on  : 04-24-2025
+ @last modified by  : Hyerin Ro
+ Modifications Log
+ Ver   Date         Author          Modification
+ 1.0   01-21-2025   Sejin Kwon     Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+                access="global"
+                description="CV Export">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="recordId"     type="String"/>
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDNSA_CVExport_Aura) .slds-modal__close {
+            display: none !important;
+        }
+    </aura:html>
+    
+    <c:dNSA_CVExport recordId="{!v.recordId}" onloadingcomplete="{!c.handleLoadingComplete}" />
+
+</aura:component>

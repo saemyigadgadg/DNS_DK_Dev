@@ -1,0 +1,20 @@
+.THIS .slds-accordion__content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.THIS .slds-form__col {
+    display: inline-block;
+    width: 50%;
+}
+
+.THIS section .slds-accordion__summary-action {
+    padding-left: 1rem !important;
+}
+
+.THIS .bsNum .slds-form-element__label::before {
+    content: '*';
+    color: #ba0517;
+    display: inline-block;
+    margin-right: 2px;
+}

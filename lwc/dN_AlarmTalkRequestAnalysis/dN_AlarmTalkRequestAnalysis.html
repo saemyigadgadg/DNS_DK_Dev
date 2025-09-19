@@ -1,0 +1,117 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-19-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-19-2025   Hyerin Ro   Initial Version
+-->
+<template>
+    <div class="slds-card total-wrap">
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='standard:shift_type' alternative-text='shift_type' size='small'
+                        title='shift_type'></lightning-icon>
+                </div>
+                <h2 class="slds-card__header-title">알림톡접수분석</h2>
+            </header>
+            <div class="button-wrap">
+                <lightning-button label="조회" onclick={search} title="조회" variant="brand"></lightning-button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body body">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <div class="top-card card-01">
+                <div class="field-wrap">
+                    <p>조회일자</p>
+                    <div class="input-wrap">
+                        <lightning-input type="date" name="from" variant="label-hidden" value={dateFromValue}
+                            onchange={handleDateChange}></lightning-input>
+                        <span class="to">~</span>
+                        <lightning-input type="date" name="to" variant="label-hidden" value={dateToValue}
+                            onchange={handleDateChange}></lightning-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="top-card card-02">
+                <div class="card-header">
+                    <lightning-icon icon-name='standard:live_chat' alternative-text='live_chat' size='x-small' title='live_chat'></lightning-icon>
+                    <h3>알림톡접수분석</h3>
+                </div>
+                <div class="table-wrap">
+                    <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>관할지사</th>
+                                <th>정비센터</th>
+                                <th>오더건수</th>
+                                <th>콜센터오더</th>
+                                <th>알림톡오더</th>
+                                <th>야간알림톡(17:30이후)</th>
+                                <th>알림톡접수율(%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={tableDataWithIndex} for:item="row" for:index="index">
+                                <tr class="slds-hint-parent" key={row.ServiceCenterId}>
+                                    <td>{row.No}</td>
+                                    <td>{row.Branch}</td>
+                                    <td>{row.ServiceCenter}</td>
+                                    <td data-column="OrderCount" 
+                                        data-id={row.ServiceCenterId} 
+                                        onclick={handleCellClick}
+                                        class="click-td">
+                                        {row.OrderCount}
+                                    </td>
+                                    <td data-column="CallCenterOrders" 
+                                        data-id={row.ServiceCenterId} 
+                                        onclick={handleCellClick}
+                                        class="click-td">
+                                        {row.CallCenterOrders}
+                                    </td>
+                                    <td data-column="AlarmTalkOrders" 
+                                        data-id={row.ServiceCenterId} 
+                                        onclick={handleCellClick}
+                                        class="click-td">
+                                        {row.AlarmTalkOrders}
+                                    </td>
+                                    <td>{row.NightAlarmTalk}</td>
+                                    <td>{row.AlarmTalkResponseRate}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="top-card card-03">
+                <div class="card-header">
+                    <lightning-icon icon-name='standard:article' alternative-text='article' size='x-small' title='article'></lightning-icon>
+                    <h3>알림톡접수분석 상세</h3>
+                </div>
+                <div class="table-wrap">
+                    <lightning-datatable 
+                        columns={detailColumns} 
+                        data={detailData} 
+                        key-field="id" 
+                        show-row-number-column 
+                        min-column-width="80"
+                        hide-checkbox-column>
+                    </lightning-datatable>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

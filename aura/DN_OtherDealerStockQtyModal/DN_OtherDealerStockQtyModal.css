@@ -1,0 +1,174 @@
+.THIS .slds-card{
+    position: relative;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+}
+
+.THIS .relative {
+    position: relative;
+}
+
+.THIS .slds-modal__container {
+    max-width: 70%; /* 너비를 80%로 설정 */
+    width: 70%;     /* 너비를 80%로 설정 */
+    max-height: 100%; /* 높이를 100%로 설정 */
+    height: 100%;     /* 높이를 100%로 설정 */
+
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close{
+    position: absolute;
+    top: -2.25rem;
+    right: 0rem;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover{
+    opacity: 0.75;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover{
+    opacity: 0.75;
+}
+
+/* Modal Header */
+.THIS .header{
+    position: relative;
+}
+
+.THIS .header h2 {
+    font-size: 16px;
+}
+
+/* Modal Body */
+
+.THIS .modal-body{
+    background-color: #F3F3F3;
+}
+
+.THIS .modal-body .top-card{
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+.THIS .modal-body .card-01{
+    padding: 1rem 1.25rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.THIS .modal-body .card-01 .field-wrap{
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.THIS .modal-body .card-01 .field-wrap p{
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+/* Table 02 */
+
+.THIS .modal-body .card-02{
+    margin-top: 1rem;
+}
+
+.THIS .modal-body .card-02 .table-wrap {
+    height: fit-content;
+    max-height: calc(100vh - 25rem);
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+.THIS .modal-body .card-02 table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 1rem; 
+}
+
+.THIS .modal-body .card-02 table td{
+    padding: .25rem .5rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.THIS .modal-body .card-02 table tr:hover{
+    background-color: #f3f3f3;
+}
+
+/* Table Class */
+
+.THIS .center{text-align: center !important;}
+.THIS .left{text-align: left !important;}
+.THIS .right{text-align: right !important;}
+
+/* Table Details */
+
+.THIS .modal-body .card-02 table td .slds-input[readonly]{
+    background: none;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input, 
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    /* min-width: 12rem; */
+    font-size: 13px;
+}
+.THIS .slds-button_icon-border{
+    border: 1px solid #c9c9c9 !important;
+}
+.THIS .slds-button_neutral{
+    border: 1px solid #c9c9c9 !important;
+}
+.THIS .slds-input{
+    line-height: 100% !important;
+    border-radius: 2px !important;
+    padding: .25rem 0.5rem !important;
+}
+
+/* Table Design */
+
+.THIS .body .card-02 table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .5rem 1rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+  }
+  .THIS .body .card-02 table td{
+    background-color: #fff;
+    padding: .5rem 1rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-left: none;
+  }
+  .THIS .body .card-02 table tfoot td{
+    background-color: #E6FAFF;
+    font-weight: bold;
+    border-top: 1px solid #d9d9d9;
+  }

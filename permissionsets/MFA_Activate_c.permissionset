@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>사용자 인터페이스 로그인의 다단계 인증 활성화</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>MFA 사용 활성화</label>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ForceTwoFactor</name>
+    </userPermissions>
+</PermissionSet>

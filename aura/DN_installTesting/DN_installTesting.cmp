@@ -1,0 +1,1147 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 2025-05-19
+  @last modified by  : chungwoo.lee@sobetec.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-29   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_PortalServiceReportController" description="설치시운전">
+
+    <!-- Event -->
+    <!-- <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" /> -->
+
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+
+    <!-- modal -->
+    <div aura:id="serviceManModal" /> <!--서비스맨 모달-->
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:attribute name="defectTypeOptions" type="List" default="[
+        {'label': '선택', 'value': ''},
+        {'label': '누유/누기', 'value': '001'},
+        {'label': '미납.오납', 'value': '002'},
+        {'label': '부품불량', 'value': '003'},
+        {'label': '설계오류', 'value': '004'},
+        {'label': '설치오류', 'value': '005'},
+        {'label': '소음/진동', 'value': '006'},
+        {'label': '조립불량', 'value': '007'},
+        {'label': '출하오류', 'value': '008'},
+        {'label': '파라메터', 'value': '009'},
+        {'label': '파손', 'value': '010'},
+        {'label': 'OPTION', 'value': '011'},
+    ]" /> <!--preparation Options-->
+    <aura:attribute name="defectTypeValue" type="String" default="option12" />
+    <aura:attribute name="loginUserInfo" type="Object" /> <!--로그인된 유저 정보-->
+    <aura:attribute name="serviceData" type="Object" /> <!--서비스 리포트 정보-->
+    <aura:attribute name="workOrderResultData" type="Object" default="{}" /> <!--WorkOrderResult 단일 정보-->
+    <aura:attribute name="workList" type="List" default="[]" /> <!--작업내역 리스트-->
+    <aura:attribute name="defectList" type="List" default="[]" /> <!--초기하자 리스트-->
+    <aura:attribute name="deletedWorkList" type="List" default="[]" /> <!--삭제내역 리스트-->
+    <aura:attribute name="deletedFileList" type="List"     default="[]" /> <!--첨부 파일 삭제내역 리스트-->
+    <aura:attribute name="selectedWork" type="Integer" /> <!--선택된 work-->
+    <aura:attribute name="selectAllWorkList" type="Boolean" default="false" /> <!--checkbox 모두 선택-->
+    <aura:attribute name="selectAllDefectList" type="Boolean" default="false" /> <!--checkbox 모두 선택-->
+    <aura:attribute name="isConfirmed" type="Boolean" default="false" /> <!--확정 여부-->
+    <aura:attribute name="workDetailValue" type="String" default="" /> <!--work detail value-->
+
+    <aura:attribute name="fileList" type="List" /> <!-- 파일 목록 -->
+    <aura:attribute name="htmFileList" type="List" /> <!-- HTML로 변환한 파일 목록 -->
+
+    <!-- 시운전 정보 -->
+    <aura:attribute name="installationFinish" type="Date" default="" /> <!--설치 시운전 완료일-->
+    <aura:attribute name="isHECare" type="Boolean" default="false" /> <!--HE Care 체크 가능 여부 -->
+    <aura:attribute name="isHECareByAsset" type="Boolean" default="false" /> <!--HE Care 체크 여부 -->
+    <aura:attribute name="isCustomerChecked" type="Boolean" default="false" /> <!--현장 책임자 고객과 동일-->
+    <aura:attribute name="siteManager" type="String" default="" /> <!--현장 책임자-->
+    <aura:attribute name="siteManagerPhone" type="String" default="" /> <!--현장 책임자 휴대폰-->
+    <aura:attribute name="isSiteManagerChecked" type="Boolean" default="false" /> <!--주 작업자 현장 책임자와 동일-->
+    <aura:attribute name="mainWorker" type="String" default="" /> <!--주 작업자-->
+    <aura:attribute name="mainWorkerPhone" type="String" default="" /> <!--주 작업자 휴대폰-->
+    <aura:attribute name="originalMainWorker" type="String" default="" />
+    <aura:attribute name="originalMainWorkerPhone" type="String" default="" />
+    <aura:attribute name="syncSiteManagerToMainWorker" type="Boolean" default="false" /> <!--체크한 뒤 값 동기화-->
+
+    <aura:attribute name="mainInstallTime" type="Decimal" default="0" /> <!--본설치시간-->
+    <aura:attribute name="tempInstallTime" type="Decimal" default="0" /> <!--가설치시간-->
+    <aura:attribute name="specInstallTime" type="Decimal" default="0" /> <!--사양설치시간-->
+    <aura:attribute name="etcTime" type="Decimal" default="0" /> <!--기타시간-->
+    <aura:attribute name="totalInstallTime" type="Decimal" default="0" /> <!--총 설치시간-->
+    <aura:attribute name="totalInputTime" type="Decimal" default="0" /> <!--총 입력시간-->
+    <aura:attribute name="tempChecked" type="Boolean" default="false" /> <!--가설치시간 체크박스-->
+    <aura:attribute name="weekendChecked" type="Boolean" default="false" /> <!--(공)휴일여부 체크박스-->
+    <aura:attribute name="reasonOfETC" type="String" default="" /> <!--기타 사유-->
+    <aura:attribute name="checkboxStates" type="List" />
+    <aura:attribute name="isDeskTop" type="Boolean" default="true"/>
+    <aura:attribute name="isModalOpen" type="Boolean" default="false"/>
+
+    <aura:attribute name="preparationValues" type="List" default="[]" />
+    <aura:attribute name="preparationOptions" type="List" default="[
+        {'label': '전기', 'value': 'ZELEC'},
+        {'label': '윤활', 'value': 'ZLUB'},
+        {'label': '유압', 'value': 'ZHYD'},
+        {'label': '공압', 'value': 'ZPNEU'},
+        {'label': '장비 위치 확정', 'value': 'ZLAYOUT'},
+        {'label': '기초 공사', 'value': 'ZFOUND'},
+    ]" /> <!--preparation Options-->
+    <aura:attribute name="isExcellenceModalOpen" type="Boolean" default="false" />
+    <aura:html tag="style">
+        .cCenterPanel:has(.cDN_serviceWrapper c-d-n_-launching-excellence-btn) {
+            height: calc(100vh - 2rem);
+            overflow: hidden;
+        }
+    </aura:html>
+
+    <!-- Body -->
+    <article class="slds-card">
+       
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- modal -->
+        <aura:if isTrue="{! v.isModalOpen}">
+            <c:dN_LaunchingExcellenceBtn aura:id="childCmp" recordId="{!v.recordId}" isDeskTop="{!v.isDeskTop}" oncloseButton="{!c.handleButtonClick}">
+            </c:dN_LaunchingExcellenceBtn>
+            <div class="slds-backdrop slds-backdrop_open" aura:id="modalBackground"></div>
+
+        </aura:if>  
+
+
+        <div class="body" aura:id="body" >
+            <div class="read-card" aura:id="read-card">
+                <!-- Card 01 -->
+                <div class="card-01 top-card">
+                    <div class="card-header">
+                        <h2>Header</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="field-wrap">
+                            <p>기종</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.machineName}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>장비번호</p>
+                            <div class="input-wrap">
+                                <p>{!v.serviceData.serviceReportInfo.assetName}</p>
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>보증여부(공임/부품)</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.warranty}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>보증시작일(Labor)</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.installDate}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>오더유형1</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.orderType}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>오더유형2</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.workOrderType}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>작업배정일</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.createdDate}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>본사배정여부</p>
+                            <div class="input-wrap">
+                                <aura:if isTrue="{!v.serviceData.serviceReportInfo.warrantyService}">
+                                    N
+                                    <aura:set attribute="else">
+                                        Y
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- card ticket -->
+                <div class="card-ticket top-card">
+                    <div class="card-header">
+                        <h2>Ticket</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="field-wrap">
+                            <p>고객사</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.accountName}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>요청자</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.requester}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>연락처</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.contactPhone}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>접수일시</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.applicationDateTime}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>대표자명</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.representative}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>고객주소</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.accountAddress}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>고객사 전화번호</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.accountTel}
+                            </div>
+                        </div>
+                        <div class="field-wrap">
+                            <p>출동요청일시</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.repairRequestDateTime}
+                            </div>
+                        </div>
+                        <div class="field-wrap grid-long">
+                            <p>접수내용</p>
+                            <div class="input-wrap">
+                                {!v.serviceData.serviceReportInfo.ReceptionDetails}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-card" aura:id="input-card">
+                <!-- Header -->
+                <div class="header" aura:id="header">
+                    <div class="title">
+                        <lightning:icon iconName="standard:loop" size="small" />
+                        <h2>조치결과입력</h2>
+                    </div>
+
+                    <aura:if isTrue="{!v.isConfirmed}">
+                        <div class="button-wrap">
+
+                        </div>
+                        <aura:set attribute="else">
+                            <div class="button-wrap">
+                                <lightning:button name="" label="Launching Excellence Web" onclick="{!c.openExcellenceModal}" />
+                                <lightning:button name="search" label="저장" iconName="utility:check" iconPosition="left"
+                                    onclick="{!c.doSave}" />
+                                <lightning:button name="confirmed" label="확정"
+                                    iconName="utility:product_service_campaign_item" iconPosition="left"
+                                    onclick="{!c.isConfirmedTrue}" />
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <div style="padding : 0.75rem">
+                    <div class="top-card card-02">
+                        <aura:if isTrue="{!v.isConfirmed}">
+                            <!-- 확정 후 -->
+                            <div class="card-body">
+                                <div class="field-wrap confirmed">
+                                    <p>
+                                        <span>현장책임자<abbr class="slds-required" title="required">*</abbr></span>
+                                        <span>
+                                            <lightning:input type="checkbox" value="" label="고객동일"
+                                                checked="{!v.isCustomerChecked}" disabled="true" />
+                                        </span>
+                                    </p>
+                                    <div class="input-wrap">
+                                        {!v.siteManager}
+                                    </div>
+                                </div>
+                                <div class="field-wrap confirmed">
+                                    <p>현장책임자 전화번호<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        {!v.siteManagerPhone}
+                                    </div>
+                                </div>
+                                <div class="field-wrap confirmed">
+                                    <p>
+                                        <span>주 작업자<abbr class="slds-required" title="required">*</abbr></span>
+                                        <span>
+                                            <lightning:input type="checkbox" value="" label="현장 책임자 동일"
+                                                checked="{!v.isSiteManagerChecked}" disabled="true" />
+                                        </span>
+                                    </p>
+                                    <div class="input-wrap">
+                                        {!v.mainWorker}
+                                    </div>
+                                </div>
+                                <div class="field-wrap confirmed">
+                                    <p>주 작업자 전화번호<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        {!v.mainWorkerPhone}
+                                    </div>
+                                </div>
+                                <div class="field-wrap non-read">
+                                    <p>설치 시운전 완료일<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        {!v.workOrderResultData.installationFinish}
+                                    </div>
+                                </div>
+
+                                <div class="field-wrap non-read">
+                                    <p>HE Care 1612</p>
+                                    <div class="input-wrap">
+                                        <lightning:input type="checkbox" aura:id="" onchange="" checked="{!v.isHECareByAsset}" disabled="true" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 확정 전 -->
+                            <aura:set attribute="else">
+                                <div class="card-body">
+                                    <div class="field-wrap">
+                                        <p>
+                                            <span>현장책임자<abbr class="slds-required" title="required">*</abbr></span>
+                                            <span>
+                                                <lightning:input type="checkbox" checked="{!v.isCustomerChecked}" label="고객동일"
+                                                    onchange="{!c.handleIsCustomerCheckedChange}" />
+                                            </span>
+                                        </p>
+                                        <div class="input-wrap">
+                                            <lightning:input type="text" value="{!v.siteManager}" variant="label-hidden"
+                                                aura:id="field7" class="{!v.siteManagerClass}" onchange="{!c.handleField7Change}"/>
+                                        </div>
+                                    </div>
+                                    <div class="field-wrap">
+                                        <p>현장책임자 전화번호<abbr class="slds-required" title="required">*</abbr></p>
+                                        <div class="input-wrap">
+                                            <lightning:input type="text" value="{!v.siteManagerPhone}"
+                                                variant="label-hidden" aura:id="field8" onchange="{!c.validatePhoneNumber}" placeholder="010-0000-0000" class="{!v.siteManagerClass}"/>
+                                        </div>
+                                    </div>
+                                    <div class="field-wrap">
+                                        <p>
+                                            <span>주 작업자<abbr class="slds-required" title="required">*</abbr></span>
+                                            <span>
+                                                <lightning:input type="checkbox" checked="{!v.isSiteManagerChecked}" label="현장 책임자 동일"
+                                                onchange="{!c.handleIsSiteManagerCheckedChange}" />
+                                            </span>
+                                        </p>
+                                        <div class="input-wrap">
+                                            <lightning:input type="text" value="{!v.mainWorker}" variant="label-hidden"
+                                                aura:id="field9" onchange="{!c.handleField9Change}"/>
+                                        </div>
+                                    </div>
+                                    <div class="field-wrap">
+                                        <p>주 작업자 전화번호<abbr class="slds-required" title="required">*</abbr></p>
+                                        <div class="input-wrap">
+                                            <lightning:input type="text" value="{!v.mainWorkerPhone}" variant="label-hidden"
+                                                aura:id="field10" onchange="{!c.validatePhoneNumber}" placeholder="010-0000-0000"/>
+                                        </div>
+                                    </div>
+                                    <div class="field-wrap non-read">
+                                        <p>설치 시운전 완료일<abbr class="slds-required" title="required">*</abbr></p>
+                                        <div class="input-wrap">
+                                            <lightning:input type="date"
+                                                value="{!v.workOrderResultData.installationFinish}"
+                                                onchange="{!c.handleinstallationFinishChange}" variant="label-hidden"
+                                                required="true" aura:id="field"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="field-wrap non-read">
+                                        <p>HE Care 1612</p>
+                                        <div class="input-wrap">
+                                            <lightning:input type="checkbox" aura:id="" onchange="" checked="{!v.workOrderResultData.isHECareByAsset}" disabled="{!v.isHECare}"/>
+                                            <!-- <lightning:input type="checkbox" aura:id="" onchange="" checked="{!v.isHECareByAsset}" disabled="{!not v.isHECare}"/> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    <!-- **** Accordion Card 02 파일 **** -->
+                    <div class="accordion accordion-02">
+                        <div class="card-header">
+                            <h2>파일</h2>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="field-wrap">
+                                <aura:if isTrue="{!v.isConfirmed}">
+                                    <!-- 파일 목록-->
+                                    <div class="file-wrap">
+                                        <aura:iteration items="{!v.fileList}" var="key" indexVar="index">
+                                            <div class="file-name">
+                                                <a href="{!key.fileVersionURL}">{!key.title}</a>
+                                            </div>
+                                        </aura:iteration>
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="input-wrap">
+                                            <lightning:fileUpload multiple="true" recordId="{!v.recordId}"
+                                                onuploadfinished="{!c.handleUploadFinished}" variant="label-hidden" />
+                                        </div>
+                                        <!-- 파일 목록-->
+                                        <div class="file-wrap">
+                                            <aura:iteration items="{!v.fileList}" var="key" indexVar="index">
+                                                <div class="file-name">
+                                                    <a href="{!key.fileVersionURL}">{!key.title}</a>
+                                                    <div href="" onclick="{!c.removeFile}"
+                                                        data-id="{!key.contentDocumentId}">
+                                                        <lightning:icon iconName="utility:close" alternativeText="Remove"
+                                                            title="Remove" size="x-small" />
+                                                    </div>
+                                                </div>
+                                            </aura:iteration>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- **** Accordion Card 03 작업내역 **** -->
+                    <div class="accordion accordion-03">
+                        <div class="card-header">
+                            <h2>작업내역</h2>
+                            <aura:if isTrue="{!v.isConfirmed}">
+                                <aura:set attribute="else">
+                                    <div class="button-wrap">
+                                        <lightning:button iconName="utility:add" name="searchItems" label="추가"
+                                            onclick="{!c.addWorkList}" />
+                                        <lightning:button iconName="utility:delete" name="searchItems"
+                                            label="삭제" onclick="{!c.deleteWorkList}" />
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="table-wrap">
+                                <aura:if isTrue="{!v.isConfirmed}">
+                                    <!-- 작업내역 확정 후 -->
+                                    <div class="table-body">
+                                        <table class="confirmed">
+                                            <colgroup>
+                                                <col width="20%" />
+                                                <col width="20%" />
+                                                <col width="20%" />
+                                                <col width="20%" />
+                                                <col width="20%" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th>작업자<abbr class="slds-required" title="required">*</abbr></th>
+                                                    <th>작업시작일</th>
+                                                    <th>시작시간</th>
+                                                    <th>작업종료일</th>
+                                                    <th>종료시간</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.workList}" var="work" indexVar="j">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!work.worker.Name}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!work.workDate}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!work.startTime}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!work.workEndDate}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!work.endTime}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- 작업내역 확정 전 -->
+                                    <aura:set attribute="else">
+                                        <div class="table-body">
+                                            <table aura:id="workListTable">
+                                                <colgroup>
+                                                    <col width="1%" />
+                                                    <col width="19%" />
+                                                    <col width="20%" />
+                                                    <col width="20%" />
+                                                    <col width="20%" />
+                                                    <col width="20%" />
+                                                </colgroup>
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <div class="input-wrap">
+                                                                <lightning:input type="checkbox"
+                                                                    aura:id="workTableCheckbox"
+                                                                    onchange="{!c.toggleAllWorkCheckboxes}"
+                                                                    checked="{!v.selectAllWorkList}" />
+                                                            </div>
+                                                        </th>
+                                                        <th>작업자<abbr class="slds-required" title="required">*</abbr> </th>
+                                                        <th>작업시작일<abbr class="slds-required" title="required">*</abbr> </th>
+                                                        <th>시작시간<abbr class="slds-required" title="required">*</abbr> </th>
+                                                        <th>작업종료일<abbr class="slds-required" title="required">*</abbr> </th>
+                                                        <th>종료시간<abbr class="slds-required" title="required">*</abbr> </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <aura:iteration items="{!v.workList}" var="work" indexVar="index">
+                                                        <tr onchange="{!c.handleWorkChange}" data-index="{!index}">
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="checkbox"
+                                                                        aura:id="worktTableCheckbox"
+                                                                        checked="{!work.checkbox}"
+                                                                        onchange="{!c.handleWorkCheckboxChange}"
+                                                                        data-field="checkbox" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="text"
+                                                                        value="{!work.worker.Name}"
+                                                                        variant="label-hidden" required="true"
+                                                                        disabled="true" data-field="worker" aura:id="field1"/>
+                                                                    <lightning:buttonicon iconName="utility:close"
+                                                                        size="medium" onclick="{!c.clearWorker}"
+                                                                        class="clear-btn" />
+                                                                    <lightning:buttonicon iconName="utility:search"
+                                                                        size="medium" alternativeText="Search"
+                                                                        onclick="{!c.openServiceManModal}" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="date" name="input2"
+                                                                        label="Date field with a predefined value"
+                                                                        value="{!work.workDate}" required="true"
+                                                                        data-field="workDate" data-index="{!index}"
+                                                                        aura:id="field"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="time"
+                                                                        value="{!work.startTime}" variant="label-hidden"
+                                                                        required="true" data-field="startTime" aura:id="field"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="date" name="input2"
+                                                                        label="Date field with a predefined value"
+                                                                        value="{!work.workEndDate}" required="true"
+                                                                        data-field="workEndDate" data-index="{!index}"
+                                                                        aura:id="field"/>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="time" value="{!work.endTime}"
+                                                                        variant="label-hidden" required="true"
+                                                                        data-field="endTime" aura:id="field"/>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- **** Accordion Card 04 사전서비스&시운전시간 **** -->
+                    <div class="accordion accordion-04">
+                        <div class="card-header">
+                            <h2>사전서비스&amp;시운전시간</h2>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="table-wrap">
+                                <div class="table-body">
+                                    <aura:if isTrue="{!v.isConfirmed}">
+                                        <!-- 사전서비스&시운전시간 확정 후 -->
+                                        <table class="confirmed">
+                                            <colgroup>
+                                                <col width="13%" />
+                                                <col width="20%" />
+                                                <col width="13%" />
+                                                <col width="20%" />
+                                                <col width="13%" />
+                                                <col width="20%" />
+                                            </colgroup>
+                                            <tr>
+                                                <th>본설치시간</th>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <p class="bottom">{!v.workOrderResultData.mainInstallTime}</p>
+                                                        <p>시간(Hours)</p>
+                                                    </div>
+                                                </td>
+                                                <th>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isTemporaryInstall}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>가설치시간</p>
+                                                    </div>
+                                                </th>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <p class="bottom">
+                                                            {!v.workOrderResultData.tempInstallTime}</p>
+                                                        <p>시간(Hours)</p>
+                                                    </div>
+                                                </td>
+                                                <th>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isHoliday}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>(공)휴일여부</p>
+                                                    </div>
+                                                </th>
+                                                <td>X 1.5</td>
+                                            </tr>
+                                            <tr>
+                                                <th rowspan="2">사양설치시간</th>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <p class="bottom">{!v.workOrderResultData.specInstallTime}</p>
+                                                        <p>시간(Hours)</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isFenseApcCover}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>Fense/APC Cover</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isSemiSplashGuard}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>Semi Splash Guard</p>
+                                                    </div>
+                                                </td>
+                                                <td colspan="2">
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isOverTools}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>90 Tools 이상</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isPMG}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>6PMG</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isAAC}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>AAC(6st 이상)</p>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <lightning:input type="checkbox"
+                                                            checked="{!v.workOrderResultData.isEtc}"
+                                                            aura:id="tableCheckbox" onchange="" disabled="true" />
+                                                        <p>
+                                                            <span>기타</span>
+                                                        <p class="bottom">{!v.workOrderResultData.etcTime}</p>
+                                                        <p>시간 (Hours)</p>
+                                                        </p>
+                                                    </div>
+                                                </td>
+                                                <td colspan="2">
+                                                    <div class="input-wrap">
+                                                        <p>사유:</p>
+                                                        <div>
+                                                            {!v.workOrderResultData.reasonOfETC}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>총 설치시간</th>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <p class="bottom">
+                                                                <aura:if isTrue="{!v.workOrderResultData.totalInstallTime == 0}">
+                                                                    {!v.workOrderResultData.mainInstallTime}
+                                                                <aura:set attribute="else">
+                                                                    {!v.workOrderResultData.totalInstallTime}
+                                                                </aura:set>
+                                                                </aura:if>
+                                                            </p>
+                                                            <p style="font-weight: bold;">시간(Hours)</p>
+                                                        </div>
+                                                    </td>                                                    
+                                                    <th>총 입력시간</th>
+                                                    <td colspan="3">
+                                                        <div class="input-wrap">
+                                                            <p class="bottom">{!v.workOrderResultData.totalInputTime}
+                                                            </p>
+                                                            <p style="font-weight: bold;">시간(Hours)</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                        <!-- 사전서비스&시운전시간 확정 전 -->
+                                        <aura:set attribute="else">
+                                            <table>
+                                                <colgroup>
+                                                    <col width="13%" />
+                                                    <col width="20%" />
+                                                    <col width="13%" />
+                                                    <col width="20%" />
+                                                    <col width="13%" />
+                                                    <col width="20%" />
+                                                </colgroup>
+                                                <tr>
+                                                    <th>본설치시간</th>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="number"
+                                                                value="{!v.workOrderResultData.mainInstallTime}"
+                                                                name="mainInstallTime" disabled="true"
+                                                                variant="label-hidden" />
+                                                            <p>시간(Hours)</p>
+                                                        </div>
+                                                    </td>
+                                                    <th>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                onchange="{!c.handleCheckboxChange}"
+                                                                name="isTemporaryInstall"
+                                                                checked="{!v.workOrderResultData.isTemporaryInstall}" />
+                                                            <p>가설치시간</p>
+                                                        </div>
+                                                    </th>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="number"
+                                                                value="{!v.workOrderResultData.tempInstallTime}"
+                                                                name="tempInstallTime" disabled="true"
+                                                                variant="label-hidden" />
+                                                            <p>시간(Hours)</p>
+                                                        </div>
+                                                    </td>
+                                                    <th>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" name="isHoliday"
+                                                                aura:id="tableCheckbox"
+                                                                onchange="{!c.handleCheckboxChange}"
+                                                                checked="{!v.workOrderResultData.isHoliday}" />
+                                                            <p>(공)휴일여부</p>
+                                                        </div>
+                                                    </th>
+                                                    <td>X 1.5</td>
+                                                </tr>
+                                                <tr>
+                                                    <th rowspan="2">사양설치시간</th>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="number"
+                                                                value="{!v.workOrderResultData.specInstallTime}"
+                                                                name="specInstallTime" disabled="true"
+                                                                variant="label-hidden" />
+                                                            <p>시간(Hours)</p>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                onchange="{!c.handleSpecCheckboxChange}"
+                                                                name="isFenseApcCover"
+                                                                checked="{!v.workOrderResultData.isFenseApcCover}" />
+                                                            <p>Fense/APC Cover</p>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                onchange="{!c.handleSpecCheckboxChange}"
+                                                                name="isSemiSplashGuard"
+                                                                checked="{!v.workOrderResultData.isSemiSplashGuard}" />
+                                                            <p>Semi Splash Guard</p>
+                                                        </div>
+                                                    </td>
+                                                    <td colspan="2">
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                onchange="{!c.handleSpecCheckboxChange}"
+                                                                name="isOverTools"
+                                                                checked="{!v.workOrderResultData.isOverTools}" />
+                                                            <p>90 Tools 이상</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                name="isPMG" onchange="{!c.handleSpecCheckboxChange}"
+                                                                checked="{!v.workOrderResultData.isPMG}" />
+                                                            <p>6PMG</p>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                name="isAAC" onchange="{!c.handleSpecCheckboxChange}"
+                                                                checked="{!v.workOrderResultData.isAAC}" />
+                                                            <p>AAC(6st 이상)</p>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                                name="isEtc"
+                                                                onchange="{!c.handleOtherInstallTimeChange}"
+                                                                checked="{!v.workOrderResultData.isEtc}" />
+                                                            <p>
+                                                                <span>기타</span>
+                                                                <lightning:input type="number" aura:id="otherInput"
+                                                                    name="etcTime"
+                                                                    value="{!v.workOrderResultData.etcTime}"
+                                                                    onchange="{!c.handleOtherInstallTimeChange}" />
+                                                            <p>시간 (Hours)</p>
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                    <td colspan="2">
+                                                        <div class="input-wrap">
+                                                            <p>사유:</p>
+                                                            <lightning:input type="text"
+                                                                value="{!v.workOrderResultData.reasonOfETC}"
+                                                                name="reasonOfETC" variant="label-hidden" />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tfoot>
+                                                    <tr>
+                                                        <th>총 설치시간</th>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                <lightning:input type="number"
+                                                                    value="{!v.workOrderResultData.totalInstallTime}"
+                                                                    name="totalInstallTime" disabled="true"
+                                                                    variant="label-hidden" />
+                                                                <p style="font-weight: bold;">시간(Hours)</p>
+                                                            </div>
+                                                        </td>
+                                                        <th>총 입력시간</th>
+                                                        <td colspan="3">
+                                                            <div class="input-wrap">
+                                                                <lightning:input type="number"
+                                                                    value="{!v.workOrderResultData.totalInputTime}"
+                                                                    name="totalInputTime" disabled="true"
+                                                                    variant="label-hidden" />
+                                                                <p style="font-weight: bold;">시간(Hours)</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </aura:set>
+                                    </aura:if>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- **** Accordion Card 05 설치 시운전 준비상태 **** -->
+                    <div class="accordion accordion-05">
+                        <div class="card-header">
+                            <h2>설치 시운전 준비상태</h2>
+                        </div>
+                        <div class="accordion-body">
+                            <div class="table-wrap">
+                                <div class="table-body">
+                                    <aura:if isTrue="{!v.isConfirmed}">
+                                        <!-- 설치 시운전 준비상태 확정 후 -->
+                                        <table class="confirmed">
+                                            <colgroup>
+                                                <col width="13%" />
+                                                <col width="57%" />
+                                                <col width="30%" />
+                                            </colgroup>
+                                            <tr>
+                                                <th>고객사 준비상태</th>
+                                                <td>
+                                                    <div class="input-wrap">
+                                                        <lightning:checkboxGroup options="{! v.preparationOptions }"
+                                                            value="{!v.preparationValues}" onchange=""
+                                                            disabled="true" />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span>
+                                                        (고객사 준비가 미비한 부분을 체크해 주세요.)
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>점검 확인 내용</th>
+                                                <td colspan="2">
+                                                    <div class="input-field">
+                                                        {! v.workOrderResultData.inspectionDetails }
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <!-- 설치 시운전 준비상태 확정 전 -->
+                                        <aura:set attribute="else">
+                                            <table>
+                                                <colgroup>
+                                                    <col width="13%" />
+                                                    <col width="57%" />
+                                                    <col width="30%" />
+                                                </colgroup>
+                                                <tr>
+                                                    <th>고객사 준비상태</th>
+                                                    <td>
+                                                        <div class="input-wrap">
+                                                            <lightning:checkboxGroup options="{! v.preparationOptions }"
+                                                                value="{! v.preparationValues }"
+                                                                onchange="{! c.handlePreparationOptionsChange }" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span>
+                                                            (고객사 준비가 미비한 부분을 체크해 주세요.)
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>점검 확인 내용</th>
+                                                    <td colspan="2">
+                                                        <div class="input-field">
+                                                            <lightning:textarea variant="label-hidden"
+                                                                value="{! v.workOrderResultData.inspectionDetails }" />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </aura:set>
+                                    </aura:if>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- **** Accordion Card 06 설치 초기하자 입력 **** -->
+                    <div class="accordion accordion-06">
+                        <div class="card-header">
+                            <h2>설치 초기하자 입력</h2>
+                        </div>
+                        <div class="accordion-body">
+                            <aura:if isTrue="{!v.isConfirmed}">
+                                <!-- 설치 초기하자 입력 확정 후 -->
+                                <div class="table-wrap">
+                                    <div class="table-body">
+                                        <table class="confirmed">
+                                            <colgroup>
+                                                <col width="3%" />
+                                                <col width="35%" />
+                                                <col width="50%" />
+                                                <col width="10%" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th>유형</th>
+                                                    <th>내용</th>
+                                                    <th>조치내역</th>
+                                                    <th>비고</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.defectList}" var="defect" indexVar="j">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                <lightning:combobox value="{!defect.type}"
+                                                                    options="{!v.defectTypeOptions}" disabled="true"
+                                                                    placeholder="선택" data-field="type" />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!defect.content}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!defect.actionTaken}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-wrap">
+                                                                {!defect.remarks}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- 설치 초기하자 입력 확정 전 -->
+                                <aura:set attribute="else">
+                                    <div class="table-wrap">
+                                        <div class="table-header">
+                                            <div class="button-wrap">
+                                                <lightning:button iconName="utility:add" name="searchItems" label="추가"
+                                                    onclick="{!c.addDefectList}" />
+                                                <lightning:button iconName="utility:delete" name="searchItems"
+                                                    label="삭제" onclick="{!c.deleteDefectList}" />
+                                            </div>
+                                        </div>
+                                        <div class="table-body">
+                                            <table>
+                                                <colgroup>
+                                                    <col width="1%" />
+                                                    <col width="3%" />
+                                                    <col width="35%" />
+                                                    <col width="50%" />
+                                                    <col width="10%" />
+                                                </colgroup>
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            <div class="input-wrap">
+                                                                <lightning:input type="checkbox"
+                                                                    aura:id="defectTableCheckbox"
+                                                                    onchange="{!c.toggleAllDefectCheckboxes}"
+                                                                    checked="{!v.selectAllDefectList}" />
+                                                            </div>
+                                                        </th>
+                                                        <th>유형</th>
+                                                        <th>내용</th>
+                                                        <th>조치내역</th>
+                                                        <th>비고</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <aura:iteration items="{!v.defectList}" var="defect" indexVar="j">
+                                                        <tr onchange="{!c.handleDefectChange}" data-index="{!index}">
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="checkbox"
+                                                                        aura:id="defectTableCheckbox"
+                                                                        checked="{!defect.checkbox}"
+                                                                        onchange="{!c.handleDefectCheckboxChange}"
+                                                                        data-field="checkbox" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:combobox value="{!defect.type}"
+                                                                        options="{!v.defectTypeOptions}"
+                                                                        placeholder="선택" data-field="type" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="text"
+                                                                        value="{!defect.content}" variant="label-hidden"
+                                                                        data-field="content" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="text"
+                                                                        value="{!defect.actionTaken}"
+                                                                        variant="label-hidden"
+                                                                        data-field="actionTaken" />
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="input-wrap">
+                                                                    <lightning:input type="text"
+                                                                        value="{!defect.remarks}" variant="label-hidden"
+                                                                        data-field="remarks" />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+</aura:component>

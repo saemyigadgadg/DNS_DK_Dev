@@ -1,0 +1,63 @@
+/* .THIS .body .card-02 .table-02 {
+    flex: auto;
+    overflow-x: scroll;
+} */
+
+c-d-n_-ordered-g-i-table{
+    display: flex;
+    flex-direction: column;
+} 
+
+.table-wrap {
+    overflow: scroll;
+    height: calc(100vh - 31rem);
+}
+.table-wrap thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+}
+.button-wrap {
+    text-align: right;
+    padding-bottom: 0.75rem;
+}
+
+.table-02 tbody td .date {
+    min-width: 9rem;
+}
+
+
+/* SLDS Table datepicker */
+.slds-datepicker__month td{
+    border: none !important;
+    background-color: #fff !important;
+    padding: .25rem !important;
+    font-size: .75rem !important;
+}
+.slds-datepicker__month th{
+    padding: .5rem !important;
+    font-weight: 400 !important;
+    background-color: #fff !important;
+    border: none !important;
+}
+.slds-datepicker__month tr{
+    border-bottom: none !important;
+}
+
+.emergency {
+    background-color:#FEADD1 !important;
+}
+
+.custom-input {
+    width: 100%;
+    min-width: 150px;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: none;
+    background-color: transparent;
+    font-size: inherit;
+    font-family: inherit;
+    padding: 2px 4px;
+    cursor: default;
+}

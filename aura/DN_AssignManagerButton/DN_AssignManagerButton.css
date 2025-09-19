@@ -1,0 +1,39 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1.25rem;
+}
+
+.THIS .slds-modal__content .message {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+.THIS .group-wrap {
+    background: #f6f6f6;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+
+.THIS .slds-modal__content .group {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    cursor: default;
+
+    width: fit-content;
+    padding: 0.25rem;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    background-color: #fff;
+}

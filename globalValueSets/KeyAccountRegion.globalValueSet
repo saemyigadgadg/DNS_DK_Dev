@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>MEXICO &amp; CA</fullName>
+        <default>false</default>
+        <label>MEXICO &amp; CA</label>
+    </customValue>
+    <customValue>
+        <fullName>MIDWEST</fullName>
+        <default>false</default>
+        <label>MIDWEST</label>
+    </customValue>
+    <customValue>
+        <fullName>NORTHEAST</fullName>
+        <default>false</default>
+        <label>NORTHEAST</label>
+    </customValue>
+    <customValue>
+        <fullName>SOUTH AMERICA</fullName>
+        <default>false</default>
+        <label>SOUTH AMERICA</label>
+    </customValue>
+    <customValue>
+        <fullName>SOUTHEAST</fullName>
+        <default>false</default>
+        <label>SOUTHEAST</label>
+    </customValue>
+    <customValue>
+        <fullName>SOUTHWEST</fullName>
+        <default>false</default>
+        <label>SOUTHWEST</label>
+    </customValue>
+    <masterLabel>Key Account Region</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

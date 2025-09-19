@@ -1,0 +1,44 @@
+.THIS .order_change_modal{
+    position: relative;
+}
+
+.THIS .slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    position: relative;
+    height: 18rem;
+    overflow: hidden;
+}
+
+.THIS .slds-modal__content .slds-wrap {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 100%;
+    padding: 1rem;
+}
+.THIS .help_text_style {
+    padding: 0 2rem;
+    margin: 0;
+}
+
+/* 📱 Responsive Media Query (해상도 ~ 767px) */
+@media all and (max-width:767px) {
+    .THIS .slds-wrap .slds-size_6-of-12 {
+        width: 100%;
+    }
+
+    .THIS .modal_body_wrap {
+        height: calc(100vh - 12rem);
+    }
+
+    .THIS .modal_body_wrap .slds-input {
+        min-width: 100%;
+        width: 100% !important;
+        line-height: 100% !important;
+    }
+}

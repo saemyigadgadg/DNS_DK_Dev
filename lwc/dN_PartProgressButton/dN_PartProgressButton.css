@@ -1,0 +1,320 @@
+.total-wrap {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    touch-action: none;
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    background-color: #fff;
+    position: relative;
+  }
+  
+  
+  /* 🍙 1. 청구부품 목록 화면 */
+  
+  .page-01 {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header */
+  
+  .page-01 .header {
+    padding: 1rem;
+    padding-top: 1.75rem;
+    position: relative;
+  }
+  
+  .page-01 .header h2 {
+    font-size: 1.75rem;
+  }
+  
+  .page-01 .header .error-msg {
+    font-size: 21px;
+    margin-top: 0.25rem;
+    color: #EA001E;
+  }
+  
+  .page-01 .header .button-wrap {
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+  }
+  
+  
+  /* Body */
+  .page-01 .body-wrap {
+    background-color: #f9f9f9;
+    padding: 1rem;
+    overflow: auto;
+    padding-bottom: 7rem;
+  }
+  
+  .page-01 .result-wrap {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    border-top: 1px solid #f3f3f3;
+    overflow-y: auto;
+  
+  }
+  
+  .page-01 .result-wrap .box {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    background-color: #fff;
+    border: 1px solid #E5E5E5;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+  
+    position: relative;
+  }
+  
+  .page-01 .result-wrap .box .box-info {
+    padding: 0.75rem;
+    padding-left: 1rem;
+    /* flex: auto; */
+    width: calc(100% - 5.25rem);
+  }
+  
+  .page-01 .result-wrap .box .box-info>p {
+    line-height: 140%;
+    color: #444;
+    word-break: break-all;
+  }
+  
+  .page-01 .result-wrap .message {
+    text-align: center;
+    padding: 2rem 0;
+  }
+  
+  .page-01 .result-wrap .box .button-wrap {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+  
+  .page-01 .add-button-wrap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    padding: 1rem 1rem 2rem 1rem;
+  }
+  
+  
+  /* 🍙 2. 부품추가 화면 */
+  
+  .page-02 {
+    background-color: #fff;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* touch-action: none; */
+  }
+  
+  /* Search */
+  .page-02 .search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  /* Filter */
+  .page-02 .filter-wrap {
+    margin: 0.25rem 0.75rem;
+  }
+  
+  /* Result */
+  .page-02 .result-wrap {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #F9F9F9;
+    margin-top: 0.75rem;
+    border-top: 1px solid #f3f3f3;
+    overflow-y: auto;
+    font-size: 18px;
+  }
+  
+  .page-02 .result-wrap .valid-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #c9c9c9;
+    padding: 0.75rem 1rem;
+  }
+  
+  .page-02 .result-wrap .info-wrap {
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+  }
+  
+  .page-02 .result-wrap .no-result {
+    text-align: center;
+    padding: 1.25rem;
+    width: 100%
+  }
+  
+  /* 🍙 3. 부품상세 화면 */
+  
+  .page-03 {
+    background-color: #fff;
+    height: 100vh;
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    touch-action: none;
+  }
+  
+  .page-03 .field-wrap {
+    margin-top: 1rem;
+    border-radius: 0.25rem;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    /* border: 1px solid #d9d9d9; */
+  }
+  
+  .page-03 .field-wrap .box {
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem;
+  }
+  
+  .page-03 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  
+  .page-03 .field-wrap .divider {
+    position: relative;
+    overflow: hidden;
+    padding-top: 0.5rem;
+    margin: 0 0.75rem;
+    margin-bottom: -0.5rem;
+  }
+  
+  .page-03 .field-wrap .divider p {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    font-size: 15px;
+    color: #EA001E;
+    text-align: center;
+  }
+  
+  .page-03 .field-wrap p {
+    font-size: 18px;
+    padding-top: 0.25rem;
+    text-wrap: nowrap;
+  }
+  
+  .page-03 .field-wrap .input-wrap .name {
+    white-space: unset;
+    text-wrap: wrap;
+    word-break: break-all;
+    overflow: hidden;
+  }
+  
+  .page-03 .field-wrap .input-wrap p:after {
+    content: ':';
+  }
+  
+  .page-03 .add-button {
+    margin-top: 1.5rem;
+    padding-bottom: 1rem;
+  }
+  
+  .page-03 .header {
+    margin: 0.5rem 0;
+    position: relative;
+  }
+  
+  .page-03 .header .stock {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  
+  .page-03 .header .error-msg {
+    font-size: 21px;
+    margin-top: 0.25rem;
+    color: #EA001E;
+  }
+  
+  .page-03 .header .error-msg {
+    font-size: 16px;
+    margin-top: 0.25rem;
+    color: #EA001E;
+  }
+  
+  /* 5. 확인 모달 */
+  
+  .confirm-wrap .slds-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  
+  .confirm-wrap .slds-modal__content {
+    padding: 2rem;
+    padding-bottom: 2.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .confirm-wrap .slds-modal__content p {
+    text-align: center;
+  }
+  
+  .confirm-wrap .icon-wrap {
+    padding: 0.75rem;
+    border-radius: 50%;
+    border: 3px solid #0176D3;
+  }
+  
+  .confirm-wrap .quantity-wrap {
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #141414;
+  }
+  
+  .confirm-wrap .quantity {
+    color: #0176D3;
+    font-weight: bold;
+    margin: 0 3px 0 6px;
+  }
+  
+  /* Backup Styles */
+  
+  /* js SLDS > 하단 밀착 버튼 */
+  /* .page-01 .add-button-wrap .add-button .slds-button_brand {
+    padding-bottom: 3rem;
+    padding-top: 0.75rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    width: 100%;
+    border-radius: 0;
+  } */

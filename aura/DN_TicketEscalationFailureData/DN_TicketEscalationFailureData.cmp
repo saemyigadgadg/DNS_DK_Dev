@@ -1,0 +1,124 @@
+<!--
+  @description       : 
+  @author            : Junyeong, Choi
+  @group             : 
+  @last modified on  : 12-23-2024
+  @last modified by  : Junyeong, Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-23-2024   Junyeong, Choi   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" description="고장부위등록모달" controller="DN_TicketEscalationFailureDataController">
+    <aura:html tag="style">
+        .slds-modal__content:has(.cDN_TicketEscalationFailureData) {
+        height: auto !important;
+        max-height: none !important;
+        padding: 0;
+        overflow-y:clip;
+        }
+        .slds-modal__container:has(.cDN_TicketEscalationFailureData) {
+        width: 30rem;
+        max-width: none;
+        min-width: none;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_TicketEscalationFailureData) {
+        padding:0;
+        }
+        <!-- overflow -->
+        .modal-body:has(.cDN_TicketEscalationFailureData) {
+        overflow: visible;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_TicketEscalationFailureData) {
+        overflow:visible;
+        }
+        .slds-modal__content:has(.cDN_TicketEscalationFailureData) {
+        overflow: visible;
+        }
+    </aura:html>
+
+    <!--Attribute-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="objectTypeOptions" type="Object" />
+    <aura:attribute name="selectedObjectType" type="String" default="" />
+    <aura:attribute name="failureMainOptions" type="Object" />
+    <aura:attribute name="selectedFailureMain" type="String" default="" />
+    <aura:attribute name="failureMiddleOptions" type="Object" />
+    <aura:attribute name="selectedFailureMiddle" type="String" default="" />
+    <aura:attribute name="failurePhenomenonOptions" type="Object" />
+    <aura:attribute name="selectedFailurePhenomenon" type="String" default="" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="FailureDataModal" aura:id="FailureDataModal">
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">고장 부위 등록</h2>
+                </header>
+
+                <!-- Modal -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="condition-content">
+                        <!-- Object Type -->
+                        <lightning:select name="ObjectType" label="Object Type" aura:id="ObjectType"
+                            value="{!v.selectedObjectType}" onchange="{!c.handleObjectTypeChange}">
+                            <option value="" selected="true"></option>
+                            <aura:iteration items="{!v.objectTypeOptions}" var="option">
+                                <option text="{!option.label}" value="{!option.value}" />
+                            </aura:iteration>
+                        </lightning:select>
+
+                        <!-- 고장부위(대) -->
+                        <aura:if isTrue="{!not(empty(v.selectedObjectType))}">
+                            <lightning:select name="FailureAreaMain" label="고장부위(대)" aura:id="FailureAreaMain"
+                                value="{!v.selectedFailureMain}" onchange="{!c.handleFailureMainChange}">
+                                <option value="" selected="true"></option>
+                                <aura:iteration items="{!v.failureMainOptions}" var="main">
+                                    <option text="{!main.label}" value="{!main.value}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </aura:if>
+
+                        <!-- 고장부위(중) -->
+                        <aura:if isTrue="{!not(empty(v.selectedFailureMain))}">
+                            <lightning:select name="FailureAreaMiddle" label="고장부위(중)" aura:id="FailureAreaMiddle"
+                                value="{!v.selectedFailureMiddle}" onchange="{!c.handleFailureMiddleChange}">
+                                <option value="" selected="true"></option>
+                                <aura:iteration items="{!v.failureMiddleOptions}" var="middle">
+                                    <option text="{!middle.label}" value="{!middle.value}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </aura:if>
+
+                        <!-- 고장 현상 -->
+                        <aura:if isTrue="{!not(empty(v.selectedFailureMiddle))}">
+                            <lightning:select name="FailurePhenomenon" label="고장현상" aura:id="FailurePhenomenon"
+                                value="{!v.selectedFailurePhenomenon}" onchange="{!c.handleFailurePhenomenonChange}">
+                                <option value="" selected="true"></option>
+                                <aura:iteration items="{!v.failurePhenomenonOptions}" var="phenomenon">
+                                    <option text="{!phenomenon.label}" value="{!phenomenon.value}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </aura:if>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button label="취소" onclick="{!c.handleCancel}" class="slds-m-left_x-small" />
+                    <lightning:button variant="brand" label="저장" onclick="{!c.handleSave}"
+                        class="slds-m-left_x-small" />
+                </footer>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

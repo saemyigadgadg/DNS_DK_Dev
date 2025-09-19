@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customObject>true</customObject>
+    <description>자재마스터 대표사양, 모델, 부품, 서비스 패키지 정보 생성 (ERP -&gt; CRM)</description>
+    <motif>Custom13: Box</motif>
+</CustomTab>

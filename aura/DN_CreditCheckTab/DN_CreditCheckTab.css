@@ -1,0 +1,40 @@
+/* Tabset */
+
+.THIS .slds-tabs_scoped__nav{
+  border: none;
+  border-bottom: 1px solid #c9c9c9;
+  overflow: hidden;
+}
+.THIS .slds-tabs_scoped__nav .slds-tabs_scoped__link{
+  border: none;
+  color: #747474;
+}
+.THIS .slds-tabs_scoped__nav .slds-is-active .slds-tabs_scoped__link{
+  border-bottom: 1px solid #1B96FF;
+  box-shadow: 0px -2px 0 0 #1b96ff inset;
+  background-color: #f3f3f3;
+  color: #181818 !important;
+  border-left: none;
+  border-right: none;
+  cursor: default;
+}
+.THIS .slds-tabs_scoped__nav .slds-is-active .slds-tabs_scoped__link:hover{
+  background-color: #f3f3f3;
+  border-bottom: 1px solid #1B96FF;
+  box-shadow: 0px -2px 0 0 #1b96ff inset;
+}
+.THIS .slds-tabs_scoped__nav .slds-tabs_scoped__link:hover{  
+  background-color: #ebebeb;
+}
+.THIS .slds-tabs_scoped__link:focus{
+  outline: none;  
+}
+
+/* Body */
+
+.THIS .slds-tabs_scoped__content{
+  background-color: #f3f3f3;
+  padding: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+}

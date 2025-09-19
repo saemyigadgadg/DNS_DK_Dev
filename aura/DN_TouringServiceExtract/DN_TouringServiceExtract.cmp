@@ -1,0 +1,127 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-12-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="티켓추출" access="global" controller="DN_TouringServiceExtractController">
+    <!--Attribute-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="targetList" type="List" default="[]" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_TouringServiceExtract) {
+            width: fit-content;
+            max-width: calc(100vw - 8rem);
+        }
+        .slds-modal__content:has(.cDN_TouringServiceExtract) {
+            height: auto !important;
+            max-height: unset !important;
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_TouringServiceExtract) {
+            padding:0;
+        }
+        *:has(.cDN_TouringServiceExtract) {
+            overflow: visible !important;
+        }
+    </aura:html>
+
+    <div aura:id="confirmModal">
+        <div class="slds-modal__container slds-modal_large">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">티켓생성</h2>
+            </header>
+
+            <!-- Modal Body-->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+        
+                <div class="card-02 top-card">
+
+                    <div class="table-02">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="14%" />
+                                <col width="14%" />
+                                <col width="15%" />
+                                <col width="30%" />
+                                <col width="27%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="" style="text-align: center;">{!$Label.c.DNS_C_SerialNumber}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="" style="text-align: center;">기종</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="" style="text-align: center;">고객사</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="" style="text-align: center;">고객사 주소</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="" style="text-align: center;">{!$Label.c.DNS_C_Manager}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:if isTrue="{!empty(v.targetList)}" >
+                                    <tr>
+                                        <td scope="row" colspan="5" style="text-align: center;"><p>Ticket 을 생성할 대상 장비가 없습니다.</p></td>
+                                    </tr>
+                                </aura:if>        
+                                <aura:iteration items="{!v.targetList}" var="targetList" indexVar="j">
+                                    <tr>
+                                        <td scope="row">
+                                            <div>{!targetList.Name}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.Model}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.Account}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!targetList.Address}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>
+                                                <lightning:recordEditForm objectApiName="CampaignAsset__c">
+                                                    <lightning:inputField fieldName="Manager__c" aura:id="manager"
+                                                        accesskey="{!j}" value="{!targetList.Manager}" variant="label-hidden" />
+                                                </lightning:recordEditForm>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelExtract}" />
+                <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.executeExtract}" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

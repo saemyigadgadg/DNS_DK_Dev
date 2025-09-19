@@ -1,0 +1,8 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+}
+.THIS.order_notice_wrapper {
+    position: relative;
+}

@@ -1,0 +1,44 @@
+/* Modal */
+
+.THIS .slds-modal__container {
+   width: 80%;
+   max-width: none;
+   padding: 0;
+}
+
+.THIS .slds-modal__content {
+   position: relative;
+   max-height: none;
+   min-height: unset;
+}
+
+.THIS .slds-modal__footer {
+   display: flex;
+   justify-content: flex-end;
+}
+
+/* Body */
+
+.THIS .modal-body {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   padding: 2.5rem 1rem;
+}
+
+.THIS .modal-body .icon-wrap {
+   margin-bottom: 1rem;
+}
+
+.THIS .modal-body p {
+   font-size: 14px;
+}
+
+/* Backdrop */
+
+.THIS.slds-backdrop {
+   opacity: 1;
+   visibility: visible;
+   z-index: 9000;
+}

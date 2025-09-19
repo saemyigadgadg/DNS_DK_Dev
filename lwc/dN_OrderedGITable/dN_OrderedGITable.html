@@ -1,0 +1,222 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-06-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-20-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+	<template lwc:if={isSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+	<div class="button-wrap">
+		<lightning-button icon-name="utility:copy" name="searchItems" label="복사"
+			onclick={handleCopy}></lightning-button>
+		<lightning-button icon-name="utility:search" name="searchItems" label="출고지시"
+			onclick={handleInsertShipmentOrder}></lightning-button>
+	</div>
+	<div class="table-wrap" data-id="copyTarget">
+		<table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table table-02">
+			
+			<colgroup>
+				<col width="1%" />
+				<col width="6%" />
+				<col width="7%" />
+				<col width="2%" />
+				<col width="6%" />
+				<col width="9%" />
+				<col width="6%" />
+				<col width="7%" />
+				<col width="7%" />
+				<col width="7%" />
+				<col width="15%" />
+				<col width="5%" />
+				<col width="5%" />
+				<col width="5%" />
+				<col width="5%" />
+				<col width="8%" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">
+						<lightning-input lwc:if={isAll} data-id="isAll" type="checkbox" onchange={handleCheckAll}></lightning-input>
+					</th>
+					<th scope="col">
+						<div title="">주문번호</div>
+					</th>
+					<th scope="col">
+						<div title="">고객사명</div>
+					</th>
+					<th scope="col">
+						<div title="">항목</div>
+					</th>
+					<th scope="col">
+						<div title="">주문품번</div>
+					</th>
+					<th scope="col">
+						<div title="">품명</div>
+					</th>
+					<th scope="col">
+						<div title="">주문수량</div>
+					</th>
+					<th scope="col">
+						<div title="">현재고</div>
+					</th>
+					<th scope="col">
+						<div title="">출고지시가능수량</div>
+					</th>
+					<th scope="col">
+						<div title="">출고가능수량</div>
+					</th>
+					<th scope="col">
+						<div title="">출고내역</div>
+					</th>
+					<th scope="col">
+						<div title="">기출고수량</div>
+					</th>
+					<th scope="col">
+						<div title="">미출고수량</div>
+					</th>
+					<th scope="col">
+						<div title="">기출고지시수량</div>
+					</th>
+					<th scope="col">
+						<div title="">미출고지시수량</div>
+					</th>
+					<th scope="col">
+						<div title="">출력일자</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template for:each={orderList} for:item="order" for:index="index">
+				<!-- <aura:iteration items="{!v.OrderListToGI}" var="gi" indexVar="i"> -->
+				<tr class="slds-hint-parent" key={order.orderItemId}>
+					<td data-label="">
+						<div class="center copy-ignore" title="">
+							<lightning-input type="checkbox" disabled={order.isDisabled} data-index={index} onchange={handleCheckboxChange}></lightning-input>
+						</div>
+					</td>
+					<td data-label="주문번호">
+						<div title="주문번호">
+							<a data-id={order.orderId} onclick={openCustomerOrderDetail}>{order.orderNumber}</a>
+						</div>
+					</td>
+					<td data-label="고객사명">
+						<span style="display:none;">{order.accountName}</span>
+						<input class="custom-input copy-ignore" readonly value={order.accountName}></input>
+						<!-- <lightning-input class="readable-input" type="text" variant="label-hidden"  readonly="true" value={order.accountName} ></lightning-input> -->
+						<!-- <div title="고객사명"> -->
+							
+							<!-- <lightning:input type="text" name="input1 " variant="label-hidden" value="" readonly="true" /> -->
+						<!-- </div> -->
+					</td>
+					<td data-label="항목" class="center">
+						<span style="display:none;">{order.itemNumber}</span>
+						<input class="custom-input copy-ignore" readonly value={order.itemNumber}></input>
+						<!-- <div title="항목">
+							{order.itemNumber} -->
+							<!-- <lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.itemNumber}></lightning-input> -->
+							<!-- <lightning:input type="text" name="input1 " variant="label-hidden" value="" readonly="true" /> -->
+						<!-- </div> -->
+					</td>
+					<td data-label="주문품번">
+						<span style="display:none;">{order.partNumber}</span>
+						<input class="custom-input copy-ignore" readonly value={order.partNumber}></input>
+						<!-- <div title="주문품번">
+							
+							<lightning-input type="text" variant="label-hidden"  readonly="true" value={order.partNumber}></lightning-input>
+							
+						</div> -->
+					</td>
+					<td data-label="품명">
+						<span style="display:none;">{order.partName}</span>
+						<input class="custom-input copy-ignore" readonly value={order.partName}></input>
+						<!-- <div title="품명">
+							<lightning-input type="text" variant="label-hidden"  readonly="true" value={order.partName}></lightning-input>
+						</div> -->
+					</td>
+					<td data-label="주문수량" class="right">
+						<span style="display:none;">{order.quantity}</span>
+						<input class="custom-input copy-ignore" readonly value={order.quantity}></input>
+						<!-- <div title="주문수량">
+							<lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.quantity}></lightning-input>
+						</div> -->
+					</td>
+					<td data-label="현재고" data-currentqty={index} class="right ">
+						<span style="display:none;">{order.currentStockQuantity}</span>
+						<input class="custom-input copy-ignore" readonly value={order.currentStockQuantity}></input>
+						<!-- <div title="현재고">
+							<lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.currentStockQuantity}></lightning-input>
+						</div> -->
+					</td>
+					<td data-label="출고지시가능수량" class="right">
+						<span style="display:none;">{order.gIOrderPossibleQty}</span>
+						<div title="출고지시가능수량" class="copy-ignore">
+							<lightning-input type="text" name={index}  data-field="gIOrderPossibleQty" onchange={handleChange} variant="label-hidden" value={order.gIOrderPossibleQty}></lightning-input>
+						</div>
+					</td>
+					<td data-label="출고가능수량" class="right">
+						<span style="display:none;">{order.gIPossibleQty}</span>
+						<div title="출고가능수량" class="copy-ignore">
+							<lightning-input type="text" name={index} data-field="gIPossibleQty" onchange={handleChange} variant="label-hidden" value={order.gIPossibleQty}></lightning-input>
+						</div>
+					</td>
+					<td data-label="출고내역">
+						<span style="display:none;">{order.gIDescription}</span>
+						<div title="출고내역" class="copy-ignore">
+							<!-- <lightning-textarea name={index} data-field="gIDescription" onchange={handleChange}  variant="label-hidden" value={order.gIDescription}></lightning-textarea> -->
+							<lightning-input type="text" name={index} data-field="gIDescription" onchange={handleChange}  variant="label-hidden" value={order.gIDescription}
+								style="min-height: 28px !important; min-width: 450px !important;">
+							</lightning-input>
+						</div>
+					</td>
+					<td data-label="기출고수량" class="right">
+						<span style="display:none;">{order.gICompletedQTY}</span>
+						<div title="기출고수량" class="copy-ignore">
+							<!-- {order.gICompletedQTY} -->
+							<lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.gICompletedQTY}></lightning-input>
+							<!-- <lightning:input type="text" name="input1 " variant="label-hidden" value="" readonly="true" /> -->
+						</div>
+					</td>
+					<td data-label="미출고수량" class="right">
+						<span style="display:none;">{order.gINotQTY}</span>
+						<div title="미출고수량" class="copy-ignore">
+							<!-- {order.gINotQTY} -->
+							<lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.gINotQTY}></lightning-input>
+							<!-- <lightning:input type="text" name="input1 " variant="label-hidden" value="1" readonly="true" /> -->
+						</div>
+					</td>
+					<td data-label="기출고지시수량" class="right">
+						<span style="display:none;">{order.gIOrderCompletedQTY}</span>
+						<div title="기출고지시수량" class="copy-ignore">
+							<!-- {order.gIOrderCompletedQTY} -->
+							<lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.gIOrderCompletedQTY}></lightning-input>
+							<!-- <lightning:input type="text" name="input1 " variant="label-hidden" value="" readonly="true" /> -->
+						</div>
+					</td>
+					<td data-label="미출고지시수량" class="right">
+						<span style="display:none;">{order.gIOrderNotQTY}</span>
+						<div title="미출고지시수량" class="copy-ignore">
+							<!-- {order.gIOrderNotQTY} -->
+							<lightning-input type="Number" variant="label-hidden"  readonly="true" value={order.gIOrderNotQTY}></lightning-input>
+							<!-- <lightning:input type="text" name="input1 " variant="label-hidden" value="1" readonly="true" /> -->
+						</div>
+					</td>
+					<td data-label="출력일자">
+						<span style="display:none;">{order.printDate}</span>
+						<div title="출력일자" class="date copy-ignore">
+							<lightning-input type="date" name={index} data-field="printDate" onchange={handleChange} variant="label-hidden" value={order.printDate}></lightning-input>
+						</div>
+					</td>
+				</tr>
+				<!-- </aura:iteration> -->
+				</template>
+			</tbody>
+		</table>
+	</div>
+	
+</template>

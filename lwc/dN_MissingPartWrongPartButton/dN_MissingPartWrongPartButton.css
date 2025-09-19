@@ -1,0 +1,28 @@
+.total-wrap{
+    position: relative;
+    padding: 1rem;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .total-wrap .container{
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  h2{
+    font-size: 1.75rem;
+  }
+  
+  .total-wrap .button-wrap {
+    /* position: fixed;
+    bottom: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%); */
+    width: 100%;
+    margin-top: 0.5rem;
+    padding-bottom: 2rem;
+  }

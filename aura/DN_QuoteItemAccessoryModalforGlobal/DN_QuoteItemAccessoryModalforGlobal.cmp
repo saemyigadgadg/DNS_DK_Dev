@@ -1,0 +1,119 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2025-05-07
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2025-01-15   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component controller="DN_QuoteItemAccessoryController">
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="isTableVisible" type="Boolean" default="false"
+        description="Controls visibility of the table section" />
+
+    <aura:attribute name="searchTerm" type="String" description="Search term Product" />
+
+    <aura:attribute name="selectedItems" type="List" description="Selected Quote Lineitem" />
+
+    <aura:attribute name="selTableColumns" type="List" description="Selected Table Columns" />
+    <aura:attribute name="selTableData" type="List" description="Selected Table Data" />
+    <aura:attribute name="delTableData" type="List" description="Deleted Table Data" />
+    <aura:attribute name="defaultData" type="List" description="Default Table Data" />
+
+    <aura:attribute name="quoteId" type="String" />
+    <aura:attribute name="category" type="String" description="Category (combobox) value" />
+    <aura:attribute name="categoryOption" type="List" description="Category (combobox) option" />
+    <aura:attribute name="categoryOptionData" type="List" description="All data not selected" />
+
+    <aura:attribute name="tableColumns" type="List" description="Table Columns" />
+    <aura:attribute name="tableData" type="List" description="Table Data" />
+    <aura:attribute name="draftValues" type="Object" default="[]" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_QuoteItemAccessoryModalforGlobal){
+        width: 50rem;
+        max-width: calc(100vw - 8rem);
+        margin: 0 auto;
+        max-height: 68rem;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 4rem 0 3rem 0;
+        }
+
+        .slds-modal__content:has(.cDN_QuoteItemAccessoryModalforGlobal){
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        }
+
+        @media all and (max-width: 479px) {
+        .slds-modal__container:has(.cDN_QuoteItemAccessoryModalforGlobal){
+        max-width: calc(100vw - 2rem);
+        }
+        }
+    </aura:html>
+
+
+    <div>
+        <aura:if isTrue="{!v.isLoading}">
+            <div class="SpinnerDiv">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__content slds-p-around_small">
+
+                <!-- Section 01 -->
+                <div class="catecory_section">
+                    <!-- 검색창 추가 -->
+                    <div class="search_section" onkeypress="{!c.handleKeyPress}">
+                        <lightning:input type="search" label="Search" placeholder="Enter search term" value="{!v.searchTerm}" variant="label-inline"/>
+                        <lightning:button label="Search" variant="brand" onclick="{!c.handleSearch}" />
+                    </div>
+                </div>
+                <div style="color: red;">{!$Label.c.DNS_M_Over200Accessories}</div>
+                <!-- A maximum of 200 accessories can be retrieved. If you cannot find the accessory, please refine your search criteria. -->
+
+                <div class="accessory_table_section">
+                    <lightning:datatable keyField="key" columns="{!v.tableColumns}" data="{!v.tableData}"
+                        hideCheckboxColumn="true" onrowaction="{!c.handleRowAction}"
+                        onrowselection="{!c.handleRowSelection}" />
+                </div>
+
+                <!-- Section 02 -->
+                <div class="down_icon_section">
+                    <lightning:icon iconName="utility:down" title="selected" size="small" />
+                </div>
+
+                <!-- Section 03 -->
+                <div class="selected_table_section">
+                    <div class="section-header">
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='standard:multi_select_checkbox' size='x-small'
+                                title="{!$Label.c.DNS_S_SelectedList}" />
+                        </div>
+                        <h1 class="slds-page-header__name-title" title="{!$Label.c.DNS_S_SelectedList}">
+                            {!$Label.c.DNS_S_SelectedList}</h1>
+                    </div>
+                    <lightning:datatable keyField="key" columns="{!v.selTableColumns}" data="{!v.selTableData}"
+                        hideTableHeader="true" hideCheckboxColumn="true" draftValues="{! v.draftValues }"
+                        onrowaction="{!c.handleRowAction}" onrowselection="{!c.handleSelRowSelection}"
+                        oncellchange="{!c.handleCellChange}" suppressBottomBar="true" />
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="slds-modal__footer">
+                <!-- 기존 Cancel 및 Save 버튼 -->
+                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleClose}" />
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{!c.handleSave}" />
+            </div>
+        </div>
+    </div>
+</aura:component>

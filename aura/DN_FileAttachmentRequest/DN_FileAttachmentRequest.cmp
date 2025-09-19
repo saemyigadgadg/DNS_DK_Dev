@@ -1,0 +1,54 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 04-01-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-03-31   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="마스터장비 업데이트" controller="DN_FileAttachmentRequestController">
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+
+    <!-- toast -->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+    <aura:html tag="style">
+        .slds-modal__content:has(.cDN_FileAttachmentRequest) {
+            height: auto !important;
+            max-height: none !important;
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_FileAttachmentRequest) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_FAR_Title}</h2>
+        </header>
+
+        <div class="modal-body slds-modal__content slds-modal_large">
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+            </aura:if>
+
+            <h1>{!$Label.c.DNS_FAR_Content}</h1>
+        </div>
+
+        <footer class="slds-modal__footer">
+            <div>
+                <lightning:button label="{!$Label.c.DNS_FAR_Close}" onclick="{!c.closeModal}" />
+                <lightning:button variant="brand" label="{!$Label.c.DNS_FAR_Send}" onclick="{!c.sendAlarmtalk}" />
+            </div>
+        </footer>
+    </div>
+
+</aura:component>

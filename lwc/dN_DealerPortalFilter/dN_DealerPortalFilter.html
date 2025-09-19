@@ -1,0 +1,546 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-19-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-19-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    <div class="card-01 top-card filterSection">
+        <!--모달창 CMP-->
+        <!-- <div class="dynamic-container"></div> -->
+
+        <template for:each={_filterList} for:item="filter" for:index="i">
+            <!-- INPUT -->
+            <template lwc:if={filter.isInput}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                                <!-- <input type="text" 
+                                data-id={filter.fieldApiName} 
+                                data-dependency={filter.parentFieldApiName} 
+                                data-type={filter.fieldType} 
+                                value={filter.defaultValueLabel} 
+                                disabled={filter.isVisible} 
+                                maxlength={filter.maxLength}
+                                onchange={handleChange} class="slds-input" style="padding-left: 0.75rem;" /> -->
+                                <template lwc:if={filter.isVisible}>
+                                    <lightning-input 
+                                        data-id={filter.fieldApiName} 
+                                        data-type={filter.fieldType} 
+                                        type={filter.fieldType} 
+                                        variant="label-hidden" 
+                                        value={filter.defaultValueLabel}
+                                        disabled={filter.isVisible} 
+                                        max-length={filter.maxLength}
+                                        onchange={handleChange} 
+                                        onblur={handleBlurValue}
+                                        >
+                                    </lightning-input>
+                                    <template lwc:if={filter.filterButtonList}>
+                                        <lightning-button-icon icon-name="utility:close" size="medium" data-clear={filter.fieldApiName} onclick={handleClear} alternative-text="Close" 
+                                            data-type={filter.fieldType} class=" input-clear-btn"></lightning-button-icon>    
+                                    </template>
+                                </template>
+                                <template lwc:else>
+                                    <template lwc:if={filter.filterButtonList}>
+                                        <c-d-n_-dealer-portal-input-box oninputchange={handleInputChange} data-child={filter.fieldApiName}  uuid={uuid} filter={filter}></c-d-n_-dealer-portal-input-box>
+                                        <lightning-button-icon icon-name="utility:close" size="medium" data-clear={filter.fieldApiName} onclick={handleClear} alternative-text="Close" 
+                                            class="input-clear-btn"></lightning-button-icon>
+                                    </template>
+                                    <template lwc:else>
+                                        <lightning-input 
+                                            data-id={filter.fieldApiName} 
+                                            data-type={filter.fieldType} 
+                                            type={filter.fieldType} 
+                                            variant="label-hidden" 
+                                            value={filter.defaultValueLabel}
+                                            disabled={filter.isVisible} 
+                                            max-length={filter.maxLength}
+                                            onchange={handleChange} 
+                                            onblur={handleBlurValue}
+                                            >
+                                        </lightning-input>
+                                    </template>
+                                </template>
+                                <!-- <lightning-input 
+                                    data-id={filter.fieldApiName} 
+                                    data-dependency={filter.parentFieldApiName} 
+                                    data-type={filter.fieldType} 
+                                    type={filter.fieldType} 
+                                    variant="label-hidden" 
+                                    value={filter.defaultValueLabel}
+                                    disabled={filter.isVisible} 
+                                    max-length={filter.maxLength}
+                                    onchange={handleChange}  
+                                    onblur={handleBlurValue}
+                                    >
+                                </lightning-input> -->
+                                <!--value : >> defaultValue > defaultValueLabel -->
+                               
+                            </div>
+                            
+                        </div>
+                        <template for:each={filter.filterButtonList} for:item="button" for:index="i">
+                            <lightning-button-icon key={button.id} 
+                                data-disabled={button.id}
+                                data-dependencykey={button.parentKey}
+                                data-param={button.modalParams}
+                                data-defaultparam={button.modalParams}
+                                icon-name={button.buttonIcon} 
+                                data-cmpname={button.modalComponent} 
+                                data-type={button.buttonType} 
+                                onclick={handleAdditionButton} 
+                                size="medium" 
+                                alternative-text={button.buttonLabel} 
+                                title={button.buttonLabel}>
+                            </lightning-button-icon>
+                        </template>
+                    </div>
+                </div>            
+            </template>
+            <!-- Not INPUT -->
+            <!-- Lookup-->
+            <template lwc:if={filter.isLookup}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left-right">
+                              <!-- <input type="text" 
+                                data-id={filter.fieldApiName}       
+                                data-dependency={filter.parentFieldApiName} 
+                                data-type={filter.fieldType} 
+                                disabled={filter.isVisible} 
+                                value={filter.defaultValueLabel} 
+                                onchange={handleChange} class="slds-input" style="padding-left: 0.75rem;" /> -->
+                                <!-- <lightning-input 
+                                    data-id={filter.fieldApiName} 
+                                    data-dependency={filter.parentFieldApiName} 
+                                    data-type={filter.fieldType} 
+                                    type={filter.fieldType} 
+                                    variant="label-hidden" 
+                                    value={filter.defaultValueLabel}
+                                    disabled={filter.isVisible} 
+                                    max-length={filter.maxLength}
+                                    onchange={handleChange} 
+                                    onblur={handleBlurValue}
+                                    >
+                                </lightning-input> -->
+                                <template lwc:if={filter.isVisible}>
+                                    <lightning-input 
+                                        data-id={filter.fieldApiName} 
+                                        data-dependency={filter.parentFieldApiName} 
+                                        data-type={filter.fieldType} 
+                                        type={filter.fieldType} 
+                                        variant="label-hidden" 
+                                        value={filter.defaultValueLabel}
+                                        disabled={filter.isVisible} 
+                                        max-length={filter.maxLength}
+                                        onchange={handleChange} 
+                                        onblur={handleBlurValue}
+                                        >
+                                    </lightning-input>
+                                    <template lwc:if={filter.filterButtonList}>
+                                        <lightning-button-icon icon-name="utility:close" size="medium" data-clear={filter.fieldApiName} onclick={handleClear} alternative-text="Close" 
+                                            data-type={filter.fieldType} class=" input-clear-btn"></lightning-button-icon>    
+                                    </template>
+                                </template>
+                                <template lwc:else>
+                                    <template lwc:if={filter.filterButtonList}>
+                                        <c-d-n_-dealer-portal-input-box oninputchange={handleInputChange} data-child={filter.fieldApiName} uuid={uuid} filter={filter}></c-d-n_-dealer-portal-input-box>
+                                        <lightning-button-icon icon-name="utility:close" size="medium" data-clear={filter.fieldApiName} onclick={handleClear} alternative-text="Close" 
+                                            data-type={filter.fieldType} class=" input-clear-btn"></lightning-button-icon>    
+                                            
+                                    </template>
+                                    <template lwc:else>
+                                        <lightning-input 
+                                            data-id={filter.fieldApiName} 
+                                            data-dependency={filter.parentFieldApiName} 
+                                            data-type={filter.fieldType} 
+                                            type={filter.fieldType} 
+                                            variant="label-hidden" 
+                                            value={filter.defaultValueLabel}
+                                            disabled={filter.isVisible} 
+                                            max-length={filter.maxLength}
+                                            onchange={handleChange} 
+                                            onblur={handleBlurValue}
+                                            >
+                                        </lightning-input>
+                                    </template>
+                                </template>
+                                
+                            </div>
+                        </div>
+                        <!-- 추가 버튼 목록-->
+                        <template lwc:if={filter.filterButtonList}>
+                            
+                            <template for:each={filter.filterButtonList} for:item="button" for:index="i">
+                                <lightning-button-icon key={button.id} 
+                                    data-disabled={button.id}
+                                    data-dependencykey={button.parentKey}
+                                    data-param={button.modalParams}
+                                    data-defaultparam={button.modalParams}
+                                    icon-name={button.buttonIcon} 
+                                    data-cmpname={button.modalComponent} 
+                                    data-type={button.buttonType} 
+                                    onclick={handleAdditionButton} 
+                                    size="medium" 
+                                    alternative-text={button.buttonLabel} 
+                                    title={button.buttonLabel}>
+                                </lightning-button-icon>
+                            </template>
+                        </template>
+                    </div>
+                </div>    
+            </template>
+            <!-- PickList-->
+            <template lwc:if={filter.isPickList}>
+                <div key={filter.id} class="field-wrap" >
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <lightning-combobox 
+                            name={filter.fieldApiName} 
+                            label={filter.fieldLabel} 
+                            options={filter.pickListValue}
+                            data-dependencefield={filter.dependenceField}
+                            data-id={filter.fieldApiName} 
+                            data-dependencevalue={filter.dependenceValue}
+                            value={filter.defaultValue} 
+                            onchange={handleChange}
+                            variant="label-hidden" 
+                            data-type={filter.fieldType} ></lightning-combobox>
+                        <!-- 추가 버튼 목록-->
+                        <template lwc:if={filter.filterButtonList}>
+                            <template for:each={filter.filterButtonList} for:item="button" for:index="i">
+                                <lightning-button-icon key={button.id} 
+                                    data-dependencykey={button.parentKey}    
+                                    data-param={button.modalParams}
+                                    data-defaultparam={button.modalParams}
+                                    icon-name={button.buttonIcon} 
+                                    data-cmpname={button.modalComponent} 
+                                    data-type={button.buttonType} 
+                                    onclick={handleAdditionButton} 
+                                    size="medium" 
+                                    alternative-text={button.buttonLabel} 
+                                    title={button.buttonLabel}>
+                                </lightning-button-icon>
+                            </template>
+                        </template>
+                    </div>
+                    </div>
+            </template>
+            <!--MultiPickList  추후에 작업예정-->
+            <template lwc:if={filter.isMultiPickList}>
+
+            </template>
+            <!-- DateToDate (Ex: 시작날짜 ~ 종료날짜)-->
+            <template lwc:if={filter.isDateToDate}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <lightning-input type="Date" data-dependencevalue={filter.dependenceValue} required={filter.isRequired} variant="label-hidden" data-set="Start" value="" data-type={filter.fieldType} data-id={filter.fieldApiName} 
+                        onchange={handleChange}
+                        >
+                        </lightning-input>
+                        <span class="to">~</span>
+                        <lightning-input type="Date" data-dependencevalue={filter.dependenceValue} required={filter.isRequired} variant="label-hidden" data-set="End" value="" data-type={filter.fieldType} data-id={filter.fieldApiName} 
+                            onchange={handleChange}
+                            >
+                        </lightning-input>
+                        <!-- 추가 버튼 목록-->
+                        <template lwc:if={filter.filterButtonList}>
+                            <template for:each={filter.filterButtonList} for:item="button" for:index="i">
+                                <lightning-button-icon key={button.id} 
+                                    data-dependencykey={button.parentKey}
+                                    data-param={button.modalParams}
+                                    data-defaultparam={button.modalParams}
+                                    icon-name={button.buttonIcon} 
+                                    data-cmpname={button.modalComponent} 
+                                    data-type={button.buttonType} 
+                                    onclick={handleAdditionButton}  
+                                    size="medium" 
+                                    alternative-text={button.buttonLabel} 
+                                    title={button.buttonLabel}>
+                                </lightning-button-icon>
+                            </template>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <!--YearMonth-->
+            <template lwc:if={filter.isYearMonth}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <lightning-input 
+                            data-id={filter.fieldApiName} 
+                            data-dependency={filter.parentFieldApiName} 
+                            data-type={filter.fieldType} 
+                            data-dependencevalue={filter.dependenceValue}
+                            variant="label-hidden" 
+                            type="month" 
+                            onchange={handleChange} 
+                            onblur={handleBlurValue}
+                            >
+                        </lightning-input>
+                       
+                    </div>
+                </div>
+            </template>
+            <!--isRadioButton-->
+            <template lwc:if={filter.isRadioButton}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap radio-group-horizontal">
+                        <lightning-radio-group 
+                          variant="label-hidden"
+                          data-id={filter.fieldApiName}
+                          options={filter.pickListValue}
+                          value={filter.defaultValue}
+                          type="radio"
+                          onchange={handleChange}
+                          data-type={filter.fieldType}
+                          >
+                        </lightning-radio-group>
+                    </div>
+                </div>
+            </template>
+            <!-- Search PicList-->
+            <template lwc:if={filter.isSearchPickList}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div  class="slds-combobox_container">
+                        <template lwc:if={filter.isSearch}>
+                            <div class={comboboxClass} aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                    <div  class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                        <input type="text"
+                                            data-input={filter.fieldApiName}
+                                            data-object={filter.objectName}
+                                            data-id={filter.fieldApiName}
+                                            data-dependency={filter.parentFieldApiName}
+                                            data-name={filter.additionalField}
+                                            data-field={filter.fieldApiName}
+                                            data-type={filter.fieldType}
+                                            data-where={filter.whereCondition}
+                                            data-value={filter.defaultValueLabel}
+                                            data-issearch={filter.isSearch}
+                                            data-dependencevalue={filter.dependenceValue}
+                                            class="slds-input slds-combobox__input"
+                                            oninput={handleSearch}
+                                            onfocus={handleFocus}
+                                            onblur={handleBlur}
+                                            disabled={filter.isSelected}
+                                        />
+                                        <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right" style="pointer-events: auto;"
+                                            onclick={handleSelectRemove}
+                                            data-icon={filter.fieldApiName}
+                                            data-type={filter.fieldType} 
+                                            data-boolean={filter.isSelected}
+    
+                                            >
+                                            
+                                            <lightning-icon lwc:if={filter.isSelected} 
+                                                data-icon={filter.fieldApiName}
+                                                data-type={filter.fieldType} 
+                                                icon-name="utility:close" size="x-small" 
+                                                class="slds-icon-text-default" 
+                                                >
+                                            </lightning-icon>
+                                            <lightning-icon lwc:else icon-name="utility:down" 
+                                                size="x-small" 
+                                                class="slds-icon-text-default">
+                                            </lightning-icon>
+                                        </span>
+                                    </div>
+                                    <!-- List BOx displayName1,2,3-->
+                                    <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid slds-scrollable" style="z-index: 100;" role="listbox" >
+                                        
+                                        <template lwc:if={filter.searchListLength}>
+                                            <ul class="slds-listbox slds-listbox_vertical " role="presentation">
+                                                <li role="presentation" class="slds-listbox__item" >
+                                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-is-selected"
+                                                        role="option"
+                                                        style="cursor: pointer;" >
+                                                        <span class="slds-media__body" >
+                                                            <span class="slds-truncate" title="No Data">No Data...</span>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </template>
+                                        <template lwc:else>
+                                            <template for:each={filter.searchList} for:item="pickList" for:index="i">
+                                                <ul key={pickList.Id} class="slds-listbox slds-listbox_vertical " role="presentation" 
+                                                data-id={pickList.Id}
+                                                data-name={filter.fieldApiName}
+                                                data-value={pickList.displayName0}
+                                                onmousedown={handleSelectPic}
+                                                onblur={handleBlur}
+                                                >
+                                                    <li role="presentation" class="slds-listbox__item" >
+                                                        <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small slds-is-selected"
+                                                            role="option"
+                                                            style="cursor: pointer;" >
+                                                            <span class="slds-media__body" >
+                                                                <span class="slds-truncate" title={pickList.displayName0}>{pickList.displayName0}</span>
+                                                                <span class="slds-listbox__option-meta" title={pickList.displayName1} >{pickList.displayName1}</span>
+                                                                <span class="slds-listbox__option-meta" title={pickList.displayName2} >{pickList.displayName2}</span>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- 검색기능 없이-->
+                        <template lwc:else>
+                            <lightning-combobox 
+                            name={filter.fieldApiName} 
+                            label={filter.fieldLabel} 
+                            options={filter.pickListValue} 
+                            data-id={filter.fieldApiName} 
+                            data-dependencevalue={filter.dependenceValue}
+                            data-issearch={filter.isSearch}
+                            onchange={handleChange}
+                            variant="label-hidden" 
+                            data-type={filter.fieldType} ></lightning-combobox>
+                        </template>
+                        
+                    </div>
+                </div>
+            </template>
+            <!--리치 텍스트-->
+            <template lwc:if={filter.isRichText}>
+                <div key={filter.id} class="field-wrap rich-text">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <!-- <lightning-input data-id={filter.fieldApiName} data-type={filter.fieldType} type={filter.fieldType} variant="label-hidden" value={filter.defaultValue} disabled={filter.isVisible} onchange={handleChange} ></lightning-input> -->
+                        <!-- 리치텍스트에서는 추가 버튼 불필요-->
+                        <lightning-textarea 
+                            data-id={filter.fieldApiName} 
+                            data-type={filter.fieldType} 
+                            variant="label-hidden" 
+                            value={filter.defaultValue} 
+                            disabled={filter.isVisible} 
+                            onchange={handleChange} 
+                            onblur={handleBlurValue}
+                            >
+                        </lightning-textarea>
+                    </div>
+                </div>
+            </template>
+            <!--Date인 경우-->
+            <template lwc:if={filter.isDate}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <lightning-input 
+                            type="Date" 
+                            variant="label-hidden"  
+                            value="" 
+                            data-type={filter.fieldType}
+                            data-id={filter.fieldApiName} 
+                            onchange={handleChange} 
+                            disabled={filter.isVisible}
+                            onblur={handleBlurValue}
+                            >
+                        </lightning-input>
+                    </div>
+                </div>
+            </template>
+            <!-- YearMonthToYearMonth (Ex: 시작월 ~ 종료월)-->
+            <template lwc:if={filter.isYearMonthToYearMonth}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <lightning-input 
+                            data-dependencevalue={filter.dependenceValue}
+                            variant="label-hidden"
+                            data-set="Start"
+                            data-type={filter.fieldType}
+                            data-id={filter.fieldApiName} 
+                            type="month" 
+                            onchange={handleChange} 
+                            onblur={handleBlurValue}
+                            >
+                        </lightning-input>
+                        <span class="to">~</span>
+                        <lightning-input 
+                            data-dependencevalue={filter.dependenceValue}
+                            variant="label-hidden"
+                            data-set="End"
+                            data-type={filter.fieldType}
+                            data-id={filter.fieldApiName} 
+                            type="month" 
+                            onchange={handleChange} 
+                            onblur={handleBlurValue}
+                            >
+                    </lightning-input>
+                    </div>
+                </div>
+            </template>    
+            <!--CheckBox-->
+            <template lwc:if={filter.isCheckBox}>
+                <div key={filter.id} class="field-wrap">
+                    <p class="label">
+                        <abbr lwc:if={filter.isRequired} class="slds-required" title="required">* </abbr>
+                        {filter.fieldLabel}
+                    </p>
+                    <div class="input-wrap">
+                        <lightning-input 
+                            data-id={filter.fieldApiName} 
+                            data-type={filter.fieldType} 
+                            type='checkbox' 
+                            variant="label-hidden" 
+                            disabled={filter.isVisible} 
+                            max-length={filter.maxLength}
+                            onchange={handleChange} >
+                        </lightning-input>
+                    </div>
+                </div>    
+            </template>
+        </template>
+
+    </div>
+    
+</template>

@@ -1,0 +1,134 @@
+/**
+ * @author            : Yeong-Deok Seo
+ * @Description       : 
+ * @last modified on  : 2025-03-26
+ * @last modified by  : yeongdeok.seo@sbtglobal.com
+ * Modifications Log
+ * Ver   Date         Author                        Modification
+ * 1.0   2025-03-26   yeongdeok.seo@sbtglobal.com   Initial Version
+**/
+@isTest
+public with sharing class EmailService_TEST {
+    public EmailService_TEST() {}
+
+    @TestSetup
+    static void makeData(){
+        
+        String profileId = UserInfo.getProfileId();
+
+        Profile profile = [SELECT Id, Name FROM Profile WHERE Id = :profileId];
+
+        User thisUser = [SELECT Id FROM User WHERE Id =: UserInfo.getUserId()];
+
+        User user;
+        System.runAs(thisUser) {
+            user = TestDataFactoryForService.createDNSUser('1800', profile.Name, 'CSDept');
+            insert user;
+        }
+
+        Country__c country = TestDataFactoryForService.createKRCountry();
+        insert country;
+
+        List<OperatingHours> testHours = TestDataFactoryForService.createOperatingHours();
+        insert testHours;
+        System.runAs(user) {
+            List<ServiceTerritory> stList = TestDataFactoryForService.createTerritory();
+            stList[0].WCCode__c = '';
+            stList[0].AvailableServiceResource__c = 0;
+            stList[1].WCCode__c = '1244842';
+            stList[1].AvailableServiceResource__c = 0;
+            insert stList;
+    
+            User testUser = [SELECT Id FROM User WHERE LastName = 'testuser' LIMIT 1];
+    
+            List<ServiceResource> insertSRList = new List<ServiceResource>();
+            ServiceResource sr = TestDataFactoryForService.createResource(stList[1].Id);
+            sr.RelatedRecordId = thisUser.Id;
+            sr.StaffNumber__c = '6527';
+            sr.LastKnownLatitude = 37.557718278300890;
+            sr.LastKnownLongitude = 126.974039677136940;
+            insertSRList.add(sr);
+    
+            ServiceResource sr2 = TestDataFactoryForService.createResource(stList[0].Id);
+            sr2.RelatedRecordId = testUser.Id;
+            sr2.StaffNumber__c = '6482';
+            sr2.LastKnownLatitude = 37.557718278300890;
+            sr2.LastKnownLongitude = 126.974039677136940;
+            sr2.CurrentStatus__c = 'Work';
+            insertSRList.add(sr2);
+            insert insertSRList;
+    
+            List<Account> insertAccountList = new List<Account>();
+            Account dealerAcc = TestDataFactoryForService.createAccount('Dealer', 'Test Dealer', country);
+            dealerAcc.CustomerCode__c = '1311191';
+            insertAccountList.add(dealerAcc);
+            Account shipToAcc = TestDataFactoryForService.createAccount('ShipToParty', 'Test Account', country);
+            shipToAcc.CustomerCode__c = '1237758';
+            insertAccountList.add(shipToAcc);
+            insert insertAccountList;
+    
+            Asset testAsset = TestDataFactoryForService.createAsset(shipToAcc.Id);
+            testAsset.Name           = 'MH0015-000307';
+            testAsset.SerialNumber   = 'MH0015-000307';
+            testAsset.ConstrYrMth__c = '2025/03';
+            insert testAsset;
+    
+            Contact con = TestDataFactoryForService.createContact('CSCustomer', shipToAcc.Id);
+            insert con;
+    
+            List<FailureArea_Major__c > majorList = TestDataFactoryForService.createFailureAreaMajor();
+            insert majorList;
+            List<FailureAreaMiddle__c > middleList = TestDataFactoryForService.createFailureAreaMiddle();
+            insert middleList;
+            List<FailurePhenomenon__c > phenomenonList = TestDataFactoryForService.createFailurePhenomenon();
+            insert phenomenonList;
+    
+            Case technicalTicket = TestDataFactoryForService.createCase('Ticket_Domestic', shipToAcc.Id, testAsset.Id, con.Id, 'Technical inquiry', 'Failure receipt');
+            technicalTicket.RepairRequestDateTime__c = Datetime.now();
+            insert technicalTicket;
+
+            EmailMessage em = new EmailMessage();
+            em.Subject = 'Test Subject';
+            em.TextBody = 'Test TextBody';
+            em.HtmlBody = 'Test HtmlBody';
+            em.ParentId = technicalTicket.Id;
+
+            TriggerHandler.bypass('AccountTriggerHandler');
+            insert em;
+            TriggerHandler.clearBypass('AccountTriggerHandler');
+        }
+    }
+
+    @isTest
+    static void emailServiceTest() {
+
+        Case ticket = [SELECT Id FROM Case LIMIT 1];
+
+        String threadString = EmailMessages.getFormattedThreadingToken(ticket.Id);
+
+        Messaging.InboundEmail email = new Messaging.InboundEmail();
+        email.subject = 'Test Case for Email Service';
+        email.plainTextBody = 'This is a test email for handling inbound email.\n' + threadString;
+        email.htmlBody = '<p>This is a test email for handling inbound email.</p><br>' + threadString;
+        email.fromAddress = 'test@example.com';
+        email.fromName = 'Test Sender';
+        email.toAddresses = new String[] {'test@example.com'};
+        email.ccAddresses = new String[] {'cc@example.com'};
+
+        Messaging.InboundEmail.BinaryAttachment attachment = new Messaging.InboundEmail.BinaryAttachment();
+        attachment.fileName = 'testAttachment.txt';
+        attachment.body = Blob.valueOf('This is a test attachment.');
+        email.binaryAttachments = new List<Messaging.InboundEmail.BinaryAttachment>{attachment};
+
+        List<Messaging.InboundEmail.Header> headers = new List<Messaging.InboundEmail.Header>();
+        Messaging.InboundEmail.Header header = new Messaging.InboundEmail.Header();
+        header.name = 'thread-index';
+        header.value = '1vQy4BQh0FPWl8b8nAaA6SY1pe1ZzEi6JpNzU1FWkdk=';
+        headers.add(header);
+        
+        email.headers = headers;
+
+        EmailService service = new EmailService();
+        Messaging.InboundEmailResult result = service.handleInboundEmail(email, null);
+    }
+}

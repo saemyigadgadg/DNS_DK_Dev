@@ -1,0 +1,28 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 11-13-2024
+  @last modified by  : Hyerin Ro
+-->
+<template>
+    <!-- 알림발송 버튼 -->
+    <!-- <lightning-button label="알림발송" onclick={handleButtonClick}></lightning-button> -->
+
+    <!-- 확인/취소 모달 창 -->
+    <div class="total-wrap">
+        <template if:true={isModalOpen}>
+            <lightning-modal-header>
+                <div class="slds-text-heading_medium">공지사항 발송</div>
+            </lightning-modal-header>
+            <lightning-modal-body>
+                <div class="body">
+                    <p>서버스요원에게 알림을 보내시겠습니까?</p>
+                </div>
+            </lightning-modal-body>
+            <lightning-modal-footer>
+                <lightning-button variant="neutral" label="취소" onclick={handleCloseModal}></lightning-button>
+                <lightning-button variant="brand" label="확인" onclick={handleSendNoti}></lightning-button>
+            </lightning-modal-footer>
+        </template>
+    </div>
+</template>

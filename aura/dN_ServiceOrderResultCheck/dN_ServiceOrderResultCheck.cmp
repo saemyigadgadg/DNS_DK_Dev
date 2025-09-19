@@ -1,0 +1,37 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 03-14-2025
+  @last modified by  : Chungwoo Lee
+-->
+<aura:component implements="force:lightningQuickAction,force:hasRecordId" access="global" controller="DN_PortalServiceReportController">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isOpen" type="Boolean" default="true" />
+    <aura:attribute name="orderNumber" type="String" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_ServiceOrderResultCheck) {
+            max-width: calc(100vw - 7rem);
+            width: 80rem;
+            min-width: 70%;
+            padding-top: 4rem;
+            padding-bottom: 3rem;
+        }
+        .slds-modal__content:has(.cDN_ServiceOrderResultCheck) {
+            height: auto !important;
+            max-height: unset !important;
+            padding: 0;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_ServiceOrderResultCheck)  {
+            padding: 0;
+        }
+    </aura:html>
+
+    <aura:handler name="init" value="{!this}" action="{!c.myAction}" />
+
+    <aura:if isTrue="{!v.isOpen}">
+        <div class="modal-body slds-modal__content slds-p-around_medium">
+            <c:DN_serviceWrapper recordId="{!v.recordId}" orderNumber="{!v.orderNumber}" isCRMSearch="true"/>
+        </div>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,243 @@
+.THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+    min-height: calc(100vh - 16rem);
+}
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card Header */
+
+.THIS .card-header {
+    margin-bottom: 1rem;
+}
+
+.THIS .card-header h2 {
+    font-weight: 700;
+    font-size: 15px;
+    color: #0176D3;
+}
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.THIS .card-01 .field-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.THIS .card-01 .field-wrap p {
+    width: 5rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+
+/* Card 02 */
+.THIS .card-02 .table-wrap {
+    overflow: auto;
+}
+
+.THIS .card-02 .row-check {
+    color: #5c5c5c;
+    margin-top: 0.5rem;
+}
+
+/* Table Design */
+
+.THIS .body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table thead tr:nth-child(2) th:first-child {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .body table .slds-input[readonly] {
+    border: none;
+}
+
+/* SLDS Table datepicker */
+
+.THIS .body .slds-datepicker__month td{
+    border: none;
+    background-color: #fff;
+    padding: .25rem;
+    font-size: .75rem;
+}
+.THIS .body .slds-datepicker__month th{
+    padding: .5rem;
+    font-weight: 400;
+    background-color: #fff;
+    border: none;
+}
+.THIS .body .slds-datepicker__month tr{
+    border-bottom: none;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    width: 12rem;
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+    white-space: nowrap;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+}
+
+.THIS .card-01 .field-wrap .slds-form-element__help {
+    display: none;
+}
+
+/* Modal */
+
+.THIS .slds-modal__container {
+    max-width: 36rem !important;
+}
+
+.THIS .slds-modal__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .slds-modal__content .icon-wrap {
+    border: 3px solid #066afe;
+    width: fit-content;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.THIS .slds-modal__content .icon-wrap .slds-icon {
+    fill: #066afe !important;
+}
+
+.THIS .slds-modal__content .textarea {
+    width: 100%;
+    padding: 0.5rem;
+}
+
+@media all and (max-width:800px) {
+    .THIS .body .card-01 {
+        flex-direction: column;
+    }
+}

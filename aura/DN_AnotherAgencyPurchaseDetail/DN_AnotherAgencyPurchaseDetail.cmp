@@ -1,0 +1,212 @@
+<!--
+  @author            : Hyunwook JIN
+  @Description       : 
+  @last modified on  : 01-10-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   01-07-2025   Hyunwook JIN   			         최초작성
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="타 대리점 구매 상세"
+    controller="DN_CreateAnotherAgencyPurchase"
+    extends="c:DN_Helper">
+
+  <!-- attribute -->
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="excelName" type="String" />
+  <aura:attribute name="partsList" type="List" default="[]" />
+  <aura:attribute name="isReadOnly" type="Boolean" default="true" />
+
+  <!-- Navigation -->
+  <lightning:navigation aura:id="navService"/>
+
+  <!--handler-->
+  <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+  <!-- <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" /> -->
+  <div>
+    <div class="detailPage">
+      <div class="card-02 top-card">
+        <div class="card-header">
+          <div class="title">
+            <lightning:icon iconName='standard:lead_list' alternativeText='lead_list' size='small' title='lead_list'/>
+            <h2>주문 내역 </h2>
+          </div>
+
+          <div class="button-wrap">
+            <lightning:buttonGroup>
+                <lightning:button name="search" label="엑셀" onclick="{!c.downloadExcel}" />
+                <aura:if isTrue="{!!v.isReadOnly}">
+                  <lightning:button name="search" label="변경요청" onclick="{!c.updateRequest}" />
+                  <lightning:button name="search" label="삭제요청" onclick="{!c.deleteRequest}" />
+                </aura:if>
+                <!--  -->
+            </lightning:buttonGroup>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <!-- Fixed : Left -->
+          <div class="table-01 left-table" aura:id="leftTableDiv">
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="1%" />
+                <col width="25%" />
+                <col width="75%" />
+              </colgroup>
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th>
+                    <div>
+                      <lightning:input type="checkbox" variant="label-hidden" onchange="{!c.selectAll}" />
+                    </div>
+                  </th>
+                  <th>
+                    <div>항목</div>
+                  </th>
+                  <th>
+                    <div>주문품번</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.partsList}" var="parts" indexVar="k">
+                  <tr class="slds-hint-parent">
+                    <td data-label="checkbox" class="center">
+                      <div title="checkbox">
+                        <lightning:input type="checkbox" checked="{!parts.isSelected}" variant="label-hidden" disabled="{!parts.isDisabledChange}" />
+                      </div>
+                    </td>
+                    <td data-label="항목" class="center">
+                      {!parts.itemSeq}
+                    </td>
+                    <td data-label="주문품번" class="center">
+                      {!parts.replacingPartName}
+                    </td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+          <!-- Scrollable : Right -->
+          <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="12%" />
+                <col width="3%" />
+                <col width="2%" />
+                <col width="3%" />
+                <col width="12%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="6%" />
+                <col width="8%" />
+                <col width="12%" />
+                <col width="12%" />
+                <col width="6%" />
+                <col width="8%" />
+              </colgroup>
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th>
+                    <div>품명</div>
+                  </th>
+                  <th>
+                    <div>수량(A)</div>
+                  </th>
+                  <th>
+                    <div>단위</div>
+                  </th>
+                  <th>
+                    <div>통화</div>
+                  </th>
+                  <th>
+                    <div>고객판매가</div>
+                  </th>
+                  <th>
+                    <div>할인판매가</div>
+                  </th>
+                  <th>
+                    <div>할인판매금액</div>
+                  </th>
+                  <th>
+                    <div>출고수량</div>
+                  </th>
+                  <th>
+                    <div>미결수량</div>
+                  </th>
+                  <th>
+                    <div>변경요청수량(B)</div>
+                  </th>
+                  <th>
+                    <div>최종요청수량(A+B)</div>
+                  </th>
+                  <th>
+                    <div>대리점재고</div>
+                  </th>
+                  <th>
+                    <div>상태</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.partsList}" var="parts" indexVar="k">
+                  <tr class="slds-hint-parent">
+                    <td data-label="품명">
+                      {!parts.partDetails}
+                    </td>
+                    <td data-label="수량(A)" class="center">
+                      <lightning:formattedNumber value="{!parts.quantity}" />
+                    </td>
+                    <td data-label="단위" class="center">
+                      {!parts.unit}
+                    </td>
+                    <td data-label="통화" class="center">
+                      {!parts.currencyCode}
+                    </td>
+                    <td data-label="고객판매가" class="right">
+                      <!-- <lightning:input type="number" aura:id="" name="customerPrice" variant="label-hidden" readonly="true" value="{!parts.customerPrice}" /> -->
+                      <lightning:formattedNumber value="{!parts.customerPrice}" />
+                    </td>
+                    <td data-label="할인판매가" class="right">
+                      <!-- <lightning:input type="number" aura:id="" name="discountPrice" variant="label-hidden" readonly="true" value="{!parts.discountPrice}" /> -->
+                      <lightning:formattedNumber value="{!parts.discountPrice}" />
+                    </td>
+                    <td data-label="할인판매금액" class="right">
+                      <!-- <lightning:input type="number" aura:id="" name="discountAmount" variant="label-hidden" readonly="true" value="{!parts.discountAmount}" /> -->
+                      <lightning:formattedNumber value="{!parts.discountAmount}" />
+                    </td>
+                    <td data-label="출고수량" class="right">
+                      <!-- <lightning:input type="number" aura:id="" name="giQuantity" variant="label-hidden" readonly="true" value="{!parts.giQuantity}" /> -->
+                      <lightning:formattedNumber value="{!parts.giQuantity}" />
+                    </td>
+                    <td data-label="미결수량" class="right">
+                      {!IF(parts.giQuantity==0, 0,parts.giQuantity - parts.quantity)}
+                    </td>
+                    <td data-label="변경요청수량(B)" class="right">
+                      <lightning:input type="number" aura:id="" name="changeQuantity" variant="label-hidden" disabled="{!parts.isDisabledChange}" value="{!parts.changeQuantity}" />
+                    </td>
+                    <td data-label="최종요청수량(A+B)" class="right">
+                      {!(parts.quantity*1 +parts.changeQuantity*1)}
+                    </td>
+                    <td data-label="대리점재고" class="right">
+                      <lightning:formattedNumber value="{!parts.currentStockQuantity}" />
+                    </td>
+                    <td data-label="상태">
+                      <aura:if isTrue="{!parts.giQuantity > 0}"> 
+                        {!parts.deliveryStatus}
+                      </aura:if>
+                      <aura:if isTrue="{!parts.giQuantity == 0}">
+                        {!parts.statusLabel}
+                      </aura:if>
+                    </td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aura:component>

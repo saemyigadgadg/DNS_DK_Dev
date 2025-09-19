@@ -1,0 +1,300 @@
+<!--
+  @description       : 
+  @author            : deokjun.kim@sbtglobal.com
+  @group             : 
+  @last modified on  : 04-25-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   06-27-2024   deokjun.kim@sbtglobal.com   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+                access="global"
+                controller="DN_QuoteLineItemsController">
+
+    <aura:attribute name="headerName" type="String" default="{!$Label.c.DN_M_QuoteLIneItem}"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    <aura:attribute name="quoteLineItemList" type="List" default="[]"/>
+    <aura:attribute name="columns" type="List" default="[]"/>
+    <aura:attribute name="sortDirection" type="String" default="desc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="desc" />
+    <aura:attribute name="sortedBy" type="String" />
+    <aura:attribute name="size" type="String" default=""/>
+    <aura:attribute name="review" type="String" default=""/>
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="editRow" type="List"/>
+    <aura:attribute name="openModal" type="Boolean" default="false"/>
+    <aura:attribute name="openPriceModal" type="Boolean" default="false"/>
+    <aura:attribute name="openSQModal" type="Boolean" default="false"/>
+    <aura:attribute name="openEditModal" type="Boolean" default="false"/>
+    <aura:attribute name="openEditMultiModal" type="Boolean" default="false"/>
+    <aura:attribute name="openDelete" type="Boolean" default="false"/>
+    <aura:attribute name="openDeleteMulti" type="Boolean" default="false"/>
+    <aura:attribute name="isFinal" type="Boolean" default="false"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="cancelReason" type="String" />
+    <aura:attribute name="recentlyVersion" type="String" />
+    <aura:attribute name="rowId" type="String" />
+    <aura:attribute name="recordIds" type="List" default="[]" />
+    <aura:attribute name="colorPalette" type="List" default="['red', 'green', 'blue']" />
+    <aura:attribute name="draftValues" type="List" default="[]"/>
+    <aura:attribute name="recordType" type="String" default=""/>
+    <aura:attribute name="ERPQuotation" type="String" default=""/>
+    <aura:attribute name="version" type="Boolean" default="true" />
+    <aura:attribute name="portalGlobal" type="Boolean" default="false" />
+
+    <aura:attribute name="quotePrice" type="String" />
+    <aura:attribute name="role" type="String" />
+    <aura:attribute name="selectAccessories" type="String" />
+    <aura:attribute name="selectOptions" type="String" />
+    <aura:attribute name="sqReview" type="String" />
+    <aura:attribute name="cancel" type="String" />
+    <aura:attribute name="delete" type="String" />
+    <aura:attribute name="reason" type="String" />
+    <aura:attribute name="reasonPlace" type="String" />
+    <aura:attribute name="title" type="String" />
+    <aura:attribute name="subtitle" type="String" />
+
+    <aura:attribute name="orderCnt" type="Boolean" default="true"/>
+
+    <aura:attribute name="dataLoad" type="Boolean" default="false" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />     
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+    <aura:handler event="force:refreshView" action="{!c.doinit}" />
+
+    <aura:if isTrue="{!not(v.recentlyVersion)}">
+            <aura:html tag="style">
+                .comm-content-header:has(.cDN_QuoteLineItems .button-hidden) .
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:not(:first-of-type),
+                .slds-wrap:has(.cDN_QuoteLineItems .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:not(:first-of-type) {
+                display: none;
+                <!-- border: 2px solid red; -->
+                }
+
+                .comm-content-header:has(.cDN_QuoteLineItems .button-hidden) 
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:first-of-type .slds-button,
+                .slds-wrap:has(.cDN_QuoteLineItems .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:first-of-type .slds-button {
+                border-radius: 0.25rem;
+                }
+            </aura:html>
+        </aura:if>
+
+        <!-- Dealer Portal - WangDealer -->
+        <aura:if isTrue="{!v.portalGlobal}">
+            <aura:html tag="style">
+                .slds-wrap:has(.cDN_QuoteLineItems .button-hidden) 
+                .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:last-of-type,
+                .comm-content-header:has(.cDN_QuoteLineItems .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-last-of-type(2) {
+                <!-- border: 1px solid red; -->
+                display: none;
+                }
+
+                .slds-wrap:has(.cDN_QuoteLineItems .button-hidden) 		
+	                .primaryFieldRow		
+	                .actionsContainer .slds-button-group-list li:last-of-type,		
+	                .comm-content-header:has(.cDN_QuoteLineItems .button-hidden) .slds-page-header_record-home		
+	                .primaryFieldRow		
+	                .actionsContainer .slds-button-group-list li:nth-last-of-type(1) {		
+	                <!-- border: 1px solid red; -->		
+	                display: none;		
+                }
+
+                .comm-content-header:has(.cDN_QuoteLineItems .button-hidden) 
+                .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-last-of-type(3) {
+                border-radius: 0 0.25rem 0.25rem 0;
+                overflow: hidden;
+                }
+            </aura:html>
+        </aura:if>
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:html tag="style">
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_QuoteLineItems){
+          overflow: hidden;
+        }
+      </aura:html>
+    <lightning:card >
+        <div>
+            <div class="button-hidden" style="display: none;"></div>
+        </div>
+        <div class="table-title">
+            <lightning:icon iconName='standard:quotes' alternativeText='Quote Line Items' size='Small' title='Quote Line Items'>
+            </lightning:icon>
+            <div class="slds-media__body slds-align-middle">
+                <h2 class="slds-card__header-title">{!v.headerName}{!v.size}{!v.review}</h2>
+            </div>
+        </div>
+        <aura:set attribute="actions">
+            <div class="slds-align-top slds-p-bottom--xx-small">
+                <!-- <aura:if isTrue="{!v.recentlyVersion}"> -->
+                    <lightning:buttonGroup>
+                        <aura:if isTrue="{!v.recentlyVersion}">
+                            <aura:if isTrue="{!not(v.isFinal)}">
+                                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_EditButton}" onclick="{! c.handleMultiEdit }"/>
+                            </aura:if>
+                            <aura:if isTrue="{!not(v.isFinal)}">
+                                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Delete}" onclick="{! c.handleMultiDelete }"/>
+                            </aura:if>
+                            <aura:if isTrue="{!v.orderCnt}">
+                                <aura:if isTrue="{!not(v.isFinal)}">
+                                    <lightning:button variant="neutral" label="{!v.selectOptions}" onclick="{! c.handleSelectOptionsBtn}"/>
+                                </aura:if>
+                            </aura:if>
+                            <!--<aura:if isTrue="{! v.role != 'Worker' }">-->
+                                <aura:if isTrue="{!not(v.isFinal)}">
+                                    <lightning:button variant="neutral" label="{!v.sqReview}" onclick="{! c.handleClickRegistration }"/>
+                                </aura:if>
+                            <!--</aura:if>-->
+                            <aura:if isTrue="{!v.orderCnt}">
+                                <aura:if isTrue="{!not(v.isFinal)}">
+                                    <lightning:button variant="neutral" label="{!v.selectAccessories}" onclick="{!c.handleAccessoryBtn}"/>
+                                </aura:if>
+                            </aura:if>
+                            <aura:if isTrue="{! v.role != 'Worker' }"> <!-- Portal유저인데 role이 Worker면 quotePrice보이면안됨-->
+                                <aura:if isTrue="{!not(v.isFinal)}">
+                                    <lightning:button variant="neutral" label="{!v.quotePrice}" onclick="{!c.handlePriceModalBtn}"/>
+                                </aura:if>
+                            </aura:if>
+                            <aura:if isTrue="{! v.role != 'Worker' }">
+                                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_CreateOrder}" onclick="{! c.handleCreateOrder }"/>
+                            </aura:if>
+                            
+                        </aura:if>
+                    </lightning:buttonGroup>
+                <!-- </aura:if> -->
+            </div>
+            
+                <!-- <lightning:buttonIcon iconName="utility:refresh" alternativeText="Refresh" title="Refresh"
+                    onclick="{!c.refresh}" class="refresh-btn" /> -->
+        </aura:set>
+        <div class="{!v.quoteLineItemList.length > 3 ? 'outerScroller setHeight' : 'outerScroller'}">
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner alternativeText="Loading" variant="brand"/>
+            </aura:if>
+                <lightning:datatable    
+                    id="quoteLineItems"
+                    aura:id="quoteLineItems"
+                    keyField="Id"
+                    columns="{! v.columns }"
+                    data="{! v.quoteLineItemList }"
+                    hideCheckboxColumn="false"
+                    onrowselection="{!c.handleSelectRow}"  
+                    onsort="{!c.handleSort}"
+                    sortedBy="{!v.sortedBy}"
+                    defaultSortDirection="{!v.defaultSortDirection}"
+                    sortedDirection="{!v.sortDirection}"     
+                    draftValues="{! v.draftValues }"   
+                    onsave="{! c.handleSaveEdition }"   
+                    onrowaction="{! c.handleEdit}"  
+                />
+        </div>
+        <div class="slds-card__footer">
+            <span class="view-all-label" style="font-size:0.75rem;"></span>
+        </div>
+    </lightning:card>
+
+    <!-- <aura:if isTrue="{!v.openModal}">
+        <c:DN_SelectOptionsModal recordIds="{! v.recordIds}" recordId="{!v.recordId}" lineItemList="{!v.selectedRows}"></c:DN_SelectOptionsModal>
+    </aura:if> -->
+    <aura:if isTrue="{!v.openModal}">
+        <c:DN_SelectOptions recordIds="{! v.recordIds}" recordId="{!v.recordId}" lineItemList="{!v.selectedRows}"></c:DN_SelectOptions>
+    </aura:if>
+    <aura:if isTrue="{! v.openSQModal }">
+        <c:DN_SQRegistrationModal recordId="{! v.recordId }" lineItemList="{!v.selectedRows}"></c:DN_SQRegistrationModal>
+    </aura:if>
+    <aura:if isTrue="{!v.openEditModal}">
+        <c:DN_EditQuoteLineItems recordId="{!v.recordId}" selectedRows="{!v.editRow}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.openEditMultiModal}">
+        <c:DN_EditQuoteLineItemsMulti recordId="{!v.recordId}" lineItemList="{!v.selectedRows}"/>
+    </aura:if>
+    <aura:if isTrue="{!v.openPriceModal}">
+        <c:DN_QuotePriceModal recordIds="{! v.recordIds}" recordId="{!v.recordId}" lineItemList="{!v.selectedRows}"></c:DN_QuotePriceModal>
+    </aura:if>
+
+    <aura:if isTrue="{!v.openDelete}">
+        <div class="slds-backdrop slds-backdrop_open"></div> <!-- 배경 어둡게 -->
+        <div class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- 모달 헤더 -->
+                <div class="example">
+                    <aura:if isTrue="{!not(v.dataLoad)}">
+                        <lightning:spinner alternativeText="Loading" size="large" />
+                    </aura:if>
+                    <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                        <h2 class="slds-text-heading_medium slds-hyphenate">
+                            {!v.title}
+                        </h2>
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="닫기" 
+                                onclick="{! c.handleClickClose }">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+                        </button>
+                    </div>
+                <!-- 모달 푸터 -->
+                    <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                        <!-- 취소 버튼 -->
+                        <lightning:button 
+                            title="취소" 
+                            onclick="{! c.handleClickClose }" 
+                            label="{!v.cancel}" 
+                            variant="neutral" />
+                        <!-- 삭제 버튼 -->
+                        <lightning:button 
+                            title="삭제" 
+                            label="{!v.delete}" 
+                            variant="destructive" 
+                            onclick="{! c.quoteLineDelete}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.openDeleteMulti}">
+        <div class="slds-backdrop slds-backdrop_open"></div> <!-- 배경 어둡게 -->
+        <div class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- 모달 헤더 -->
+                <div class="example">
+                    <aura:if isTrue="{!not(v.dataLoad)}">
+                        <lightning:spinner alternativeText="Loading" size="large" />
+                    </aura:if>
+                    <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                        <h2 class="slds-text-heading_medium slds-hyphenate">
+                            {!v.title}
+                        </h2>
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="닫기" 
+                                onclick="{! c.handleClickClose }">
+                            <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+                        </button>
+                    </div>
+                <!-- 모달 푸터 -->
+                    <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                        <!-- 취소 버튼 -->
+                        <lightning:button 
+                            title="취소" 
+                            onclick="{! c.handleClickClose }" 
+                            label="{!v.cancel}" 
+                            variant="neutral" />
+                        <!-- 삭제 버튼 -->
+                        <lightning:button 
+                            title="삭제" 
+                            label="{!v.delete}" 
+                            variant="destructive" 
+                            onclick="{! c.quoteLineDeleteMulti}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+</aura:component>

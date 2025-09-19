@@ -1,0 +1,49 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-02-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-02-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:hasRecordId,force:hasSObjectName,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable"
+                description="견적서 다운로드"
+                extends="c:DN_Helper"
+                controller="DN_DealerPortalQuoteCreateController">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="progressValue" type="String" default="0" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="change" value="{!v.isExcelJsLoading}" action="{!c.excelLoadingComplete}" />
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_DealerPortalQuotationDownload) {
+            width: 100% !important;
+        }
+        .slds-modal__content:has(.cDN_DealerPortalQuotationDownload) {
+            height: fit-content !important;
+            padding: 0;
+        }
+        .cuf-content:has(.cDN_DealerPortalQuotationDownload) {
+            padding: 0 !important;
+        }
+    </aura:html>
+    <div class="slds-modal__container">
+        <!-- modal header -->
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">다운로드 중</h2>
+        </header>
+    
+        <!-- Modal Content -->
+        <div class="modal-body slds-modal__content">
+            <div>
+                <lightning:progressBar value="{!v.progressValue}" size="large" />
+            </div>
+        </div>
+    </div>
+    
+    
+</aura:component>

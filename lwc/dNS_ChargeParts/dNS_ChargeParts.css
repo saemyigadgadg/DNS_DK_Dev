@@ -1,0 +1,370 @@
+.table-wrap {
+    width: 100%;
+}
+
+.container {
+    height: 100%;
+}
+
+.textLayer {
+    border: 5px solid red;
+}
+
+/* 수량 입력 필드 컨테이너 */
+.amount-container {
+    width: 100%;
+    height: 32px;
+    padding: 0 2px;
+    display: flex;
+    align-items: center;
+}
+
+/* 수량 입력 필드 스타일 */
+.amount-input {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.amount-input input {
+    text-align: right !important;
+    width: 100% !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 4px !important;
+    font-size: 12px !important;
+}
+
+/* 수량 셀 스타일 */
+td[data-label="수 량"] {
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+/* 읽기 전용 입력 필드 스타일 */
+.amount-input[readonly] input {
+    background-color: #f3f3f3 !important;
+}
+
+.slds-button-group .slds-button {
+    margin: 0;
+}
+
+.slds-no-flex {
+    display: flex;
+    align-items: center;
+}
+
+/* 부품재고 전체 대리점 조회 모달 */
+
+.serviceModal .slds-modal__container {
+    width: 36rem !important;
+    max-width: calc(100vw - 6rem) !important;
+    margin: 0 auto;
+}
+
+.serviceModal .slds-modal__content {
+    max-height: calc(100vh - 14rem) !important;
+    height: 28rem !important;
+}
+
+.serviceModal .modal-body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.serviceModal .modal-body .top-card {
+    background-color: #fff;
+    border-bottom: 1px solid #C9C9C9;
+}
+
+.serviceModal .card-01 {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+}
+
+.serviceModal .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.serviceModal .card-01 .field-wrap p {
+    text-wrap: nowrap;
+}
+
+.serviceModal .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.serviceModal .card-02 {
+    flex: 1;
+    padding: 0;
+    overflow: auto;
+}
+
+.serviceModal .card-02 table {
+    border-collapse: separate;
+}
+
+
+
+/* 부품별 재고 현황 조회 모달 */
+
+.stockModal .slds-modal__container {
+    width: 60rem !important;
+    max-width: calc(100vw - 6rem) !important;
+    margin: 0 auto;
+}
+
+.stockModal .slds-modal__content {
+    max-height: calc(100vh - 14rem) !important;
+    height: 40rem !important;
+    padding: 1rem !important;
+}
+
+.stockModal .search-section {
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+}
+
+.stockModal .card-01 {
+    background-color: #fff;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stockModal .card-01 .slds-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.75rem !important;
+    margin-bottom: 0.75rem;
+}
+
+.stockModal .card-01 .slds-grid:last-child {
+    margin-bottom: 0;
+}
+
+.stockModal .card-01 .slds-form-element {
+    padding: 0 0.5rem;
+}
+
+.stockModal .card-01 .slds-form-element__label {
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+.stockModal .card-01 .slds-form-element__static {
+    min-height: 1.75rem;
+    padding: 0.125rem 0;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 0.875rem;
+}
+
+.stockModal .card-02 {
+    background-color: #fff;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+
+.stockModal .card-02 .table-section {
+    margin-top: 0.75rem;
+}
+
+.stockModal lightning-datatable {
+    /* border: 1px solid #d8dde6; */
+    border-radius: 0.25rem;
+}
+
+
+.table-wrap {
+    position: relative;
+    overflow: auto !important;
+    min-height: 26rem;
+    max-height: 28rem;
+}
+
+.table-wrap table {
+    background-color: white;
+    table-layout: fixed;
+    border-collapse: separate;
+}
+
+.slds-table thead th {
+    background-color: #f3f3f3;
+}
+
+
+/* Table Comobox */
+
+.THIS .card-02 table tr:nth-of-type(1) td .slds-dropdown-trigger .slds-dropdown,
+.THIS .card-02 table tr:nth-of-type(2) td .slds-dropdown-trigger .slds-dropdown,
+.THIS .card-02 table tr:nth-of-type(3) td .slds-dropdown-trigger .slds-dropdown,
+.THIS .card-02 table tr:nth-of-type(4) td .slds-dropdown-trigger .slds-dropdown{
+    top: 100% !important;
+    bottom: unset !important;
+}
+
+.THIS .card-02 table tr:nth-last-of-type(1) td .slds-dropdown-trigger .slds-dropdown,
+.THIS .card-02 table tr:nth-last-of-type(2) td .slds-dropdown-trigger .slds-dropdown,
+.THIS .card-02 table tr:nth-last-of-type(3) td .slds-dropdown-trigger .slds-dropdown,
+.THIS .card-02 table tr:nth-last-of-type(4) td .slds-dropdown-trigger .slds-dropdown{
+    top: unset;
+    bottom: 100%;
+}
+
+.slds-table td {
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.slds-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.slds-table th {
+    padding: 0.5rem;
+    background-color: #f3f3f3;
+    font-weight: bold;
+}
+
+.slds-input {
+    min-height: 32px;
+}
+
+.slds-combobox {
+    min-height: 32px;
+}
+
+lightning-input.slds-checkbox {
+    margin-bottom: 0;
+}
+
+.slds-button_icon {
+    color: #706e6b;
+}
+
+.slds-hint-parent:hover {
+    background-color: #f3f3f3;
+}
+
+.slds-table td lightning-input,
+.slds-table td lightning-combobox {
+    margin-bottom: 0;
+}
+
+.slds-table td lightning-input .slds-input,
+.slds-table td lightning-combobox .slds-combobox__input {
+    height: 32px;
+    padding: 0 0.5rem;
+}
+
+.slds-card__body {
+    margin-top: 0.75rem;
+}
+
+/* 체크박스 열 너비 고정 */
+.slds-table td:first-child,
+.slds-table th:first-child {
+    width: 40px;
+    min-width: 40px;
+}
+
+/* 삭제 버튼 열 너비 고정 */
+.slds-table td:nth-child(2),
+.slds-table th:nth-child(2) {
+    width: 40px;
+    min-width: 40px;
+}
+
+/* 콤보박스 스타일 개선 */
+.slds-combobox_container {
+    max-width: 100%;
+}
+
+.slds-combobox {
+    min-height: 32px;
+    max-width: 100%;
+}
+
+.slds-combobox__input {
+    max-width: 100%;
+}
+
+.slds-listbox {
+    max-width: 100%;
+}
+
+/* 테이블 셀 내부 콤보박스 */
+.slds-table td .slds-combobox_container {
+    width: 100%;
+}
+
+.slds-table td lightning-combobox {
+    width: 100%;
+}
+
+.slds-table td .slds-combobox__input {
+    min-height: 32px;
+    padding: 0 0.5rem;
+    width: 100%;
+}
+
+/* 드롭다운 메뉴가 테이블을 벗어나지 않도록 */
+.slds-table td {
+    position: relative;
+}
+
+.slds-table td .slds-listbox {
+    max-width: 250px;
+    position: absolute;
+    z-index: 7000;
+}
+
+/* 테이블 스크롤 시에도 드롭다운이 보이도록 */
+
+/* .table-wrap {
+    overflow: visible;
+    position: relative;
+}
+
+.slds-table {
+    position: relative;
+} */
+
+
+/* 스핀들 모달 스타일 */
+
+.spindleModal .slds-modal__container {
+    width: 80rem !important;
+    max-width: calc(100vw - 6rem) !important;
+    margin: 0 auto;
+}
+
+.spindleModal .slds-modal__content {
+    max-height: calc(100vh - 14rem) !important;
+    height: 40rem !important;
+    padding: 1rem !important;
+}
+
+.spindleModal lightning-datatable {
+    height: 100%;
+    overflow: auto;
+}
+
+.spindleModal .slds-table_header-fixed_container {
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+}

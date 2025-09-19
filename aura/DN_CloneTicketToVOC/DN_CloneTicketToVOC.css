@@ -1,0 +1,33 @@
+/* Modal Layout */
+
+.THIS .slds-modal__container {
+    overflow: hidden !important;
+}
+
+.THIS .modalContent{
+    max-height: 65vh !important;
+    padding: 1rem 1.25rem;
+}
+
+/* Modal Body */
+
+.THIS .infoTitle{
+    padding: 0.25rem;
+    padding-left: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.875rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+}
+
+.THIS .fieldContainer {
+    display: flex;
+    justify-content: stretch;
+    padding-top: 0.5rem;
+}
+
+.THIS .fieldContainer .col {
+    padding: 0.5rem 0.75rem;
+    flex: 1;
+}

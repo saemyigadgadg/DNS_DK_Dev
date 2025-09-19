@@ -1,0 +1,277 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-31-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-02-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_StorageBinCreateChangeController"
+  description="재고 위치 등록/수정">
+  <!--Attribute-->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="storageBin" type="Boolean" default="false" />
+  <aura:attribute name="storageBinModal" type="Boolean" default="false" />
+  <aura:attribute name="selectedRow" type="Object" />
+  <aura:attribute name="isPrint" type="Boolean" default="false"/>
+  <aura:attribute name="printDate" type="date" />
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="excelUploadModal" type="Boolean" default="false" /> <!-- whereCondition-->
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="uploadTable" type="List" default="[1,2,3,4,5,6]" />
+  <aura:attribute name="uploadTemplate" type="List" />
+  <aura:attribute name="pageMap" type="Object" />
+
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <!-- 설정모달-->
+  <div aura:id="settingStorageModal"></div>
+
+  <!-- aura Event -->
+  <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+    <!-- 엑셀 업로드 -->
+    <aura:if isTrue="{!v.excelUploadModal}">
+      <div aura:id="excelModal" class="slds-modal slds-fade-in-open excelModal">
+        <div class="slds-modal_large excelModal">
+          <div>
+            <!-- Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">엑셀 업로드</h2>
+              <!-- Close Button -->
+              <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' size='small' title='close'
+                  name="closeModal" onclick="{!c.closeUploadExcel}"></lightning:icon>
+              </button>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium">
+              <c:DN_DealerPortalExcelUploadTemplate aura:id="excelTemplate"
+                buttonLabel="업로드 양식 다운로드"
+                uploadName="StorageBinTemplate"
+              />
+              <p>* Upload file form</p>
+              <p>- Use header information.</p>
+              <lightning:input type="file" label="Upload Excel File" onchange="{!c.uploadExcel}"
+                  accept=".xlsx, .xls" />
+              <!-- <div class="file-input">
+                <lightning:input type="file" label="Upload Excel File" onchange="{!c.uploadExcel}"
+                  accept=".xlsx, .xls" />
+                  <table class="excelTable">
+                    <thead>
+                        <tr>
+                          <th class="excelTd excelTh">1</th>  
+                          <th class="excelTd excelTh">Material</th>
+                            <th class="excelTd excelTh">Storage bin 1</th>
+                            <th class="excelTd excelTh">Storage bin 2</th>
+                            <th class="excelTd excelTh">Storage bin 3</th>
+                            <th class="excelTd excelTh">Storage bin 4</th>
+                            <th class="excelTd excelTh">Storage bin 5</th>
+                            <th class="excelTd excelTh">Storage bin 6</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.uploadTable}" var="upload" indexVar="index">
+                        <tr>
+                          <td class="excelTd">{!upload}</td>
+                          <td class="excelTd"></td>
+                          <td class="excelTd"></td>
+                          <td class="excelTd"></td>
+                          <td class="excelTd"></td>
+                          <td class="excelTd"></td>
+                          <td class="excelTd"></td>
+                          <td class="excelTd"></td>
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                </table>
+                <div class="note">* Max Length 2 Limit (Storage Bin)</div>
+              </div> -->
+
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                onclick="{!c.closeUploadExcel}" />
+            </footer>
+          </div>
+        </div>
+      </div>
+    </aura:if>
+      <!-- Card 02 : 조회테이블-->
+        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table slds-scrollable" >
+          <colgroup>
+            <col width="1%" />
+            <col width="10%" />
+            <col width="30%" />
+            <col width="10%" />
+            <col width="5%" />
+            <col width="7%" />
+            <col width="5%" />
+            <col width="10%" />
+            <col width="10%" />
+            <col width="10%" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">
+                <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }"
+                  variant="label-hidden" />
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">부품번호</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">품명</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">규격</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">재고량</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">최종입고일</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">가용재고</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">구매단가</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">판매단가</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">저장위치</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <aura:iteration items="{!v.recordList}" var="record" indexVar="j">
+              <tr>
+                <td class="center">
+                  <lightning:input type="checkbox" aura:id="checkbox" name="{!j}" onchange="{! c.handleCheckboxChange }"
+                    variant="label-hidden" />
+                </td>
+                <td scope="row">
+                  <div>{!record.partNumber}</div>
+                </td>
+                <td scope="row">
+                  <div>{!record.partName}</div>
+                </td>
+                <td scope="row">
+                  <div>{!record.partSpec}</div>
+                </td>
+                <td scope="row" class="right">
+                  <div>{!record.currentStockQuantity}</div>
+                </td>
+                <td scope="row" class="center">
+                  <div>{!record.lastImportDateTime}</div>
+                </td>
+                <td scope="row" class="right">
+                  <div>{!record.availableQuantity}</div>
+                </td>
+                <td scope="row" class="right">
+                  <div>
+                    <lightning:formattedNumber value="{!record.dispr}" />
+                  </div>
+                </td>
+                <td scope="row" class="right">
+                  <div>
+                    <lightning:formattedNumber value="{!record.price}" />
+                  </div>
+                </td>
+                <td scope="row">
+                  <div>
+                    <lightning:button name="{!j}" label="설정" onclick="{!c.storageBinSetting}" />
+                    <a name="{!j}" data-id="{!record.location}" onclick="{!c.storageBinDetail}">{!record.location}</a>
+                  </div>
+                </td>
+              </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+  
+  <!-- 📌 Modal : 저장위치 상세 -->
+  <aura:if isTrue="{!v.storageBin}">
+    <div class="storageBinModal">
+      <div aura:id="storageBinModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">저장위치</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.storageBinModalCancel}" />
+            </button>
+          </header>
+
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+
+              <div class="field-wrap">
+                <p>저장위치</p>
+                <div class="input-wrap">
+                  <lightning:input class="readonly-input" value="{!v.selectedRow.location}" readonly="true"
+                      variant="label-hidden" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>설명</p>
+                <div class="input-wrap">
+                  <lightning:input class="readonly-input" value="{!v.selectedRow.description}" readonly="true" variant="label-hidden" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>부품번호</p>
+                <aura:iteration items="{!v.selectedRow.partNumber}" var="part" indexVar="j">
+                  <div class="input-wrap">
+                    <lightning:input class="readonly-input" value="{!part}" readonly="true"
+                      variant="label-hidden" />
+                  </div>
+                </aura:iteration>
+                
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+              onclick="{!c.storageBinModalCancel}" />
+          </footer>
+        </div>
+      </div>
+
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+  
+
+</aura:component>

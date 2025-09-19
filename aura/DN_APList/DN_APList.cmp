@@ -1,0 +1,151 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 03-05-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-19   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+	implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+	controller="DN_APController"
+	description="외상매입금 리스트">
+
+	<!-- attribute -->
+	<aura:attribute name="isLoading" type="Boolean" default="false" />
+
+	<!-- 신규 속성 -->
+    <aura:attribute name="startDate"         type="Date"  /> <!--기간(시작)-->
+    <aura:attribute name="endDate"           type="Date"  /> <!--기간(종료)-->	 
+
+	<!-- 예전 속성 -->
+	<aura:attribute name="startDocNum" type="String" />
+	<aura:attribute name="endDocNum" type="String" />
+	<aura:attribute name="searchStartDate" type="date" />
+	<aura:attribute name="searchEndDate" type="date" />
+	<aura:attribute name="resultList" type="List" />
+	<aura:attribute name="excelList" type="List" />
+	<aura:attribute name="WorkCenter" type="Object" />
+
+	<!-- handler -->
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+	<div class="total-wrap">
+		<article class="slds-card">
+
+			<!-- Loading Spinner -->
+			<aura:if isTrue="{! v.isLoading }">
+				<lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+			</aura:if>
+
+			<!-- Header -->
+			<div class="header">
+
+				<div class="title slds-grid">
+					<lightning:icon iconName="standard:expense_report" size="small" alternativeText="Indicates approval" />
+					<h2 class="slds-truncate">외상매입금 리스트</h2>
+				</div>
+
+				<!-- APList 상세 모달 -->
+				<div aura:id="apListPopupModal"></div>
+
+				<div class="button-wrap">
+					<lightning:button name="searchItems" label="검색" iconName="utility:search" iconPosition="left"
+						onclick="{!c.searchResultList}" />
+					<c:DN_ExcelUtilButton excelData="{!v.excelList}" excelName="apList"></c:DN_ExcelUtilButton>
+				</div>
+			</div>
+
+			<!-- Body -->
+			<div class="body">
+
+				<!-- Card 01 : 검색 필터 -->
+				<div class="card-01">
+					<div class="field-wrap">
+						<p>문서번호</p>
+						<div class="input-wrap">
+							<lightning:input type="text" name="startDocNum" variant="label-hidden"
+								value="{!v.startDocNum}" />
+							~
+							<lightning:input type="text" name="endDocNum" variant="label-hidden"
+								value="{!v.endDocNum}" />
+						</div>
+					</div>
+					<div class="field-wrap">
+						<p>판매일자<abbr class="slds-required" title="required">*</abbr></p>
+						<div class="input-wrap">
+							<lightning:input type="date" name="searchStartDate" aura:id="Start" variant="label-hidden"
+								value="{!v.searchStartDate}" />
+							~
+							<lightning:input type="date" name="searchEndDate" aura:id="End" variant="label-hidden"
+								value="{!v.searchEndDate}" />
+						</div>
+					</div>
+				</div>
+
+				<div class="card-02 top-card">
+					<div class="table-wrap">
+						<table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+							<colgroup>
+								<col width="1%" />
+								<col width="10%" />
+								<col width="30%" />
+								<col width="5%" />
+								<col width="10%" />
+								<col width="10%" />
+								<col width="15%" />
+								<col width="5%" />
+								<col width="15%" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>번호</th>
+									<th>Billing No</th>
+									<th>지급조건</th>
+									<th>순서</th>
+									<th>문서일자</th>
+									<th>만기일</th>
+									<th>금액</th>
+									<th>통화</th>
+									<th>미결잔액</th>
+								</tr>
+							</thead>
+							<tbody>
+								<aura:if isTrue="{!v.resultList.length > 0}">
+									<aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+										<tr class="slds-hint-parent">
+											<td class="center">{!i + 1}</td>
+											<td class="center">
+												<a onclick="{!c.openAPListPopupModal}" value="{!result.VBELN}">{!result.VBELN}</a>
+											</td>
+											<td>{!result.VTEXT}</td>
+											<td class="center">{!result.BUZEI}</td>
+											<td class="center">{!result.BLDAT}</td>
+											<td class="center">{!result.FAEDT}</td>
+											<td class="right">
+												{!result.WRBTR}
+											</td>
+											<td class="center">{!result.WAERK}</td>
+											<td class="right">
+												{!result.WRSHB}<!-- <lightning:formattedNumber value="" /> -->
+											</td>
+										</tr>
+									</aura:iteration>
+									<aura:set attribute="else">
+										<tr class="slds-hint-parent">
+											<td colspan="9" style="text-align: center;"> No Data.</td>
+										</tr>
+									</aura:set>
+								</aura:if>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+
+		</article>
+	</div>
+
+</aura:component>

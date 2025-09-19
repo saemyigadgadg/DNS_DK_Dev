@@ -1,0 +1,116 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 2025-06-13
+  @last modified by  : yeongju.yun
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-11-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,force.hasSObjectName"
+                controller="DN_SQController" 
+                description="Edit SQ Review Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="rowDataList"      type="List"     default="[]" />
+    <aura:attribute name="picklistValue"    type="List"     default="[]" />
+    <aura:attribute name="deletedRows"      type="List"     default="[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.editInit}" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <div class="SQSearchModal">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">Split SQ Review</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+
+                    <!-- Aura Layout -->
+                <div class="slds-form slds-align_absolute-center">
+
+                    <div class="section-container">
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered first-table"
+                                aria-label="Example table of Opportunities with vertical borders">
+                                <colgroup>
+                                    <col width="5%" />
+                                    <col width="18%" />
+                                    <col width="77%" />
+                                </colgroup>
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="add" scope="col" style="width: 4%">
+                                            <div class="slds-truncate addBtn" title="">
+                                                <lightning:buttonIcon iconName="utility:add" size="x-small"
+                                                    alternativeText="Add" title="Add"
+                                                    onclick="{!c.handleClickAddButton}" />
+                                            </div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title listPrice" title="Type">{!$Label.c.DNS_ACC_C_TYPE}</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title" title="SQ Title">{!$Label.c.DNS_REVIEW_C_REVIEWTITLE}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.rowDataList}" var="row" indexVar="j">
+                                        <tr class="slds-hint-parent" aura:id="recordFieldRow">
+                                            <td data-label="Delete" class="add">
+                                                <lightning:buttonIcon iconName="utility:dash" alternativeText="Delete" title="Delete" size="x-small" accesskey="{!j}" onclick="{!c.handleClickdeleteButton}" />
+                                            </td>
+                                            <td data-label="Type">
+                                                <lightning:combobox aura:id="type" id="type" value="{!row.type}" options="{! v.picklistValue }" accesskey="{!j}" disabled="{!NOT(row.Id1 == null)}" variant="label-hidden" onchange="{!c.handleTypeChange}"/>
+                                            </td>
+                                            <td data-label="Title">
+                                                <!-- <lightning:input aura:id="sqTitle" id="sqTitle" value="{!row.title}" accesskey="{!j}" variant="label-hidden" disabled="{!NOT(row.Id1 == null)}" required="true" /> -->
+                                                <!-- 20250613 yeongju.yun sq일 때 40자 제한 -->
+                                                <aura:if isTrue="{!row.type == 'SQ'}">
+                                                    <lightning:input 
+                                                        aura:id="sqTitle" 
+                                                        id="sqTitle" 
+                                                        value="{!row.title}" 
+                                                        accesskey="{!j}" 
+                                                        variant="label-hidden" 
+                                                        disabled="{!NOT(row.Id1 == null)}" 
+                                                        required="true" 
+                                                        maxlength="40" 
+                                                        pattern=".{0,40}" 
+                                                        messageWhenPatternMismatch="{!$Label.c.DNS_M_SQMaximum40}"/>
+                                                    <aura:set attribute="else">
+                                                        <lightning:input aura:id="sqTitle" id="sqTitle" value="{!row.title}" accesskey="{!j}" variant="label-hidden" disabled="{!NOT(row.Id1 == null)}" required="true"/>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button title="Cancel" onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_B_Close}" />
+                    <lightning:button title="Apply" onclick="{! c.handleClickApply }" label="{!$Label.c.DNS_B_APPLY}"  variant="Brand" />
+                </div>
+            </div>
+
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+</aura:component>

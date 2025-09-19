@@ -1,0 +1,254 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-04-16
+  @last modified by  : chungwoo.lee@sobetec.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-13-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" description="폐품 미반납 리스트" controller="DN_PortalManageServiceController">
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="returnOptions" type="List" default="[
+        {'label':'전체', 'value' : 'All'},
+        {'label':'신품', 'value' : '1'},
+        {'label':'폐품', 'value' : '2'},
+        {'label':'소모성', 'value' : '3'},
+        {'label':'망실', 'value' : '4'},
+        {'label':'인수증', 'value' : '5'},
+        {'label':'해외부품', 'value' : '6'},
+        {'label':'미반납 대상', 'value' : '7'}
+    ]" />
+    <aura:attribute name="baseUrl"              type="String" /> <!-- Sandbox & Production url 구분 -->
+    <aura:attribute name="returnValue"          type="String" default="All" />
+    <aura:attribute name="WorkCenter"           type="Object" />
+    <aura:attribute name="returnStatusOptions"  type="List" default="[
+        {'label':'N', 'value' : 'N'},
+        {'label':'Y', 'value' : 'Y'}
+    ]" />
+    <aura:attribute name="returnStatusValue" type="String" default="N" />
+    <aura:attribute name="iframeSrc" type="String" default="" />
+    <aura:attribute name="pdfModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="nonReturnList" type="List" />
+    <aura:attribute name="excelData" type="List" />
+    <aura:attribute name="StartDate" type="Date" />
+    <aura:attribute name="EndDate" type="Date" />
+    <aura:attribute name="OrderNumber" type="String" />
+    <aura:attribute name="PartsNumber" type="String" />
+    <aura:attribute name="apexUrl" type="String" />
+    <aura:attribute name="selectedList" type="List" />
+    <!--LMS -->
+    <lightning:messageChannel type="DealerPortalPrintLMC__c" aura:id="dealerPortalLMC" />
+    <!-- Body -->
+    <article class="slds-card">
+
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header test">
+            <div class="title">
+                <lightning:icon iconName="standard:lead_list" size="small"
+                    alternativeText="Equipment Shipment Status" />
+                <h2>폐품반납관리</h2>
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left"
+                    onclick="{!c.doSearch}" />
+                <c:DN_ExcelUtilButton excelData="{!v.excelData}" excelName="itemList" />
+                <lightning:button name="" label="전표발행" iconName="utility:print" iconPosition="left"
+                    onclick="{!c.openScrapReceipt}" />
+            </div>
+        </div>
+
+
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>WorkCenter<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" variant="label-hidden" readonly="true" disabled="true"
+                            value="{!v.WorkCenter.Name}" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>작업자<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.WorkCenter.UserName}" variant="label-hidden" readonly="true"
+                            disabled="true" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap date-wrap">
+                    <p>접수일<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="" aura:id="Start" value="{!v.StartDate}"
+                            variant="label-hidden" />
+                        <span>~</span>
+                        <lightning:input type="date" name="" aura:id="End" value="{!v.EndDate}"
+                            variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>반납구분<abbr class="slds-required" title="required">*</abbr></p>
+                    <lightning:combobox name="returnOption" value="{!v.returnValue}" options="{!v.returnOptions}"
+                        variant="label-hidden" />
+                </div>
+                <div class="field-wrap">
+                    <p>반납여부<abbr class="slds-required" title="required">*</abbr></p>
+                    <lightning:combobox name="returnOption" value="{!v.returnStatusValue}"
+                        options="{!v.returnStatusOptions}" variant="label-hidden" />
+                </div>
+                <div class="field-wrap">
+                    <p>오더번호</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.OrderNumber}" variant="label-hidden"
+                            aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>품번</p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.PartsNumber}" variant="label-hidden"
+                            aura:id="" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 02 -->
+            <div class="card-02 top-card">
+
+                <div class="table-wrap">
+                    <!-- Fixed : Left -->
+                    <div class="table-01 table-left" aura:id="leftTableDiv">
+                        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="1%"/>
+                                <col width="25%"/>
+                                <col width="25%"/>
+                                <col width="25%"/>
+                                <col width="25%"/>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <lightning:input type="checkbox" aura:id="headerCheckbox"
+                                            onchange="{! c.selectAll }" />
+                                    </th>
+                                    <th>오더번호</th>
+                                    <th>기종</th>
+                                    <th>장비번호</th>
+                                    <th>고객사</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- <aura:if isTrue="{!v.isSearched}"> -->
+                                <aura:iteration items="{!v.nonReturnList}" var="ar" indexVar="j">
+                                    <tr>
+                                        <td class="check-box center">
+                                            <lightning:input type="checkbox" aura:id="checkbox" name="{!j}"
+                                                onchange="{! c.handleCheck }" />
+                                        </td>
+                                        <td>{!ar.AUFNR}</td>
+                                        <td>{!ar.TYPBZ}</td>
+                                        <td>{!ar.SERNR}</td>
+                                        <td>{!ar.NAME1}</td>
+                                    </tr>
+                                </aura:iteration>
+                                <!-- </aura:if> -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Scrollable : Right -->
+                    <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="5%" />
+                                <col width="10%" />
+                                <col width="5%" />
+                                <col width="5%" />
+                                <col width="10%" />
+                                <col width="10%" />
+                                <col width="5%" />
+                                <col width="10%" />
+                                <col width="10%" />
+                                <col width="20%" />
+                                <col width="10%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>품번</th>
+                                    <th>품명</th>
+                                    <th>미반납수량</th>
+                                    <th>반납구분</th>
+                                    <th>공급구분</th>
+                                    <th>대리점</th>
+                                    <th>반납여부</th>
+                                    <th>Work Center</th>
+                                    <th>작업자</th>
+                                    <th>내역</th>
+                                    <th>전표 발행일자</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <aura:iteration items="{!v.nonReturnList}" var="ar">
+                                    <tr>
+                                        <td>{!ar.MATNR}</td>
+                                        <td>{!ar.MAKTX}</td>
+                                        <td class="center">{!ar.NO_QTY}</td>
+                                        <td class="center">{!ar.RETURN_TYPE}</td>
+                                        <td>{!ar.SUPPLY_TYPE}</td>
+                                        <td>{!ar.NAME2}</td>
+                                        <td class="center">{!ar.RETURN_END_YN}</td>
+                                        <td>{!ar.KTEXT}</td>
+                                        <td>{!ar.SVCMAN}</td>
+                                        <td>{!ar.TEXT}</td>
+                                        <td>{!ar.PRT_DATE}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 전표발행 PDF -->
+        <aura:if isTrue="{!v.pdfModalOpen}">
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- 모달 헤더 -->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.modalCancel}"
+                            alternativeText="Close" class="slds-modal__close" />
+                        <h2 class="slds-text-heading_medium">전표발행</h2>
+                    </header>
+
+                    <!-- 모달 바디 -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <iframe src="{!v.apexUrl}" aura:id="vfFrame" style="width: 100%; height:65vh;"></iframe>
+                    </div>
+
+                    <!-- 모달 푸터 -->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" label="닫기" onclick="{!c.modalCancel}" />
+                    </footer>
+                </div>
+            </section>
+            <!-- 배경 -->
+            <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+    </article>
+</aura:component>

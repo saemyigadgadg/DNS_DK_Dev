@@ -1,0 +1,195 @@
+.THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body>div {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+
+.THIS .body .card-01 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 1.25rem;
+    column-gap: 2rem;
+    padding: 1.25rem 1.75rem;
+}
+
+@media screen and (max-width: 960px) {
+    .THIS .body .card-01 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+.THIS .body .card-01 p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .body .card-01 .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.THIS .body .card-01 .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .body .card-01 .field-wrap .icon-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.THIS .body .card-01 .icon-wrap .slds-button_icon-x-small {
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid #C9C9C9;
+}
+
+.THIS .body .card-01 .icon-wrap .slds-button+.slds-button {
+    margin-left: 0 !important;
+}
+
+.THIS .body .card-01 .input-wrap .slds-input,
+.THIS .body .card-01 .input-wrap .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    min-width: 12rem;
+}
+
+/* Table Design */
+
+.THIS .body .card-02 table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body .card-02 table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body .card-02 table th+th {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS .body .card-02 table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+}
+
+.THIS .body .card-02 table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+
+/* Sticky Tables */
+
+/* Card 02 */
+.THIS .body .card-02 .table-wrap {
+    display: flex;
+    position: relative;
+    max-height: calc(100vh - 24rem);
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.THIS .body .card-02 .table-wrap thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+}
+/* .THIS .body .card-02 .table-wrap .table-02::-webkit-scrollbar{
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+} */
+
+.THIS .body .card-02 .table-wrap table-02 table{
+    table-layout: fixed;
+}
+
+/* Table 01 */
+.THIS .body .card-02 .table-01 {
+    flex: 2;
+}
+
+.THIS .body .card-02 .table-01 table tr>th:last-child {
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .body .card-02 .table-01 table tr>td:last-child {
+    border-right: 1px solid #D9D9D9;
+    font-size: 13px;
+}
+
+/* Table 02 */
+.THIS .body .card-02 .table-02 {
+    flex: 3;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Table Class */
+
+.THIS .center{text-align: center !important;}
+.THIS .left{text-align: left !important;}
+.THIS .right{text-align: right !important;}

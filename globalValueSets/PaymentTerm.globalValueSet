@@ -1,0 +1,1441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1602</fullName>
+        <default>false</default>
+        <label>10% 60 Days, 90% 360 Days</label>
+    </customValue>
+    <customValue>
+        <fullName>XT07</fullName>
+        <default>false</default>
+        <label>10% T/T in Advance, 70% TT 20days, 20% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>XT02</fullName>
+        <default>false</default>
+        <label>10%TT in Advance,TT70% BLDATE20DAYS,20%L/CAfterFAC</label>
+    </customValue>
+    <customValue>
+        <fullName>1603</fullName>
+        <default>false</default>
+        <label>20% CIA, 40% 120 D, 20% 180 D, 20% 240 D</label>
+    </customValue>
+    <customValue>
+        <fullName>XT61</fullName>
+        <default>false</default>
+        <label>20% T/T BEFORE DELIVERY, 80% T/TN60 DAYS FROM DELI</label>
+    </customValue>
+    <customValue>
+        <fullName>XT06</fullName>
+        <default>false</default>
+        <label>20% T/T in Advance, 70% TT 60days, 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>7125</fullName>
+        <default>false</default>
+        <label>20 Days(net) after Invoice day</label>
+    </customValue>
+    <customValue>
+        <fullName>7126</fullName>
+        <default>false</default>
+        <label>25th on Following month</label>
+    </customValue>
+    <customValue>
+        <fullName>XT03</fullName>
+        <default>false</default>
+        <label>30%TT in Advance, 60%LC At Sight, 10%LC After FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>7127</fullName>
+        <default>false</default>
+        <label>30 Days from end of Month</label>
+    </customValue>
+    <customValue>
+        <fullName>DI07</fullName>
+        <default>false</default>
+        <label>3 X 10% - 45% 30d- 45% 60d</label>
+    </customValue>
+    <customValue>
+        <fullName>7129</fullName>
+        <default>false</default>
+        <label>45 Days from end of Month</label>
+    </customValue>
+    <customValue>
+        <fullName>DI02</fullName>
+        <default>false</default>
+        <label>4 x 25% - 0- 30-60-90</label>
+    </customValue>
+    <customValue>
+        <fullName>DI04</fullName>
+        <default>false</default>
+        <label>50% 30d, 50% 60d</label>
+    </customValue>
+    <customValue>
+        <fullName>1601</fullName>
+        <default>false</default>
+        <label>50% 90 Days, 50% 180 Days</label>
+    </customValue>
+    <customValue>
+        <fullName>DI12</fullName>
+        <default>false</default>
+        <label>50% after 60 days</label>
+    </customValue>
+    <customValue>
+        <fullName>XT94</fullName>
+        <default>false</default>
+        <label>50% T/T 20 days, 50% T/T 70 days from delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>XTA2</fullName>
+        <default>false</default>
+        <label>50% T/T 45 days, 50% T/T 105 days from B/L date</label>
+    </customValue>
+    <customValue>
+        <fullName>XTA1</fullName>
+        <default>false</default>
+        <label>50% T/T 45 days, 50% T/T 75 days from B/L date</label>
+    </customValue>
+    <customValue>
+        <fullName>XTA3</fullName>
+        <default>false</default>
+        <label>50% T/T in 60, 50% T/T 120 days from B/L date</label>
+    </customValue>
+    <customValue>
+        <fullName>XTA4</fullName>
+        <default>false</default>
+        <label>50% T/T in advance,50% T/T 90 days from B/L date</label>
+    </customValue>
+    <customValue>
+        <fullName>XT91</fullName>
+        <default>false</default>
+        <label>50% T/T in advance 50% T/T 30days from delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>XT92</fullName>
+        <default>false</default>
+        <label>50% T/T in advance 50% T/T 45days from delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>XT93</fullName>
+        <default>false</default>
+        <label>50% T/T in advance 50% T/T 60days from delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>7128</fullName>
+        <default>false</default>
+        <label>60 Days from end of Month</label>
+    </customValue>
+    <customValue>
+        <fullName>L0TE</fullName>
+        <default>false</default>
+        <label>70% LC AT SIGHT, TT 30% AFTER FINAL ACCEPTANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>XT98</fullName>
+        <default>false</default>
+        <label>70% T/T 90 days, 30% T/T 180 days from delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>L0TD</fullName>
+        <default>false</default>
+        <label>75% LC AT SIGHT, TT 25% AFTER FINAL ACCEPTANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>L0TC</fullName>
+        <default>false</default>
+        <label>80% LC AT SIGHT, TT 20% AFTER FINAL ACCEPTANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>XT96</fullName>
+        <default>false</default>
+        <label>80% T/T in advance, TT10% FAC, TT10% 360FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>XT05</fullName>
+        <default>false</default>
+        <label>80%TTinAdvance,20%TT 6Month After machine arrival</label>
+    </customValue>
+    <customValue>
+        <fullName>XT04</fullName>
+        <default>false</default>
+        <label>80%TT in Advance, 20%TT Within 60Days After FAC DT</label>
+    </customValue>
+    <customValue>
+        <fullName>L0TB</fullName>
+        <default>false</default>
+        <label>85% LC AT SIGHT, TT 15% AFTER FINAL ACCEPTANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>L0TA</fullName>
+        <default>false</default>
+        <label>90% LC AT SIGHT, TT 10% AFTER FINAL ACCEPTANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>XT95</fullName>
+        <default>false</default>
+        <label>90% T/T in advance, 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TP90</fullName>
+        <default>false</default>
+        <label>90 Days after Puschase Approval</label>
+    </customValue>
+    <customValue>
+        <fullName>L0T9</fullName>
+        <default>false</default>
+        <label>95% LC AT SIGHT, TT 5% AFTER FINAL ACCEPTANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>4153</fullName>
+        <default>false</default>
+        <label>ACH-15days from Document date</label>
+    </customValue>
+    <customValue>
+        <fullName>4155</fullName>
+        <default>false</default>
+        <label>ACH-30days from Document date</label>
+    </customValue>
+    <customValue>
+        <fullName>4162</fullName>
+        <default>false</default>
+        <label>ACH-365days from Document date</label>
+    </customValue>
+    <customValue>
+        <fullName>4156</fullName>
+        <default>false</default>
+        <label>ACH-45days from Document date</label>
+    </customValue>
+    <customValue>
+        <fullName>4157</fullName>
+        <default>false</default>
+        <label>ACH-60days from Document date</label>
+    </customValue>
+    <customValue>
+        <fullName>4158</fullName>
+        <default>false</default>
+        <label>ACH-90days from Document date</label>
+    </customValue>
+    <customValue>
+        <fullName>4151</fullName>
+        <default>false</default>
+        <label>ACH-Immediate payment</label>
+    </customValue>
+    <customValue>
+        <fullName>CP00</fullName>
+        <default>false</default>
+        <label>Advanced Payment</label>
+    </customValue>
+    <customValue>
+        <fullName>CPA0</fullName>
+        <default>false</default>
+        <label>Advanced Payment (Parts)</label>
+    </customValue>
+    <customValue>
+        <fullName>7100</fullName>
+        <default>false</default>
+        <label>Advance payment</label>
+    </customValue>
+    <customValue>
+        <fullName>ZNET</fullName>
+        <default>false</default>
+        <label>AR AP Net-off</label>
+    </customValue>
+    <customValue>
+        <fullName>CC02</fullName>
+        <default>false</default>
+        <label>Capital Loan - 12M</label>
+    </customValue>
+    <customValue>
+        <fullName>CC03</fullName>
+        <default>false</default>
+        <label>Capital Loan - 24M</label>
+    </customValue>
+    <customValue>
+        <fullName>CC04</fullName>
+        <default>false</default>
+        <label>Capital Loan - 36M</label>
+    </customValue>
+    <customValue>
+        <fullName>CC05</fullName>
+        <default>false</default>
+        <label>Capital Loan - 48M</label>
+    </customValue>
+    <customValue>
+        <fullName>CC07</fullName>
+        <default>false</default>
+        <label>Capital Loan - 60M</label>
+    </customValue>
+    <customValue>
+        <fullName>CC01</fullName>
+        <default>false</default>
+        <label>Capital Loan - Interest free</label>
+    </customValue>
+    <customValue>
+        <fullName>7101</fullName>
+        <default>false</default>
+        <label>Cash</label>
+    </customValue>
+    <customValue>
+        <fullName>PP00</fullName>
+        <default>false</default>
+        <label>Cash 100% for Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>DI03</fullName>
+        <default>false</default>
+        <label>Cash 50% and 30d 50%</label>
+    </customValue>
+    <customValue>
+        <fullName>4163</fullName>
+        <default>false</default>
+        <label>Cash Against Document</label>
+    </customValue>
+    <customValue>
+        <fullName>C002</fullName>
+        <default>false</default>
+        <label>Cash Installment</label>
+    </customValue>
+    <customValue>
+        <fullName>C001</fullName>
+        <default>false</default>
+        <label>Cash Payment</label>
+    </customValue>
+    <customValue>
+        <fullName>C010</fullName>
+        <default>false</default>
+        <label>Cash Payment 50 days</label>
+    </customValue>
+    <customValue>
+        <fullName>C011</fullName>
+        <default>false</default>
+        <label>Cash Payment-Bobcat</label>
+    </customValue>
+    <customValue>
+        <fullName>C012</fullName>
+        <default>false</default>
+        <label>Cash Payment Two Months</label>
+    </customValue>
+    <customValue>
+        <fullName>7202</fullName>
+        <default>false</default>
+        <label>Cheque</label>
+    </customValue>
+    <customValue>
+        <fullName>7102</fullName>
+        <default>false</default>
+        <label>Cheque within end of 1st month</label>
+    </customValue>
+    <customValue>
+        <fullName>DAB4</fullName>
+        <default>false</default>
+        <label>DA 240 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>DA30</fullName>
+        <default>false</default>
+        <label>DA 30 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>DA45</fullName>
+        <default>false</default>
+        <label>DA 45 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>DA60</fullName>
+        <default>false</default>
+        <label>DA 60 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>4168</fullName>
+        <default>false</default>
+        <label>DICEA 2% discount Net 30days.</label>
+    </customValue>
+    <customValue>
+        <fullName>XT25</fullName>
+        <default>false</default>
+        <label>Downpayment 20%, 180 Days after B/L Date 80%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT20</fullName>
+        <default>false</default>
+        <label>Downpayment 20%, 40 Days after B/L Date 80%</label>
+    </customValue>
+    <customValue>
+        <fullName>WX20</fullName>
+        <default>false</default>
+        <label>Downpayment 20%, 90 Days from Ex-work date</label>
+    </customValue>
+    <customValue>
+        <fullName>CP10</fullName>
+        <default>false</default>
+        <label>Due 10  Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP12</fullName>
+        <default>false</default>
+        <label>Due 12 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP01</fullName>
+        <default>false</default>
+        <label>Due 1 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP24</fullName>
+        <default>false</default>
+        <label>Due 24 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP02</fullName>
+        <default>false</default>
+        <label>Due 2 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP03</fullName>
+        <default>false</default>
+        <label>Due 3 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP04</fullName>
+        <default>false</default>
+        <label>Due 4 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP05</fullName>
+        <default>false</default>
+        <label>Due 5 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP06</fullName>
+        <default>false</default>
+        <label>Due 6 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP07</fullName>
+        <default>false</default>
+        <label>Due 7 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>CP09</fullName>
+        <default>false</default>
+        <label>Due 9 Month Later</label>
+    </customValue>
+    <customValue>
+        <fullName>ST00</fullName>
+        <default>false</default>
+        <label>Due Immedialtely</label>
+    </customValue>
+    <customValue>
+        <fullName>2006</fullName>
+        <default>false</default>
+        <label>Every 25th (Monthly/AP)</label>
+    </customValue>
+    <customValue>
+        <fullName>2003</fullName>
+        <default>false</default>
+        <label>Every 7th (Monthly/AP)</label>
+    </customValue>
+    <customValue>
+        <fullName>CC90</fullName>
+        <default>false</default>
+        <label>FLOOR PLAN</label>
+    </customValue>
+    <customValue>
+        <fullName>C003</fullName>
+        <default>false</default>
+        <label>Government Policy Loan</label>
+    </customValue>
+    <customValue>
+        <fullName>7106</fullName>
+        <default>false</default>
+        <label>Immediate Payment</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAG</fullName>
+        <default>false</default>
+        <label>Installment(12 months)_UK8.333*8,8.334*4</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAD</fullName>
+        <default>false</default>
+        <label>Installment(12months)30,10*3,5*5</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAE</fullName>
+        <default>false</default>
+        <label>Installment(18months)25,5*15,3,2</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAF</fullName>
+        <default>false</default>
+        <label>Installment(24months)20,5*11,3*4,2*3,1*4</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAI</fullName>
+        <default>false</default>
+        <label>Installment(36 months)</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAL</fullName>
+        <default>false</default>
+        <label>Installment(3months)20,30,50</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAA</fullName>
+        <default>false</default>
+        <label>Installment(3months)40,30,30</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAB</fullName>
+        <default>false</default>
+        <label>Installment(6months)40,15*2,10*3</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAN</fullName>
+        <default>false</default>
+        <label>Installment(9month)40,10*4,5*4</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAC</fullName>
+        <default>false</default>
+        <label>Installment(9months)30,10*6,5*2</label>
+    </customValue>
+    <customValue>
+        <fullName>CI12</fullName>
+        <default>false</default>
+        <label>Installment - 12M (China)</label>
+    </customValue>
+    <customValue>
+        <fullName>CI15</fullName>
+        <default>false</default>
+        <label>Installment - 15M (China)</label>
+    </customValue>
+    <customValue>
+        <fullName>L/C</fullName>
+        <default>false</default>
+        <label>L/C</label>
+    </customValue>
+    <customValue>
+        <fullName>XT40</fullName>
+        <default>false</default>
+        <label>LC00 70%, TTA2 30%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT55</fullName>
+        <default>false</default>
+        <label>LC00 90%, TA36 10%</label>
+    </customValue>
+    <customValue>
+        <fullName>LA00</fullName>
+        <default>false</default>
+        <label>LC 0 Days after Final Acceptance Certification</label>
+    </customValue>
+    <customValue>
+        <fullName>LCA2</fullName>
+        <default>false</default>
+        <label>LC 120 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LSA2</fullName>
+        <default>false</default>
+        <label>LC 120 Days after Sight</label>
+    </customValue>
+    <customValue>
+        <fullName>LCA5</fullName>
+        <default>false</default>
+        <label>LC 150 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7140</fullName>
+        <default>false</default>
+        <label>LC 150 Days after Inv. Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LCA8</fullName>
+        <default>false</default>
+        <label>LC 180 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5926</fullName>
+        <default>false</default>
+        <label>LC 180 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LA18</fullName>
+        <default>false</default>
+        <label>LC 180 Days After Final Acceptance Certification</label>
+    </customValue>
+    <customValue>
+        <fullName>7118</fullName>
+        <default>false</default>
+        <label>LC 180 Days after Invoice Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LSA8</fullName>
+        <default>false</default>
+        <label>LC 180 Days after Sight</label>
+    </customValue>
+    <customValue>
+        <fullName>WLA8</fullName>
+        <default>false</default>
+        <label>LC 180 days from Ex-work date</label>
+    </customValue>
+    <customValue>
+        <fullName>LCB1</fullName>
+        <default>false</default>
+        <label>LC 210 days after B/L date</label>
+    </customValue>
+    <customValue>
+        <fullName>LCB4</fullName>
+        <default>false</default>
+        <label>LC 240 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LC30</fullName>
+        <default>false</default>
+        <label>LC 30 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5922</fullName>
+        <default>false</default>
+        <label>LC 30 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7301</fullName>
+        <default>false</default>
+        <label>LC 30 DAYS AFTER CMR DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>LCC3</fullName>
+        <default>false</default>
+        <label>LC 330 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LCC6</fullName>
+        <default>false</default>
+        <label>LC 360 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LC45</fullName>
+        <default>false</default>
+        <label>LC 45 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>LC60</fullName>
+        <default>false</default>
+        <label>LC 60 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5924</fullName>
+        <default>false</default>
+        <label>LC 60 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7302</fullName>
+        <default>false</default>
+        <label>LC 60 DAYS AFTER CMR DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>LS60</fullName>
+        <default>false</default>
+        <label>LC 60 Days after Sight</label>
+    </customValue>
+    <customValue>
+        <fullName>LCG2</fullName>
+        <default>false</default>
+        <label>LC 720 Days after B/L date</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB3</fullName>
+        <default>false</default>
+        <label>LC 80%, LC10% FAC, TT 10 360 FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>L0T6</fullName>
+        <default>false</default>
+        <label>LC 90% &amp; 10% against certificate of satisfactory</label>
+    </customValue>
+    <customValue>
+        <fullName>LC90</fullName>
+        <default>false</default>
+        <label>LC 90 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5925</fullName>
+        <default>false</default>
+        <label>LC 90 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7116</fullName>
+        <default>false</default>
+        <label>LC 90 Days after Inv. Date</label>
+    </customValue>
+    <customValue>
+        <fullName>L0T5</fullName>
+        <default>false</default>
+        <label>LC 95% &amp; 5% against certificate of satisfactory in</label>
+    </customValue>
+    <customValue>
+        <fullName>5921</fullName>
+        <default>false</default>
+        <label>LC At Sight</label>
+    </customValue>
+    <customValue>
+        <fullName>LOAR</fullName>
+        <default>false</default>
+        <label>LONG AR</label>
+    </customValue>
+    <customValue>
+        <fullName>2002</fullName>
+        <default>false</default>
+        <label>M+1 25th by BOE /下月 25日票据</label>
+    </customValue>
+    <customValue>
+        <fullName>CD00</fullName>
+        <default>false</default>
+        <label>N% D.C IF PAID IN N DAYS</label>
+    </customValue>
+    <customValue>
+        <fullName>4850</fullName>
+        <default>false</default>
+        <label>Net 30 Days</label>
+    </customValue>
+    <customValue>
+        <fullName>4853</fullName>
+        <default>false</default>
+        <label>Net 60 Days</label>
+    </customValue>
+    <customValue>
+        <fullName>4857</fullName>
+        <default>false</default>
+        <label>Net 75</label>
+    </customValue>
+    <customValue>
+        <fullName>4854</fullName>
+        <default>false</default>
+        <label>Net 90 Days</label>
+    </customValue>
+    <customValue>
+        <fullName>CR02</fullName>
+        <default>false</default>
+        <label>Net-off by Customer Agreement</label>
+    </customValue>
+    <customValue>
+        <fullName>CR01</fullName>
+        <default>false</default>
+        <label>Net-off by Sales Policy</label>
+    </customValue>
+    <customValue>
+        <fullName>ZZZZ</fullName>
+        <default>false</default>
+        <label>Not Specified</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAM</fullName>
+        <default>false</default>
+        <label>nstallment(6months)30,15*4,10</label>
+    </customValue>
+    <customValue>
+        <fullName>C004</fullName>
+        <default>false</default>
+        <label>Other Financing (Rental)</label>
+    </customValue>
+    <customValue>
+        <fullName>TT</fullName>
+        <default>false</default>
+        <label>Payable immediately Due net</label>
+    </customValue>
+    <customValue>
+        <fullName>2001</fullName>
+        <default>false</default>
+        <label>Payment immediately</label>
+    </customValue>
+    <customValue>
+        <fullName>CPBA</fullName>
+        <default>false</default>
+        <label>Sales:1~31, Due on 2 months&apos; end</label>
+    </customValue>
+    <customValue>
+        <fullName>CPBC</fullName>
+        <default>false</default>
+        <label>Sales:1~31, Due on 3 months&apos; end</label>
+    </customValue>
+    <customValue>
+        <fullName>CPBD</fullName>
+        <default>false</default>
+        <label>Sales:1~31, Due on 5 months&apos; end</label>
+    </customValue>
+    <customValue>
+        <fullName>CPBE</fullName>
+        <default>false</default>
+        <label>Sales:1~31, Due on 6 months&apos; end</label>
+    </customValue>
+    <customValue>
+        <fullName>TA19</fullName>
+        <default>false</default>
+        <label>T/T 6 Month After the machine arrive at customer’s</label>
+    </customValue>
+    <customValue>
+        <fullName>XT00</fullName>
+        <default>false</default>
+        <label>T/T In Advance</label>
+    </customValue>
+    <customValue>
+        <fullName>7112</fullName>
+        <default>false</default>
+        <label>Terms 120 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7208</fullName>
+        <default>false</default>
+        <label>Terms 14 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7215</fullName>
+        <default>false</default>
+        <label>Terms 150 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7108</fullName>
+        <default>false</default>
+        <label>Terms 15 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7113</fullName>
+        <default>false</default>
+        <label>Terms 180 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7209</fullName>
+        <default>false</default>
+        <label>Terms 30 days from Doc.Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7109</fullName>
+        <default>false</default>
+        <label>Terms 30 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7115</fullName>
+        <default>false</default>
+        <label>Terms 45 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7110</fullName>
+        <default>false</default>
+        <label>Terms 60 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7107</fullName>
+        <default>false</default>
+        <label>Terms 7 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7111</fullName>
+        <default>false</default>
+        <label>Terms 90 days from Document Date</label>
+    </customValue>
+    <customValue>
+        <fullName>STAA</fullName>
+        <default>false</default>
+        <label>Transfer : Employee Refunds</label>
+    </customValue>
+    <customValue>
+        <fullName>TA00</fullName>
+        <default>false</default>
+        <label>TT 0 Days after Final Acceptance Certification</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC2</fullName>
+        <default>false</default>
+        <label>TT 10% DownPay, LC 85% At Sight, LC 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA1</fullName>
+        <default>false</default>
+        <label>TT 10% DownPay LC 80% B/S, TT 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA6</fullName>
+        <default>false</default>
+        <label>TT10% DownPay LC 85% B/S, TT 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX90</fullName>
+        <default>false</default>
+        <label>TT10% Down Payment, LC 90% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL90</fullName>
+        <default>false</default>
+        <label>TT 10% Down Payment, LC 90% Before Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB2</fullName>
+        <default>false</default>
+        <label>TT10% DPay LC 80% B/S, LC10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC3</fullName>
+        <default>false</default>
+        <label>TT 15% DownPay, LC 80% At Sight, LC 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC7</fullName>
+        <default>false</default>
+        <label>TT 15% DownPay LC 75% At Sight, LC 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB7</fullName>
+        <default>false</default>
+        <label>TT 15% DownPay LC 75% At Sight, TT 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB8</fullName>
+        <default>false</default>
+        <label>TT 15% DownPay LC 80% At Sight, TT 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX85</fullName>
+        <default>false</default>
+        <label>TT15% Down Payment, LC 85% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL85</fullName>
+        <default>false</default>
+        <label>TT 15% Down Payment, LC 85% Before Shipm</label>
+    </customValue>
+    <customValue>
+        <fullName>WTA5</fullName>
+        <default>false</default>
+        <label>TT 150 days from Ex-work date</label>
+    </customValue>
+    <customValue>
+        <fullName>TA18</fullName>
+        <default>false</default>
+        <label>TT 180 Days after Final Acceptance Certification</label>
+    </customValue>
+    <customValue>
+        <fullName>XT15</fullName>
+        <default>false</default>
+        <label>TT20% D/P, TT30 70%, TT 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC4</fullName>
+        <default>false</default>
+        <label>TT 20% DownPay, LC 75% At Sight, LC 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC8</fullName>
+        <default>false</default>
+        <label>TT 20% DownPay LC 70% At Sight, LC10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA2</fullName>
+        <default>false</default>
+        <label>TT 20% DownPay LC 70% B/S, TT 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA7</fullName>
+        <default>false</default>
+        <label>TT20% DownPay LC 75% B/S, TT 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX80</fullName>
+        <default>false</default>
+        <label>TT20% Down Payment, LC 80% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL80</fullName>
+        <default>false</default>
+        <label>TT 20% DOWN PAYMENT, LC 80% Before Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC9</fullName>
+        <default>false</default>
+        <label>TT 25% DownPay LC 65% At Sight, LC10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB5</fullName>
+        <default>false</default>
+        <label>TT25% DownPay LC 65% B/S, TT10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB9</fullName>
+        <default>false</default>
+        <label>TT 25% DownPay LC 70% At Sight, TT 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX75</fullName>
+        <default>false</default>
+        <label>TT25% Down Payment, LC 75% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL75</fullName>
+        <default>false</default>
+        <label>TT 25% DOWN PAYMENT, LC 75% LC AT SIGHT</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB6</fullName>
+        <default>false</default>
+        <label>TT 25% DPay, LC 70% B/S, LC 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC5</fullName>
+        <default>false</default>
+        <label>TT 30% DownPay, LC 65% At Sight , LC 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA3</fullName>
+        <default>false</default>
+        <label>TT 30% DownPay LC 60% B/S, TT 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA8</fullName>
+        <default>false</default>
+        <label>TT30% DownPay LC 65% B/S, TT 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX70</fullName>
+        <default>false</default>
+        <label>TT30% Down Payment, LC 70% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL70</fullName>
+        <default>false</default>
+        <label>TT 30% Down Payment, LC 70% Before Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB4</fullName>
+        <default>false</default>
+        <label>TT30% DPay LC 60% B/S, LC10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TA03</fullName>
+        <default>false</default>
+        <label>TT 30 Days after Installation</label>
+    </customValue>
+    <customValue>
+        <fullName>WT30</fullName>
+        <default>false</default>
+        <label>TT 30 days from Ex-work date</label>
+    </customValue>
+    <customValue>
+        <fullName>TX65</fullName>
+        <default>false</default>
+        <label>TT35% Down Payment, LC 65% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TA36</fullName>
+        <default>false</default>
+        <label>TT 360 Days after Final Acceptance Certification</label>
+    </customValue>
+    <customValue>
+        <fullName>TX60</fullName>
+        <default>false</default>
+        <label>TT40% Down Payment, LC 60% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL60</fullName>
+        <default>false</default>
+        <label>TT 40% Down Payment, LC 60% Before Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA9</fullName>
+        <default>false</default>
+        <label>TT40% DPay LC 50% B/S, LC10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX55</fullName>
+        <default>false</default>
+        <label>TT45% Down Payment, LC 55% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC1</fullName>
+        <default>false</default>
+        <label>TT 5% DownPay, LC 90% At Sight, LC 5% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA4</fullName>
+        <default>false</default>
+        <label>TT 5% DownPay LC 80% B/S, TT 15% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLC6</fullName>
+        <default>false</default>
+        <label>TT 5% DownPay LC 85% At Sight, LC 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TLA5</fullName>
+        <default>false</default>
+        <label>TT 5% DownPay LC 85% B/S, TT 10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TX95</fullName>
+        <default>false</default>
+        <label>TT 5% Down Payment, LC 95% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL95</fullName>
+        <default>false</default>
+        <label>TT 5% Down Payment, LC 95% Before Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>TX50</fullName>
+        <default>false</default>
+        <label>TT50% Down Payment, LC 50% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>TL50</fullName>
+        <default>false</default>
+        <label>TT 50% Down Payment, LC 50% Before Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>TLB1</fullName>
+        <default>false</default>
+        <label>TT50% DPay LC 40% B/S, LC10% FAC</label>
+    </customValue>
+    <customValue>
+        <fullName>TA04</fullName>
+        <default>false</default>
+        <label>TT 60 Days after Final Acceptance Certification</label>
+    </customValue>
+    <customValue>
+        <fullName>TX10</fullName>
+        <default>false</default>
+        <label>TT90% Down Payment, LC 10% After Final Acceptance</label>
+    </customValue>
+    <customValue>
+        <fullName>WT90</fullName>
+        <default>false</default>
+        <label>TT 90 days from Ex-work date</label>
+    </customValue>
+    <customValue>
+        <fullName>TTIF</fullName>
+        <default>false</default>
+        <label>TT Interface</label>
+    </customValue>
+    <customValue>
+        <fullName>TT00</fullName>
+        <default>false</default>
+        <label>TT NET 0 DAYS</label>
+    </customValue>
+    <customValue>
+        <fullName>7312</fullName>
+        <default>false</default>
+        <label>TT within 105 days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TTA1</fullName>
+        <default>false</default>
+        <label>TT within 105 Days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TTST</fullName>
+        <default>false</default>
+        <label>TT Within 10 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7303</fullName>
+        <default>false</default>
+        <label>TT within 10 days from INVOICE DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>TTA2</fullName>
+        <default>false</default>
+        <label>TT within 120 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TTA3</fullName>
+        <default>false</default>
+        <label>TT within 120 Days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7307</fullName>
+        <default>false</default>
+        <label>TT within 120 days from INVOICE DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>7309</fullName>
+        <default>false</default>
+        <label>TT within 135 days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7310</fullName>
+        <default>false</default>
+        <label>TT within 165 days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TTA8</fullName>
+        <default>false</default>
+        <label>TT within 180 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5916</fullName>
+        <default>false</default>
+        <label>TT within 180Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7313</fullName>
+        <default>false</default>
+        <label>TT within 180 Days from Invoice Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT20</fullName>
+        <default>false</default>
+        <label>TT within 20 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TTB1</fullName>
+        <default>false</default>
+        <label>TT within 210 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT30</fullName>
+        <default>false</default>
+        <label>TT within 30 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5912</fullName>
+        <default>false</default>
+        <label>TT within 30 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT31</fullName>
+        <default>false</default>
+        <label>TT within 30 Days after CMR Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7304</fullName>
+        <default>false</default>
+        <label>TT within 30 days from INVOICE DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>TTC6</fullName>
+        <default>false</default>
+        <label>TT within 360 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT40</fullName>
+        <default>false</default>
+        <label>TT within 40 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT45</fullName>
+        <default>false</default>
+        <label>TT within 45 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5913</fullName>
+        <default>false</default>
+        <label>TT within 45 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT46</fullName>
+        <default>false</default>
+        <label>TT within 45 Days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7308</fullName>
+        <default>false</default>
+        <label>TT within 55 days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT05</fullName>
+        <default>false</default>
+        <label>TT Within 5 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT60</fullName>
+        <default>false</default>
+        <label>TT within 60 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>5914</fullName>
+        <default>false</default>
+        <label>TT within 60 Days after Billing Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7305</fullName>
+        <default>false</default>
+        <label>TT within 60days from INVOICE DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>TT70</fullName>
+        <default>false</default>
+        <label>TT within 70 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7311</fullName>
+        <default>false</default>
+        <label>TT within 75 days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT75</fullName>
+        <default>false</default>
+        <label>TT within 75 Days from B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>TT90</fullName>
+        <default>false</default>
+        <label>TT within 90 Days after B/L Date</label>
+    </customValue>
+    <customValue>
+        <fullName>7306</fullName>
+        <default>false</default>
+        <label>TT within 90 days from INVOICE DATE</label>
+    </customValue>
+    <customValue>
+        <fullName>C007</fullName>
+        <default>false</default>
+        <label>Wholesale selling (30 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>C008</fullName>
+        <default>false</default>
+        <label>Wholesale selling (45 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>C006</fullName>
+        <default>false</default>
+        <label>Wholesale selling (5 Day)</label>
+    </customValue>
+    <customValue>
+        <fullName>C009</fullName>
+        <default>false</default>
+        <label>Wholesale selling (60 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>7103</fullName>
+        <default>false</default>
+        <label>Within end of 1st month(Bank Transfer)</label>
+    </customValue>
+    <customValue>
+        <fullName>7105</fullName>
+        <default>false</default>
+        <label>Within end of 3rd month(Bank Transfer)</label>
+    </customValue>
+    <customValue>
+        <fullName>WX40</fullName>
+        <default>false</default>
+        <label>WT60 10%, WTA2 10%, WTA8 80%</label>
+    </customValue>
+    <customValue>
+        <fullName>WX30</fullName>
+        <default>false</default>
+        <label>WT60 20%, WTA5 30%, WTC3 50%</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAJ</fullName>
+        <default>false</default>
+        <label>WT90 25%, Installment(6months) 75%</label>
+    </customValue>
+    <customValue>
+        <fullName>CPAK</fullName>
+        <default>false</default>
+        <label>WT90 25%, Installment(9months) 75%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT97</fullName>
+        <default>false</default>
+        <label>XT00 10%, 120 Days after B/L Date 90%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT60</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT180 90%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT90</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT30 30%, TT120 60%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT80</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT30 30%, TT150 60%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT70</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT30 30%, TT180 60%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT30</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT30 30%, TT90 60%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT50</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT60 30%, TT120 60%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT10</fullName>
+        <default>false</default>
+        <label>XT00 10%, TT90 90%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT18</fullName>
+        <default>false</default>
+        <label>XT00 10% D/P,TTST 80% 10Days,TT30 10% 30Days</label>
+    </customValue>
+    <customValue>
+        <fullName>XT82</fullName>
+        <default>false</default>
+        <label>XT00 15%, TT45 85%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT81</fullName>
+        <default>false</default>
+        <label>XT00 15%, TT90 85%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT37</fullName>
+        <default>false</default>
+        <label>XT00 30%, TTA2 70%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT33</fullName>
+        <default>false</default>
+        <label>XT00 30%, WT30 30%, WT75 40%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT85</fullName>
+        <default>false</default>
+        <label>XT00 5%, TT00 85% TA00 10%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT38</fullName>
+        <default>false</default>
+        <label>XT00 70%, LC00 30%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT73</fullName>
+        <default>false</default>
+        <label>XT00 70%, TT60 30%</label>
+    </customValue>
+    <customValue>
+        <fullName>XT71</fullName>
+        <default>false</default>
+        <label>XT01 80%, 7115 20%</label>
+    </customValue>
+    <customValue>
+        <fullName>LC00</fullName>
+        <default>false</default>
+        <label>LC00</label>
+    </customValue>
+    <customValue>
+        <fullName>XT08</fullName>
+        <default>false</default>
+        <label>XT08</label>
+    </customValue>
+    <customValue>
+        <fullName>C013</fullName>
+        <default>false</default>
+        <label>7일 이내 수금</label>
+    </customValue>
+    <description>Payment Term</description>
+    <masterLabel>Payment Term</masterLabel>
+    <sorted>true</sorted>
+</GlobalValueSet>

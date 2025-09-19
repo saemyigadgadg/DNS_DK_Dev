@@ -1,0 +1,79 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 01-19-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-06-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="Edit SQ Review Modal">
+
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="reviewId"         type="String" />
+    <aura:attribute name="objectName"       type="String"   default="SQReview__c" />
+    <aura:attribute name="fieldList"        type="List"     default="[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.modalInit}" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            <!-- 🚩Aura Header -->
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">Requested SQ</h1>
+            </div>
+
+            <!-- 🚩Aura Body -->
+            <lightning:recordEditForm   aura:id="recordEditForm" 
+                                        objectApiName="{! v.objectName }"
+                                        recordId="{! v.reviewId }"
+                                        onsubmit="{! c.handleSubmit }"
+                                        onsuccess="{! c.handleSuccess }" 
+                                        onerror="{! c.handleError }">
+                <lightning:messages />
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+
+                    <!-- Aura Layout -->
+                    <div class="slds-form slds-align_absolute-center">
+
+
+                        <!-- 🚩 1. SQ Information -->
+                        <div class="section-header">
+                            <h2 class="section-title">SQ Review</h2>
+                        </div>
+                        <div class="section-container">
+                            <aura:iteration items="{!v.fieldList}" var="field">
+                                <aura:if isTrue="{! field != 'Comments__c' }">
+                                    <div class="one-column">
+                                        <lightning:inputField aura:id="recordField" fieldName="{! field }" />
+                                    </div>
+                                </aura:if>
+                            </aura:iteration>
+                            <div class="one-column">
+                                <lightning:inputField aura:id="recordField" fieldName="Comments__c" required="false" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                    <!-- 🚩Aura Footer -->
+                <div class="slds-modal__footer">
+                    <lightning:button onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_B_Cancel}" />
+                    <lightning:button variant="brand" type="submit" label="{!$Label.c.DNS_B_Save}" />
+                </div>
+            </lightning:recordEditForm>
+        </div>
+    </section>
+
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

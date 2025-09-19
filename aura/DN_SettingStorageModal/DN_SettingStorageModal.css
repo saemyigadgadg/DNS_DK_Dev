@@ -1,0 +1,301 @@
+.THIS .slds-modal__container {
+    max-width: 1980px;
+    min-width: 920px;
+    width: 60vw;
+    height: 80vh;
+    margin: unset;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0;
+}
+
+/* Modal Header */
+
+.THIS .slds-modal__header {
+    display: block;
+    padding: 1rem;
+}
+
+.THIS .slds-modal__header h2 {
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.25;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+
+/* Modal Body */
+
+.THIS .slds-modal__content {
+    background-color: #F3F3F3;
+    /* max-height: calc(100vh - 18rem); */
+}
+
+.THIS .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0 !important;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    /* flex: none !important; */
+}
+
+.THIS .body{
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    overflow: auto;
+}
+
+
+/* Card Body */
+
+.THIS .card-body {
+    overflow-x: auto;
+}
+
+.THIS .body .card-01 .card-body{
+    display: flex;
+    align-items: end;
+    gap: 0.25rem;
+}
+
+.THIS .body .card-01 .card-body .field-wrap {
+    display: block;
+    flex: none;
+    width: 50%;
+}
+
+.THIS .body .card-01 .slds-input {
+    padding-left: 0.5rem;
+}
+
+.THIS .body .card-02 .table-wrap {
+    height: calc(100vh - 66rem);
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.THIS .body .card-03 .card-body {
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .body .card-03 .table-wrap {
+    height: calc(100vh - 66rem);
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+/* Table Design */
+
+.THIS .body table{
+    border-collapse: separate;
+}
+
+.THIS .body table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.THIS .body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Table Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+
+/* 📌 Modal 1 */
+
+.THIS .slds-modal__container .card-02{
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    flex: none;
+}
+
+.THIS .slds-modal__container .card-02 .card-header {
+    margin-bottom: 0.25rem;
+}
+
+.THIS .slds-modal__container .card-02 .card-header .button-wrap {
+    text-align: right;
+}
+
+.THIS .slds-modal__container .card-02 .card-body{
+    overflow: auto;
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-modal__container .top-card {
+    display: block;
+}
+
+/* 📌 Modal 2 */
+
+
+.THIS .modal-2 .card-01 .card-body {
+    width: unset !important;
+    display: flex;
+    gap: 1.5rem;
+    flex: auto;
+}
+
+.THIS .modal-2 .card-01 .card-body .button-wrap {
+    place-self: auto;
+}
+
+.THIS .modal-2 .card-01 .card-body .field-wrap {
+    flex: 1;
+}
+
+.THIS .modal-2 .card-02 {
+    display: inline-table;
+}
+
+.THIS .modal-2 .card-02 table {
+    table-layout: fixed;
+}
+
+.THIS .modal-2 .card-03 table {
+    border-spacing: 0;
+}
+
+/* Pagination */
+
+.THIS .pagination-wrap .total {
+    padding: 0.25rem 0;
+    text-align: right;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .pagination-wrap .pagination {
+    display: flex;
+    border: 1px solid #C9C9C9;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    width: fit-content;
+    margin: auto;
+    width: fit-content;
+}
+
+.THIS .pagination-wrap .pagination a {
+    text-decoration: none;
+}
+
+.THIS .pagination-wrap .pagination li+li {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS .pagination-wrap .pagination li:not(.pages) a {
+    padding: 0.5rem 0.75rem;
+    background-color: #fff;
+    color: #706E6B;
+    display: inline-block;
+    cursor: pointer;
+    line-height: 1rem;
+    height: 100%;
+}
+
+.THIS .pagination-wrap .pagination li a:hover {
+    background-color: #F3F3F3;
+}
+
+.THIS .pagination-wrap .pagination .pages a {
+    min-width: 2.25rem;
+    text-align: center;
+    display: inline-block;
+    padding: 0.5rem;
+    border-left: 1px solid #c9c9c9;
+}
+
+.THIS .pagination-wrap .pagination .pages span:first-child a {
+    border-left: none;
+}
+
+.THIS .pagination-wrap .pagination .pages .here {
+    display: inline-block;
+    text-align: center;
+    min-width: 2.25rem;
+    padding: 0.5rem;
+    background-color: #0176D3;
+    color: #fff;
+    cursor: unset;
+}
+.THIS .pagination-wrap .slds-icon_container{
+    pointer-events: none;
+}
+
+.THIS .slds-input {
+    min-width: unset;
+    padding-left: 0.75rem;
+}
+.THIS .card-table {
+    min-height: 200px;
+}

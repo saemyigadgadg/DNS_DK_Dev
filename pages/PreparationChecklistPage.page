@@ -1,0 +1,118 @@
+<apex:page >
+    <style>
+        .checklist-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .checklist-table th, .checklist-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        .checklist-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+    <h1>설치시운전 고객사 준비사항 점검표</h1>
+    
+    <table class="checklist-table">
+        <tr>
+            <td><strong>고객사:</strong> 에이테스(주)</td>
+            <td><strong>설치희망일:</strong> 2024-04-30</td>
+        </tr>
+        <tr>
+            <td colspan="2"><strong>주소:</strong> 경남 창원시 성산구 공단로 21번길 27</td>
+        </tr>
+        <tr>
+            <td colspan="2"><strong>설치장비/대수:</strong> GT3100L / 2대</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>고객사담당자/소속:</strong> 안찬영차장 / 에이테스 주식회사 &nbsp; <strong>전화번호:</strong> 010-8500-9571
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>판매자/소속:</strong> 허동해대표 / 엠티창원판매 &nbsp; <strong>전화번호:</strong> 010-8597-2387
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <strong>준비사항확인자/소속:</strong> 허동해대표 / 엠티창원판매 &nbsp; <strong>전화번호:</strong> 010-8597-2387
+            </td>
+        </tr>
+    </table>
+
+    <h2>기준공사</h2>
+    <table class="checklist-table">
+        <tr>
+            <th>항목</th>
+            <th>설치시운전 고객사 준비사항</th>
+            <th>예정일</th>
+            <th>완료일</th>
+        </tr>
+        <tr>
+            <td rowspan="3">기초공사</td>
+            <td>기초공사 시방서 및 기초도면 전달/설명</td>
+            <td>해당무</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>설치시운전 리드타임 전달/설명</td>
+            <td>해당무</td>
+            <td>완료</td>
+        </tr>
+        <tr>
+            <td>바닥깍기, 콘크리트 양생기간</td>
+            <td>해당무</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>설치위치 확인</td>
+            <td>장비와 틀 +/- 1.0m 확인 (장비 변경, 정비보수용)</td>
+            <td></td>
+            <td>확인완료</td>
+        </tr>
+        <tr>
+            <td rowspan="3">도어방지</td>
+            <td>레이아웃 변경을 포함한 장비 설치 위치 확정</td>
+            <td></td>
+            <td>확인완료</td>
+        </tr>
+        <tr>
+            <td>장비하치, 설치와 이동, 가설전기 (전문업체수행)</td>
+            <td>지게</td>
+            <td>확인완료</td>
+        </tr>
+        <tr>
+            <td>Transformer 준비 (장비 소요전력 220V)</td>
+            <td></td>
+            <td>확인완료</td>
+        </tr>
+        <tr>
+            <td rowspan="3">유틸리티</td>
+            <td>장비 설치제작자의 전기배선 (공장 NFB 용량, 전선규격 주의)</td>
+            <td>2024-04-30</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>전기공사 및 배선준비</td>
+            <td>2024-04-30</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>유공압</td>
+            <td>2024-04-30</td>
+            <td>확인완료</td>
+        </tr>
+        <tr>
+            <td>각종 윤활유/절삭유</td>
+            <td></td>
+            <td>확인완료</td>
+        </tr>
+    </table>
+
+    <p>1) 기초공사 시방서 및 기초도면은 장비 계약시 또는 계약후 1주일이내에 고객사에 직접 전달함. 내용설명 요망</p>
+    <p>※ 특기사항</p>
+</apex:page>

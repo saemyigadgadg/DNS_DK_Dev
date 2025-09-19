@@ -1,0 +1,477 @@
+<!--
+  @author            : Jun-Hyo Hwang 
+  @Description       : 안전재고 대상 & ROP 등록 (Yeong-Deok Seo, Jun-Yeong Choi 작성 모듈 참고)
+  @last modified on  : 01-09-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-24   junhyo.hwang@concentrix.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="안전재고 대상 &amp; ROP 등록" 
+  extends="c:DN_Helper"
+  controller="DN_DemandRegSafetyStockandPoController">
+
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!--mrpTypeOptions2 whereCondition-->
+  <aura:attribute name="materialListbyMonth" type="List" />
+  <aura:attribute name="mrpTypeOptions2" type="List" default="[
+  {'label': 'VB', 'value': 'VB'},
+  {'label': 'ND', 'value': 'ND'}
+  ]"/>
+
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      <!-- 📌 Body -->
+      <!-- <div class="body"> -->
+        
+        <!-- Card 02 -->
+        <!-- <div class="card-02 top-card"> -->
+          <div class="table-wrap">
+            <!-- Left Data Table -->
+            <div class="table-01 left-table" aura:id="leftTableDiv">
+              <table aura:id="leftDataTable" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="30%" />
+                  <col width="70%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th>
+                      <div>Material</div>
+                    </th>
+                    <th>
+                      <div>Material Description</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody aura:id="leftDataTableBody" id="leftTableBody">
+                  <aura:iteration items="{!v.recordList}" var="material" indexVar="i">
+                    <tr class="slds-hint-parent" style="scrollbar-width: none;">
+                      <td data-label="Material">
+                        <div title="Material">
+                          <lightning:input type="text" id="matnr" name="input2" variant="label-hidden"
+                            value="{!material.material}" readonly="false" />
+                        </div>
+                      </td>
+                      <td data-label="Material Description">
+                        <div title="Material Description">
+                          <lightning:input type="text" id="matnrdesc" name="input3" variant="label-hidden"
+                            value="{!material.materialDesc}" readonly="false" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- right Data Table-->
+            <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table aura:id="rightDataTable" id="rightTable"
+                class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead id="rightTableHead">
+                  <tr class="slds-line-height_reset">
+                    <aura:iteration items="{!v.materialListbyMonth}" var="month">
+                      <th > <!-- 금년 현재 달에서 2년 후 현재 달까지 -->
+                        <div title="{!month}">{!month}</div>
+                      </th>
+                    </aura:iteration>
+                    <th>
+                      <div>Unit</div>
+                    </th>
+                    <th>
+                      <div>C.ROP</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">N.ROP</div>
+                    </th>
+                    <th>
+                      <div>C.Max Lv.</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">N.Max Lv.</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">MRP Type</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">Fix</div>
+                    </th>
+                    <th>
+                      <div>C.R-Val.</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">N.R-Val.</div>
+                    </th>
+                    <th>
+                      <div>C.Min Lot</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">N.Min Lot</div>
+                    </th>
+                    <th>
+                      <div>6M</div>
+                    </th>
+                    <th>
+                      <div>12M</div>
+                    </th>
+                    <th>
+                      <div>18M</div>
+                    </th>
+                    <th>
+                      <div>Price</div>
+                    </th>
+                    <th>
+                      <div>ABC</div>
+                    </th>
+                    <th>
+                      <div>PDT</div>
+                    </th>
+                    <th>
+                      <div>Weight</div>
+                    </th>
+                    <th>
+                      <div>W.AMD</div>
+                    </th>
+                    <th>
+                      <div>STDEV</div>
+                    </th>
+                    <th>
+                      <div class="colored-th">Parts Note</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody aura:id="rightDataTableBody" id="rightTableBody">
+                  <aura:iteration items="{!v.recordList}" var="material" indexVar="materialIndex">
+                    <tr class="slds-hint-parent">
+                      <!-- <aura:iteration items="{!v.monthHeader}" var="month" indexVar="monthIndex">
+                                              <td data-label="curMonth"> 
+                                                  <div   title="{!month + month}">
+                                                      <lightning:input id="matnrCnt" type="text" name="{!monthIndex}" variant="label-hidden" value="{!materialIndex}" readonly="true" />
+                                                  </div>
+                                              </td>
+                                          </aura:iteration> -->
+                      <aura:iteration items="{!material.monthlyList}" var="month" indexVar="monthIndex">
+                        <td data-label="month18ago">
+                          <div title="month18ago">
+                            <lightning:input type="text" name="month18ago" variant="label-hidden"
+                              value="{!month.quantity}" readonly="true" />
+                          </div>
+                        </td>
+                      </aura:iteration>
+                      <!-- <td data-label="month18ago">
+                        <div title="month18ago">
+                          <lightning:input type="text" name="month18ago" variant="label-hidden"
+                            value="{!material.mon0}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month17ago">
+                        <div title="month17ago">
+                          <lightning:input type="text" name="month17" variant="label-hidden"
+                            value="{!material.mon1}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month16ago">
+                        <div title="month16ago">
+                          <lightning:input type="text" name="month16" variant="label-hidden"
+                            value="{!material.mon2}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month15ago">
+                        <div title="month15ago">
+                          <lightning:input type="text" name="month15" variant="label-hidden"
+                            value="{!material.mon3}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month14ago">
+                        <div title="month14ago">
+                          <lightning:input type="text" name="month14" variant="label-hidden"
+                            value="{!material.mon4}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month13ago">
+                        <div title="month13ago">
+                          <lightning:input type="text" name="month13" variant="label-hidden"
+                            value="{!material.mon5}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month12ago">
+                        <div title="month12ago">
+                          <lightning:input type="text" name="month12" variant="label-hidden"
+                            value="{!material.mon6}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month11ago">
+                        <div title="month11ago">
+                          <lightning:input type="text" name="month11" variant="label-hidden"
+                            value="{!material.mon7}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month10ago">
+                        <div title="month10ago">
+                          <lightning:input type="text" name="month10" variant="label-hidden" 
+                            value="{!material.mon8}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month9ago">
+                        <div title="month9ago">
+                          <lightning:input type="text" name="month9" variant="label-hidden" 
+                            value="{!material.mon9}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month8ago">
+                        <div title="month8ago">
+                          <lightning:input type="text" name="month8" variant="label-hidden"
+                             value="{!material.mon10}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month7ago">
+                        <div title="month7ago">
+                          <lightning:input type="text" name="month7" variant="label-hidden"
+                             value="{!material.mon11}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month6ago">
+                        <div title="month6ago">
+                          <lightning:input type="text" name="month6" variant="label-hidden" 
+                            value="{!material.mon12}"  readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month5ago">
+                        <div title="month5ago">
+                          <lightning:input type="text" name="month5" variant="label-hidden" 
+                            value="{!material.mon13}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month4ago">
+                        <div title="month4ago">
+                          <lightning:input type="text" name="month4" variant="label-hidden" 
+                            value="{!material.mon14}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month3ago">
+                        <div title="month3ago">
+                          <lightning:input type="text" name="month3" variant="label-hidden" 
+                            value="{!material.mon15}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month2ago">
+                        <div title="month2ago">
+                          <lightning:input type="text" name="month2" variant="label-hidden" 
+                            value="{!material.mon16}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="month1ago">
+                        <div title="month1ago">
+                          <lightning:input type="text" name="month1" variant="label-hidden" 
+                            value="{!material.mon17}" readonly="true" />
+                        </div>
+                      </td> -->
+                      <td data-label="Unit">
+                        <div title="Unit">
+                          <lightning:input type="text" name="input1" variant="label-hidden" value="{!material.unit}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="C.ROP"  >
+                        <div title="C.ROP">
+                          <lightning:input type="text" name="input2" variant="label-hidden" value="{!material.cROP}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="N.ROP" class="right">
+                        <div title="N.ROP">
+                          <lightning:input type="text" name="input3" variant="label-hidden" value="{!material.nROP}" accesskey="{!materialIndex}" onchange="{!c.handeQTYChange}" />
+                        </div>
+                      </td>
+                      <td data-label="C.Max Lv."  >
+                        <div title="C.Max Lv.">
+                          <lightning:input type="text" name="input4" variant="label-hidden" value="{!material.cMaxLv}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="N.Max Lv." class="right">
+                        <div title="N.Max Lv.">
+                          <lightning:input type="text" name="input5" variant="label-hidden"
+                            value="{!material.nMaxLv}" accesskey="{!materialIndex}" onchange="{!c.handleMaxChange}"/>
+                        </div>
+                      </td>
+                      <td data-label="MRP Type"  >
+                        <div title="MRP Type">
+                          <lightning:combobox name="input6" variant="label-hidden" value="{!material.mrpType}"
+                            options="{!v.mrpTypeOptions2}" onchange="" />
+                        </div>
+                      </td>
+                      <td data-label="Fix"  >
+                        <div title="Fix">
+                          <lightning:input type="checkbox" variant="label-hidden" aura:id="input7"
+                            checked="{!material.fix}" disabled="false" />
+                        </div>
+                      </td>
+                      <td data-label="C.R-Val." class="right">
+                        <div title="C.R-Val.">
+                          <lightning:input type="text" name="input8" variant="label-hidden" value="{!material.cRVal}" 
+                          readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="N.R-Val." class="right">
+                        <div title="N.R-Val.">
+                          <lightning:input type="text" name="input9" variant="label-hidden" value="{!material.nRVal}"
+                            accesskey="{!materialIndex}" onchange="{!c.handeRoundValChange}" 
+                           />
+                        </div>
+                      </td>
+                      <td data-label="C.Min Lot" class="right">
+                        <div title="C.Min Lot">
+                          <lightning:input type="text" name="input10" variant="label-hidden" value="{!material.cMinLot}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="N.Min Lot" class="right">
+                        <div title="N.Min Lot">
+                          <lightning:input type="text" name="input11" variant="label-hidden" value="{!material.nMinLot}" 
+                          accesskey="{!materialIndex}" onchange="{!c.handeMinLotChange}"  />
+                        </div>
+                      </td>
+                      <td data-label="6M" class="right">
+                        <div title="6M">
+                          <lightning:input type="text" name="input12" variant="label-hidden" value="{!material.m6}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="12M" class="right">
+                        <div title="12M">
+                          <lightning:input type="text" name="input13" variant="label-hidden" value="{!material.m12}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="18M" class="right">
+                        <div title="18M">
+                          <lightning:input type="text" name="input14" variant="label-hidden"
+                            value="{!material.m18}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="Price" class="right">
+                        <div title="Price">
+                          <lightning:formattedNumber value="{!material.price}"/>
+                          <!-- <lightning:input type="text" name="input15" variant="label-hidden" value="" readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="ABC"  >
+                        <div title="ABC">
+                          <lightning:input type="text" name="input16" variant="label-hidden" value="{!material.abc}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="PDT" class="right">
+                        <div title="PDT">
+                          <lightning:formattedNumber value="{!material.pdt}"/>
+                          <!-- <lightning:input type="text" name="input17" variant="label-hidden" value="{!material.pdt}"
+                            readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="Weight" class="right">
+                        <div title="Weight">
+                          <lightning:formattedNumber value="{!material.weight}"/>
+                          <!-- <lightning:input type="text" name="input18" variant="label-hidden" value="{!material.weight}"
+                            readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="W.AMD" class="right">
+                        <div title="W.AMD">
+                          <lightning:formattedNumber value="{!material.wAMD}"/>
+                          <!-- <lightning:input type="text" name="input19" variant="label-hidden" value="{!material.wAMD}"
+                            readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="STDEV" class="right">
+                        <div title="STDEV">
+                          <lightning:formattedNumber value="{!material.sTDEV}"/>
+                          <!-- <lightning:input type="text" name="input20" variant="label-hidden" value="{!material.stdev}"
+                            readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="Parts Note" class="left">
+                        <div title="Parts Note">
+                          <lightning:input type="text" name="input21" variant="label-hidden"
+                            value="{!material.partsNote}" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <!-- </div> -->
+
+        <!-- 📌 Pagination -->
+        <!-- <div class="pagination-wrap">
+          <div class="total">
+            <p>총 건수 : <span style="font-weight: bold;">{!v.allResultCount}</span>({!v.currentPage}/{!v.totalPage})</p>
+          </div>
+          <ul class="pagination">
+            <li class="first">
+              <a onclick="{!c.handleChangePage}" value="1">
+                <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small'
+                  title='jump_to_left'></lightning:icon>
+              </a>
+            </li>
+            <li class="prev">
+              <a onclick="{!c.handleChangePage}" value="{!v.currentPage - 1}">
+                <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small'
+                  title='chevronleft'></lightning:icon>
+              </a>
+            </li>
+            <li class="pages">
+              <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                  <span class="here"> {!pageNumber + 1} </span>
+                  <aura:set attribute="else">
+                    <span>
+                      <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber +
+                        1}</a>
+                    </span>
+                  </aura:set>
+                </aura:if>
+              </aura:iteration>
+            </li>
+            <li class="next">
+              <a onclick="{!c.handleChangePage}" value="{!v.currentPage + 1}">
+                <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small'
+                  title='chevronright'></lightning:icon>
+              </a>
+            </li>
+            <li class="last">
+              <a onclick="{!c.handleChangePage}" value="{!v.pageList.length}">
+                <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small'
+                  title='jump_to_right'></lightning:icon>
+              </a>
+            </li>
+          </ul>
+        </div> -->
+      <!-- </div> -->
+    </article>
+  </div>
+</aura:component>

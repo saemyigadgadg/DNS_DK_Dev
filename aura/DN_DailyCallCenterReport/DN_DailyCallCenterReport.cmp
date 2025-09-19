@@ -1,0 +1,339 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-09-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   01-08-2025   Hayeong Min    Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_DailyCallCenterReportController"
+    description="Daily 콜센터 현황 리스트" >
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="startDate" type="Date" default="" />
+    <aura:attribute name="endDate" type="Date" default="" />
+    <aura:attribute name="data" type="Object[]" />
+    <aura:attribute name="date" type="Object[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:if isTrue="{! v.isLoading }">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+    <article class="slds-card total-wrap">
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:call_history' alternativeText='call_history' size='small' title='call_history'></lightning:icon>
+                </div>
+                <h2 class="slds-card__header-title">Daily 콜센터 현황 리스트</h2>
+            </header>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body body">
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>조회기간</p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="" value="{!v.startDate}" variant="label-hidden" aura:id="" />
+                        <span class="to">~</span>
+                        <lightning:input type="date" name="" value="{!v.endDate}" variant="label-hidden" aura:id="" />
+                    </div>
+                </div>
+                <div class="button-wrap">
+                    <lightning:button variant="brand" label="조회" title="조회" onclick="{! c.handleSearch }" />
+                </div>
+            </div>
+            <div class="card-02">
+                <div class="table-wrap">
+                    <!-- Table 01 -->
+                    <div class="table-01 left-table" aura:id="leftTableDiv">
+                        <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">일자</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration  items="{!v.date}" var="date" indexVar="j">
+                                    <tr>
+                                        <td class="row-index">
+                                            <div class="slds-truncate" title="">{!j+1}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!date.RecordDate__c}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Table 02 -->
+                    <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col" colspan="2" rowspan="2" style="border-bottom: 1px solid #c9c9c9; line-height: 3.63;">
+                                        <div class="slds-truncate" title="">인입콜</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="12">
+                                        <div class="slds-truncate" title="">상담</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="4">
+                                        <div class="slds-truncate" title="">배정</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="10">
+                                        <div class="slds-truncate" title="">접수</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="3">
+                                        <div class="slds-truncate" title="">출동</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="4">
+                                        <div class="slds-truncate" title="">마감관리</div>
+                                    </th>                               
+                                </tr>
+                                <tr class="slds-line-height_reset">
+                                    <th class="first-th" scope="col">
+                                        <div class="slds-truncate" title="">서비스접수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">기술상담</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">콜서비스</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">미상담</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">고장접수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">미배정</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">고객회신대기</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">유무상판정</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">기술검토</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">배정지연</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">고객부재</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">20분 초과건수</div>
+                                    </th>
+    
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">총 배정건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">지사</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">정비업체</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">20분초과 건수(상담 후)</div>
+                                    </th>
+    
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">접수건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">인천지사</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">수원지사</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">대전</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">천안</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">광주</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">대구지사</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">부산지사</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">창원</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">울산</div>
+                                    </th>
+    
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">총 출동대상건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">당일 출동(S)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">익일 출동예정</div>
+                                    </th>
+    
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">예약 관리(S)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">당일 종결</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">일일 모니터링 확인</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">일일 모니터링 미확인</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.data}" var="field" indexVar="j">
+                                    <tr class="slds-line-height_reset">
+                                        <td class="row-index">
+                                            <div class="slds-truncate" title="">{!j+1}</div>
+                                        </td>                                        
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.InboundCallNum__c}</div>
+                                        </td>  
+                                        
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.ServiceReception__c}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.TechnicalInquiry__c +' ('+ field.FM_TechnicalInquiry__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.CallService__c +' ('+ field.FM_CallService__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.NoCall__c +' ('+ field.FM_NoCall__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.FailureReceipt__c +' ('+ field.FM_FailureReceipt__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.NoAssign__c +' ('+ field.FM_NoAssign__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.WaitingForCustomerResponse__c +' ('+ field.FM_WaitingForCustomerResponse__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.WarrantyDetermination__c +' ('+ field.FM_WarrantyDetermination__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.TechnicalReview__c +' ('+ field.FM_TechnicalReview__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.AssignHolding__c +' ('+ field.FM_AssignHolding__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.CustomerAbsence__c +' ('+ field.FM_CustomerAbsence__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Exceeding20Min__c +' ('+ field.FM_Exceeding20Min__c + '%)'}</div>
+                                        </td> 
+
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.AssignNumAll__c +' ('+ field.FM_AssignNumAll__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Branch__c +' ('+ field.FM_Branch__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.WorkCenter__c +' ('+ field.FM_WorkCenter__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.AssignExceeding20Min__c +' ('+ field.FM_AssignExceeding20Min__c + '%)'}</div>
+                                        </td> 
+
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.ReceptionNum__c +' ('+ field.FM_ReceptionNum__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Incheon__c +' ('+ field.FM_Incheon__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Suwon__c +' ('+ field.FM_Suwon__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Daejeon__c +' ('+ field.FM_Daejeon__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Cheonan__c +' ('+ field.FM_Cheonan__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Gwangju__c +' ('+ field.FM_Gwangju__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Deagu__c +' ('+ field.FM_Deagu__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Busan__c +' ('+ field.FM_Busan__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Changwon__c +' ('+ field.FM_Changwon__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.Ulsan__c +' ('+ field.FM_Ulsan__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.AllDispatchNum__c +' ('+ field.FM_AllDispatchNum__c + '%)'}</div>
+                                        </td> 
+
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.DispatchOntheDay__c +' ('+ field.FM_DispatchOntheDay__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.DispatchTomorrow__c +' ('+ field.FM_DispatchTomorrow__c + '%)'}</div>
+                                        </td> 
+
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.OnsiteManagement__c +' ('+ field.FM_OnsiteManagement__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.ClosedToday__c +' ('+ field.ClosedToday__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.DailyMonitoringCheck__c +' ('+ field.FM_DailyMonitoringCheck__c + '%)'}</div>
+                                        </td> 
+                                        <td>
+                                            <div class="slds-truncate" title="">{!field.DailyMonitoringUnCheck__c +' ('+ field.FM_DailyMonitoringUnCheck__c + '%)'}</div>
+                                        </td> 
+
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </article>
+
+</aura:component>

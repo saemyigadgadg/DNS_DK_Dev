@@ -1,0 +1,233 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 02-21-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+  controller="DN_PortalSalesRequestEduController"
+  description="납품후교육목록">
+
+    <!-- URL State 읽어오기 위한 속성 추가 -->
+    <aura:attribute name="pageReference" type="Object"/>
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading"    type="Boolean" default="false" description="동작 중인 경우 true" />
+    <aura:attribute name="isSearched"   type="Boolean" default="false" description="검색 결과가 존재하면 true" />
+    <aura:attribute name="dealerInfo"   type="Object" description="접속한 사용자의 정보" />
+    
+    <!-- 검색 조건 -->
+    <aura:attribute name="erpPSONo"     type="String" default="" description="수주번호" />
+    <aura:attribute name="customerInfo" type="Object" description="고객사 정보" />
+    <aura:attribute name="startDate"    type="Date"   description="접수일자(시작)" /> 
+    <aura:attribute name="endDate"      type="Date"   description="접수일자(종료)" />
+    <aura:attribute name="machineName"  type="String" default="" description="기종" />
+    <aura:attribute name="assetName"    type="String" default="" description="장비번호" />
+    <aura:attribute name="ticketNo"     type="String" default="" description="Ticket 번호" />
+    
+    <aura:attribute name="caseNo"       type="String" />
+    <aura:attribute name="accId"        type="String" />
+    <aura:attribute name="accName"      type="String" />
+    <aura:attribute name="assetList"   type="List" default="[]" /> <!--오더목록-->
+    <aura:attribute name="ticketList"  type="List" default="[]" /> <!--교육목록-->    
+    <aura:attribute name="assetData"    type="Object"  />             <!--기본정보-->
+    <aura:attribute name="orderNumber"  type="String"   default="" /> <!--주문번호-->
+    <aura:attribute name="dateFrom"     type="Date" />                <!--접수일자From-->
+    <aura:attribute name="dateTo"       type="Date" />                <!--접수일자To-->
+
+    <!-- navigation -->
+    <lightning:navigation aura:id="navTrainingCreate"/> <!--납품 후 교육 등록 페이지로 이동-->
+    <lightning:navigation aura:id="navTrainingList"/> <!--납품 후 교육 조회 페이지로 이동-->
+  
+    <!-- Handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <!-- URL State 변경 시 doInit 재실행 -->
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <div class="total-wrap">
+    <article class="slds-card">
+
+      <!-- 모달 -->
+      <div aura:id="CustomerListModal" /> <!--고객사모달-->
+      <div aura:id="ModelSearchModal"  /> <!--기종/장비번호모달-->
+      <div aura:id="OrderListModal"    /> <!--주문번호모달-->
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading}">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName="standard:service_request" size="small" />
+          <h2 class="slds-truncate">납품 후 교육 목록</h2>
+        </div>
+
+        <div class="button-wrap">
+          <lightning:button name="search" label="생성" iconName="utility:add" iconPosition="left"
+            onclick="{!c.createTraining}" />
+          <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left"
+            onclick="{!c.doSearch}" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        <!-- Card 01 -->
+        <div class="card-01 top-card">
+
+          <div class="field-wrap">
+            <p>수주번호</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="erpPSONo" value="{!v.erpPSONo}" variant="label-hidden" disabled="true"  readonly="true"/>
+              <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close OrderNo"  
+              onclick="{!c.clearOrderNo}" class="clear-btn"/>
+              <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search" onclick="{!c.openOrderListModal}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>고객사</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.accName}" variant="label-hidden" disabled="true"  readonly="true"/>
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="customer Name" onclick="{!c.clearCustomerName}" class="clear-btn"/>
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.openCustomerListModal}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>기종</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.machineName}" variant="label-hidden" disabled="true"  readonly="true"/>
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine" 
+                  onclick="{!c.clearMachine}" class="clear-btn"/>
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                  onclick="{!c.openModelModal}" />
+            </div>
+          </div>
+          
+          <div class="field-wrap">
+            <p>장비번호</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.assetName}" variant="label-hidden" disabled="true"  readonly="true"/>
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"  
+                onclick="{!c.clearAsset}" class="clear-btn"/>
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.openSerialNumberModal}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>Ticket 번호</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="caseNo" value="{!v.caseNo}" variant="label-hidden" onchange="{!c.handleChange}"/>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>접수일자</p>
+            <div class="input-wrap">
+              <lightning:input type="date" name="startDate" value="{!v.startDate}" variant="label-hidden" onchange="{!c.handleChange}" />
+              ~
+              <lightning:input type="date" name="endDate" value="{!v.endDate}" variant="label-hidden" onchange="{!c.handleChange}" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Table 01 -->
+        <div class="card-02 top-card">
+          <div class="table-wrap">
+            <!-- Fixed : Left -->
+            <div class="table-01 table-left" aura:id="leftTableDiv">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="%" />
+                  <col width="%" />
+                  <col width="%" />
+                  <col width="%" />
+                  <col width="%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Ticket 번호</th>
+                    <th>접수일시</th>
+                    <th>교육담당자</th>
+                    <th>기종</th>
+                    <th>장비번호</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!v.isSearched}">
+                    <aura:iteration items="{!v.ticketList}" var="ti" indexVar="j">
+                      <tr>
+                        <td class="center">
+                          <div onclick="{!c.searchTraining}" data-case="{!ti.CaseNumber}" class="receipt-num">
+                            {!ti.CaseNumber}
+                          </div>
+                        </td>
+                        <td class="center">{!ti.CreatedDate}</td>
+                        <td class="center">{!ti.Owner.Name}</td>
+                        <td class="center">{!ti.FM_AssetMachineName__c}</td>
+                        <td class="center">{!ti.Asset.Name}</td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Scrollable : Right -->
+            <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>상태</th>
+                    <th>고객사</th>
+                    <th>고객사 담당자</th>
+                    <th>고객사 연락처</th>
+                    <th>직책</th>
+                    <th>교육종류</th>
+                    <th>교육횟수</th>
+                    <th>교육요청일시(1)</th>
+                    <th>교육요청일시(2)</th>
+                    <th>교육요청일시(3)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!v.isSearched}">
+                    <aura:iteration items="{!v.ticketList}" var="ti" indexVar="j">
+                      <tr>
+                        <td class="center">{!ti.Status}</td>
+                        <td class="center">{!ti.Account.Name}</td>
+                        <td class="center">{!ti.ContactName__c}</td>
+                        <td class="center">{!ti.ContactPhone__c}</td>
+                        <td class="center">{!ti.ContactPosition__c}</td>
+                        <td class="center">{!ti.TrainingType__c}</td>
+                        <td class="center">{!ti.TrainingCount__c}</td>
+                        <td class="center">{!ti.TrainingDateTime1__c}</td>
+                        <td class="center">{!ti.TrainingDateTime2__c}</td>
+                        <td class="center">{!ti.TrainingDateTime3__c}</td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+  </div>
+
+</aura:component>

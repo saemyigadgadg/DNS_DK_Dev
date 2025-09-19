@@ -1,0 +1,135 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 02-10-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   02-10-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable,force:hasRecordId"
+    description="견적서 상세"
+    extends="c:DN_Helper"
+    controller="DN_DealerPortalQuoteCreateController"
+>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="partsList" type="List" />
+    <aura:attribute name="quoteTotal" type="Integer" default="0" />
+
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+
+    <div class="detailPage">
+        <div class="card-02 top-card">
+          <div class="card-header">
+            <div class="title">
+              <lightning:icon iconName='standard:lead_list' alternativeText='lead_list' size='small' title='lead_list'/>
+              <h2>Parts List</h2>
+            </div>
+  
+            <div class="button-wrap">
+              <lightning:buttonGroup>
+                <!-- 
+                    Button
+                  -->
+              </lightning:buttonGroup>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <div class="table-01 " aura:id="leftTableDiv">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">품번</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">품명</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="">수량</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">UOM</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">고객판매가</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">할인판매가</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">할인판매금액</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">할인율(%)</div>
+                      </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+                    <tr class="slds-hint-parent">
+                      <td data-label="품번">
+                        <div class="slds-truncate" title="품번">{!parts.replacingPartName}</div> 
+                        <!-- {!parts.partName} -->
+                      </td>
+                      <td data-label="품명">
+                        <div class="slds-truncate" title="품명">{!parts.replacingPartDetails}</div>
+                        <!-- {!parts.partDetails} -->
+                      </td>
+                      <td data-label="수량" class="right">
+                        <div class="slds-truncate" title="수량">
+                            <lightning:formattedNumber name="quantity" value="{!parts.quantity}" />
+                        </div>
+                      </td>
+                      <td data-label="UOM">
+                        <div class="slds-truncate" title="UOM">{!parts.unit}</div>
+                      </td>
+                      <td data-label="고객판매가">
+                        <div class="slds-truncate right" title="고객판매가">
+                            <lightning:formattedNumber name="customerPrice" value="{!parts.customerPrice}" />
+                        </div>
+                      </td>
+                      <td data-label="할인판매가">
+                        <div class="slds-truncate right" title="할인판매가">
+                            <lightning:formattedNumber name="discountPrice" value="{!parts.discountPrice}" />
+                        </div>
+                      </td>
+                      <td data-label="할인판매금액">
+                        <div class="slds-truncate right" title="할인판매금액">
+                            <lightning:formattedNumber name="discountAmount" value="{!parts.discountAmount}" />
+                        </div>
+                      </td>
+                      <td data-label="할인율(%)">
+                        <div class="slds-truncate right" title="할인율(%)">
+                            <lightning:formattedNumber name="discountRate" value="{!parts.discountRate}" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+        </div>
+        <div class="table-wrap foot-table">
+            <table>
+              <colgroup>
+                <col width="75%" />
+                <col width="25%" />
+              </colgroup>
+              <tfoot>
+                <td class="right">
+                  견적서 총 합계
+                </td>
+                <td class="right">
+                  <lightning:formattedNumber name="quoteTotal" value="{!v.quoteTotal}" />
+                </td>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+</aura:component>

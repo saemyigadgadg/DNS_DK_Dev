@@ -1,0 +1,187 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-02-18
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-12-20   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<template>
+    <div class="total-wrap slds-card">
+        <div class="header">
+            <div class="title">
+                <lightning-icon icon-name='standard:care_request_reviewer' alternative-text='care_request_reviewer'
+                    size='xx-small' title='care_request_reviewer'></lightning-icon>
+                <h2>지사별 클레임 미결현황</h2>
+            </div>
+        </div>
+
+        <div class="body">
+            <template if:true={isLoading}>
+                <lightning-spinner size="x-small"></lightning-spinner>
+            </template>
+            
+
+            <div class="title-wrap">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:checkin' alternative-text='checkin' size='small' title='checkin'></lightning-icon>
+                </div>
+                <div class="title">
+                    <p class="label">지사</p>
+                    <h3>{currentWCName}</h3>
+                </div>
+            </div>
+
+            <div class="call-wrap">
+                <div class="card">
+                    <div class="card-title">
+                        <lightning-icon icon-name='utility:incoming_call' alternative-text='incoming_call' size='xx-small' title='incoming_call'></lightning-icon>
+                        <h4 class="label">접수건수</h4>
+                    </div>
+                    <div class="count">
+                        <p>{currentWCData.AllOrderCount}</p>
+                        <span>건</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        <lightning-icon icon-name='utility:end_call' alternative-text='end_call' size='xx-small' title='end_call'></lightning-icon>
+                        <h4 class="label">미결건수</h4>
+                    </div>
+                    <div class="count">
+                        <p>{currentWCData.pendingOrderCount}</p>
+                        <span>건</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        <lightning-icon icon-name='utility:capacity_plan' alternative-text='capacity_plan' size='xx-small' title='capacity_plan'></lightning-icon>
+                        <h4 class="label">완료율</h4>
+                    </div>
+                    <div class="count">
+                        <p><lightning-formatted-number value={currentWCData.completionRate} maximum-fraction-digits="2"></lightning-formatted-number></p>
+                        <span>%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="image-wrap">
+                <img alt="Map Area Image" src={brcArea} />
+            </div>
+
+            <div class="agent-wrap">
+                <h2>인원 현황</h2>
+                <ul class="card-container">
+                    <li class="card">
+                        <div class="card-title">
+                            <lightning-icon icon-name='utility:people' alternative-text='people' size='xx-small' title='people'></lightning-icon>
+                            <h4 class="label">인원</h4>
+                        </div>
+                        <div class="count">
+                            <p>{currentWCData.personCount}</p>
+                            <span>명</span>
+                        </div>
+                    </li>
+                    <li class="card">
+                        <div class="card-title">
+                            <lightning-icon icon-name='utility:resource_capacity' alternative-text='resource_capacity' size='xx-small' title='resource_capacity'></lightning-icon>
+                            <h4 class="label">작업</h4>
+                        </div>
+                        <div class="count">
+                            <p>{currentWCData.statusWork}</p>
+                            <span>명</span>
+                        </div>
+                    </li>
+                    <li class="card">
+                        <div class="card-title">
+                            <lightning-icon icon-name='utility:queue' alternative-text='queue' size='xx-small' title='queue'></lightning-icon>
+                            <h4 class="label">대기</h4>
+                        </div>
+                        <div class="count">
+                            <p>{currentWCData.statusWait}</p>
+                            <span>명</span>
+                        </div>
+                    </li>
+                    <li class="card">
+                        <div class="card-title">
+                            <lightning-icon icon-name='utility:agent_home' alternative-text='agent_home' size='xx-small' title='agent_home'></lightning-icon>
+                            <h4 class="label">교육/자체</h4>
+                        </div>
+                        <div class="count">
+                            <p>{currentWCData.statusEdu}</p>
+                            <span>명</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <thead>
+                        <tr>
+                            <th>지사</th>
+                            <th>접수건수</th>
+                            <th>미결건수</th>
+                            <th>완료율</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{currentWCName}</td>
+                            <td>{currentWCData.AllOrderCount}건</td>
+                            <td>{currentWCData.pendingOrderCount}건</td>
+                            <td>{currentWCData.completionRate}%</td>
+                        </tr>
+                        <tr>
+                            <th>인원</th>
+                            <th>작업</th>
+                            <th>대기</th>
+                            <th>교육/자체</th>
+                        </tr>
+                        <tr>
+                            <td>{currentWCData.personCount}명</td>
+                            <td>{currentWCData.statusWork}명</td>
+                            <td>{currentWCData.statusWait}명</td>
+                            <td>{currentWCData.statusEdu}명</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <tr>
+                        <th>지사</th>
+                        <td>{currentWCName}</td>
+                    </tr>
+                    <tr>
+                        <th>접수건수</th>
+                        <td>{currentWCData.AllOrderCount}건</td>
+                    </tr>
+                    <tr>
+                        <th>미결건수</th>
+                        <td>{currentWCData.pendingOrderCount}건</td>
+                    </tr>
+                    <tr>
+                        <th>완료율</th>
+                        <td>{currentWCData.completionRate}%</td>
+                    </tr>
+                    <tr>
+                        <th>인원</th>
+                        <td>{currentWCData.personCount}명</td>
+                    </tr>
+                    <tr>
+                        <th>작업</th>
+                        <td>{currentWCData.statusWork}명</td>
+                    </tr>
+                    <tr>
+                        <th>대기</th>
+                        <td>{currentWCData.statusWait}명</td>
+                    </tr>
+                    <tr>
+                        <th>교육/자체</th>
+                        <td>{currentWCData.statusEdu}명</td>
+                    </tr>
+                </table>
+            </div> -->
+        </div>
+    </div>
+</template>

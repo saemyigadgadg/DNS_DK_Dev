@@ -1,0 +1,91 @@
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CampaignExtractConditionController">
+
+    <aura:html tag="style">
+        .slds-modal__content:has(.cDN_CampaignExtractCondition) {
+        height: auto !important;
+        max-height: none !important;
+        padding: 0;
+        overflow-y:clip;
+        }
+        .slds-modal__container:has(.cDN_CampaignExtractCondition) {
+        width: 30rem;
+        max-width: none;
+        min-width: none;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CampaignExtractCondition) {
+        padding:0;
+        }
+        <!-- overflow -->
+        .modal-body:has(.cDN_CampaignExtractCondition) {
+        overflow: visible;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CampaignExtractCondition) {
+        overflow:visible;
+        }
+        .slds-modal__content:has(.cDN_CampaignExtractCondition) {
+        overflow: visible;
+        }
+    </aura:html>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="extractTarget" type="String" default="" />
+    <aura:attribute name="extractCondition" type="String" default="" />
+    <aura:attribute name="conditionDate" type="String" default="" />
+    <aura:attribute name="ticketType" type="String" default="" />
+    
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!--Container-->
+    <div class="ExtractConditionModal">
+        <div>
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">추출조건</h2>
+            </header>
+            <div class="slds-modal__container">
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="condition-content">
+                        <lightning:recordEditForm objectApiName="ExtractCondition__c">
+                            <lightning:inputField fieldName="ExtractionTarget__c" aura:id="extractTarget" value="{!v.extractTarget}" onchange="{!c.handleTarget}" />
+                            <lightning:inputField fieldName="ExtractionCondition__c" aura:id="extractCondition" value="{!v.extractCondition}" onchange="{!c.handleCondition}" />
+
+                            <!-- Work Order -->
+                            <aura:if isTrue="{! AND( v.extractTarget == 'Work Order', OR(v.extractCondition == '설치완료일자', v.extractCondition == 'Warranty Start Date'))}">
+                                <label class="date-label">{!v.extractCondition}</label>
+                                <div class="date">
+                                    <lightning:inputField fieldName="FromDate__c" aura:id="workOrderFromDate" variant="label-hidden" />
+                                    <P>~</P>    
+                                    <lightning:inputField fieldName="ToDate__c" aura:id="workOrderToDate" variant="label-hidden" />
+                                </div>
+                            </aura:if>
+                            <!-- Ticket -->
+                            <aura:if isTrue="{! AND( v.extractTarget =='Ticket', OR(v.extractCondition == '티켓종료일자', v.extractCondition == 'Ticket Closed Date'))}">
+                                <label class="date-label">{!v.extractCondition}</label>
+                                <div class="date">
+                                    <lightning:inputField fieldName="FromDate__c" aura:id="ticketFromDate" variant="label-hidden" />
+                                    <p>~</p>
+                                    <lightning:inputField fieldName="ToDate__c" aura:id="ticketToDate" variant="label-hidden" />
+                                </div>
+                            </aura:if>
+                            <aura:if
+                                isTrue="{! AND( v.extractTarget =='Ticket', OR(v.extractCondition == '티켓유형', v.extractCondition == 'Ticket Type'))}">
+                                <lightning:inputField fieldName="TicketType__c" aura:id="ticketType" value="{!v.ticketType}" />
+                            </aura:if>
+                        </lightning:recordEditForm>
+                    </div>
+                </div>
+
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="destructive-text" label="Cancel" onclick="{!c.handleCancel}"
+                    class="slds-m-left_x-small" />
+                <lightning:button variant="brand" label="Save" onclick="{!c.handleSave}" class="slds-m-left_x-small" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

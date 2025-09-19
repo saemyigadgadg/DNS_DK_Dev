@@ -1,0 +1,19 @@
+/* common */
+
+.THIS .slds-modal__container {
+  padding: 0;
+  overflow: clip;
+}
+
+.THIS .slds-modal__content {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  padding: 1.5rem 1.25rem;
+}
+
+.THIS .slds-modal__content p {
+  font-size: 14px;
+  height: 4rem;
+  line-height: 4rem;
+}

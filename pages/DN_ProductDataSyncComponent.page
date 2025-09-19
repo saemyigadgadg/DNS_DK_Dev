@@ -1,0 +1,210 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @description       : 
+  @last modified on  : 2025-05-08
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+-->
+<!-- <apex:page standardController="Product2"> -->
+    <apex:page standardController="Product2" extensions="DN_ProductDataSyncController">
+
+    <style>
+        .container {
+            height: calc(100vh - 2rem);
+            position: relative;
+        }
+        .modal-container {
+            width: 40rem;
+            max-height: calc(100vw - 12rem);
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 47%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 13px;
+            box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.15);
+        }
+        .modal-header {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 0.25rem 0.25rem 0 0;
+            text-align: center;
+            border-bottom: 2px solid #c9c9c9;
+        }
+        .modal-header h2 {
+            font-size: 1.25rem;
+            line-height: 1.25rem;
+            font-weight: 500;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 1rem;
+        }
+        .modal-content input {
+            background-color: #fff;
+            border: 1px solid #dddbda;
+            border-radius: .25rem;
+            transition: border .1s linear, background-color .1s linear;
+            display: inline-block;
+            padding: 0 1rem 0 .75rem;
+            line-height: 1.875rem;
+            min-height: calc(1.875rem + (1px * 2));
+        }
+        .modal-content .label {
+            display: inline-block;
+            margin-right: 1rem;
+            font-size: 13px;
+            font-weight: 400;
+        }
+        .modal-footer {
+            background-color: #f3f3f3;
+            padding: 0.75rem;
+            border-radius: 0 0 0.25rem 0.25rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            border-top: 2px solid #c9c9c9;
+        }
+        .modal-footer > input {
+            background: #0176d3 !important;
+            border: none;
+            padding: 0.5rem 0.75rem !important ;
+            color: #fff;
+            border-radius: 0.25rem;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        .modal-footer > input:hover {
+            filter: brightness(0.95);
+        }
+        .modal-footer .cancel {
+            color: #0176d3;
+            background: #fff !important;
+            border: 1px solid #c9c9c9;
+            margin-right: 0.5rem;
+        }
+    </style>
+
+    <script>
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.textContent = message;
+
+            toast.style.position = "fixed";
+            toast.style.top = "30px";
+            toast.style.left = "50%";
+            toast.style.transform = "translateX(-50%)";
+            toast.style.backgroundColor = "#f44336";
+            toast.style.color = "white";
+            toast.style.padding = "16px 32px";
+            toast.style.fontSize = "18px";
+            toast.style.fontWeight = "bold";
+            toast.style.borderRadius = "6px";
+            toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+            toast.style.zIndex = "9999";
+            toast.style.maxWidth = "80%";
+            toast.style.textAlign = "center";
+            toast.className = "toast-message";
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function hideToast() {
+            document.querySelectorAll('.toast-message').forEach(el => el.remove());
+        }
+
+        function showSpinner() {
+            document.getElementById('spinner').style.display = 'flex';
+        }
+
+        function hideSpinner() {
+            document.getElementById('spinner').style.display = 'none';
+        }
+
+    </script>
+
+    <style>
+        .spinner-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 8px solid #ccc;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+    </style>
+
+    <apex:form styleClass="container">
+
+        <!-- 스피너 -->
+        <div id="spinner" class="spinner-overlay" style="display:none;">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- 에러 메시지 영역 (rerender 대상) -->
+        <apex:outputPanel id="errorPanel">
+            <apex:outputText rendered="{!NOT(ISBLANK(errorMessage))}">
+                <script>
+                    showToast("{!JSENCODE(errorMessage)}");
+                </script>
+            </apex:outputText>
+        </apex:outputPanel>
+
+        <apex:outputPanel id="redirectPanel">
+            <apex:outputText rendered="{!NOT(ISBLANK(redirectUrl))}">
+                <script>
+                    function handleResponse() {
+                        hideSpinner();
+                        console.log('??', "{!JSENCODE(redirectUrl)}");
+                        
+                        window.location.href = "{!JSENCODE(redirectUrl)}";
+                    }
+                </script>
+            </apex:outputText>
+
+            <apex:outputText rendered="{!ISBLANK(redirectUrl)}">
+                <script>
+                    function handleResponse() {
+                        hideSpinner();
+                    }
+                </script>
+            </apex:outputText>
+        </apex:outputPanel>
+
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Data Sync</h2>
+            </div>
+            <div class="modal-content">
+                <div class="input-wrap">
+                    <span class="label">{!productCodeLabel}</span>
+                    <apex:inputText value="{!productCodeValue}" styleClass="input-text"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <apex:commandButton value="{!cancelLabel}" action="{!clickCancel}" styleClass="cancel" />
+                <apex:commandButton value="{!confirmLabel}" action="{!clickConfirm}" styleClass="confirm" onclick="hideToast(); showSpinner();" oncomplete="handleResponse();" rerender="formBlock, errorPanel, redirectPanel" />
+            </div>
+        </div>
+
+    </apex:form>
+
+</apex:page>

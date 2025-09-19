@@ -1,0 +1,215 @@
+<!--
+  @description       : (포탈) 판매가 > 판매가 조정 요청
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-11
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   02-18-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PortalSalePriceRequestController"
+  description="판매가 조정 요청">
+  
+  <!-- navigation -->
+  <lightning:navigation aura:id="navPriceDetailView"/> <!--상세조회 페이지로 이동-->
+
+  <!-- attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="isExecute" type="Boolean" default="false" />
+
+  <aura:attribute name="dealerInfo" type="Object"     default="" description="로그인 유저 정보" />
+
+  <aura:attribute name="inquiryPONo"    type="String" default="" description="Inquiry PO No" />
+  <aura:attribute name="requester"      type="String" default="" description="요청인" />
+  <aura:attribute name="requesterEmail" type="String" default="" description="요청인 Email" />
+  <aura:attribute name="equipmentName"  type="String" default="" description="기종" />
+  <aura:attribute name="equipmentNo"    type="String" default="" description="장비번호" />
+  <aura:attribute name="today"          type="String"            description="생성일(당일)" />
+
+  <aura:attribute name="maxFileSize"    type="Integer" default="10485760" description="파일 업로드 용량 제한 10MB" />
+  <aura:attribute name="filesList"      type="List" default="[]" description="업로드한 파일 정보" />
+  <aura:attribute name="urlFilesList"   type="List" default="[]" description="url 변환한 파일 ID" />
+  <aura:attribute name="splitFilesList" type="List" default="[]" description="분할 파일 정보" />
+
+  <aura:attribute name="partsList"      type="List" default="[]" description="가격 요청 부품 리스트" />
+  <aura:attribute name="checkList"      type="List" default="[]" description="삭제할 row 모음" />
+
+  <aura:attribute name="part" type="List" default="[]" description="enter 용 데이터 저장" />
+  <aura:attribute name="peNo" type="String" default="" description="sap 저장시 받는 번호" />
+
+  <!-- handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+  <div class="total-wrap">
+    <article class="slds-card">
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading }">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName='standard:currency' alternativeText='currency' size='small' title='currency' />
+          <h2 class="slds-truncate">{!$Label.c.PAR_PriceEscalation} <!-- 판매가 조정 요청 --></h2>
+        </div>
+
+        <div class="button-wrap">
+          <lightning:button name="" label="{!$Label.c.DNS_FSL_Complete}" iconName="utility:multi_select_checkbox" iconPosition="left"
+            onclick="{!c.doComplete}" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p>Inquiry PO No</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="inquiryPONo" value="{!v.inquiryPONo}" variant="label-hidden" />
+              <!-- 12자리 제한 >> SAP 에서 13자리 이 후 글자는 버리고 12자리까지만 가져가서 저장함. -->
+              <!-- <lightning:input type="text" name="inquiryPONo" value="{!v.inquiryPONo}" variant="label-hidden" maxlength="12" onkeypress="{!c.inputText}"/> -->
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_PartsDealer} <!-- 부품대리점 --><abbr class="slds-required" title="required">*</abbr></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="dealer" value="{!v.dealerInfo.dealerName}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_Requester} <!-- 요청인 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="requester" value="{!v.requester}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_RequesterEmail} <!-- 요청인 Email --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="requesterEmail" value="{!v.requesterEmail}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_ModelNo} <!-- 기종 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="equipmentName" value="{!v.equipmentName}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.service_lbl_serial_no} <!-- 장비번호 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="equipmentNo" value="{!v.equipmentNo}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_CreationDtae} <!-- 생성일 --><abbr class="slds-required" title="required">*</abbr></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="today" value="{!v.today}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+        </div>
+        <div class="card-02 top-card">
+          <div class="card-header">
+            <h2>
+              {!$Label.c.PAR_AttachRelevantDoc} <!-- 관련 서류 첨부 -->
+            </h2>
+            <p>
+              {!$Label.c.PAR_FileMsg} <!-- *파일크기 : 총 10MB 이하 *견적서, 온라인 판매가, 직전 구매 견적 등 -->
+            </p>
+          </div>
+          <div class="card-body">
+            <div class="field-wrap">
+              <div class="input-wrap">
+                <lightning:fileUpload multiple="true" recordId="{!v.recordId}" 
+                  onuploadfinished="{!c.handleUploadFinished}" variant="label-hidden" />
+              </div>
+              <!-- 파일 목록-->
+              <div class="file-wrap">
+                <aura:iteration items="{!v.filesList}" var="key" indexVar="index">
+                  <div class="file-name">
+                    <a href="">{!key.name}</a>
+                    <div href="" onclick="{!c.removeFile}" data-id="{!key.documentId}" data-file="{!key.name}" >
+                      <lightning:icon iconName="utility:close" alternativeText="Remove" title="Remove"
+                        size="xx-small" />
+                    </div>
+                  </div>
+                </aura:iteration>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-03 top-card">
+          <div class="card-header">
+            <div class="button-wrap">
+              <!-- 기존 두비즈에도 있는 기능이라서 개발. 단 기존 두비즈에서도 숨김처리되어 있어 개발 후 숨김 처리함. -->
+              <!-- <lightning:button iconName="utility:add"                name="addRow"    label="추가" onclick="{!c.addRow}" /> -->
+              <!-- <lightning:button iconName="utility:delete"             name="deleteRow" label="삭제" onclick="{!c.deleteRow}" /> -->
+              <lightning:button iconName="utility:duration_downscale" name="execute"   label="{!$Label.c.PAR_Execution}" iconPosition="left" onclick="{!c.doExecute}" />
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <colgroup>
+                  <col width="1%" />
+                  <col width="5%" />
+                  <col width="13%" />
+                  <col width="13%" />
+                  <col width="13%" />
+                  <col width="13%" />
+                  <col width="13%" />
+                  <col width="28%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th scope="col" class="check-box">
+                      <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.doCheckAll }" />
+                    </th>
+                    <th>No</th>
+                    <th>{!$Label.c.DNS_FSL_ProductNumber} <!-- 품번 --></th>
+                    <th>{!$Label.c.service_lbl_part_name} <!-- 품명 --></th>
+                    <th>{!$Label.c.DNS_C_Currency} <!-- 통화 --></th>
+                    <th>{!$Label.c.PAR_SystemPrice} <!-- 시스템가격 --></th>
+                    <th>{!$Label.c.PAR_SuggestedPrice} <!-- 제안가격 --></th>
+                    <th>{!$Label.c.DNS_T_QuoteReviewSubtitle} <!-- 요청사항 --></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.partsList}" var="part" indexVar="j">
+                    <tr>
+                      <td class="check-box center">
+                        <lightning:input type="checkbox" aura:id="checkbox" accesskey="{!j}"
+                          onchange="{! c.doCheck }" />
+                      </td>
+                      <td data-label="항목" class="center" name="itemNo" aura:id="itemNoId">
+                        {!part.itemNo}
+                      </td>
+                      <td accesskey="{!j}" onkeypress="{!c.handleKeyPress}" >
+                        <lightning:input type="text" name="partNo" aura:id="partNoId" value="{!part.partNo}" variant="label-hidden" onchange="{!c.handleUpperCase}" />
+                      </td>
+                      <td>{!part.partName}</td>
+                      <td>{!part.curr}</td>
+                      <td>{!part.systemPrice}</td>
+                      <td>
+                        <lightning:input type="text" name="sugestPrice" aura:id="sPriceId" value="{!part.sugestPrice}" variant="label-hidden" accesskey="{!j}" onfocus="{!c.handleFocus}" onchange="{!c.formatNumber}" />
+                      </td>
+                      <td>
+                        <lightning:input type="text" name="request" value="{!part.request}" variant="label-hidden" />
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+</aura:component>

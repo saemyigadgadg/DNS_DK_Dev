@@ -1,0 +1,46 @@
+/********** modal **********/
+
+.THIS.slds-modal__container {
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   max-width: unset;
+   min-width: unset;
+}
+
+.THIS .slds-modal__content {
+   position: relative;
+   overflow-x: auto;
+}
+
+.THIS .modal-body {
+   height: 40rem;
+   max-height: calc(100vh - 12rem);
+   /* display: flex;
+   justify-content: center;
+   align-items: center; */
+   /* gap: 5.25rem; */
+   /* padding: 0.75rem; */
+   /* flex-direction: column; */
+   overflow-x: auto;
+   padding: 0;
+}
+
+.THIS .top-card {
+   width: 100%;
+}
+
+.THIS .modal-body p {
+   font-size: 14px;
+   font-weight: 1500;
+}
+
+.THIS .table-02 thead {
+   position: sticky;
+   top: 0;
+   z-index: 3;
+}
+
+.THIS .table-02 table {
+   border-collapse: separate;
+}

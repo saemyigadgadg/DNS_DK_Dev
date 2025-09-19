@@ -1,0 +1,205 @@
+<!--
+  @description       : 
+  @author            : Joohyun Lee
+  @group             : 
+  @last modified on  : 03-21-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,flexipage:availableForRecordHome,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+                controller="DN_BoardController" 
+                description="통합 게시판">
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoaded"             type="Boolean"  default="false" />
+    <aura:attribute name="isCSPage"             type="Boolean"  default="false" />
+    <aura:attribute name="boardList"            type="List" />
+    <aura:attribute name="pickListValue"        type="List"  />
+    <aura:attribute name="searchSubject"        type="String"   default=""/>
+    <aura:attribute name="searchKeyword"        type="String"   default=""/>
+    <aura:attribute name="searchBoardMonth"     type="String"   default=""/>
+    <aura:attribute name="searchCategory"       type="String"   default="All" />
+    <aura:attribute name="boardMonth"           type="String" />
+    <aura:attribute name="searchStartDate"      type="Date" />
+    <aura:attribute name="searchEndDate"        type="Date" />
+    
+    <!-- Paging Attribute -->
+    <aura:attribute name="pagingResultList"     type="List"     default="[]" />
+    <aura:attribute name="dividePageCount"      type="Integer"  default="20" />
+    <aura:attribute name="allResultCount"       type="Integer"  default="0" />
+    <aura:attribute name="totalPage"            type="Decimal"  default="1" />
+    <aura:attribute name="pageAllCountList"     type="List" />
+    <aura:attribute name="pageCountListIndex"   type="Decimal"  default="0" />
+    <aura:attribute name="pageCountList"        type="List"     default="[0]" />
+    <aura:attribute name="currentPage"          type="Decimal"  default="1" />
+    <aura:attribute name="pageList"             type="List" />
+    <!--design setting-->
+    <aura:attribute name="header"   type="String"/>
+    <aura:attribute name="recordType"   type="String"/>
+    <!-- recordTypeId-->
+    <aura:attribute name="recordTypeId"   type="String"/>
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+
+    <!-- Body -->
+    <article class="slds-card">
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoaded}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header test">
+            <div class="title">
+                <lightning:icon iconName="standard:partner_fund_claim" size="small" alternativeText="통합 게시판" />
+                <h2>{!v.header}</h2>
+            </div>
+
+            <div class="button-wrap">
+                <lightning:button   name="searchCustomsClearance" 
+                                    label="Search" 
+                                    iconName="utility:search" 
+                                    iconPosition="left"
+                                    onclick="{! c.handleSearch }" />
+            </div>
+        </div>
+
+        <div class="body">
+            <!-- Card 01 : Search Condition Area -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>{!$Label.c.support_lbl_category}</p><!--카테고리-->
+                    <div class="input-wrap">
+                        <!-- <lightning:recordEditForm recordTypeId="{!v.recordTypeId}" objectApiName="Board__c">
+                            <lightning:inputField fieldName="Category__c" value="{!v.searchCategory}" onchange="{! c.handleChangeCategory}"  variant="label-hidden"/>
+                        </lightning:recordEditForm> -->
+                        <!-- <lightning:combobox name="machineOption" value="{!v.searchCategory}" options="{!v.pickListValue}" onchange="{! c.handleChangeCategory}" variant="label-hidden" /> -->
+                        <c:dN_CSBoardCategory searchCategory="{!v.searchCategory}" recordTypeId="{!v.recordType}" onchange="{!c.handleChangeCategory}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.support_lbl_title}</p> <!--제목-->
+                    <div class="input-wrap" onkeyup="{! c.handleEnterSearch }">
+                        <lightning:input type="text" name="Search Title" value="{!v.searchSubject}" onchange="{! c.handleChangeTitle }" variant="label-hidden" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p><abbr class="slds-required" title="required">*</abbr>{!$Label.c.support_lbl_creation_month}</p> <!--작성월-->
+                    <div class="input-wrap">
+                        <ui:inputDate aura:id="SearchBoardMonth" displayDatePicker="true" value="{! v.boardMonth }" format="yyyy-MM" change="{! c.handleChangeMonth }" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.support_lbl_keyword}</p> <!--키워드-->
+                    <div class="input-wrap" onkeyup="{! c.handleEnterSearch }">
+                        <lightning:input type="text" name="Search Keyword" value="{!v.searchKeyword}" onchange="{! c.handleChangeKeyword }" variant="label-hidden" />
+                    </div>
+                </div>
+                <!-- <div class="field-wrap">
+                    <p>작성일</p>
+                    <div class="input-wrap">
+                        <lightning:input type="date" name="Search Start Date" value="{!v.searchStartDate}" variant="label-hidden" dateStyle="short" onchange="{!c.onChangeSearchStartDate}" />
+                        <span>~</span>
+                        <lightning:input type="date" name="Search End Date" value="{!v.searchEndDate}" variant="label-hidden" onchange="{!c.onChangeSearchEndDate}" />
+                    </div>
+                </div> -->
+            </div>
+
+            <!-- Card 02 : Board List -->
+            <div class="card-02 top-card">
+                <div class="table-wrap">
+                    <!-- Fixed : Left -->
+                    <div class="table-01 table-left">
+                        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="12%" />
+                                <col width="64%" />
+                                <col width="12%" />
+                                <col width="12%" />
+                            </colgroup>
+
+                            <thead>
+                                <tr>
+                                    <th>{!$Label.c.support_fld_category}</th> <!--카테고리-->
+                                    <th>{!$Label.c.support_fld_title}</th> <!--제목-->
+                                    <th>{!$Label.c.support_fld_writer}</th> <!--작성자-->
+                                    <th>{!$Label.c.support_fld_creation_date}</th> <!--작성일-->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <aura:iteration items="{!v.pagingResultList}" var="board">
+                                    <tr>
+                                        <td class="center">
+                                            <div>{!board.Category__c}</div>
+                                        </td>
+                                        <td>
+                                            <aura:if isTrue="{!board.isNew}">
+                                                <p class="highlight"> [New] <a href="{!'/s/board/' + board.Id}" >{!board.Name} </a></p>
+                                                <aura:set attribute="else">
+                                                    <lightning:formattedUrl value="{!'/s/board/' + board.Id}" tooltip="{!board.Name}" label="{!board.Name}" target="_self" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td class="center">
+                                            <div>{!board.FM_Writer__c}</div>
+                                        </td>
+                                        <td class="center">
+                                            <div>{!board.PostingDate__c}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- 🚩Aura Page -->
+                <div class="pagination-wrap">
+                    <div class="total">
+                        <p>
+                            {!$Label.c.support_lbl_total_no} : <span style="font-weight: bold;">{!v.allResultCount}</span> <!--총 건수-->
+                            ({!v.currentPage}/{!v.totalPage})
+                        </p>
+                    </div>
+                    <ul class="pagination">
+                        <li class="first">
+                            <a onclick="{!c.handleChangePage}" name="first" value="1">
+                                <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small' title='jump_to_left'></lightning:icon>
+                            </a>
+                        </li>
+                        <li class="prev">
+                            <a onclick="{!c.handleChangePage}" name="previous" value="{!v.currentPage - 1}">
+                                <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small' title='chevronleft'></lightning:icon>
+                            </a>
+                        </li>
+                        <li class="pages">
+                            <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                                <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                                    <span class="here"> {!pageNumber + 1} </span>
+    
+                                    <aura:set attribute="else">
+                                        <span>
+                                            <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber +1}</a>
+                                        </span>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:iteration>
+                        </li>
+                        <li class="next">
+                            <a onclick="{!c.handleChangePage}" name="next" value="{!v.currentPage + 1}">
+                                <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small' title='chevronright'></lightning:icon>
+                            </a>
+                        </li>
+                        <li class="last">
+                            <a onclick="{!c.handleChangePage}" name="last" value="{!v.pageList.length}">
+                                <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small' title='jump_to_right'></lightning:icon>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </article>
+</aura:component>

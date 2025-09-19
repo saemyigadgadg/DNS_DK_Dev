@@ -1,0 +1,65 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 03-13-2025
+  @last modified by  : Hyerin Ro
+-->
+<aura:component
+   implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+   controller="DN_ResourceAbsenceController" access="global">
+
+   <aura:html tag="style">
+      .slds-modal__container:has(.cDN_WorkOrderConfirmButton) {
+         width: 32rem;
+         max-width: calc(100vw - 20rem);
+         min-width: 24rem;
+         margin: 0 auto;
+      }
+      .slds-modal__content:has(.cDN_WorkOrderConfirmButton) {
+         height: auto !important;
+         max-height: none !important;
+         width : 100% !important;
+         padding: 0;
+         overflow-y:clip;
+      }
+      .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_WorkOrderConfirmButton) {
+      padding:0;
+      }
+   </aura:html>
+
+   <!--Attribute-->
+   <aura:attribute name="isSpinner" type="Boolean" default="false" />
+
+   <!--Toast-->
+   <lightning:notificationsLibrary aura:id="notifLib" />
+   <lightning:overlayLibrary aura:id="overlayLib" />
+
+   <!--Navigate-->
+   <lightning:navigation aura:id="navService"/>
+
+   <!--Container-->
+   <div class="slds-modal__container">
+      <header class="slds-modal__header">
+         <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_OrderConfirm}</h2>
+      </header>
+      <div class="slds-modal__content">
+        <aura:if isTrue="{!v.isSpinner}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+
+        <lightning:icon iconName='action:approval' alternativeText='Approved' size='medium' title='Approved'
+        class="slds-m-right_small error"></lightning:icon>
+
+         <!-- 실패 메시지 -->
+         <div class="message">
+            <p>{!$Label.c.DNS_M_OrderConfirm}</p>
+         </div>
+
+      </div>
+      <footer class="slds-modal__footer">
+         <lightning:button label="{!$Label.c.DNS_B_No}" onclick="{!c.handleClose}" />
+         <lightning:button variant="brand" label="{!$Label.c.DNS_B_Yes}" onclick="{!c.handleConfirm}" />
+      </footer>
+   </div>
+
+</aura:component>

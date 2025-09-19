@@ -1,0 +1,298 @@
+<template>
+    <template lwc:if={isDueOut}>
+
+    </template>
+    <template lwc:else>
+        <div class="wrap">
+            <div class="layout">
+            <table class="btn_tb" style="margin-bottom:4px;">
+                <tbody><tr>
+                    <td class="sub_title">
+                        <div id="action_btn_area">
+                            <lightning-button variant="base" label="Print" icon-name="utility:print" title="Print" onclick={handlePirint} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody></table>		
+            </div>
+        </div>
+    </template>
+    <!--입출고증 -->
+    <div lwc:if={isGRGI}>
+        <template for:each={dataList} for:item="data" for:index="index">
+            <table class="printArea" key={data.id}>
+                <tr>
+                    <td style="font-size: 22px; font-weight: bold;" colspan="2">
+                        {data.partNumber}
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan="2" style="font-size: 10px;">
+                        {data.partName}
+                    </td>
+                    <td style="font-size: 10px;">
+                        S/O : {data.orderNumber}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tl">
+                        <font style="font-size: 20px; font-weight: bold;">{data.type}</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font style="font-size: 20px; font-weight: bold;">{data.quantity}</font> {data.unit}
+                    </td>
+                    <td style="font-size: 13px;">
+                        Bin : {data.stockLocation}
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;" colspan="2">
+                        {data.accountName}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" style="padding: 10px;">
+                        <canvas data-id="barcodeCanvas" data-index={data.partNumber} ></canvas>   
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;">
+                        {data.partNumber}
+                    </td>
+                    <td style="font-size: 10px;">
+                        {data.printDate}
+                    </td>
+                </tr>
+            </table>
+        </template>
+    </div>
+    <!--주문출고 출력-->
+    <div lwc:if={isOrder}>
+        <template for:each={dataList} for:item="rec" for:index="index" > 
+            <table key={rec.index} class="printArea data-table">
+                <tr>
+                    <td style="font-size: 22px; font-weight: bold;" colspan="2">
+                        {rec.partNumber} <!--주문품번-->
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan="2" style="font-size: 10px;">
+                        {rec.partName} <!--품명-->
+                    </td>
+                    <td style="font-size: 10px;">
+                        S/O : {rec.orderNumber} <!--OrderNumber-->
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;">
+                        D/O : {rec.shipOrderNumber}<!--출고지시번호-->
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <font style="font-size: 20px; font-weight: bold;">출고</font>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font style="font-size: 20px; font-weight: bold;">{rec.qty}</font> {rec.unit}
+                    </td>
+                    <td style="font-size: 13px;">
+                        Bin : {rec.binLocation} <!--저장위치 없는 경우 No Stor. Bin-->
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;" colspan="2">
+                        {rec.accountName} <!--대리점명-->
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px;" colspan="2">
+                        <canvas data-id="barcodeCanvas" data-index={rec.partNumber}></canvas>   
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;">
+                        {rec.partName} <!--주문품번-->
+                    </td>
+                    <td style="font-size: 10px;">
+                        {rec.print} <!-- 프린트 날짜-->
+                    </td>
+                </tr>
+            </table>
+        </template>
+    </div>
+    <!--대리점 자제 종합조회 && 재고위치 저장 및 수정 프린트-->
+    <div  lwc:if={isStockInfo} >
+        <template for:each={dataList} for:item="data" for:index="index" > 
+            <table class="printArea data-table" key={data.id}>
+                <tr>
+                    <td colspan="2">
+                        <div style="font-size: 18px; font-weight: bold;">{data.partNumber}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td rowspan="2" style="font-size: 10px;">
+                        {data.partName}
+                    </td>
+                    <td style="font-size: 10px;">Date : {printDate}</td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td style="font-size: 10px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <template lwc:if={isPrintQty}>
+                            <font style="font-size: 20px; font-weight: bold;">{printQty}</font> {data.unit}
+                        </template>
+                        <template lwc:else>
+                            <font style="font-size: 20px; font-weight: bold;">{data.currentStockQuantity}</font> {data.unit}
+                        </template>
+                        
+                    </td>
+                    <td style="font-size: 13px;">
+                        Bin : 
+                        {data.stockLocation}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;" colspan="2">
+                        {data.accountName}
+                    </td>
+                </tr>
+                <tr style="padding: 20px;">
+                    <td colspan="2">
+                        <canvas data-id="barcodeCanvas"  data-index={data.partNumber}></canvas>   
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 10px;">
+                        {data.partNumber}
+                    </td>
+                    <td style="font-size: 10px;">
+                        {data.weight} {data.weightUnit}
+                    </td>
+                </tr>
+            </table>
+        </template>
+    </div>
+    <div lwc:if={isLocation} >
+        <template for:each={dataList} for:item="data" for:index="index"> 
+            <table key={data.Id} class="printArea">
+                <tr style="padding: 20px;">
+                    <td class="tl" style="font-size: 34px; font-weight: bold; ">
+                        {data.FM_Loc__c}
+                    </td>
+                </tr>
+                <!-- 바코드 자리-->
+                <tr>
+                    <td>
+                        <canvas data-id="barcodeCanvas" data-index={index} ></canvas>   
+                    </td>
+                </tr>
+                    
+                </tbody>
+            </table>
+        </template>
+    </div>
+    <!-- PO List Review Print  printArea-->
+    <div lwc:if={isDueOut}>
+        <div class="printAreaPO dueOut">
+            <div class="header">
+                <h1>Due Out</h1>
+                <h2>({docNum})</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <colgroup>
+                        <col width="10%" />
+                        <col width="6%" />
+                        <col width="6%" />
+                        <col width="10%" />
+                        <col width="22%" />
+                        <col width="14%" />
+                        <col width="10%" />
+                        <col width="6%" />
+                        <col width="6%" />
+                        <col width="10%" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col" style="border-left:none;">
+                                Doc No.
+                            </th>
+                            <th scope="col">
+                                Item
+                            </th>
+                            <th scope="col">
+                                ICA
+                            </th>
+                            <th scope="col">
+                                Material
+                            </th>
+                            <th scope="col">
+                                Material Description
+                            </th>
+                            <th scope="col">
+                                Customer Name
+                            </th>
+                            <th scope="col">
+                                Order Qty
+                            </th>
+                            <th scope="col">
+                                출고
+                            </th>
+                            <th scope="col">
+                                미출고
+                            </th>
+                            <th scope="col">
+                                Doc. Date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={dataList} for:item="data" for:index="index"> 
+                            <tr key={data.docNo}>
+                                <td>
+                                    {data.docNo}
+                                </td>
+                                <td>
+                                    {data.item}
+                                </td>
+                                <td>
+                                {data.ica}
+                                </td>
+                                <td>
+                                    {data.material}
+                                </td>
+                                <td>
+                                    {data.materialDesc}
+                                </td>
+                                <td>
+                                {data.customerName}
+                                </td>
+                                <td>
+                                    {data.orderQty}
+                                </td>
+                                <td>
+                                    {data.release} 
+                                </td>
+                                <td>
+                                    {data.unRelease}
+                                </td>
+                                <td>
+                                    {data.docDate}
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- else -->
+    <!-- <div class="printArea" lwc:else>
+    </div> -->
+    
+</template>

@@ -1,0 +1,219 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 01-21-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-11   yuhyun.park@sbtglobal.com   Initial Version
+  controller="DN_PortalManageServiceController"
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PortalServiceController"
+  description="서비스 이력 조회">
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading"          type="Boolean"  default="false" />
+  <aura:attribute name="isSearched"         type="Boolean"  default="false" />
+  <aura:attribute name="serviceHistoryList" type="List"     default="[]" />
+  <aura:attribute name="customerInfo"       type="Object"   default="" />
+  <aura:attribute name="customerName"       type="String"   default="" />
+  <aura:attribute name="assetData"          type="Object"  default="{}"/>
+  <aura:attribute name="workOrderInfo"      type="Object"  default="{}"/>
+  <aura:attribute name="machineName"        type="String"   default="" />
+  <aura:attribute name="assetName"          type="String"   default="" />
+  <aura:attribute name="headExcelData"      type="List"     default="[]" />
+  <aura:attribute name="excelData"          type="List"     default="[]" />
+  <aura:attribute name="excelName"          type="String"   default="Sales_Service_History" />
+  <aura:attribute name="ReceptionDateFrom"  type="Date" />
+  <aura:attribute name="ReceptionDateTo"    type="Date" />
+
+  <!-- Handler -->
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      <!-- 모달 -->
+      <div aura:id="CustomerListModal" /> <!--고객사모달-->
+      <div aura:id="ModelSearchModal"  /> <!--기종/장비번호모달-->
+      <div aura:id="OrderListModal"    /> <!--주문번호모달-->
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading}">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName="standard:service_request" size="small" alternativeText="Sales Service History" />
+          <h2 class="slds-truncate">서비스 이력 조회</h2>
+        </div>
+
+        <div class="button-wrap">
+          <!-- 검색 필터 및 기능 추가 필요 -->
+          <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+          <c:DN_ExcelUtilButton excelData="{! v.excelData }" excelName="{! v.excelName }" />
+          <!-- <c:DN_DealerPortalExcelUtilButton headerData="{!v.headExcelData}" excelData="{! v.excelData }" excelName="{! v.excelName }" /> -->
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        <!-- Card 01 -->
+        <div class="card-01 top-card">
+
+          <div class="field-wrap">
+            <p>수주번호</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="" value="{!v.workOrderInfo.psoNumber}" variant="label-hidden" disabled="true"  readonly="true"/>
+              <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close OrderNo"  
+              onclick="{!c.clearOrderNo}" class="clear-btn"/>
+              <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search" onclick="{!c.openOrderListModal}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>고객사</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.customerInfo.Name}" variant="label-hidden" disabled="true"  readonly="true"/>
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="customer Name" onclick="{!c.clearCustomerName}" class="clear-btn"/>
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.openCustomerListModal}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>기종</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.machineName}" variant="label-hidden" disabled="true"  readonly="true"/>
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine" 
+                                    onclick="{!c.clearMachine}" class="clear-btn"/>
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.openModelModal}" />
+            </div>
+          </div>
+          
+          <div class="field-wrap">
+            <p>장비번호</p>
+            <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.assetName}" variant="label-hidden" disabled="true"  readonly="true"/>
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"  
+                onclick="{!c.clearAsset}" class="clear-btn"/>
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.openSerialNumberModal}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>접수일</p>
+            <div class="input-wrap">
+              <lightning:input type="date" name="ReceptionDateFrom" value="{!v.ReceptionDateFrom}" onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+              ~
+              <lightning:input type="date" name="ReceptionDateTo" value="{!v.ReceptionDateTo}" onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Table 01 -->
+        <div class="card-02 top-card">
+          <div class="table-wrap">
+            <!-- Fixed : Left -->
+            <div class="table-01 table-left" aura:id="leftTableDiv">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="33%" />
+                  <col width="33%" />
+                  <col width="34%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>고객사</th>
+                    <th>기종</th>
+                    <th>장비번호</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!not(v.isSearched)}">
+                    <tr>
+                      <td colspan="3" class="center">No Data</td>
+                    </tr>
+                  </aura:if>
+
+                  <aura:if isTrue="{!v.isSearched}">
+                    <aura:iteration items="{!v.serviceHistoryList}" var="service">
+                      <tr>
+                        <td class="center">{!service.Account.Name}</td>
+                        <td class="center">{!service.Asset.MachineName__c}</td>
+                        <td class="center">{!service.Asset.Name}</td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Scrollable : Right -->
+            <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>수주번호</th>
+                    <th>장비 도착일</th>
+                    <th>접수일자</th>
+                    <th>서비스종결일</th>
+                    <th>오더유형</th>
+                    <th>오더유형 2</th>
+                    <th>서비스오더 번호</th>
+                    <th>Work Center</th>
+                    <th>작업자</th>
+                    <th>고장부위내역</th>
+                    <th>고장원인내역</th>
+                    <th>고장조치분류</th>
+                    <th>접수내역</th>
+                    <th>조치내역</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!not(v.isSearched)}">
+                    <tr>
+                      <td colspan="14" class="center">No Data</td>
+                    </tr>
+                  </aura:if>
+
+                  <aura:if isTrue="{!v.isSearched}">
+                    <aura:iteration items="{!v.serviceHistoryList}" var="service">
+                      <tr>
+                        <td class="center">{!service.Asset.Order__r.ERPPSONo__c}</td>
+                        <td class="center">{!service.Asset.InstallDate}</td>
+                        <td class="center"><ui:outputDate value="{!service.Case.ApplicationDateTime__c}"/></td>
+                        <td class="center"><ui:outputDate value="{!service.ConfirmedDate__c}"/></td>
+                        <td class="center">{!service.OrderType__c}</td>
+                        <td class="center">{!service.PMActivityType__c}</td>
+                        <td class="center">{!service.ServiceOrderNumber__c}</td>
+                        <td class="center">{!service.ServiceTerritory.Name}</td>
+                        <td class="center">{!service.Worker__r.Name}</td>
+                        <td class="center">{!service.FailurePhenomenonDetail__c}</td>
+                        <td class="center">{!service.CauseOfFailureDetail__c}</td>
+                        <td class="center"></td>
+                        <td class="center">{!service.Case.ReceptionDetails__c}</td>
+                        <td class="center">{!service.PendingOrCustomerMatters__c}</td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+
+                </tbody>  
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+  </div>
+
+</aura:component>

@@ -1,0 +1,86 @@
+<!--
+  @class             : DN_QuoteRealtedController 
+  @description       : Opportunity의 Product가 존재하고 , Qualified단계 부터 생성 가능하게
+  @author            : Sejin Kwon
+  @last modified on  : 2024-11-04
+  @last modified by  : Sejin Kwon 
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2024-11-04   Sejin Kwon   Initial Version
+-->
+<template>
+    <div class={componentStyle}>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <lightning-card  variant="Narrow" title={title} icon-name={icon} class={cardStyle}>
+            <template if:true={showPortalBtn}>
+                <lightning-button slot="actions" label={cLabel.DNS_B_New} onclick={handleSelect}></lightning-button>
+            </template>
+            <template if:true={showCRMBtn}>
+                <lightning-button-menu slot="actions" icon-size="small" menu-alignment="auto" onselect={handleSelect}>
+                    <lightning-menu-item value="new" label={cLabel.DNS_B_New}></lightning-menu-item>
+                </lightning-button-menu>
+            </template>
+            <template if:true={showMobileBtn}>
+                <lightning-button-icon slot="actions" icon-name="utility:chevronright" variant="bare" size="medium" onclick={handleViewAll}></lightning-button-icon>
+            </template>
+
+            <template if:true={isDataShow}>
+                <div class="slds-card__body">
+                    <ul class="uiAbstractList">
+                        <!-- <template if:true={isPortal}> -->
+                            <lightning-datatable
+                                key-field="recordId"
+                                columns={columns}
+                                data={data}
+                                onrowaction={handleRowAction}
+                                hide-checkbox-column
+                            ></lightning-datatable>
+                            <!--show-row-number-column-->
+                        <!-- </template> -->
+                        <!-- <template if:false={isPortal}>
+                            <template for:each={data} for:item="row">
+                                <li key={row.recordId} class="slds-var-p-horizontal_medium slds-var-p-vertical_xx-small custom_tile">
+                                    <div class="slds-media__body">
+                                        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                            <lightning-formatted-url label={row.QuoteNumber} value={row.link} target="_self"></lightning-formatted-url>
+                                        </div>
+                                        <div class="slds-tile__detail">
+                                            <ul class="itemRows truncate">
+                                                <li class="tableRowGroup">
+                                                    <div class="slds-list--horizontal forceListRecordItem">
+                                                        <div class="slds-item--label slds-truncate recordCell">{cLabel.DNS_C_QuoteName}:</div>
+                                                        <div class="slds-item--detail slds-truncate recordCell">{row.Name}</div>
+                                                    </div>
+                                                </li>
+                                                <li class="tableRowGroup">
+                                                    <div class="slds-list--horizontal forceListRecordItem">
+                                                        <div class="slds-item--label slds-truncate recordCell">{cLabel.DNS_C_QuoteExpirationDate}:</div>
+                                                        <div class="slds-item--detail slds-truncate recordCell">{row.ExpirationDate}</div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <lightning-button-menu icon-size="x-small" menu-alignment="auto" onselect={handleEdit}>
+                                            <lightning-menu-item value={row.Id} label={cLabel.DNS_B_Edit}></lightning-menu-item>
+                                        </lightning-button-menu>
+                                    </div>
+                                </li>
+                            </template>
+                        </template> -->
+                    </ul>
+                </div>
+                <template if:true={hasData}>
+                    <div slot="footer">
+                        <lightning-button variant="base" label={cLabel.DNS_B_ViewAll} onclick={handleViewAll}></lightning-button>
+                    </div>
+                </template>
+            </template>
+
+        </lightning-card>
+    </div>
+</template>

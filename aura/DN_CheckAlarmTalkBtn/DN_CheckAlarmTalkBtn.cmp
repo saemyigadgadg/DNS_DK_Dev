@@ -1,0 +1,335 @@
+<!--연결된 알림톡 상세내역 조회 버튼-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_CheckAlarmTalkBtnController" access="global">
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_CheckAlarmTalkBtn) {
+            width: 68rem;
+            max-width: calc(100vw - 5rem);
+            padding-bottom: 3rem;
+        }
+        .slds-modal__content:has(.cDN_CheckAlarmTalkBtn) {
+            height: auto !important;
+            max-height: none !important;
+            padding: 0;
+            overflow-y:clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CheckAlarmTalkBtn) {
+            padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CheckAlarmTalkBtn) {
+            overflow-y: clip;
+        }
+        *:has(.cDN_CheckAlarmTalkBtn) {
+            overflow: visible !important;
+        }
+    </aura:html>
+
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <aura:attribute name="alarmTalk" type="Object" default="{}" />
+    <aura:attribute name="prefixURL" type="String" default="/sfc/servlet.shepherd/document/download/" />
+    <aura:attribute name="fileList" type="List" default="[]" />
+    <!-- Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{! c.init }" />
+
+
+    <div>
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium" onclick="{!c.goAlarm}">{!$Label.c.DNS_B_AlarmTalk}</h2>
+        </header>
+        <div class="slds-modal__container">
+            <aura:if isTrue="{!v.isSpinner}">
+                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+            </aura:if>
+            <div class="slds-modal__content">
+                <div class="title">{!$Label.c.DNS_S_ASDetailInfo}</div>
+
+                <div aura:id="table" class="list-table">
+                    <table>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">접수번호</div>
+                                </th>
+                                <td data-label="접수번호">
+                                    <div class="slds-truncate" title="접수번호">
+                                        {!v.alarmTalk.ticketNumber}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">티켓상태</div>
+                                </th>
+                                <td data-label="티켓상태">
+                                    <div class="slds-truncate" title="티켓상태">
+                                        {!v.alarmTalk.ticketStatus}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">접수일시</div>
+                                </th>
+                                <td data-label="접수일시" style="width: 36%;">
+                                    <div class="slds-truncate" title="접수일시">
+                                        <lightning:formattedDateTime value="{!v.alarmTalk.receptionDate}" year="numeric"
+                                            month="2-digit" day="2-digit" weekday="narrow" hour="2-digit"
+                                            minute="2-digit" hour12="false" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <!-- 요청자 이름 -->
+                                <th scope="col">
+                                    <div class="slds-truncate">요청자</div>
+                                </th>
+                                <td data-label="요청자" colspan="3">
+                                    <div class="slds-truncate" title="요청자">
+                                        {!v.alarmTalk.contact}
+                                    </div>
+                                </td>
+                                <!-- 요청자 번호 -->
+                                <th scope="col">
+                                    <div class="slds-truncate">전화번호</div>
+                                </th>
+                                <td data-label="전화번호">
+                                    <div class="slds-truncate" title="전화번호">
+                                        {!v.alarmTalk.customerPhone}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">업체명</div>
+                                </th>
+                                <td data-label="업체명" colspan="3">
+                                    <div class="slds-truncate" title="업체명">
+                                        {!v.alarmTalk.account}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">주소</div>
+                                </th>
+                                <td data-label="주소">
+                                    <div class="slds-truncate" title="주소">
+                                        {!v.alarmTalk.address}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">장비번호</div>
+                                </th>
+                                <td data-label="장비번호" colspan="3">
+                                    <div class="slds-truncate" title="장비번호">
+                                        {!v.alarmTalk.equipment}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">기종</div>
+                                </th>
+                                <td data-label="기종">
+                                    <div class="slds-truncate" title="기종">
+                                        {!v.alarmTalk.model}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">고장증상</div>
+                                </th>
+                                <td data-label="고장증상">
+                                    <div class="slds-truncate" title="고장증상">
+                                        {!v.alarmTalk.failureSymtom}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!--증상사진/동영상-->
+                    <table>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">증상사진</div>
+                                </th>
+                                <td data-label="증상사진">
+                                    <div class="slds-truncate" title="증상사진">
+                                        <aura:iteration items="{! v.fileList }" var="f" indexVar="index">
+                                            <aura:if
+                                                isTrue="{!f.ContentDocument.FileType != 'MP4' &amp;&amp; f.ContentDocument.FileType != 'MOV'}">
+                                                <img src="{!v.prefixURL + f.ContentDocumentId}" />
+                                            </aura:if>
+                                            <br />
+                                        </aura:iteration>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">증상동영상</div>
+                                </th>
+                                <td data-label="증상사진">
+                                    <div class="slds-truncate" title="증상사진">
+                                        <aura:iteration items="{! v.fileList }" var="f" indexVar="index">
+                                            <aura:if
+                                                isTrue="{!f.ContentDocument.FileType == 'MP4' || f.ContentDocument.FileType == 'MOV'}">
+                                                <video style="width:50%" controls="controls">
+                                                    <source src="{!v.prefixURL + f.ContentDocumentId}"
+                                                        type="video/mp4" />
+                                                </video>
+                                            </aura:if>
+                                            <br />
+                                        </aura:iteration>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!--요청사항-->
+                    <table>
+                        <tbody>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">요청사항</div>
+                                </th>
+                                <td data-label="요청사항" colspan="3">
+                                    <div class="slds-truncate" title="요청사항">
+                                        {!v.alarmTalk.request}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">요청일시</div>
+                                </th>
+                                <td data-label="요청일시">
+                                    <div class="slds-truncate" title="요청일시">
+                                        <lightning:formattedDateTime value="{!v.alarmTalk.requestRepairDate}"
+                                            year="numeric" month="numeric" day="numeric" weekday="narrow" hour="2-digit"
+                                            minute="2-digit" hour12="false" />
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">요청구분</div>
+                                </th>
+                                <td data-label="요청구분">
+                                    <div class="slds-truncate" title="요청구분">
+                                        {!v.alarmTalk.requestType}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">오더번호</div>
+                                </th>
+                                <td data-label="오더번호">
+                                    <div class="slds-truncate" title="오더번호">
+                                        {!v.alarmTalk.orderNumber}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">배정일자</div>
+                                </th>
+                                <td data-label="배정일자">
+                                    <div class="slds-truncate" title="배정일자">
+                                        <lightning:formattedDateTime value="{!v.alarmTalk.assignDate}" year="numeric"
+                                            month="numeric" day="numeric" weekday="narrow" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">상담사</div>
+                                </th>
+                                <td data-label="상담사">
+                                    <div class="slds-truncate" title="상담사">
+                                        {!v.alarmTalk.consultant}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">상담사 전화번호</div>
+                                </th>
+                                <td data-label="상담사 전화번호">
+                                    <div class="slds-truncate" title="상담사 전화번호">
+                                        {!v.alarmTalk.consultantPhone}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">서비스 상담사(업체명)</div>
+                                </th>
+                                <td data-label="서비스 상담사(업체명)">
+                                    <div class="slds-truncate" title="서비스 상담사(업체명)">
+                                        {!v.alarmTalk.serviceResource} ({!v.alarmTalk.workCenter})
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">서비스 담당자 전화번호</div>
+                                </th>
+                                <td data-label="서비스 담당자 전화번호">
+                                    <div class="slds-truncate" title="서비스 담당자 전화번호">
+                                        {!v.alarmTalk.serviceResourcePhone}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">설치일자</div>
+                                </th>
+                                <td data-label="설치일자">
+                                    <div class="slds-truncate" title="설치일자">
+                                        <lightning:formattedDateTime value="{!v.alarmTalk.installDate}" year="numeric"
+                                            month="numeric" day="numeric" weekday="narrow" />
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">보증여부</div>
+                                </th>
+                                <td data-label="보증여부">
+                                    <div class="slds-truncate" title="보증여부">
+                                        {!v.alarmTalk.isWarranty}
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="slds-hint-parent">
+                                <th scope="col">
+                                    <div class="slds-truncate">접수유형</div>
+                                </th>
+                                <td data-label="접수유형">
+                                    <div class="slds-truncate" title="접수유형">
+                                        {!v.alarmTalk.receptionType}
+                                    </div>
+                                </td>
+                                <th scope="col">
+                                    <div class="slds-truncate">방문예약일시</div>
+                                </th>
+                                <td data-label="방문예약일시" colspan="3">
+                                    <div class="slds-truncate" title="방문예약일시">
+                                        <aura:if isTrue="{!v.alarmTalk.isVisit}">
+                                            <lightning:formattedDateTime value="{!v.alarmTalk.visitDate}" year="numeric"
+                                                month="numeric" day="numeric" weekday="narrow" hour="2-digit"
+                                                minute="2-digit" hour12="false" />
+                                            <aura:set attribute="else">
+                                                방문예약 설정 없음
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <footer class="slds-modal__footer">
+            <lightning:button label="{!$Label.c.DNS_B_Close}" onclick="{!c.handleClose}" class="slds-m-left_x-small" />
+        </footer>
+    </div>
+</aura:component>

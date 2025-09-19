@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1146</fullName>
+        <default>false</default>
+        <label>MT Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>114S</fullName>
+        <default>false</default>
+        <label>MT Service</label>
+    </customValue>
+    <customValue>
+        <fullName>1846</fullName>
+        <default>false</default>
+        <label>DNS Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>184S</fullName>
+        <default>false</default>
+        <label>DNS Service</label>
+    </customValue>
+    <customValue>
+        <fullName>2746</fullName>
+        <default>false</default>
+        <label>DNS DNSC Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>274S</fullName>
+        <default>false</default>
+        <label>DNS DNSC Service</label>
+    </customValue>
+    <customValue>
+        <fullName>4140</fullName>
+        <default>false</default>
+        <label>DNSA</label>
+    </customValue>
+    <customValue>
+        <fullName>414S</fullName>
+        <default>false</default>
+        <label>DNSA CS</label>
+    </customValue>
+    <customValue>
+        <fullName>4146</fullName>
+        <default>false</default>
+        <label>DNSA PDC</label>
+    </customValue>
+    <customValue>
+        <fullName>7340</fullName>
+        <default>false</default>
+        <label>DNSEU</label>
+    </customValue>
+    <customValue>
+        <fullName>734S</fullName>
+        <default>false</default>
+        <label>DNSEU CS</label>
+    </customValue>
+    <customValue>
+        <fullName>7346</fullName>
+        <default>false</default>
+        <label>DNSEU Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>7360</fullName>
+        <default>false</default>
+        <label>DIG AM Parts</label>
+    </customValue>
+    <customValue>
+        <fullName>1840</fullName>
+        <default>false</default>
+        <label>1840</label>
+    </customValue>
+    <customValue>
+        <fullName>1842</fullName>
+        <default>false</default>
+        <label>1842</label>
+    </customValue>
+    <customValue>
+        <fullName>1849</fullName>
+        <default>false</default>
+        <label>1849</label>
+    </customValue>
+    <customValue>
+        <fullName>1845</fullName>
+        <default>false</default>
+        <label>1845</label>
+    </customValue>
+    <customValue>
+        <fullName>2740</fullName>
+        <default>false</default>
+        <label>2740</label>
+    </customValue>
+    <masterLabel>Delivering Plant</masterLabel>
+    <sorted>true</sorted>
+</GlobalValueSet>

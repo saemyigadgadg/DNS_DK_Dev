@@ -1,0 +1,276 @@
+<!--
+  @description       : 
+  @author            : suheon.ha@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 2025-01-31
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <div class="total-wrap">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <!-- 🚩 Page 01 -->
+        <lightning-tabset>
+
+            <!-- 공지사항 목록 -->
+            <lightning-tab label={cLabel.DNS_FSL_Announcement} onclick={handleTabChange} onactive={handleActive}>
+                <template if:true={isMainView}>
+                    <div class="page-01 tab-01">
+                        <template if:true={announcementList.length}>
+                            <!-- combobox형식 -->
+                            <!-- <lightning-combobox name="sortOptions" label="정렬 기준" value={sortBy}
+                                    placeholder="정렬 기준 선택" options={sortOptions} onchange={handleSortAnChange}>
+                                </lightning-combobox> -->
+                            <!-- button형식 -->
+                            <div class="button-wrap">
+                                <lightning-button label={cLabel.DNS_FSL_ByName} value={sortBy} onclick={handleAnnounceSortName}></lightning-button>
+                                <lightning-button label={cLabel.DNS_FSL_ByDate} value={sortBy} onclick={handleAnnounceSortDate}></lightning-button>
+                            </div>
+
+                            <div class="box-container">
+                                <template for:each={announcementList} for:item="announcement">
+                                    <div key={announcement.id} class="box-wrap" onclick={handleAnnouncementClick}
+                                        data-id={announcement.id}>
+                                        <div class="content-wrap">
+                                            <div class="title">{announcement.title}</div>
+                                            <div class="info-wrap">
+                                                <div class="user">
+                                                    <span class="label">{cLabel.DNS_FSL_Writer}</span>
+                                                    <p class="content">{announcement.user}</p>
+                                                </div>
+                                                <div class="date">{announcement.date}</div>
+                                            </div>
+                                            <div class="content">
+                                                <lightning-formatted-rich-text
+                                                    value={announcement.content}></lightning-formatted-rich-text>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <template if:false={announcementList.length}>
+                            <p>{cLabel.DNS_FSL_NoAnnouncement}</p>
+                        </template>
+                    </div>
+                </template>
+            </lightning-tab>
+
+            <!-- Q&A 목록 -->
+            <lightning-tab label="Q & A" onclick={handleTabChange} onactive={handleActive}>
+                <template if:true={isMainView}>
+                    <div class="page-01 tab-02">
+                        <template if:true={qnaList.length}>
+                            <div class="button-container">
+                                <div class="button-wrap">
+                                    <lightning-button variant="base" label={cLabel.DNS_FSL_CreateQnA} icon-name="utility:add"
+                                        class="slds-m-left_x-small" onclick={handleNewQnA}></lightning-button>
+                                </div>
+                                <div class="button-wrap">
+                                    <lightning-button label={cLabel.DNS_FSL_ByName} value={sortBy} onclick={handleQnASortName}></lightning-button>
+                                    <lightning-button label={cLabel.DNS_FSL_ByDate} value={sortBy} onclick={handleQnASortDate}></lightning-button>
+                                </div>
+                            </div>
+                            <template if:true={isFlowVisible}>
+                                <!-- <lightning-flow
+                                flow-api-name={flowApiName}
+                                onstatuschange={handleFlowStatusChange}>
+                            </lightning-flow> -->
+                            </template>
+
+                            <!-- combobox -->
+                            <!-- <lightning-combobox name="sortOptions" label="정렬 기준" value={sortBy} placeholder="정렬 기준 선택"
+                                options={sortOptions} onchange={handleSortQnAChange}>
+                            </lightning-combobox> -->
+
+                            <div class="box-container">
+                                <template for:each={qnaList} for:item="qna">
+                                    <div key={qna.id} class="box-wrap" onclick={handleQnAClick} data-id={qna.id}>
+                                        <div class="content-wrap">
+                                            <div class="title">{qna.title}</div>
+                                            <div class="info-wrap">
+                                                <div class="user">
+                                                    <span class="label">{cLabel.DNS_FSL_Writer}</span>
+                                                    <p class="content">{qna.user}</p>
+                                                </div>
+                                                <div class="date">{qna.date}</div>
+                                            </div>
+                                            <div class="content">
+                                                <lightning-formatted-rich-text
+                                                    value={qna.questionContent}></lightning-formatted-rich-text>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div >
+                        </template>
+                        <template if:false={qnaList.length}>
+                            <p>{cLabel.DNS_FSL_NoAnnouncement}</p>
+                        </template>
+                    </div>
+                </template>
+            </lightning-tab>
+        </lightning-tabset>
+
+        <!-- Q&A 생성 -->
+        <template if:true={isCreateView}>
+            <div class="total-wrap modal-01">
+                <div class="body">
+                    <div class="body-header">
+                        <div class="button-wrap">
+                            <lightning-button variant="label-hidden" icon-name="utility:chevronleft"
+                                onclick={handleBack}></lightning-button>
+                        </div>
+                        <div class="title">{cLabel.DNS_FSL_CreateQnA}</div>
+                    </div>
+                    <div class="card-wrap">
+                        <div class="field-container">
+                            <lightning-input name="Name" label={cLabel.DNS_FSL_QnATitle} type="text" value={newName}
+                                onchange={handleNameChange}></lightning-input>
+                            <lightning-input name="PostingDate" label={cLabel.DNS_FSL_PostingDate} type="date" value={newPostingDate}
+                                onchange={handlePostingDateChange} required></lightning-input>
+                            <div class="textarea">
+                                <lightning-textarea name="QuestionContent" label={cLabel.DNS_FSL_QuestionContent} value={newQuestion}
+                                    onchange={handleQuestionContentChange}></lightning-textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="button-wrap create">
+                        <lightning-button variant="brand" label={cLabel.DNS_FSL_Create} onclick={handleNew}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- 디테일 -->
+        <div class="page-02">
+            <!-- 공지사항 디테일 -->
+            <template if:true={isDetailView}>
+
+                <div class="card-header">
+                    <!-- 뒤로가기 버튼 -->
+                    <div class="button-wrap back">
+                        <lightning-button variant="label-hidden" icon-name="utility:chevronleft"
+                            onclick={handleBack}></lightning-button>
+                    </div>
+
+                    <div class="header-content">
+                        <div class="label">{cLabel.DNS_FSL_Announcement}</div>
+                        <div class="title">
+                            {selectedAnnouncement.title}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container">
+                    <!-- ↓ iteration ↓ -->
+                    <div class="card qna">
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_IntegratedBulletinBoard}</span>
+                            <p class="content">{selectedAnnouncement.title}</p>
+                        </div>
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_PostingDate}</span>
+                            <p class="content">{selectedAnnouncement.date}</p>
+                        </div>
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_Writer}</span>
+                            <p class="content">{selectedAnnouncement.user}</p>
+                        </div>
+                        <div class="content-wrap">
+                            <span class="label">{cLabel.DNS_FSL_Content}</span>
+                            <div class="content">
+                                <lightning-formatted-rich-text
+                                    value={selectedAnnouncement.content}></lightning-formatted-rich-text>
+                            </div>
+                            <div class="file-wrap">
+                                <template if:true={selectedFiles.length}>
+                                    <h4 class="label">{cLabel.DNS_FSL_Attachment}</h4>
+                                    <ul class="files">
+                                        <template for:each={selectedFiles} for:item="file">
+                                            <li key={file.title}>
+                                                <lightning-button icon-name="utility:file" label={file.title}
+                                                    data-download-link={file.downloadLink}
+                                                    onclick={handleFileDownload}></lightning-button>
+                                                <!-- <lightning-button label={file.title} data-latest-version-id={file.latestVersionId} onclick={handleFileDownload}></lightning-button> -->
+
+                                                <!-- <lightning-button label="미리보기" icon-name="utility:preview" data-preview-link={file.previewLink} onclick={handleFilePreview}></lightning-button> -->
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </template>
+                                <template if:false={selectedFiles.length}>
+                                    <p class="label">{cLabel.DNS_FSL_NoFilesAttached}</p>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ↑ iteration ↑ -->
+                </div>
+            </template>
+
+            <!-- Q&A 디테일 -->
+            <template if:true={isQnaDetailView}>
+
+                <div class="card-header">
+                    <!-- 뒤로가기 버튼 -->
+                    <div class="button-wrap back">
+                        <lightning-button variant="label-hidden" icon-name="utility:chevronleft"
+                            onclick={handleBack}></lightning-button>
+                    </div>
+
+                    <div class="header-content">
+                        <div class="label">Q&A</div>
+                        <div class="title">
+                            {selectedQnA.title}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container">
+                    <!-- Question -->
+                    <div class="card">
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_IntegratedBulletinBoard}</span>
+                            <p class="content">{selectedQnA.title}</p>
+                        </div>
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_PostingDate}</span>
+                            <p class="content">{selectedQnA.date}</p>
+                        </div>
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_Writer}</span>
+                            <p class="content">{selectedQnA.user}</p>
+                        </div>
+                        <div class="content-wrap">
+                            <span class="label">{cLabel.DNS_FSL_QuestionContent}</span>
+                            <div class="content">
+                                <lightning-formatted-rich-text
+                                    value={selectedQnA.questionContent}></lightning-formatted-rich-text>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Answer -->
+                    <div class="card">
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_Respondent}</span>
+                            <p class="content">{selectedQnA.respondent}</p>
+                        </div>
+                        <div class="field">
+                            <span class="label">{cLabel.DNS_FSL_PostingDate}</span>
+                            <p class="content">{selectedQnA.dateOfReply}</p>
+                        </div>
+
+                        <div class="content-wrap">
+                            <span class="label">{cLabel.DNS_FSL_AnswerContent}</span>
+                            <div class="content">{selectedQnA.answerContent}</div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+    </div>
+</template>

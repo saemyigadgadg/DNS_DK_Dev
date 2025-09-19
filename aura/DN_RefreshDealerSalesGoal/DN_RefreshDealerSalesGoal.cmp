@@ -1,0 +1,44 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2025-03-18
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-12-06   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_RefreshDealerSalesGoalController" 
+    description="Dealer Sales Goal의 Previous Actual, YoY 값, Marketshare update. DNSA Only">
+
+    <!-- Attribute -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isLoading" type="boolean" default="false" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- Toast Notification -->
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- Body -->
+    <div>
+        <!-- ⏳ Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Click -->
+        <div class="button-wrap">
+            <button class="slds-button slds-button_neutral" onclick="{! c.handleRefresh }">
+                Refresh
+                <lightning:icon iconName="utility:refresh" size="small" alternativeText="Refresh" class="slds-m-left_x-small"/>
+            </button>
+        </div>
+        
+
+    </div>
+
+
+</aura:component>

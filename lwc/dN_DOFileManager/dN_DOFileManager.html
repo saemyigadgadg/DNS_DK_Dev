@@ -1,0 +1,64 @@
+<!--
+  @class             : DN_DeliveryRequestRegistrationController
+  @description       : DO화면에서 파일 관리
+  @author            : yeongju.yun
+  @last modified on  : 2024-12-08
+  @last modified by  : yeongju.yun
+-->
+<template>
+    <lightning-card>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+        <div class="slds-table_edit_container table-container">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer custom-table">
+                <colgroup>
+                    <col style="width: 20%;" />
+                    <col style="width: 70%;" />
+                    <col style="width: 10%;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">{cLabel.DNS_C_Item} </th>
+                        <th scope="col">{cLabel.DNS_C_FileUpload} </th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={fileFields} for:item="field">
+                        <tr key={field.name}>
+                            <td>{field.label}</td>
+                            <td>
+                                <template if:true={field.fileId}>
+                                    <template if:true={isPortal}>
+                                        <a href={field.publicURL} data-id={field.fileId}>{field.fileName}</a>
+                                    </template>
+                                    <template if:false={isPortal}>
+                                        <a href="javascript:void(0);" data-id={field.fileId} data-url={field.publicURL} onclick={previewHandler}>{field.fileName}</a>
+                                    </template>
+                                </template>
+                                <template if:false={field.fileId}>
+                                    <input type="file" class="file-input" accept="*/*" onchange={handleFileChange} data-name={field.name} disabled={isSentERP}/>
+                                </template>
+                            </td>
+                            <td class="custom-cell">
+                                <template if:false={isSentERP}>
+                                    <template if:true={field.fileId}>
+                                        <lightning-button-icon 
+                                            icon-name="utility:delete" 
+                                            onclick={handleDeleteFile} 
+                                            data-id={field.fileId}
+                                        ></lightning-button-icon>
+                                    </template>
+                                    <template if:false={field.fileId}>
+                                        <span></span>
+                                    </template>
+                                </template>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </lightning-card>
+</template>

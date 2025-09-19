@@ -1,0 +1,165 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-14-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-14-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+  <div class="customerOrderStatus">
+    <template lwc:if={isLoading}>
+      <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+    </template>
+    <div class="card-01 top-card">
+      <div class="field-wrap">
+        <p class="label">주문번호</p>
+        <div class="input-wrap">
+          {orderInfo.seq}
+        </div>
+      </div>
+      <div class="field-wrap">
+        <p class="label">고객주문번호</p>
+        <div class="input-wrap">
+          {orderInfo.customerOrerNumber}
+        </div>
+      </div>
+      <div class="field-wrap">
+        <p class="label">주문날짜</p>
+        <div class="input-wrap">
+          {orderInfo.orderDate}
+        </div>
+      </div>
+      <div class="field-wrap">
+        <p class="label">주문유형</p>
+        <div class="input-wrap">
+          {orderInfo.orderTypeLabel}
+        </div>
+      </div>
+    </div>
+    <div class="card-02 top-card">
+      <div>
+        <h2 class="title slds-text-heading_small slds-truncate">주문 내역</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th class="" scope="col" rowspan="2">
+                <div class="slds-truncate" title="">항목</div>
+              </th>
+              <th class="" scope="col" rowspan="2">
+                <div class="slds-truncate" title="">주문품번</div>
+              </th>
+              <th class="" scope="col" rowspan="2">
+                <div class="slds-truncate" title="">품명</div>
+              </th>
+              <th class="" scope="col" rowspan="2">
+                <div class="slds-truncate" title="">단위</div>
+              </th>
+              <th class="center" scope="col" colspan="4">
+                <div class="slds-truncate" title="">수량</div>
+              </th>
+              <th class="" scope="col" rowspan="2">
+                <div class="slds-truncate" title="">상태</div>
+              </th>
+              <th class="" scope="col" rowspan="2">
+                <div class="slds-truncate" title="">출고완료일</div>
+              </th>
+            </tr>
+            <tr>
+              <th class="" scope="col" rowspan="1">
+                <div class="slds-truncate" title="">고객주문수량</div>
+              </th>
+              <th class="" scope="col" rowspan="1">
+                <div class="slds-truncate" title="">출고수량</div>
+              </th>
+              <th class="" scope="col" rowspan="1">
+                <div class="slds-truncate" title="">미결수량</div>
+              </th>
+              <th class="" scope="col" rowspan="1">
+                <div class="slds-truncate" title="">결품수량</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template for:each={orderItemInfos} for:item="orderItem" for:index="index">
+              <tr class="slds-hint-parent" key={orderItem.itemId}>
+                <td data-label="항목">
+                  <div class="slds-truncate" title="항목">
+                    {orderItem.itemSeq}
+                    <!-- <lightning-input type="text"  name="input6" variant="label-hidden"
+                            value="000010" readonly="true"> </lightning-input> -->
+                  </div>
+                </td>
+                <td data-label="주문품번">
+                  <div class="slds-truncate" title="주문품번">
+                    {orderItem.replacingPartName}
+                    <!-- <lightning-input type="text"  name="input7" variant="label-hidden"
+                          readonly="true" step="0.01" value="140107-00230" ></lightning-input> -->
+                  </div>
+                </td>
+                <td data-label="품명">
+                  <div class="slds-truncate" title="품명">
+                    {orderItem.replacingPartDetails}
+                    <!-- <lightning-input type="text"  name="input7" variant="label-hidden"
+                          readonly="true" step="0.01" value="BEARING,ROLLER" ></lightning-input> -->
+                  </div>
+                </td>
+                <td data-label="단위">
+                  <div class="slds-truncate" title="단위">
+                    {orderItem.unit}
+                    <!-- <lightning-input type="text"  name="input9" variant="label-hidden" value="EA" readonly="true"></lightning-input> -->
+                  </div>
+                </td>
+                <td data-label="고객주문수량">
+                  <div class="slds-truncate" title="고객주문수량">
+                    <lightning-input type="number" name="input10" variant="label-hidden" readonly="true"
+                      value={orderItem.quantity}></lightning-input>
+                  </div>
+                </td>
+                <td data-label="출고수량">
+                  <div class="slds-truncate" title="출고수량" style="display: flex; align-items: center;">
+                    <lightning-input type="number" name="input2" variant="label-hidden" readonly="true"
+                      value={orderItem.giQuantity}></lightning-input>
+                  </div>
+                </td>
+                <td data-label="미결수량">
+                  <div class="slds-truncate" title="미결수량">
+                    <lightning-input type="text" name="input12" variant="label-hidden" readonly="true" step="0.01"
+                      value={orderItem.pendingQuantity}></lightning-input>
+                  </div>
+                </td>
+                <td data-label="결품수량">
+                  <!-- 
+                          해당 품번의 현재고를 Backorder 에 
+                          순차적으로 할당할 경우 해당 오더의 부족한 재고 수량 
+                        -->
+                  <div class="slds-truncate" title="결품수량">
+                    <template lwc:if={orderItem.isComplete}></template>
+                    <a lwc:else accesskey={index} onclick={openInventoryModal}>
+                      <span lwc:if={orderItem.isOutOfStock}>{orderItem.avaiableQuantity}</span>
+                      <span lwc:else>0</span>
+                    </a>
+                  </div>
+                </td>
+                <td data-label="상태">
+                  <div class="slds-truncate" title="상태">
+                    {orderItem.deliveryStatus}
+                  </div>
+                </td>
+                <td data-label="출고완료일">
+                  <div class="slds-truncate" title="출고완료일">
+                    {orderItem.giDate}
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</template>

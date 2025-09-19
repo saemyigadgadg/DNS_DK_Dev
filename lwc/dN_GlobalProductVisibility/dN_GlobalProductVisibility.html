@@ -1,0 +1,20 @@
+<template>
+    <lightning-card title="글로벌 영업 제품 동남아 노출 관리">
+        <div class="slds-p-horizontal_small slds-m-bottom_small">
+            <lightning-input type="search" label="제품명 검색" value={searchKey} onchange={handleSearchChange}></lightning-input>
+        </div>
+        <div class="slds-p-horizontal_small slds-text-body_small slds-m-bottom_xx-small slds-text-color_warning">
+            ※ 제품은 최대 200개까지만 조회됩니다. 더 많은 결과를 보려면 검색어를 입력하세요. 
+        </div>
+        <lightning-datatable
+            key-field="Id"
+            data={products}
+            columns={columns}
+            draft-values={draftValues}
+            onsave={handleSave}
+            hide-checkbox-column
+            show-row-number-column
+        >
+        </lightning-datatable>
+    </lightning-card>
+</template>

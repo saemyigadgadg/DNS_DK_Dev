@@ -1,0 +1,186 @@
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.header h2 {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.body {
+    background-color: #F3F3F3;
+    padding: 0.75rem;
+    margin: 0;
+}
+
+.body .top-card {
+    padding: 1rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card Header */
+
+.card-header {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.card-header h3 {
+    font-weight: 600;
+}
+
+/* Card 01 */
+
+.card-01 {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.card-01 .field-container {
+    display: flex;    
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.card-01 .field-wrap p {
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.card-01 .button-wrap {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Card 02 */
+
+.card-02 {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.card-02 .top-card {
+    padding-top: 0.75rem;
+}
+
+.card-02 .container-01 {
+    width: 70%;
+}
+
+.card-02 .container-01 .table-wrap {
+    min-height: 19rem;
+    height: calc(100vh - 25rem);
+    background: #f3f3f3;
+}
+
+.card-02 .container-02 {
+    width: 30%;
+    min-height: calc(100vh - 23.25rem);
+}
+
+.card-02 .container-01 .table-wrap {
+    border: 1px solid #c9c9c9;
+    overflow: auto;
+}
+
+.card-02 .container-02 .table-wrap {
+    border: 1px solid #c9c9c9;
+    border-top: 0;
+    border-bottom: 0;
+    overflow: visible;
+}
+
+.card-02 .button-wrap {
+    padding: 0 0.25rem;
+    margin-top: 0.75rem;
+    justify-content: space-between;
+    display: flex;
+}
+
+/* Table Design */
+
+.body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.body table td {
+    background-color: #fff;
+    padding: .25rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.body table tr:first-of-type td {
+    border-top: 1px solid #c9c9c9;
+}
+
+.body table th+th,
+.body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.body table .slds-input[readonly] {
+    border: none;
+}
+
+@media all and (max-width: 1320px) {
+    .card-01 {
+        flex-wrap: wrap;
+    }   
+  }

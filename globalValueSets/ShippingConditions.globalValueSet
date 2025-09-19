@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>W5</fullName>
+        <default>false</default>
+        <label>CROWN Ground</label>
+    </customValue>
+    <customValue>
+        <fullName>W6</fullName>
+        <default>false</default>
+        <label>CROWN Pick-Up/Collec</label>
+    </customValue>
+    <customValue>
+        <fullName>WR</fullName>
+        <default>false</default>
+        <label>CROWN Ret.Ship.Cond</label>
+    </customValue>
+    <customValue>
+        <fullName>Y1</fullName>
+        <default>false</default>
+        <label>Cust. Consigmnt.</label>
+    </customValue>
+    <customValue>
+        <fullName>Y2</fullName>
+        <default>false</default>
+        <label>DICC Export(FL)</label>
+    </customValue>
+    <customValue>
+        <fullName>Y3</fullName>
+        <default>false</default>
+        <label>Core sales to vendor</label>
+    </customValue>
+    <customValue>
+        <fullName>YA</fullName>
+        <default>false</default>
+        <label>NA Parts Return</label>
+    </customValue>
+    <customValue>
+        <fullName>ZE</fullName>
+        <default>false</default>
+        <label>Ocean [CBT]</label>
+    </customValue>
+    <customValue>
+        <fullName>ZF</fullName>
+        <default>false</default>
+        <label>CIS Earth [CBT]</label>
+    </customValue>
+    <customValue>
+        <fullName>01</fullName>
+        <default>false</default>
+        <label>Class 1</label>
+    </customValue>
+    <customValue>
+        <fullName>02</fullName>
+        <default>false</default>
+        <label>Class 2</label>
+    </customValue>
+    <customValue>
+        <fullName>03</fullName>
+        <default>false</default>
+        <label>Monday</label>
+    </customValue>
+    <customValue>
+        <fullName>04</fullName>
+        <default>false</default>
+        <label>Tuesday</label>
+    </customValue>
+    <customValue>
+        <fullName>05</fullName>
+        <default>false</default>
+        <label>Wednesday</label>
+    </customValue>
+    <customValue>
+        <fullName>06</fullName>
+        <default>false</default>
+        <label>Thursday</label>
+    </customValue>
+    <customValue>
+        <fullName>07</fullName>
+        <default>false</default>
+        <label>Friday</label>
+    </customValue>
+    <customValue>
+        <fullName>08</fullName>
+        <default>false</default>
+        <label>S.F. Express (Group)</label>
+    </customValue>
+    <customValue>
+        <fullName>10</fullName>
+        <default>false</default>
+        <label>Domestic Express</label>
+    </customValue>
+    <customValue>
+        <fullName>11</fullName>
+        <default>false</default>
+        <label>Oversea Express</label>
+    </customValue>
+    <customValue>
+        <fullName>12</fullName>
+        <default>false</default>
+        <label>Oversea Express -CKD</label>
+    </customValue>
+    <customValue>
+        <fullName>20</fullName>
+        <default>false</default>
+        <label>Truck</label>
+    </customValue>
+    <customValue>
+        <fullName>21</fullName>
+        <default>false</default>
+        <label>Bus</label>
+    </customValue>
+    <customValue>
+        <fullName>30</fullName>
+        <default>false</default>
+        <label>Train</label>
+    </customValue>
+    <customValue>
+        <fullName>40</fullName>
+        <default>false</default>
+        <label>Ship</label>
+    </customValue>
+    <customValue>
+        <fullName>50</fullName>
+        <default>false</default>
+        <label>Air</label>
+    </customValue>
+    <customValue>
+        <fullName>90</fullName>
+        <default>false</default>
+        <label>Quick Service</label>
+    </customValue>
+    <customValue>
+        <fullName>99</fullName>
+        <default>false</default>
+        <label>Loco(Spot)</label>
+    </customValue>
+    <customValue>
+        <fullName>A0</fullName>
+        <default>false</default>
+        <label>Same Day</label>
+    </customValue>
+    <customValue>
+        <fullName>A1</fullName>
+        <default>false</default>
+        <label>DHL Express-Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>A2</fullName>
+        <default>false</default>
+        <label>DHL-Freight</label>
+    </customValue>
+    <customValue>
+        <fullName>A3</fullName>
+        <default>false</default>
+        <label>THSLVS (Pick-up)</label>
+    </customValue>
+    <customValue>
+        <fullName>A4</fullName>
+        <default>false</default>
+        <label>DHL Hybrid</label>
+    </customValue>
+    <customValue>
+        <fullName>A5</fullName>
+        <default>false</default>
+        <label>DHL Freight</label>
+    </customValue>
+    <customValue>
+        <fullName>A6</fullName>
+        <default>false</default>
+        <label>DHL Express-COB (non</label>
+    </customValue>
+    <customValue>
+        <fullName>A7</fullName>
+        <default>false</default>
+        <label>NightStar</label>
+    </customValue>
+    <customValue>
+        <fullName>A8</fullName>
+        <default>false</default>
+        <label>Self Col.NEU</label>
+    </customValue>
+    <customValue>
+        <fullName>A9</fullName>
+        <default>false</default>
+        <label>Self Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>AA</fullName>
+        <default>false</default>
+        <label>DHL Pre12</label>
+    </customValue>
+    <customValue>
+        <fullName>AB</fullName>
+        <default>false</default>
+        <label>DHL Pre9</label>
+    </customValue>
+    <customValue>
+        <fullName>AC</fullName>
+        <default>false</default>
+        <label>DHL Express-COB (EU)</label>
+    </customValue>
+    <customValue>
+        <fullName>AD</fullName>
+        <default>false</default>
+        <label>Exp-Stand. Economy S</label>
+    </customValue>
+    <customValue>
+        <fullName>AE</fullName>
+        <default>false</default>
+        <label>DHL Domestic Express</label>
+    </customValue>
+    <customValue>
+        <fullName>AF</fullName>
+        <default>false</default>
+        <label>DHL Worldwide Expres</label>
+    </customValue>
+    <customValue>
+        <fullName>AG</fullName>
+        <default>false</default>
+        <label>Exp-Stand.Eco.Sel. n</label>
+    </customValue>
+    <customValue>
+        <fullName>B0</fullName>
+        <default>false</default>
+        <label>Bosman</label>
+    </customValue>
+    <customValue>
+        <fullName>B1</fullName>
+        <default>false</default>
+        <label>Cheapest Way</label>
+    </customValue>
+    <customValue>
+        <fullName>B2</fullName>
+        <default>false</default>
+        <label>Corneel Geerts</label>
+    </customValue>
+    <customValue>
+        <fullName>B3</fullName>
+        <default>false</default>
+        <label>DFDS Transport</label>
+    </customValue>
+    <customValue>
+        <fullName>B4</fullName>
+        <default>false</default>
+        <label>DHL Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>B5</fullName>
+        <default>false</default>
+        <label>DHL Prepaid</label>
+    </customValue>
+    <customValue>
+        <fullName>B6</fullName>
+        <default>false</default>
+        <label>France Express</label>
+    </customValue>
+    <customValue>
+        <fullName>B7</fullName>
+        <default>false</default>
+        <label>Own Transport</label>
+    </customValue>
+    <customValue>
+        <fullName>B8</fullName>
+        <default>false</default>
+        <label>Post(B8)</label>
+    </customValue>
+    <customValue>
+        <fullName>B9</fullName>
+        <default>false</default>
+        <label>Raben</label>
+    </customValue>
+    <customValue>
+        <fullName>BA</fullName>
+        <default>false</default>
+        <label>TNT Economy Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>BB</fullName>
+        <default>false</default>
+        <label>TNT Economy Prepaid</label>
+    </customValue>
+    <customValue>
+        <fullName>BC</fullName>
+        <default>false</default>
+        <label>TNT Global Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>BD</fullName>
+        <default>false</default>
+        <label>TNT Global Prepaid</label>
+    </customValue>
+    <customValue>
+        <fullName>BE</fullName>
+        <default>false</default>
+        <label>TNT Innight Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>BF</fullName>
+        <default>false</default>
+        <label>TNT National Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>BG</fullName>
+        <default>false</default>
+        <label>TNT National Prepaid</label>
+    </customValue>
+    <customValue>
+        <fullName>BH</fullName>
+        <default>false</default>
+        <label>Vanderoel</label>
+    </customValue>
+    <customValue>
+        <fullName>BI</fullName>
+        <default>false</default>
+        <label>With another shipmen</label>
+    </customValue>
+    <customValue>
+        <fullName>BJ</fullName>
+        <default>false</default>
+        <label>TNT Innight Prepaid</label>
+    </customValue>
+    <customValue>
+        <fullName>BK</fullName>
+        <default>false</default>
+        <label>CIBLEX</label>
+    </customValue>
+    <customValue>
+        <fullName>BL</fullName>
+        <default>false</default>
+        <label>ZIEGLER</label>
+    </customValue>
+    <customValue>
+        <fullName>C0</fullName>
+        <default>false</default>
+        <label>Next Day Delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>C1</fullName>
+        <default>false</default>
+        <label>12AM Delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>C2</fullName>
+        <default>false</default>
+        <label>10.30AM</label>
+    </customValue>
+    <customValue>
+        <fullName>C3</fullName>
+        <default>false</default>
+        <label>9AM</label>
+    </customValue>
+    <customValue>
+        <fullName>C4</fullName>
+        <default>false</default>
+        <label>Post(C4)</label>
+    </customValue>
+    <customValue>
+        <fullName>C6</fullName>
+        <default>false</default>
+        <label>2-3 Day</label>
+    </customValue>
+    <customValue>
+        <fullName>C7</fullName>
+        <default>false</default>
+        <label>Collect</label>
+    </customValue>
+    <customValue>
+        <fullName>C8</fullName>
+        <default>false</default>
+        <label>SAT AM</label>
+    </customValue>
+    <customValue>
+        <fullName>C9</fullName>
+        <default>false</default>
+        <label>SAT 10.30AM</label>
+    </customValue>
+    <customValue>
+        <fullName>CA</fullName>
+        <default>false</default>
+        <label>SAT 9AM</label>
+    </customValue>
+    <customValue>
+        <fullName>CB</fullName>
+        <default>false</default>
+        <label>TNT Int&apos;l 1 Day</label>
+    </customValue>
+    <customValue>
+        <fullName>CC</fullName>
+        <default>false</default>
+        <label>TNT Int&apos;l 2 to 3 Day</label>
+    </customValue>
+    <customValue>
+        <fullName>CD</fullName>
+        <default>false</default>
+        <label>GSS 1 Day</label>
+    </customValue>
+    <customValue>
+        <fullName>CE</fullName>
+        <default>false</default>
+        <label>GSS 2 to 3 Day</label>
+    </customValue>
+    <customValue>
+        <fullName>CF</fullName>
+        <default>false</default>
+        <label>Free Transport</label>
+    </customValue>
+    <customValue>
+        <fullName>CG</fullName>
+        <default>false</default>
+        <label>Transuniverse</label>
+    </customValue>
+    <customValue>
+        <fullName>CH</fullName>
+        <default>false</default>
+        <label>Direct Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>D1</fullName>
+        <default>false</default>
+        <label>DIA MT AIR</label>
+    </customValue>
+    <customValue>
+        <fullName>D2</fullName>
+        <default>false</default>
+        <label>DIA MT OCEAN</label>
+    </customValue>
+    <customValue>
+        <fullName>F1</fullName>
+        <default>false</default>
+        <label>GROUND(F1)</label>
+    </customValue>
+    <customValue>
+        <fullName>F2</fullName>
+        <default>false</default>
+        <label>PICK-UP(F2)</label>
+    </customValue>
+    <customValue>
+        <fullName>F3</fullName>
+        <default>false</default>
+        <label>Next Day</label>
+    </customValue>
+    <customValue>
+        <fullName>F4</fullName>
+        <default>false</default>
+        <label>Second Day</label>
+    </customValue>
+    <customValue>
+        <fullName>G1</fullName>
+        <default>false</default>
+        <label>Common</label>
+    </customValue>
+    <customValue>
+        <fullName>G2</fullName>
+        <default>false</default>
+        <label>Express</label>
+    </customValue>
+    <customValue>
+        <fullName>G3</fullName>
+        <default>false</default>
+        <label>Pick Up</label>
+    </customValue>
+    <customValue>
+        <fullName>S1</fullName>
+        <default>false</default>
+        <label>Next day (CS Only)</label>
+    </customValue>
+    <customValue>
+        <fullName>S2</fullName>
+        <default>false</default>
+        <label>Second Day (CS Only)</label>
+    </customValue>
+    <customValue>
+        <fullName>SS</fullName>
+        <default>false</default>
+        <label>Special ship (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>U0</fullName>
+        <default>false</default>
+        <label>Next Day Air</label>
+    </customValue>
+    <customValue>
+        <fullName>U1</fullName>
+        <default>false</default>
+        <label>Next Day AirEarly AM</label>
+    </customValue>
+    <customValue>
+        <fullName>U2</fullName>
+        <default>false</default>
+        <label>2nd Day Air</label>
+    </customValue>
+    <customValue>
+        <fullName>U3</fullName>
+        <default>false</default>
+        <label>3rd Day Air</label>
+    </customValue>
+    <customValue>
+        <fullName>U4</fullName>
+        <default>false</default>
+        <label>Saturday Delivery</label>
+    </customValue>
+    <customValue>
+        <fullName>U5</fullName>
+        <default>false</default>
+        <label>Ground(U5)</label>
+    </customValue>
+    <customValue>
+        <fullName>U6</fullName>
+        <default>false</default>
+        <label>Pick-up(U6)</label>
+    </customValue>
+    <customValue>
+        <fullName>UR</fullName>
+        <default>false</default>
+        <label>Return Ship.cond</label>
+    </customValue>
+    <customValue>
+        <fullName>W0</fullName>
+        <default>false</default>
+        <label>CROWN Next Day Air</label>
+    </customValue>
+    <customValue>
+        <fullName>W1</fullName>
+        <default>false</default>
+        <label>CROWN NextDay Air AM</label>
+    </customValue>
+    <customValue>
+        <fullName>W2</fullName>
+        <default>false</default>
+        <label>CROWN 2nd Day Air</label>
+    </customValue>
+    <customValue>
+        <fullName>W3</fullName>
+        <default>false</default>
+        <label>CROWN 3rd Day Air</label>
+    </customValue>
+    <customValue>
+        <fullName>W4</fullName>
+        <default>false</default>
+        <label>CROWN Saturday Deliv</label>
+    </customValue>
+    <description>Shipping Conditions</description>
+    <masterLabel>Shipping Conditions</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

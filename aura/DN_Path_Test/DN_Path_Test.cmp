@@ -1,0 +1,128 @@
+<aura:component
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    controller="DN_Opportunity_Path_Controller"
+    access="global"
+>
+    <div class="slds-path slds-path_has-coaching slds-is-expanded">
+        <div class="slds-grid slds-path__track">
+            <div class="slds-grid slds-path__scroller-container">
+                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-path__trigger slds-path__trigger_open" title="Toggle Sales Coaching" aria-expanded="true" aria-controls="path-coaching-2">
+                    <lightning:icon iconName="utility:chevronright" size="x-small" class="slds-button__icon" alternativeText="Toggle Icon"/>
+                    <span class="slds-assistive-text">Show Details</span>
+                </button>
+                <div class="slds-path__scroller">
+                    <div class="slds-path__scroller_inner">
+                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal" aria-labelledby="slds-path__stage-name">
+                            <!-- Path Item: Contacted -->
+                            <li class="slds-path__item slds-is-complete" role="presentation">
+                                <a aria-selected="false" class="slds-path__link" href="#" id="path-26" role="option" tabindex="-1">
+                                    <span class="slds-path__stage">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon" alternativeText="Stage Complete Icon"/>
+                                        <span class="slds-assistive-text">Stage Complete</span>
+                                    </span>
+                                    <span class="slds-path__title">Contacted</span>
+                                </a>
+                            </li>
+                            <!-- Path Item: Open -->
+                            <li class="slds-path__item slds-is-complete" role="presentation">
+                                <a aria-selected="false" class="slds-path__link" href="#" id="path-27" role="option" tabindex="-1">
+                                    <span class="slds-path__stage">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon" alternativeText="Stage Complete Icon"/>
+                                        <span class="slds-assistive-text">Stage Complete</span>
+                                    </span>
+                                    <span class="slds-path__title">Open</span>
+                                </a>
+                            </li>
+                            <!-- Path Item: Unqualified -->
+                            <li class="slds-path__item slds-is-current" role="presentation">
+                                <a aria-selected="false" class="slds-path__link" href="#" id="path-28" role="option" tabindex="-1">
+                                    <span class="slds-path__stage">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon" alternativeText="Current Stage Icon"/>
+                                        <span class="slds-assistive-text">Current Stage:</span>
+                                    </span>
+                                    <span class="slds-path__title">Unqualified</span>
+                                </a>
+                            </li>
+                            <!-- Path Item: Nurturing -->
+                            <li class="slds-path__item slds-is-incomplete slds-is-active" role="presentation">
+                                <a aria-selected="true" class="slds-path__link" href="#" id="path-29" role="option" tabindex="0">
+                                    <span class="slds-path__stage">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon" alternativeText="Nurturing Stage Icon"/>
+                                    </span>
+                                    <span class="slds-path__title">Nurturing</span>
+                                </a>
+                            </li>
+                            <!-- Path Item: Closed -->
+                            <li class="slds-path__item slds-is-incomplete" role="presentation">
+                                <a aria-selected="false" class="slds-path__link" href="#" id="path-30" role="option" tabindex="-1">
+                                    <span class="slds-path__stage">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon" alternativeText="Closed Stage Icon"/>
+                                    </span>
+                                    <span class="slds-path__title">Closed</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-path__action">
+                <span id="slds-path__stage-name" class="slds-path__stage-name">Stage: Unqualified</span>
+                <button class="slds-button slds-button_brand slds-path__mark-complete">
+                    <lightning:icon iconName="utility:check" size="x-small" class="slds-button__icon slds-button__icon_left" alternativeText="Mark as Complete Icon"/>
+                    Mark Status as Complete
+                </button>
+                <button class="slds-button slds-button_neutral slds-path__trigger-coaching-content" aria-expanded="true" aria-controls="path-coaching-2">Show Less</button>
+            </div>
+        </div>
+        <div class="slds-path__content" id="path-coaching-2">
+            <div class="slds-path__coach slds-grid">
+                <div class="slds-path__keys">
+                    <div class="slds-grid slds-grid_align-spread slds-path__coach-title">
+                        <h2>Key Fields This Stage</h2>
+                        <button class="slds-button slds-path__coach-edit slds-text-body_small">Edit</button>
+                    </div>
+                    <div class="slds-form" role="list">
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                    <span class="slds-form-element__label">Expected Budget</span>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-form-element__static">$10,000</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                    <span class="slds-form-element__label">Lead Source</span>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-form-element__static">Marketing and Web Referral</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                    <span class="slds-form-element__label">Support Engineer</span>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-form-element__static">Jane Authur</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-path__guidance">
+                    <h2 class="slds-path__coach-title">Guidance for Success</h2>
+                    <div class="slds-text-longform slds-path__guidance-content">
+                        <p>Regularly cross-sell related products using <a href="#">cross-sell tactics and principles</a>.</p>
+                        <p>Prepare demo deck using the <a href="#">latest template</a> and review with Marketing and Sales teams. Review demo copy with Legal and Doc team.</p>
+                        <p>Look up <a href="#">needs analysis principles</a> and review selling plan with Sales Engineer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

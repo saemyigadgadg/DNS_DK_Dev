@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>01</fullName>
+        <default>false</default>
+        <label>Wholesale</label>
+    </customValue>
+    <customValue>
+        <fullName>02</fullName>
+        <default>false</default>
+        <label>Retail</label>
+    </customValue>
+    <customValue>
+        <fullName>10</fullName>
+        <default>false</default>
+        <label>Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>1A</fullName>
+        <default>false</default>
+        <label>South East Asia</label>
+    </customValue>
+    <customValue>
+        <fullName>1B</fullName>
+        <default>false</default>
+        <label>C.I.S</label>
+    </customValue>
+    <customValue>
+        <fullName>1C</fullName>
+        <default>false</default>
+        <label>Latin America</label>
+    </customValue>
+    <customValue>
+        <fullName>1D</fullName>
+        <default>false</default>
+        <label>Korea</label>
+    </customValue>
+    <customValue>
+        <fullName>1E</fullName>
+        <default>false</default>
+        <label>Middle East, Africa(1E)</label>
+    </customValue>
+    <customValue>
+        <fullName>20</fullName>
+        <default>false</default>
+        <label>Export</label>
+    </customValue>
+    <customValue>
+        <fullName>21</fullName>
+        <default>false</default>
+        <label>CBT_DBSA</label>
+    </customValue>
+    <customValue>
+        <fullName>22</fullName>
+        <default>false</default>
+        <label>CBT_NA</label>
+    </customValue>
+    <customValue>
+        <fullName>26</fullName>
+        <default>false</default>
+        <label>Field Mod. Order</label>
+    </customValue>
+    <customValue>
+        <fullName>2A</fullName>
+        <default>false</default>
+        <label>China</label>
+    </customValue>
+    <customValue>
+        <fullName>2B</fullName>
+        <default>false</default>
+        <label>China WLD</label>
+    </customValue>
+    <customValue>
+        <fullName>2C</fullName>
+        <default>false</default>
+        <label>DISC</label>
+    </customValue>
+    <customValue>
+        <fullName>4A</fullName>
+        <default>false</default>
+        <label>North America</label>
+    </customValue>
+    <customValue>
+        <fullName>4B</fullName>
+        <default>false</default>
+        <label>Oceania</label>
+    </customValue>
+    <customValue>
+        <fullName>5A</fullName>
+        <default>false</default>
+        <label>Brazil</label>
+    </customValue>
+    <customValue>
+        <fullName>7A</fullName>
+        <default>false</default>
+        <label>E.U</label>
+    </customValue>
+    <customValue>
+        <fullName>7B</fullName>
+        <default>false</default>
+        <label>Middle East, Africa(7B)</label>
+    </customValue>
+    <customValue>
+        <fullName>7U</fullName>
+        <default>false</default>
+        <label>U.K</label>
+    </customValue>
+    <customValue>
+        <fullName>B0</fullName>
+        <default>false</default>
+        <label>BCP Dnet</label>
+    </customValue>
+    <customValue>
+        <fullName>B1</fullName>
+        <default>false</default>
+        <label>BCP Dnet -15%</label>
+    </customValue>
+    <customValue>
+        <fullName>B2</fullName>
+        <default>false</default>
+        <label>BCP Oceania</label>
+    </customValue>
+    <customValue>
+        <fullName>B3</fullName>
+        <default>false</default>
+        <label>BCP List</label>
+    </customValue>
+    <customValue>
+        <fullName>B4</fullName>
+        <default>false</default>
+        <label>BCP Cost</label>
+    </customValue>
+    <customValue>
+        <fullName>B5</fullName>
+        <default>false</default>
+        <label>BCP Cost +10%</label>
+    </customValue>
+    <customValue>
+        <fullName>B6</fullName>
+        <default>false</default>
+        <label>BCP List -40%</label>
+    </customValue>
+    <customValue>
+        <fullName>B7</fullName>
+        <default>false</default>
+        <label>BCP List +10%</label>
+    </customValue>
+    <customValue>
+        <fullName>B8</fullName>
+        <default>false</default>
+        <label>BCP Cost +5%(B8)</label>
+    </customValue>
+    <customValue>
+        <fullName>B9</fullName>
+        <default>false</default>
+        <label>BCP Cost +20%</label>
+    </customValue>
+    <customValue>
+        <fullName>BA</fullName>
+        <default>false</default>
+        <label>BCP List -10%</label>
+    </customValue>
+    <customValue>
+        <fullName>BB</fullName>
+        <default>false</default>
+        <label>BCP Cost +54%</label>
+    </customValue>
+    <customValue>
+        <fullName>BC</fullName>
+        <default>false</default>
+        <label>BCP Cost +15%</label>
+    </customValue>
+    <customValue>
+        <fullName>BD</fullName>
+        <default>false</default>
+        <label>BCP AU Dnet - 22%</label>
+    </customValue>
+    <customValue>
+        <fullName>BE</fullName>
+        <default>false</default>
+        <label>BCP AU Dnet - 15%</label>
+    </customValue>
+    <customValue>
+        <fullName>BS</fullName>
+        <default>false</default>
+        <label>BCP Sunbelt</label>
+    </customValue>
+    <customValue>
+        <fullName>CD</fullName>
+        <default>false</default>
+        <label>Compact Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>CM</fullName>
+        <default>false</default>
+        <label>Compact MIAMI</label>
+    </customValue>
+    <customValue>
+        <fullName>CN</fullName>
+        <default>false</default>
+        <label>Compact NA</label>
+    </customValue>
+    <customValue>
+        <fullName>CU</fullName>
+        <default>false</default>
+        <label>Compact Europe</label>
+    </customValue>
+    <customValue>
+        <fullName>EA</fullName>
+        <default>false</default>
+        <label>E/G North America</label>
+    </customValue>
+    <customValue>
+        <fullName>ED</fullName>
+        <default>false</default>
+        <label>E/G Dom</label>
+    </customValue>
+    <customValue>
+        <fullName>EO</fullName>
+        <default>false</default>
+        <label>E/G Overseas</label>
+    </customValue>
+    <customValue>
+        <fullName>M1</fullName>
+        <default>false</default>
+        <label>Within 5 Days (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>M2</fullName>
+        <default>false</default>
+        <label>Within 30 Days (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>M3</fullName>
+        <default>false</default>
+        <label>Within 45 Days (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP AU Dnet - 15%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP AU Dnet - 15%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP AU Dnet - 22%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP AU Dnet - 22%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Cost +15%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Cost +15%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Cost +54%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Cost +54%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP List -10%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP List -10%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Cost +20%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Cost +20%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Cost +5%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Cost +5%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP List +10%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP List +10%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP List -40%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP List -40%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Cost +10%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Cost +10%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Cost</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Cost</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP List</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP List</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Oceania</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Oceania</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Dnet -15%</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Dnet -15%</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Dnet</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Dnet</label>
+    </customValue>
+    <customValue>
+        <fullName>U.K</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>U.K</label>
+    </customValue>
+    <customValue>
+        <fullName>E.U</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>E.U</label>
+    </customValue>
+    <customValue>
+        <fullName>Brazil</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Brazil</label>
+    </customValue>
+    <customValue>
+        <fullName>Oceania</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Oceania</label>
+    </customValue>
+    <customValue>
+        <fullName>North America</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>North America</label>
+    </customValue>
+    <customValue>
+        <fullName>DISC</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DISC</label>
+    </customValue>
+    <customValue>
+        <fullName>China WLD</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>China WLD</label>
+    </customValue>
+    <customValue>
+        <fullName>Compact NA</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Compact NA</label>
+    </customValue>
+    <customValue>
+        <fullName>Field Mod. Order</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Field Mod. Order</label>
+    </customValue>
+    <customValue>
+        <fullName>CBT_NA</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>CBT_NA</label>
+    </customValue>
+    <customValue>
+        <fullName>CBT_DBSA</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>CBT_DBSA</label>
+    </customValue>
+    <customValue>
+        <fullName>Export</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Export</label>
+    </customValue>
+    <customValue>
+        <fullName>Middle East, Africa</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Middle East, Africa</label>
+    </customValue>
+    <customValue>
+        <fullName>Korea</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Korea</label>
+    </customValue>
+    <customValue>
+        <fullName>Latin America</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Latin America</label>
+    </customValue>
+    <customValue>
+        <fullName>C.I.S</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>C.I.S</label>
+    </customValue>
+    <customValue>
+        <fullName>South East Asia</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>South East Asia</label>
+    </customValue>
+    <customValue>
+        <fullName>Domestic</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>China</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>China</label>
+    </customValue>
+    <customValue>
+        <fullName>Compact Europe</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Compact Europe</label>
+    </customValue>
+    <customValue>
+        <fullName>E/G North America</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>E/G North America</label>
+    </customValue>
+    <customValue>
+        <fullName>E/G Dom</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>E/G Dom</label>
+    </customValue>
+    <customValue>
+        <fullName>E/G Overseas</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>E/G Overseas</label>
+    </customValue>
+    <customValue>
+        <fullName>Within 5 Days (MT)</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Within 5 Days (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>Within 30 Days (MT)</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Within 30 Days (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>Within 45 Days (MT)</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Within 45 Days (MT)</label>
+    </customValue>
+    <customValue>
+        <fullName>Compact MIAMI</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Compact MIAMI</label>
+    </customValue>
+    <customValue>
+        <fullName>Compact Domestic</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Compact Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>BCP Sunbelt</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>BCP Sunbelt</label>
+    </customValue>
+    <masterLabel>Price List</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

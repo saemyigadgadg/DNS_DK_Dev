@@ -1,0 +1,139 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @last modified on  : 05-20-2025
+  @last modified by  : Hanyeong Choi
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force.hasSObjectName,lightning:actionOverride"
+                controller="DN_CommodityController" 
+                description="SQ Registration Confirm">
+
+    
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="checkApply"       type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="objectName"       type="String"   default="Order" />
+    <aura:attribute name="O_Price"          type="String"   default="" />
+    <aura:attribute name="warrantyValue"    type="String"   default="" />
+    <aura:attribute name="extraDisc"        type="Decimal" />
+    <aura:attribute name="warrValue"        type="Decimal" />
+    <aura:attribute name="promo"            type="Decimal" />
+    <aura:attribute name="profit"           type="Decimal" />
+    <aura:attribute name="otherDiscount"    type="Decimal" />
+    <aura:attribute name="warr"             type="Decimal" />
+    
+    <aura:attribute name="listPrice"        type="Decimal"  default="0.00" />
+    <aura:attribute name="adjustmentPrice"  type="Decimal"  default="0.00" />
+    <aura:attribute name="totalPrice"       type="Decimal"  default="0.00" />
+    <aura:attribute name="dealerPrice"      type="Decimal"  default="0.00" />
+
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_QuotePricingModal) {
+            width: 56rem;
+            max-width: calc(100vw - 7rem);
+            min-width: 10rem;
+            padding: 0 !important;
+            margin: 0 auto; 
+        }
+        .slds-modal__content:has(.cDN_QuotePricingModal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_QuotePricingModal) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">Discount</h2>
+            <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal" onclick="{!c.closeModal}">
+                </lightning:icon>
+            </button>
+        </header>
+
+        <div class="slds-modal__content">
+
+            <div class="modal-body">
+
+                <div class="first-wrap">
+                    <div class="input-container">
+                        <div class="slds-form-element_horizontal slds-form-element extra-input-wrap">
+                            <label class="slds-form-element__label slds-no-flex">List Price</label>
+                            <div class="slds-form-element__control slds-grow">
+                                <!-- <lightning:input type="number"  value="{! v.listPrice }" disabled="true" variant="label-hidden" /> -->
+                                <!-- <span class="value">{! v.listPrice }</span> -->
+                                <lightning:formattedNumber value="{!v.listPrice}" style="decimal" minimumFractionDigits="2" maximumFractionDigits="2" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element_horizontal slds-form-element extra-input-wrap">
+                            <label class="slds-form-element__label slds-no-flex">Adjustment Price</label>
+                            <div class="slds-form-element__control slds-grow">
+                                <!-- <lightning:input type="number"  value="{! v.adjustmentPrice }" disabled="true" variant="label-hidden" /> -->
+                                <!-- <span class="value">{! v.adjustmentPrice }</span> -->
+                                <lightning:formattedNumber value="{!v.adjustmentPrice}" style="decimal" minimumFractionDigits="2" maximumFractionDigits="2" />
+                            </div>
+                        </div>
+                        <div></div>
+                        <div class="slds-form-element_horizontal slds-form-element extra-input-wrap">
+                            <label class="slds-form-element__label slds-no-flex">Dealer Price</label>
+                            <div class="slds-form-element__control slds-grow">
+                                <!-- <lightning:input type="number"  value="{! v.dealerPrice }" disabled="true" variant="label-hidden" /> -->
+                                <lightning:formattedNumber value="{!v.dealerPrice}" style="decimal" minimumFractionDigits="2" maximumFractionDigits="2" />
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <p class="total-price"></p>
+                </div>
+
+                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }" recordId="{! v.recordId }" onsubmit="{! c.handleSubmit }">
+
+                    <lightning:inputField aura:id="recordField" fieldName="DiscountfromSalesAvailabilityList__c" value="{!v.extraDisc}" disabled="true" />
+                    <ui:message aura:id="errorMsgDiscountfromSalesAvailabilityListc" title="Error" severity="error" closable="true" class="slds-hide">This field cannot be positive.</ui:message>
+
+                    <lightning:inputField aura:id="recordField" fieldName="OtherDiscount__c" onkeyup="{! c.handleFieldChange }" />
+                    <ui:message aura:id="errorMsgOtherDiscountc" title="Error" severity="error" closable="true" class="slds-hide">This field cannot be positive.</ui:message>
+
+                    <lightning:inputField aura:id="recordField" fieldName="PromotionalPackage__c" onkeyup="{! c.handleFieldChange }" />
+                    <ui:message aura:id="errorMsgPromotionalPackagec" title="Error" severity="error" closable="true" class="slds-hide">This field cannot be positive.</ui:message>
+
+                    <lightning:inputField aura:id="recordField" fieldName="ProfitMarginSubsidyPlan__c" onkeyup="{! c.handleFieldChange }" />
+                    <ui:message aura:id="errorMsgProfitMarginSubsidyPlanc" title="Error" severity="error" closable="true" class="slds-hide">This field cannot be positive.</ui:message>
+
+                    <lightning:inputField aura:id="recordField" fieldName="ServiceReimbursement__c" onchange="{! c.handlePickChange }" required="true" />
+                    <!-- <ui:message aura:id="errorMsgServiceReimbursementc" title="Error" severity="error" closable="true" class="slds-hide">This field cannot be negative.</ui:message> -->
+
+                    <lightning:inputField aura:id="recordField" fieldName="MachinePartsWarranty__c" onchange="{! c.handleWarrChange }" required="true" />
+
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label slds-form-element" for="horizontal-input-id-01">Service Reimbursement</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input aura:id="recordField" variant="label-hidden" disabled="true" value="{! v.O_Price }" />
+                        </div>
+                    </div>
+
+                    <lightning:inputField aura:id="recordField" fieldName="ExtWarranty__c" value="{!v.warrValue}" disabled="true" />
+                </lightning:recordEditForm>
+                <p class="total-price">
+                    Total Price: <lightning:formattedNumber value="{!v.totalPrice}" style="decimal" minimumFractionDigits="2" maximumFractionDigits="2" />
+                </p>
+            </div>
+        </div>
+
+        <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" onclick="{! c.handleClickClose }">Cancel</button>
+            <lightning:button class="slds-button slds-button_neutral" variant="brand" label="Apply" onclick="{! c.handleClickApply }" disabled="{! v.checkApply }" />
+        </footer>
+    </div>
+</aura:component>

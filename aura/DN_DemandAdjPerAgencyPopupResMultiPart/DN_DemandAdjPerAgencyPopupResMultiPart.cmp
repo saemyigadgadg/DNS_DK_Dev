@@ -1,0 +1,74 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 07-03-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-03-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    extends="c:DN_Helper"
+    controller="DN_AgencyPopupResMultiPartController"
+    description="부품 멀티 등록 모달">
+    
+    <!-- attribute -->
+    <aura:attribute name="keywordList" type="List" default="[]"/>
+    <aura:attribute name="parentCmp" type="String" />
+    <aura:attribute name="type" type="String" />
+    <!-- handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+	<!-- Event -->
+	<aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+    <div class="RegsiterMultiPartModal" aura:id="pasteDiv">
+        <div aura:id="RegsiterMultiPartModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+
+                    <h2 class="slds-text-heading_medium">{!v.type =='Part'? '부품 멀티 등록' : '재고 위치 멀티 등록'}</h2>
+
+                    <!-- close btn -->
+                    <button class="slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse'
+                            size='small' title='close' name="closeModal" onclick="{!c.handleClose}">
+                        </lightning:icon>
+                    </button>
+                </header>
+                <!-- Modal Content -->
+                <div aura:id="RegsiterMultiPartModalBody" class="slds-modal__content" contenteditable="true">
+                    
+                    <p>* Excel에서 복사한 Data만 붙여넣기 가능 합니다.</p>
+                    <aura:iteration items="{!v.keywordList}" var="word" indexVar="index">
+                        <div class="copy-name">
+                            <p name="{!index}">{!word}</p>
+                            <a href="" name="{!index}" onclick="{!c.removeText}">
+                                <lightning:icon name="{!index}" iconName="utility:close" alternativeText="Remove" title="Remove" size="xx-small" />
+                            </a>
+                        </div>
+                    </aura:iteration>
+                    
+                </div>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Close" onclick="{!c.handleClose}" />
+                    <div class="flex-wrap">
+                        <lightning:button aura:id="pasteBTN" label="Paste" onclick="{!c.handlePasteButton}" />
+                        <aura:if isTrue="{! v.type=='Part'}">
+                            <lightning:button label="Confirm" onclick="{!c.handleConfirm}" variant="brand" />
+                            <aura:set attribute="else">
+                                <lightning:button label="Confirm" onclick="{!c.handleStorege}" variant="brand" />
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <!-- 배경 -->
+        <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

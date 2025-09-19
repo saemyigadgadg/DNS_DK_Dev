@@ -1,0 +1,107 @@
+.THIS .slds-modal__container {
+  width: 60vw;
+  min-width: 340px;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  border: none;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+  opacity: 0.75;
+}
+
+/* Modal Body */
+.THIS .modal-body {
+  background-color: #F3F3F3;
+}
+
+.THIS .modal-body .top-card {
+  display: block;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS .top-card .field-wrap p {
+  font-weight: 600;
+  width: 5rem;
+  margin-bottom: .25rem;
+  text-wrap: nowrap;
+}
+
+/* card-01 */
+.THIS .modal-body .card-01 {
+  display: flex;
+}
+
+.THIS .card-01 .field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.THIS .slds-modal .card-01 .field-wrap .input-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .25rem;
+  height: 160px;
+  border: 1px solid #adb5bd;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.THIS .card-01 .field-wrap .input-wrap li {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap li:hover {
+  background-color: #f1f3f5;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+  width: 100%;
+}
+
+/* card-02 */
+.THIS .card-02 .slds-form-element__control {
+  display: grid;
+  grid-template-columns: repeat(4 , 1fr);
+  padding: 0.5rem 1rem 1.5rem;
+}
+
+/* Table Class */
+
+.THIS .center {
+  text-align: center !important;
+}
+
+.THIS .left {
+  text-align: left !important;
+}
+
+.THIS .right {
+  text-align: right !important;
+}
+
+/* SLDS Customs */
+.THIS .slds-button_neutral {
+  text-wrap: nowrap;
+}

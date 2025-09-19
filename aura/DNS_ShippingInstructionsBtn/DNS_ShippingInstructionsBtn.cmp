@@ -1,0 +1,578 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   08-26-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_ShippingInstructionBtnController" access="global">
+
+    <!--출하지시서 버튼-->
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDNS_ShippingInstructionsBtn) {
+        width: 74rem;
+        max-width: calc(100vw - 8rem);
+        min-width: 28rem;
+        padding: 3rem 0 4rem 0;
+        }
+        .slds-modal__content:has(.cDNS_ShippingInstructionsBtn) {
+        height: auto !important;
+        max-height: none !important;
+        padding: 0;
+        overflow-y:clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNS_ShippingInstructionsBtn) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDNS_ShippingInstructionsBtn) {
+        overflow-y: clip;
+        }
+    </aura:html>
+
+    <!--Attribute-->
+    <aura:attribute name="isSpinner" type="Boolean" default="true" />
+    <aura:attribute name="model" type="String" default="" />
+    <aura:attribute name="assetId" type="String" default="" />
+    <aura:attribute name="o_header" type="Object" default="{}" />
+    <aura:attribute name="t_o_remark" type="String" default="" />
+    <aura:attribute name="t_o_classification" type="List" default="[]" />
+    <aura:attribute name="t_o_mannual" type="List" default="[]" />
+    <aura:attribute name="t_o_material" type="List" default="[]" />
+    <aura:attribute name="t_o_so_items" type="List" default="[]" />
+    <aura:attribute name="t_o_shipping_part_list" type="List" default="[]" />
+    <aura:attribute name="t_o_rsp_list" type="List" default="[]" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!--Container-->
+    <div>
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_ShippingInstruction}</h2>
+        </header>
+        <div class="slds-modal__container">
+            <aura:if isTrue="{!v.isSpinner}">
+                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+            </aura:if>
+            <div class="slds-modal__content">
+
+                <!-- 🚩 출하지시서 조회 Table -->
+                <div class="container">
+                    <div class="title">{!$Label.c.DNS_T_ShippingInstruction}</div>
+                    <div aura:id="table" class="table-wrap">
+                        <table>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_Model}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_Model}" style="width: 15%;">
+                                        <div class="slds-truncate" title="{!$Label.c.DNS_C_Model}">
+                                            <lightning:input type="text" variant="label-hidden" name="input1"
+                                                value="{!v.model}"/>
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_SerialNumber}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_SerialNumber}">
+                                        <lightning:recordEditForm aura:id="recordEditForm" objectApiName="Case">
+                                            <div class="slds-truncate" title="{!$Label.c.DNS_C_SerialNumber}">
+                                                <lightning:inputField fieldName="AssetId" value="{!v.assetId}"
+                                                    variant="label-hidden" onchange="{!c.handleAsset}"/>
+                                            </div>
+                                        </lightning:recordEditForm>
+                                    </td>
+                                    <td rowspan="2" class="search-btn">
+                                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Search}"
+                                            onclick="{!c.handleSearch}" class="slds-m-left_x-small" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <!-- 🚩 출하지시서 Table -->
+                <div class="container">
+                    <div class="title">{!$Label.c.DNS_B_ShippingInstruction}</div>
+                    <div aura:id="table" class="table-wrap">
+                        <table>
+                            <colgroup>
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                                <col width="12.5%" />
+                            </colgroup>
+                            <tbody>
+                                <tr class="slds-hint-parent">
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_ContractNumber}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_ContractNumber}">
+                                        <div class="slds-truncate" title="{!$Label.c.DNS_C_ContractNumber}">
+                                            {!v.o_header.CONT_NO}
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_IssueNumber}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_IssueNumber}">
+                                        <div class="slds-truncate" title="{!$Label.c.DNS_C_IssueNumber}">
+                                            {!v.o_header.ISSUE_NO}
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_Model}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_Model}">
+                                        <div class="slds-truncate" title="{!$Label.c.DNS_C_Model}">
+                                            {!v.o_header.TYPBZ}
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_SerialNumber}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_SerialNumber}">
+                                        <div class="slds-truncate" title="{!$Label.c.DNS_C_SerialNumber}">
+                                            {!v.o_header.SERNR}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <th scope="col">
+                                        <div class="slds-truncate">TYPE</div>
+                                    </th>
+                                    <td data-label="TYPE">
+                                        <div class="slds-truncate" title="TYPE">
+                                            {!v.o_header.TYPE}
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div class="slds-truncate">{!$Label.c.DNS_C_ShippingDate}</div>
+                                    </th>
+                                    <td data-label="{!$Label.c.DNS_C_ShippingDate}" colspan="5">
+                                        <div class="slds-truncate" title="{!$Label.c.DNS_C_ShippingDate}">
+                                            {!v.o_header.WADAT}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="slds-hint-parent">
+                                    <th scope="col">
+                                        <div class="slds-truncate">REMARK</div>
+                                    </th>
+                                    <td data-label="REMARK" colspan="7">
+                                        <div class="slds-truncate" title="TYPE">
+                                            <lightning:formattedRichText value="{!v.t_o_remark}" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div aura:id="table" class="table-flex">
+                    <!-- 🚩 Characteristic & Value Table-->
+                    <div class="container col">
+                        <div class="title">S/O CV</div>
+                        <div class="table-wrap scrollable">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="50%" />
+                                    <col width="50%" />
+                                </colgroup>
+                                <thead>
+                                    <tr class="slds-hint-parent">
+                                        <th scope="col">
+                                            <div class="slds-truncate">Characteristic</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Value</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.t_o_classification}" var="cla">
+                                        <tr class="slds-hint-parent">
+                                            <td data-label="WORK COORDINATE SYSTEM PRESET">
+                                                <div class="slds-truncate" title="{!cla.WKADDR}">
+                                                    {!cla.WKADDR}
+                                                </div>
+                                            </td>
+                                            <td data-label="{!cla.WKVALUE}">
+                                                <div class="slds-truncate" title="NONE">
+                                                    {!cla.WKVALUE}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- <div class="container col">
+                        <div class="title">Sales Order</div>
+                        <div class="table-wrap scrollable">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <thead>
+                                    <tr class="slds-hint-parent">
+                                        <th scope="col">
+                                            <div class="slds-truncate">item</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Material</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Description</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Spec</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Order Quantity</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Unit</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.t_o_material}" var="so">
+                                        <tr class="slds-hint-parent">
+                                            <td data-label="item">
+                                                <div class="slds-truncate" title="item">
+                                                    {!so.POSNR}
+                                                </div>
+                                            </td>
+                                            <td data-label="Material">
+                                                <div class="slds-truncate" title="Material">
+                                                    {!so.MATNR}
+                                                </div>
+                                            </td>
+                                            <td data-label="Description">
+                                                <div class="slds-truncate" title="Description">
+                                                    {!so.ARKTX}
+                                                </div>
+                                            </td>
+                                            <td data-label="Spec">
+                                                <div class="slds-truncate" title="Spec">
+                                                    {!so.ATWRT}
+                                                </div>
+                                            </td>
+                                            <td data-label="Order Quantity">
+                                                <div class="slds-truncate" title="Order Quantity">
+                                                    {!so.KWMENG}
+                                                </div>
+                                            </td>
+                                            <td data-label="Unit">
+                                                <div class="slds-truncate" title="Unit">
+                                                    {!so.VRKME}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> -->
+                </div>
+
+                <!-- 🚩 Tabset -->
+                <div class="container tabset">
+                    <lightning:tabset>
+
+                        <!-- Tab 01. Sales Order -->
+                        <lightning:tab label="Sales Order">
+                            <div aura:id="table" class="table-wrap scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="col" style="width: 10%;">
+                                                <div class="slds-truncate">item</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Material</div>
+                                            </th>
+                                            <th scope="col" style="width: 32%;">
+                                                <div class="slds-truncate">Description</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Spec</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Order Quantity</div>
+                                            </th>
+                                            <th scope="col" style="width: 10%;">
+                                                <div class="slds-truncate">Unit</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.t_o_material}" var="so">
+                                            <tr class="slds-hint-parent">
+                                                <td data-label="item">
+                                                    <div class="slds-truncate" title="item">
+                                                        {!so.POSNR}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Material">
+                                                    <div class="slds-truncate" title="Material">
+                                                        {!so.MATNR}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Description">
+                                                    <div class="slds-truncate" title="Description">
+                                                        {!so.ARKTX}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Spec">
+                                                    <div class="slds-truncate" title="Spec">
+                                                        {!so.ATWRT}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Order Quantity">
+                                                    <div class="slds-truncate" title="Order Quantity">
+                                                        {!so.KWMENG}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Unit">
+                                                    <div class="slds-truncate" title="Unit">
+                                                        {!so.VRKME}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </lightning:tab>
+
+                        <!-- Tab 02. Manual -->
+                        <lightning:tab label="Manual">
+                            <div aura:id="table" class="table-wrap scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="col" style="width: 20%;">
+                                                <div class="slds-truncate">Manual Classification</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Manual</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Appl.Mon</div>
+                                            </th>
+                                            <th scope="col" style="width: 20%;">
+                                                <div class="slds-truncate">Book Number</div>
+                                            </th>
+                                            <th scope="col" style="width: 9%;">
+                                                <div class="slds-truncate">Lang</div>
+                                            </th>
+                                            <th scope="col" style="width: 9%;">
+                                                <div class="slds-truncate">Serial</div>
+                                            </th>
+                                            <th scope="col" style="width: 9%;">
+                                                <div class="slds-truncate">Copies</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.t_o_mannual}" var="man">
+                                            <tr class="slds-hint-parent">
+                                                <td data-label="{!man.MANULDV}">
+                                                    <div class="slds-truncate" title="{!man.MANULDV}">
+                                                        {!man.MANULDV}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!man.MANUL}">
+                                                    <div class="slds-truncate" title="{!man.MANUL}">
+                                                        {!man.MANUL}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!man.PPNOF}">
+                                                    <div class="slds-truncate" title="{!man.PPNOF}">
+                                                        {!man.PPNOF}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!man.BOOKN}">
+                                                    <div class="slds-truncate" title="{!man.BOOKN}">
+                                                        {!man.BOOKN}
+                                                    </div>
+                                                </td>
+                                                <td data-label="ENG">
+                                                    <div class="slds-truncate" title="ENG">
+                                                        {!man.SLANG}
+                                                    </div>
+                                                </td>
+                                                <td data-label="1">
+                                                    <div class="slds-truncate" title="1">
+                                                        {!man.SERIAL}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!man.COPIS}">
+                                                    <div class="slds-truncate" title="{!man.COPIS}">
+                                                        {!man.COPIS}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </lightning:tab>
+
+                        <!-- Tab 03. Shipping Part List -->
+                        <lightning:tab label="Shipping Part List">
+                            <div aura:id="table" class="table-wrap scrollable">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="col">
+                                                <div class="slds-truncate">Item</div>
+                                            </th>
+                                            <th scope="col" >
+                                                <div class="slds-truncate">Material Num</div>
+                                            </th>
+                                            <th scope="col" style="width: 400px;">
+                                                <div class="slds-truncate">Description</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Spec</div>
+                                            </th>
+                                            <th scope="col" style="width: 136px;">
+                                                <div class="slds-truncate">Req.Quantity</div>
+                                            </th>
+                                            <th scope="col" style="width: 136px;">
+                                                <div class="slds-truncate">Unit</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.t_o_shipping_part_list}" var="sp">
+                                            <tr class="slds-hint-parent">
+                                                <td data-label="{!sp.POSNR}">
+                                                    <div class="slds-truncate" title="{!sp.POSNR}">
+                                                        {!sp.POSNR}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!sp.POSNR}">
+                                                    <div class="slds-truncate" title="{!sp.POSNR}">
+                                                        {!sp.MATNR}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!sp.MAKTX}">
+                                                    <div class="slds-truncate" title="{!sp.MAKTX}">
+                                                        {!sp.MAKTX}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!sp.ZSPEC}">
+                                                    <div class="slds-truncate" title="{!sp.ZSPEC}">
+                                                        {!sp.ZSPEC}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!sp.MENGE}">
+                                                    <div class="slds-truncate" title="{!sp.MENGE}">
+                                                        {!sp.MENGE}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!sp.MEINS}">
+                                                    <div class="slds-truncate" title="{!sp.MEINS}">
+                                                        {!sp.MEINS}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </lightning:tab>
+
+                        <!-- Tab 04. RSP List -->
+                        <lightning:tab label="RSP List">
+                            <div aura:id="table" class="table-wrap scrollable">
+                                <!-- RSP List-->
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <thead>
+                                        <tr class="slds-hint-parent">
+                                            <th scope="col">
+                                                <div class="slds-truncate">Item</div>
+                                            </th>
+                                            <th scope="col" style="width: 400px;">
+                                                <div class="slds-truncate">Description</div>
+                                            </th>
+                                            <th scope="col">
+                                                <div class="slds-truncate">Spec</div>
+                                            </th>
+                                            <th scope="col" style="width: 136px;">
+                                                <div class="slds-truncate">Req.Quantity</div>
+                                            </th>
+                                            <th scope="col" style="width: 136px;">
+                                                <div class="slds-truncate">Unit</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.t_o_rsp_list}" var="rsp">
+                                            <tr class="slds-hint-parent">
+                                                <td data-label="{!rsp.POSNR}">
+                                                    <div class="slds-truncate" title="{!rsp.POSNR}">
+                                                        {!rsp.POSNR}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!rsp.MAKTX}">
+                                                    <div class="slds-truncate" title="{!rsp.MAKTX}">
+                                                        {!rsp.MAKTX}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!rsp.ZSPEC}">
+                                                    <div class="slds-truncate" title="{!rsp.ZSPEC}">
+                                                        {!rsp.ZSPEC}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!rsp.MENGE}">
+                                                    <div class="slds-truncate" title="{!rsp.MENGE}">
+                                                        {!rsp.MENGE}
+                                                    </div>
+                                                </td>
+                                                <td data-label="{!rsp.MEINS}">
+                                                    <div class="slds-truncate" title="{!rsp.MEINS}">
+                                                        {!rsp.MEINS}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </lightning:tab>
+
+
+
+                    </lightning:tabset>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="slds-modal__footer">
+            <lightning:button label="{!$Label.c.DNS_B_Close}" onclick="{!c.handleClose}" class="slds-m-left_x-small" />
+        </footer>
+    </div>
+</aura:component>

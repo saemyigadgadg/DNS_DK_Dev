@@ -1,0 +1,332 @@
+.THIS .slds-modal__container {
+    max-width: 76rem;
+    /* 너비를 80%로 설정 */
+    width: 80%;
+    /* 너비를 80%로 설정 */
+    height: 100%;
+    max-height: 100%;
+    padding: 4rem 0;
+}
+
+/* Modal Header */
+
+.THIS .orderDetailModal .slds-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+}
+
+.THIS .orderDetailModal .slds-modal__header h2 {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* Modal Body */
+
+.THIS .slds-modal__content {
+    padding: 1.25rem 1rem;
+    background: #f3f3f3;
+}
+
+.THIS .slds-modal__content .top-card {
+    padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    margin-bottom: 1rem;
+}
+
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: start;
+    gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.THIS .card-01 .input-wrap span {
+    text-wrap: nowrap;
+    margin: 0 0.5rem;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element__control {
+    display: flex;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+/* Card 02 */
+
+/* Card Header */
+
+.THIS .card-header {
+    margin-bottom: 1rem;
+}
+
+.THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Table Design */
+.THIS .card-02 table th {
+    height: 40.1px;
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .25rem 1rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .card-02 table td {
+    height: 42px;
+    background-color: #fff;
+    padding: .25rem 1rem;
+    border-bottom: 1px solid #D9D9D9;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.THIS .card-02 table tfoot tr{
+    border-top: 2px solid #90a0ca;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .modal-body .card-02 .table-wrap,
+.THIS .card-02 .table-wrap {
+    display: flex;
+    height: 16rem;
+    border: 1px solid #d9d9d9;
+}
+
+/* Sticky : Table 01 */
+
+.THIS .modal-body .card-02 .table-01,
+.THIS .card-02 .table-01 {
+    flex: 1;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #d9d9d9
+}
+
+@media screen and (max-width: 1800px) {
+    .THIS .modal-body .card-02 .table-01,
+    .THIS .card-02 .table-01 {
+    flex: 2;
+}}
+
+@media screen and (max-width: 1240px) {
+    .THIS .modal-body .card-02 .table-01,
+    .THIS .card-02 .table-01 {
+    flex: 3;
+}}
+
+@media screen and (max-width: 840px) {
+    .THIS .modal-body .card-02 .table-01,
+    .THIS .card-02 .table-01 {
+    flex: 4;
+}}
+
+.THIS .modal-body .card-02 .table-01::-webkit-scrollbar,
+.THIS .card-02 .table-01::-webkit-scrollbar {
+    /* 두 테이블 스크롤바 유무 차이로 인한 단차 없애기 */
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+
+/* Sticky : Table 02 */
+
+.THIS .modal-body .card-02 .table-02,
+.THIS .card-02 .table-02 {
+    flex: 3;
+    overflow-x: scroll;
+}
+
+.THIS .modal-body .card-02 .table-02 th,
+.THIS .card-02 .table-02 th,
+.THIS .card-02 .table-01 th {
+    text-align: center;
+    padding: 0.55rem 1rem;
+}
+
+.THIS .modal-body .card-02 .table-02 td,
+.THIS .card-02 .table-02 td,
+.THIS .card-02 .table-01 td {
+    padding: 0.59rem 1rem;
+}
+
+
+/* Modal */
+
+/* Modal Close */
+
+.THIS.check-modal-wrap .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS.check-modal-wrap .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* 📌 Modal 01 : 엑셀 내려받기 */
+
+.THIS.check-modal-wrap .slds-modal__container .modal-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: center;
+}
+
+.THIS.check-modal-wrap .slds-modal__container .modal-body .icon-wrap {
+    padding: 1rem;
+    border-radius: 50%;
+    border: 3px solid #0176D3;
+}
+
+.THIS.check-modal-wrap .slds-modal__container .modal-body .icon-wrap .slds-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    fill: #0176D3;
+}
+
+.THIS.check-modal-wrap .slds-modal__container .modal-body p {
+    font-size: 14px;
+}
+
+.THIS.check-modal-wrap .slds-modal__footer {
+    display: flex;
+    justify-content: end;
+}
+
+/* 공통 */
+.THIS .slds-form-element__label {
+    display: none !important;
+}
+
+.THIS .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+/* Modal in Modal */
+
+.THIS.THIS.check-modal-wrap .slds-modal {
+    z-index: 9002;
+}
+
+.THIS.THIS.check-modal-wrap .slds-modal__container {
+    max-width: 36rem;
+}
+
+.THIS.THIS.check-modal-wrap .slds-modal__content{
+    background: #fff;
+}
+
+.THIS.check-modal-wrap .modalInModalBg {
+    z-index: 9001;
+    background-color: rgba(8, 7, 7, 0.3);
+}
+
+/* detail page */
+.THIS.detailPage {
+    margin: 1rem 1.5rem;
+    background-color: #fff !important;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+}
+
+.THIS.detailPage .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0 !important;
+    /* padding: 1rem;
+    padding-bottom: .75rem; */
+    justify-content: space-between;
+    background-color: #f3f3f3;
+}
+
+.THIS.detailPage .card-header .button-wrap {
+    padding-right: 1rem;
+
+}
+
+.THIS.detailPage .card-header .title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+.THIS.detailPage .card-02 .table-wrap {
+    border: none;
+}
+
+.THIS .center {
+    text-align: center !important;
+  }
+  
+  .THIS .left {
+    text-align: left !important;
+  }
+  
+  .THIS .right {
+    text-align: right !important;
+  }

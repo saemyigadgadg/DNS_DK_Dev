@@ -1,0 +1,266 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .slds-modal__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    max-height: calc(100vh - 12rem);
+}
+
+.THIS .slds-modal__content .slds-spinner_container {
+    height: 100%;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+/* 📦 Body */
+
+.THIS .modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0;
+}
+
+.THIS .input-container {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background-color: #f9f9f9;
+    padding: 1rem 1.5rem;
+    margin: 1rem 1rem 0;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+}
+
+.THIS .input-container .slds-button_neutral {
+    text-wrap: nowrap;
+    border: 1px solid #949494;
+}
+
+.THIS .input-container .slds-form-element__label {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.THIS .modal-body .slds-input{
+    border: 1px solid #949494;
+}
+
+/* Address Table */
+
+.THIS .address-container {
+    width: 100%;
+    padding: 0 1.5rem;
+}
+
+.THIS .address-container table tr:nth-of-type(even) td{
+    background-color: #f9f9f9;
+}
+
+
+
+.THIS .addrInputBtn {
+    width: 100%;
+}
+
+.THIS .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.THIS iframe html {
+    overflow: hidden !important;
+}
+
+/* Table */
+
+.THIS .address-container .table-wrap {
+    overflow-y: scroll;
+    max-height: 40vh;
+}
+.THIS .address-container table thead {
+    position: sticky;
+    top: -1px;
+    background: #fff;
+    z-index: 3;
+}
+.THIS .address-container table th {
+    text-align: center;
+}
+
+.THIS .address-container .slds-table_bordered:not(.slds-no-row-hover) tbody tr:hover>td:not(.slds-has-focus){
+    box-shadow: none !important;
+}
+
+.THIS .address-container .slds-table:not(.slds-no-row-hover) tbody tr:hover>td{
+    background-color: #f3f3f3;
+    cursor: pointer;
+}
+
+/* Seclected Address */
+.THIS .slds-modal__content:has(.select-wrap) {
+    height: 60vh;
+}
+
+.THIS .select-wrap {
+    height: 100%;
+    padding: 1rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.THIS .select-wrap table th{
+    background-color: #f3f3f3;
+    border-right: 1px solid #c9c9c9;
+    border-top: 1px solid #c9c9c9;
+    border-bottom: 1px solid #c9c9c9;
+    text-align: center;
+}
+
+.THIS .select-wrap table td{
+    text-align: left;
+    padding: 0.25rem 0.5rem;
+    height: 3rem;
+    border-top: 1px solid #c9c9c9;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .address-input {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.THIS .row {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .label {
+    width: 100px;
+    font-weight: bold;
+}
+
+.THIS .value {
+    flex: 1;
+}
+
+/* Text Align Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+    text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+
+/* Pagination */
+
+.THIS .pagination-wrap {
+    margin: 1rem;
+}
+
+.THIS .pagination-wrap .total {
+    padding: 0.25rem 0;
+    text-align: right;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .pagination-wrap .pagination {
+    display: flex;
+    border: 1px solid #C9C9C9;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    width: fit-content;
+    margin: auto;
+    width: fit-content;
+}
+
+.THIS .pagination-wrap .pagination a {
+    text-decoration: none;
+}
+
+.THIS .pagination-wrap .pagination li+li {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS .pagination-wrap .pagination li:not(.pages) a {
+    padding: 0.5rem 0.75rem;
+    background-color: #fff;
+    color: #706E6B;
+    display: inline-block;
+    cursor: pointer;
+    line-height: 1rem;
+    height: 100%;
+}
+
+.THIS .pagination-wrap .pagination li a:hover {
+    background-color: #F3F3F3;
+}
+
+.THIS .pagination-wrap .pagination .pages a {
+    min-width: 2.25rem;
+    text-align: center;
+    display: inline-block;
+    padding: 0.5rem;
+    border-left: 1px solid #c9c9c9;
+}
+
+.THIS .pagination-wrap .pagination .pages span:first-child a {
+    border-left: none;
+}
+
+.THIS .pagination-wrap .pagination .pages {
+    background-color: #fff;
+}
+
+.THIS .pagination-wrap .pagination .pages .here {
+    display: inline-block;
+    text-align: center;
+    min-width: 2.25rem;
+    padding: 0.5rem;
+    background-color: #0176D3;
+    color: #fff;
+    cursor: unset;
+}
+
+.THIS .radio_container .slds-form-element__control{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem;
+    padding: 1rem 6rem 0;
+}

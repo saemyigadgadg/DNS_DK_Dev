@@ -1,0 +1,52 @@
+<!--
+  @related           : [DN_ShareFileForPortalController]
+  @description       : 포탈에 공유할 파일 업로드
+  @author            : yeongju.yun
+  @last modified on  : 2025-03-19
+  @last modified by  : yeongju.yun 
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2025-03-19   yeongju.yun   Initial Version
+-->
+<template>
+    <div class={componentStyle}>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <lightning-card variant="Narrow" title={cardTitle} icon-name={cardIcon}>
+
+            <div slot="actions">
+                <lightning-button-icon 
+                    icon-name="utility:refresh"
+                    onclick={handleRefresh}
+                    title="refesh"
+                    variant="border-filled"
+                    size="small"
+                ></lightning-button-icon>
+            </div>
+            
+            <template if:false={isPortal}>
+                <lightning-input
+                    type="file"
+                    onchange={handleFileChange} 
+                    name="fileUploader"
+                    variant="label-hidden"
+                    multiple
+                ></lightning-input>
+            </template>
+    
+            <template if:true={isDataShow}>
+                <div class={table_style}>
+                    <lightning-datatable
+                        key-field="cdId"
+                        data={tableFiles}
+                        columns={tableColumns}
+                        onrowaction={handleRowAction}
+                        hide-checkbox-column
+                    ></lightning-datatable>
+                </div>
+            </template>
+        </lightning-card>
+    </div>
+</template>

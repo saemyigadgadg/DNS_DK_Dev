@@ -1,0 +1,139 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2024-07-03
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-24   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="Port Code 모달 for Country Code 모달">
+
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+  <aura:registerEvent name="cmpEvent2" type="c:DN_HandlerEvent" />
+  <aura:registerEvent name="cmpEvent3" type="c:DN_HandlerEvent" />
+  <aura:registerEvent name="cmpEvent4" type="c:DN_HandlerEvent" />
+  <aura:registerEvent name="cmpEvent5" type="c:DN_HandlerEvent" />
+
+  <!-- Attribute -->
+  <aura:attribute name="portList" type="List" default="[]" />
+  <aura:attribute name="countryCode" type="String" />
+  <aura:attribute name="paramFrom" type="String" />
+  <aura:attribute name="portType" type="String" />
+  <aura:attribute name="calloutCmp" type="String" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+  <!-- Body -->
+  <div class="portCodeModal">
+
+    <!-- 모달 -->
+    <div aura:id="countryCodeModal"></div>
+
+    <div aura:id="portCodeModal" class="modal-1 slds-modal slds-fade-in-open">
+
+      <div class="slds-modal__container">
+
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">Entries Of {!v.countryCode.desc} Port</h2>
+
+          <!-- Close -->
+          <button class="slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.closeModal}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Body -->
+        <div class="modal-body slds-modal__content">
+          <!-- Card 01 : Search -->
+          <div class="card-01 top-card">
+            <div class="field-wrap">
+              <p>Port Code</p>
+              <div class="input-wrap">
+                <lightning:input value="" variant="label-hidden" />
+              </div>
+            </div>
+
+            <div class="field-wrap">
+              <p>Port Name</p>
+              <div class="input-wrap">
+                <lightning:input value="" variant="label-hidden" />
+              </div>
+            </div>
+
+            <div class="button-wrap">
+              <!-- 검색(필터링) 기능 추가 필요 -->
+              <lightning:button name="search" label="Search" iconName="utility:search" iconPosition="left" onclick="" />
+              <!-- Finish 기능 추가 필요 -->
+              <lightning:button name="finish" label="Finish" iconName="utility:check" iconPosition="left"
+                onclick="{!c.sendCountryCode}" />
+            </div>
+          </div>
+
+
+          <!-- Card 02 : 세로 스크롤 -->
+          <div class="card-02 top-card">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th>Port Code</th>
+                  <th>Port Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 값이 있을 때 -->
+                <aura:if isTrue="{!v.portList.length > 0}">
+                  <aura:iteration items="{!v.portList}" var="port" indexVar="index">
+                    <tr class="slds-hint-parent" onclick="{!c.sendCountryPortCode}" data-index="{!index}">
+                      <td data-label="port">
+                        <div class="slds-truncate" title="port">
+                          <lightning:input type="text" name="code" variant="label-hidden" value="{!port.code}"
+                            readonly="true" aura:id="code" />
+                        </div>
+                      </td>
+                      <td data-label="Description">
+                        <div class="slds-truncate" title="Description">
+                          <lightning:input type="text" name="desc" variant="label-hidden" value="{!port.desc}"
+                            readonly="true" aura:id="desc" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+
+                  <!-- 값이 없을 때 -->
+                  <aura:set attribute="else">
+                    <tr>
+                      <td colspan="2" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:set>
+                </aura:if>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Previous" title="Brand action" onclick="{!c.openPrevious}" />
+          <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.closeModal}" />
+        </footer>
+      </div>
+    </div>
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+
+</aura:component>

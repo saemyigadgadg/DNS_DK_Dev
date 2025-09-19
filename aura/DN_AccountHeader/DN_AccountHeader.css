@@ -1,0 +1,93 @@
+.THIS.total-wrap {
+    padding: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.THIS .title-wrap {
+    display: flex;
+    align-items: 0;
+    gap: 0.75rem;
+}
+
+.THIS .title-wrap .icon-wrap .slds-icon_container {
+    border-radius: 0;
+}
+
+.THIS .title-label {
+    font-size: 0.8125rem;
+    line-height: 1;
+    color: #5a5a5a;
+}
+
+.THIS .slds-grid .detail-content {
+    font-size: 14px;
+    color: #222;    
+}
+
+/* Fields */
+
+.THIS .account-owner {
+    display: flex;
+    align-items: center;    
+    gap: 0.25rem;
+}
+
+.THIS .account-owner .icon-wrap {
+    padding: 0.25rem;
+    border-radius: 50%;
+    background-color: #8199AF;
+    height: 1.25rem;
+    width: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.THIS .account-owner .icon-wrap .slds-icon_xx-small {
+    width: 0.675rem;
+    height: 1rem;
+}
+
+.THIS .account-owner a {
+    border-bottom: 1px dotted;
+}
+
+.THIS .account-owner a:hover {
+    text-decoration: none !important;
+}
+
+/* 🚕 Modal 01 - 실고객전환  */ 
+
+.THIS.cDN_AccountConvertToTradeCustomer .slds-modal__container {
+    max-width: calc(100vw - 8rem) !important;
+    width: 46rem !important;
+    margin: auto;
+}
+
+.THIS.cDN_AccountConvertToTradeCustomer .validation-modal {
+    padding: 2rem 4rem 1rem 4rem;
+}
+
+/* 🚕 Modal 02 - 국내 주소 검색  */ 
+
+.THIS .cDN_AccountAddressPopUp.slds-modal__container {
+    max-width: calc(100vw - 8rem) !important;
+    width: 46rem !important;
+    margin: auto;
+}
+
+/* 🚕 Modal 03 - 사업자번호 상태확인  */ 
+
+.THIS .cDN_CheckAccountBusinessNumber.slds-modal__container {
+    max-width: calc(100vw - 8rem) !important;
+    width: 46rem !important;
+    margin: auto;
+}

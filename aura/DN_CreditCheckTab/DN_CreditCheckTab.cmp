@@ -1,0 +1,22 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 07-18-2024
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-26-2024   Hanyeong Choi   Initial Version
+  1.0   06-27-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes"
+                description="신용정보 조회 탭">
+    <lightning:tabset variant="scoped">
+        <lightning:tab label="개인 신용정보 조회">
+            <c:DN_PersonalCreditChecks />
+        </lightning:tab>
+        <lightning:tab label="법인 신용정보 조회">
+            <c:DN_BusinessCreditChecks />
+        </lightning:tab>
+    </lightning:tabset>
+</aura:component>

@@ -1,0 +1,392 @@
+<!--
+  @author            : Jun-Hyo Hwang 
+  @Description       : Stock Monitoring (Yeong-Deok Seo, Jun-Yeong Choi 작성 모듈 참고)
+  @last modified on  : 02-28-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-24   junhyo.hwang@concentrix.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="Stock Monitoring"
+  extends="c:DN_Helper"
+  controller="DN_DemandAdjPerAgencyController">
+
+  <!-- attribute -->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="materialCodeDate" type="String"  /> <!-- whereCondition-->
+  <aura:attribute name="selectedTd" type="Object" default="{!null}" />  
+  
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      
+      <!-- <aura:if isTrue="{!!v.dataTypeClicked}"> -->
+        <!-- <div class="card-02 top-card"> -->
+          <div class="table-wrap">
+            <!-- Left Data Table -->
+            <div class="table-01 left-table" aura:id="leftTableDiv">
+              <table aura:id="leftDataTable" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="30%" />
+                  <col width="70%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th>
+                      <div>Material</div>
+                    </th>
+                    <th>
+                      <div>Material Description</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody aura:id="leftDataTableBody" id="leftTableBody">
+                  <aura:iteration items="{!v.recordList}" var="material" indexVar="i">
+                    <tr class="slds-hint-parent" style="scrollbar-width: none;">
+                      <td data-label="Material">
+                        {!material.material}
+                        <!-- <div title="{!material.material}">
+                          <lightning:input type="text" id="matnr" name="input2" variant="label-hidden"
+                            value="{!material.material}" readonly="false" />
+                        </div> -->
+                      </td>
+                      <td data-label="Material Description">
+                        <div title="{!material.materialDesc}">
+                          <lightning:input type="text" id="matnrdesc" name="input3" variant="label-hidden"
+                            value="{!material.materialDesc}" readonly="false" />
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+            <!-- right Data Table-->
+            <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table aura:id="rightDataTable" id="rightTable"
+                class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="10%" />
+                  <col width="10%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="10%" />
+                </colgroup>
+                <thead id="rightTableHead">
+                  <tr class="slds-line-height_reset">
+                    <th>
+                      <div>Start Parts</div>
+                    </th>
+                    <th>
+                      <div>Last Parts</div>
+                    </th>
+                    <th>
+                      <div>MRP Type</div>
+                    </th>
+                    <th>
+                      <div>ROP</div>
+                    </th>
+                    <th>
+                      <div>Min Lot</div>
+                    </th>
+                    <th>
+                      <div>Max Lv.</div>
+                    </th>
+                    <th>
+                      <div>ABC</div>
+                    </th>
+                    <th>
+                      <div>12M</div>
+                    </th>
+                    <th>
+                      <div>18M</div>
+                    </th>
+                    <th>
+                      <div>24M</div>
+                    </th>
+                    <th>
+                      <div>ND->VB</div>
+                    </th>
+                    <th>
+                      <div>VB->ND</div>
+                    </th>
+                    <th>
+                      <div>안전재고제외</div>
+                    </th>
+                    <th>
+                      <div>Parts Note</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody aura:id="rightDataTableBody" id="rightTableBody">
+                  <aura:iteration items="{!v.recordList}" var="material" indexVar="materialIndex">
+                    <tr class="slds-hint-parent">
+                      <td data-label="Start Parts">
+                        {!material.startParts}
+                        <!-- <div title="{!material.startParts}">
+                          <lightning:input type="text" name="input1" variant="label-hidden"
+                            value="{!material.startParts}" readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="Last Parts">
+                        {!material.lastParts}
+                        <!-- <div title="{!material.lastParts}">
+                          <lightning:input type="text" name="input2" variant="label-hidden"
+                            value="{!material.lastParts}" readonly="true" />
+                        </div> -->
+                      </td>
+                      <td data-label="MRP Type" class="center">
+                        <div title="{!material.mrpType}">
+                          <lightning:input type="text" name="input3" variant="label-hidden" value="{!material.mrpType}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="ROP" class="right">
+                        <div title="{!material.rop}">
+                          <lightning:input type="text" name="input4" variant="label-hidden" value="{!material.rop}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="Min Lot" class="right">
+                        <div title="{!material.minLot}">
+                          <lightning:input type="text" name="input5" variant="label-hidden" value="{!material.minLot}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="Max Lv." class="right">
+                        <div title="{!material.maxLv}">
+                          <lightning:input type="text" name="input6" variant="label-hidden" value="{!material.maxLv}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="ABC" class="right">
+                        <div title="{!material.abc}">
+                          <lightning:input type="text" name="input7" variant="label-hidden" value="{!material.abc}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="12M" class="right">
+                        <div title="{!material.m12}">
+                          <lightning:input type="text" name="input8" variant="label-hidden" value="{!material.m12}"
+                            readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="18M" class="right">
+                        <div title="{!material.m18}">
+                          <lightning:input type="text" name="input9" variant="label-hidden"
+                            value="{!material.m18}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="24M" class="right">
+                        <div title="{!material.m24}">
+                          <lightning:input type="text" name="input10" variant="label-hidden"
+                            value="{!material.m24}" readonly="true" />
+                        </div>
+                      </td>
+                      <td data-label="ND->VB" class="center">
+                        <aura:if isTrue="{!material.type =='ND'}">
+                          <div title="ND->VB">
+                            <lightning:input type="checkbox" aura:id="checkbox" checked="false"
+                              disabled="true" />
+                          </div>  
+                          <aura:set attribute="else">
+                          <div title="ND->VB">
+                            <lightning:input type="checkbox" aura:id="checkbox" checked="true"
+                              disabled="true" />
+                          </div>
+                          </aura:set>
+                        </aura:if>
+                      </td>
+                      <td data-label="VB->ND" class="center">
+                        <aura:if isTrue="{!material.type =='ND'}">
+                          <div title="VB->ND">
+                            <lightning:input type="checkbox" aura:id="checkbox" checked="true"
+                              disabled="true" />
+                          </div>
+                          <aura:set attribute="else">
+                            <div title="VB->ND">
+                              <lightning:input type="checkbox" aura:id="checkbox" checked="false"
+                                disabled="true" />
+                            </div>
+                          </aura:set>
+                        </aura:if>
+                      </td>
+                      <td data-label="안전재고제외" class="center">
+                        <div title="안전재고제외">
+                          <lightning:input type="checkbox" aura:id="checkbox" checked="{!material.isExcludeStockMonitoring}"/>
+                        </div>
+                      </td>
+                      <td data-label="Parts Note">
+                        {!material.partsNote}
+                        <!-- <div title="{!material.partsNote}">
+                          {!material.partsNote}
+                          <lightning:input type="text" name="input14" variant="label-hidden"
+                            value="{!material.partsNote}" readonly="true" />
+                        </div> -->
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <!-- </div> -->
+
+        <!-- <aura:set attribute="else">
+          <div class="card-02 top-card">
+            <table aura:id="deliveryTable" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th>
+                    <div>Order No.</div>
+                  </th>
+                  <th>
+                    <div>Item</div>
+                  </th>
+                  <th>
+                    <div>Doc. Type</div>
+                  </th>
+                  <th>
+                    <div>Material</div>
+                  </th>
+                  <th>
+                    <div>Material Description</div>
+                  </th>
+                  <th>
+                    <div>PQ Qty</div>
+                  </th>
+                  <th>
+                    <div>GR Qty</div>
+                  </th>
+                  <th>
+                    <div>Doc. Date</div>
+                  </th>
+                  <th>
+                    <div>PDT</div>
+                  </th>
+                  <th>
+                    <div>Last GR Date</div>
+                  </th>
+                  <th>
+                    <div>PDT Date</div>
+                  </th>
+                  <th>
+                    <div>ABC</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.deliveryList}" var="order" indexVar="i">
+                  <tr class="slds-hint-parent" style="scrollbar-width: none;">
+                    <td data-label="Order No.">
+                      <div title="Order No.">
+                        <lightning:input type="text" id="matnr" name="input2" variant="label-hidden"
+                          value="{!order.orderNo}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="Item">
+                      <div title="Item">
+                        <lightning:input type="text" id="matnrdesc" name="input3" variant="label-hidden"
+                          value="{!order.item}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="Doc. Type">
+                      <div title="Doc. Type">
+                        <lightning:input type="text" id="matnr" name="input4" variant="label-hidden"
+                          value="{!order.docType}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="Material">
+                      <div title="Material">
+                        <lightning:input type="text" id="matnrdesc" name="input5" variant="label-hidden"
+                          value="{!order.matnr}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="Material Description">
+                      <div title="Material Description">
+                        <lightning:input type="text" id="matnr" name="input6" variant="label-hidden"
+                          value="{!order.matnrDesc}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="PQ Qty">
+                      <div title="PQ Qty">
+                        <lightning:input type="text" id="matnrdesc" name="input7" variant="label-hidden"
+                          value="{!order.poQty}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="GR Qty">
+                      <div title="GR Qty">
+                        <lightning:input type="text" id="matnr" name="input8" variant="label-hidden"
+                          value="{!order.grQty}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="Doc. Date">
+                      <div title="Doc. Date">
+                        <lightning:input type="text" id="matnrdesc" name="input9" variant="label-hidden"
+                          value="{!order.docDate}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="PDT">
+                      <div title="PDT">
+                        <lightning:input type="text" id="matnr" name="input10" variant="label-hidden"
+                          value="{!order.pdt}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="Last GR Date">
+                      <div title="Last GR Date">
+                        <lightning:input type="text" id="matnrdesc" name="input11" variant="label-hidden"
+                          value="{!order.lastGRdate}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="PDT Date">
+                      <div title="PDT Date">
+                        <lightning:input type="text" id="matnr" name="input12" variant="label-hidden"
+                          value="{!order.pdtDate}" readonly="false" />
+                      </div>
+                    </td>
+                    <td data-label="ABC">
+                      <div title="ABC">
+                        <lightning:input type="text" id="matnrdesc" name="input13" variant="label-hidden"
+                          value="{!order.abc}" readonly="false" />
+                      </div>
+                    </td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        </aura:set> -->
+      <!-- </aura:if> -->
+    </article>
+  </div>
+</aura:component>

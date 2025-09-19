@@ -1,0 +1,51 @@
+.THIS .container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr)
+}
+
+.THIS .top-card{
+    padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 01 */
+.THIS .card-01 {
+    padding: 1rem 1.25rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.THIS .card-01 .field-wrap{
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 8px;
+}
+
+.THIS .card-01 .field-wrap p{
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .card-01 .input-wrap {
+    border-bottom: 1px solid #d9d9d9;
+    min-height: 1.25rem;
+}
+
+.THIS .field-wrap:nth-child(10),
+.THIS .field-wrap:nth-child(11) {
+    grid-column: span 3;
+}
+
+.THIS .input-wrap.dateitem {
+    height: 35px;
+}
+
+.THIS .modal-body {
+    background-color: #f1f3f5;
+}

@@ -1,0 +1,202 @@
+.THIS .slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+}
+
+.THIS .slds-modal__content {
+    height: calc(100vh - 16rem);
+}
+
+.THIS .slds-backdrop.inner {
+    width: 300vw;
+    left: -200%;
+}
+
+.THIS .selectRecordType.slds-modal__content {
+    height: auto !important;
+}
+
+.THIS .slds-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.THIS .slds-scope .slds-p-around_medium {
+    padding: 1rem;
+}
+
+.THIS .form-container {
+    width: 100%;
+}
+
+.THIS .form-container .infoTitle {
+    padding: 0.75rem 0.5rem;
+    background: #f3f3f3;
+    border-radius: 0.25rem;
+    font-size: 14px;
+}
+
+.THIS .button-wrap {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.THIS .form-container .field-wrap {
+    padding: 0.5rem 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+}
+
+.THIS .form-container .field-wrap .input-wrap.withBlank {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.THIS .form-container .noGrid {
+    grid-template-columns: 1fr;
+}
+
+/* Select Record Page */
+
+.THIS .slds-modal__content.selectRecordType {
+    padding: 1.75rem 1.25rem;
+}
+
+.THIS .selectRecordType .record-label {
+    font-weight: 600;
+}
+
+.THIS .selectRecordType .slds-align_absolute-center {
+    justify-content: start !important;
+}
+
+.THIS .selectRecordType .slds-form-element__control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1rem 0.25rem;
+}
+
+/* Removing Serch Filter Combobx Label */
+
+.THIS c-d-n_-search-filter-combobox .input-field-wrap .slds-form-element__label {
+    display: none !important;
+}
+
+/* Adjusting Serch Filter Combobx Layout */
+
+.THIS c-d-n_-search-filter-combobox .input-field-wrap {
+    display: flex;
+}
+
+.THIS c-d-n_-search-filter-combobox .input-field-wrap .input-label {
+    width: calc(48%) !important;
+    max-width: none !important;
+    padding-left: 0.25rem;
+}
+
+.THIS c-d-n_-search-filter-combobox .input-field-wrap .slds-form-element__control {
+    padding-left: 0 !important;
+}
+
+
+/* Inner Modal */
+
+.THIS .slds-backdrop.inner {
+    width: 200vw;
+    left: -100% !important;
+}
+
+.THIS .slds-modal.inner .slds-modal__container {
+    max-width: 34rem;
+}
+
+.THIS .slds-modal.inner .slds-modal__content {
+    padding: 1rem;
+}
+
+.THIS .slds-modal.inner .card-01 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.THIS .slds-modal.inner .card-01 > div {
+    flex: auto;
+}
+
+.THIS .slds-modal.inner .card-01 > .slds-button {
+    margin-bottom: 0.5rem;
+}
+
+/* Table */
+
+.THIS .slds-modal.inner .table-wrap {
+    overflow: auto;
+    height: 18rem;
+}
+
+.THIS .slds-modal.inner table {
+    border-collapse: separate;
+}
+
+.THIS .slds-modal.inner table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.THIS .slds-modal.inner table tr{    
+    border-bottom: 1px solid #c9c9c9;
+}
+.THIS .slds-modal.inner table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+.THIS .slds-modal.inner table td{
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .slds-modal.inner table td .slds-checkbox_faux {
+    margin: 0 !important;
+}
+
+.THIS .slds-modal.inner table th+th,
+.THIS .slds-modal.inner table td+td{
+    border-left: 1px solid #D9D9D9;
+}
+
+@media all and (max-width:767px) {
+    .THIS c-d-n_-search-filter-combobox .input-field-wrap {
+        display: block;
+    }
+
+    .THIS c-d-n_-search-filter-combobox .input-field-wrap .slds-form-element {
+        display: block;
+        align-items: center;
+    }
+
+    .THIS c-d-n_-search-filter-combobox .input-field-wrap .input-label {
+        width: calc(100%) !important;
+    }
+}

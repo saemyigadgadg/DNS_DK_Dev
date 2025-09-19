@@ -1,0 +1,771 @@
+.THIS.slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+/* 
+.THIS  .equipspec-btn {
+  position: absolute;
+  top: 12px;
+  right: 10rem;
+} */
+/* Header */
+
+.THIS .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #c9c9c9;
+  background-color: #fff;
+}
+@media screen and (max-width:767px) {
+  .THIS .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+.THIS .header .title {
+  display: flex;
+  align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+  padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+  margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+  background-color: #F3F3F3;
+}
+
+/* .THIS .body .read-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 0;
+  background: #f1f3f5;
+  box-shadow: none;
+} */
+
+.THIS .body .read-card .field-wrap.grid-long {
+  grid-column: 1 / 4;
+}
+
+@media screen and (max-width:767px) {
+  .THIS .body .read-card .field-wrap.grid-long {
+    grid-column: 1 / 3;
+  }
+}
+
+.THIS .body .read-card .input-wrap {
+  min-height: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.THIS .body .top-card {
+  padding: 1rem 1.25rem;
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+  
+  /* Card Header */
+  
+.THIS .card-header {
+  margin-bottom: 1rem;
+}
+
+.THIS .card-header h2 {
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+}
+
+/* card-body */
+
+.THIS .card-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+@media screen and (max-width:767px) {
+  .THIS .card-body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.THIS .card-body .field-wrap {
+  padding: .5rem 0 .25rem 0;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.THIS .card-body .field-wrap p {
+  font-weight: 600;
+  width: 5rem;
+  margin-bottom: .25rem;
+  text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .clear-btn {
+  position: absolute;
+  border: none;
+  right: 37px;
+}
+
+.THIS .card-body .field-wrap .input-wrap .slds-form-element {
+  width: 100%;
+}
+
+.THIS .card-body .field-wrap:last-of-type .input-wrap .slds-form-element {
+  width: unset;
+  flex: auto;
+}
+
+.THIS .card-body .input-wrap .slds-button+.slds-button {
+  margin-left: 0;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0;
+}
+
+
+/* Card 01 */
+
+.THIS .card-01 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: end;
+    gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .card-01 .button-wrap{
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Fake Input */
+
+.THIS .body .card-01 .input-wrap .fakeInput {
+  width: 100%;
+  min-height: 2rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  line-height: 100%;
+  font-size: 13px;
+  border: 1px solid #c9c9c9;
+  background-color: #f3f3f3;
+  text-wrap: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.THIS .body .card-01 .input-wrap .fakeInput span {
+  display: inline-block;
+  font-size: 13px;
+  color: #444;
+}
+
+.THIS .body .card-01 .input-wrap .fakeInput span:last-child {
+  font-size: 12px;
+  color: #989898;
+}
+
+/* accordion */
+.THIS .accordion {
+  padding: 1rem 1.25rem;
+  margin: 1rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.THIS .accordion .card-header {
+  margin-bottom: 0.75rem;
+}
+
+.THIS .accordion .accordion-header span {
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+}
+
+.THIS .accordion .accordion-body {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.THIS .accordion .accordion-body:has(.table-wrap) {
+    display: block;
+}
+
+.THIS .accordion .accordion-body .table-wrap {
+    overflow: hidden;
+    overflow-x: scroll;
+}
+
+.THIS .accordion-04 .accordion-body .table-wrap {
+  overflow: visible;
+}
+
+.THIS .accordion-04 .card-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.THIS .accordion .button-wrap {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+  }
+
+.THIS .accordion .field-wrap {
+    padding: .5rem 0 .25rem 0;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.THIS .accordion .field-wrap p {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.THIS .accordion .field-wrap .input-wrap {
+  min-height: 1.5rem;
+  padding: 0.25rem 0;
+}
+
+.THIS .accordion .input-wrap.min-input .slds-input {
+  min-width: 7rem;
+}
+
+.THIS .accordion .field-wrap .input-wrap.check-input p {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.THIS .accordion .field-wrap .input-wrap.check-input p span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.THIS .accordion .field-wrap .input-wrap lightning-textarea {
+  width: 100%;
+}
+
+/* accordion-03 */
+.THIS .accordion-03 .accordion-body {
+    display: block;
+}
+
+.THIS .accordion-03 .field-wrap {
+    border-bottom: 0;
+}
+
+.THIS .accordion-03 .file-wrap {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.THIS .accordion-03 .file-wrap .file-name {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: #d0ebff;
+  border-radius: 10rem;
+}
+
+.THIS .accordion-03 .file-wrap .file-name lightning-icon {
+  cursor: pointer;
+}
+
+/* file upload */
+.THIS .accordion .field-wrap .input-wrap:has(lightning-file-upload) {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 1rem;
+border: 1px solid #c9c9c9;
+border-radius: 0.25rem;
+}
+
+.THIS .accordion .field-wrap .input-wrap lightning-file-upload  .slds-form-element__label {
+display: none;
+}
+
+/* accordion-04 */
+.THIS .accordion-04 {
+  position: relative;
+}
+.THIS .accordion-04 .input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.THIS .accordion-04 .input-wrap .clear-btn {
+  position: absolute;
+  border: none;
+  right: 38px;
+}
+
+/* accordion-05 */
+.THIS .accordion-05 {
+  position: relative;
+}
+.THIS .accordion-05 .input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.THIS .accordion-05 .input-wrap .clear-btn {
+  position: absolute;
+  border: none;
+  right: 38px;
+}
+.THIS .accordion-05 .input-field lightning-input {
+    width: 100%;
+}
+
+
+
+/* accordion table */
+
+.THIS .accordion .info {
+  position: absolute;
+  top: 12px;
+  right: 1.75rem;
+  font-weight: 700;
+}
+.THIS .accordion .table-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  background-color: #fff;
+}
+.THIS .accordion .table-wrap table:not(.slds-datepicker) {
+  border-top: 1px solid #c9c9c9;
+}
+.THIS .accordion .table-wrap tr th:first-child:not(.slds-datepicker){
+  border-right: 1px solid #c9c9c9;
+}
+.THIS .accordion .table-wrap .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+.THIS .accordion .table-wrap .input-wrap lightning-input {
+  width: 100%;
+  border-radius: 0.25rem;
+}
+.THIS .accordion .table-wrap .input-wrap lightning-input.input-small {
+    width: 5vw;
+    min-width: 60px;
+  }
+.THIS .accordion .table-wrap .input-wrap lightning-input.input-medium {
+  width: 10vw;
+  min-width: 120px;
+}
+.THIS .accordion .table-wrap .input-wrap lightning-input.input-large {
+  width: 40vw;
+  min-width: 500px;
+}
+
+
+.THIS .accordion .table-wrap .input-wrap lightning-textarea {
+    width: 100%;
+}
+.THIS .accordion .table-wrap td:has(.slds-checkbox){
+  width: 40px;
+  border-right: 1px solid #c9c9c9;
+}
+.THIS .accordion .table-wrap .input-wrap .slds-form-element__label {
+  display: none;
+}
+
+/* file upload */
+.THIS .accordion .field-wrap .input-wrap:has(lightning-file-upload) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem;
+}
+
+.THIS .accordion .field-wrap .input-wrap lightning-file-upload  .slds-form-element__label {
+  display: none;
+}
+
+/* Table Design */
+.THIS .body table {
+    border-top: 1px solid #c9c9c9;
+}
+
+.THIS .body table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .body table td {
+  background-color: #fff;
+  padding: .25rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+  border-left: 1px solid #D9D9D9;
+  border-right: 1px solid #D9D9D9;
+}
+.THIS .body .table-02 table td:last-of-type{
+  border-right: none;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+  display: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+  text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+  text-align: right !important;
+}
+
+/* Main Button */
+
+.THIS .mainBtn {
+  background: #0176D3;
+  border-color: #0176D3 !important;
+  color: #fff;
+}
+
+/* SLDS Table datepicker */
+
+.THIS .body .slds-datepicker__month td {
+  border: none !important;
+  background-color: #fff !important;
+  padding: .25rem !important;
+  font-size: .75rem !important;
+}
+
+.THIS .body .slds-datepicker__month th {
+  padding: .5rem !important;
+  font-weight: 400 !important;
+  background-color: #fff !important;
+  border: none !important;
+}
+
+.THIS .body .slds-datepicker__month tr {
+  border-bottom: none !important;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .body .card-02 .table-wrap {
+  display: flex;
+}
+
+/* Sticky : Table 01 */
+
+.THIS .body .card-02 .table-01 {
+  flex: 2;
+  border-right: 1px solid #d9d9d9
+}
+
+/* Sticky : Table 02 */
+
+.THIS .body .card-02 .table-02 {
+  flex: 4;
+  overflow-x: scroll;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+  border: 1px solid #C9C9C9;
+  /* min-width: 12rem; */
+}
+
+.THIS .slds-button_neutral {
+  border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+  line-height: 100% !important;
+  padding: .25rem 0.5rem !important;
+}
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (max-width:767px) {
+  .THIS .card-01 {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Modal */
+
+.THIS .slds-modal__container {
+    max-width: 640px;
+    width: 60vw;
+  }
+  
+/* modal header */
+.THIS .slds-modal__header .header-wrap .slds-button {
+  position: absolute;
+  top: 14px;
+  right: 1rem;
+}
+
+  /* Modal Close */
+  
+  .THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+  }
+  
+  .THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+  }
+
+  
+  /* Modal Body */
+  
+  .THIS .slds-p-around_medium {
+    padding: 0;
+  }
+  
+  .THIS .modal-body {
+    background-color: #F3F3F3;
+  }
+  
+  .THIS .modal-body .top-card {
+    display: grid;
+    /* grid-template-columns: repeat(4, 1fr); */
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+  }
+
+  .THIS .slds-modal .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    flex: 1;
+  }
+
+  .THIS .slds-modal .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+  }
+
+  .THIS .slds-modal .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  
+  /* Card 01 */
+  
+  .THIS .modal-body .card-01 {
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+  }
+
+  /* 모달마다 커스텀 */
+  .THIS .broken-area-modal .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    flex: 1;
+  }
+  .THIS .broken-area-modal .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+  }
+
+  .THIS .broken-area-modal .card-01 .field-wrap .input-wrap lightning-input {
+    width: 80%;
+  }
+  
+
+  
+  /* Table Design */
+  .THIS .modal-body .table-wrap {
+    width: 100%;
+  }
+  
+  .THIS .modal-body table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+  }
+  
+  .THIS .modal-body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+  }
+  
+  .THIS .modal-body table td {
+    background-color: #fff;
+    padding: .5rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+  }
+  
+  .THIS .modal-body table th+th,
+  .THIS .modal-body table td+td {
+    border-left: 1px solid #D9D9D9;
+  }
+  
+  
+  /* Table Class */
+  
+  .THIS .center {
+    text-align: center !important;
+  }
+  
+  .THIS .left {
+    text-align: left !important;
+  }
+  
+  .THIS .right {
+    text-align: right !important;
+  }
+  
+  /* SLDS Customs */
+  .THIS .slds-button_neutral {
+    text-wrap: nowrap;
+  }
+
+  /* Modal 02 Background */
+
+.THIS .modal-2-bg{
+  z-index: 9001 !important;
+}
+
+.THIS .error-border .slds-input {
+  border: 2px solid red;
+  border-radius: 0.25rem;
+}

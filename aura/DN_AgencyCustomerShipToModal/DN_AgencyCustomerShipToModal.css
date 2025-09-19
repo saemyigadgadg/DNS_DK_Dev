@@ -1,0 +1,272 @@
+.THIS .slds-modal__container {
+    position: relative;
+    top: 50%;
+    bottom: 50%;
+    transform: translateY(-50%);
+    width: 80vw;
+    max-width: 1240px;
+    min-width: 1024px;
+    height: fit-content;
+    padding: 0;
+}
+
+.THIS .slds-modal__container.modal-2 {
+    max-width: 50%;
+    /* 너비를 80%로 설정 */
+    width: 50%;
+    /* 너비를 80%로 설정 */
+    max-height: 90%;
+    /* 높이를 90%로 설정 */
+    height: 90%;
+    /* 높이를 90%로 설정 */
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* Modal Body */
+.THIS .slds-p-around_large,
+.THIS .slds-p-around_medium {
+    padding: 0;
+}
+
+.THIS .modal-body {
+    background-color: #F3F3F3;
+}
+
+.THIS .modal-body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    overflow: hidden;
+}
+
+.THIS .card-02 .table-wrap {
+    height: calc(100vh - 31rem);
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.THIS .card-02 .table-wrap thead {
+    position: sticky;
+    z-index: 3;
+    top: -1px;
+}
+
+.THIS .card-02 .table-wrap td .customer {
+    max-width: 120px;
+    word-break: break-word;
+    white-space: initial;
+}
+
+.THIS .card-02 .table-wrap td .juso {
+    max-width: 520px;
+    word-break: break-word;
+    white-space: initial;
+}
+
+/* 🎈 Modal 01 */
+
+/* Card 01 */
+
+.THIS .modal-1 .card-01 {
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.THIS .modal-1 .card-01 .field-container{
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+}
+
+.THIS .modal-1 .card-01 .field-head{
+    background-color: #F9F9F9;
+    border-bottom: 1px solid #C9C9C9;
+    align-items: center !important;
+    padding: 1rem 1.25rem;
+}
+.THIS .modal-1 .car-01 .field-head .slds-form-element__label:empty{
+    display: none;
+}
+.THIS .modal-1 .card-01 .field-head .slds-form-element__control{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.THIS .modal-1 .card-01 .field-body{
+    padding: 1rem 1.25rem;
+}
+
+.THIS .modal-1 .card-01 .field-wrap {
+    display: flex;
+    gap: 0.25rem;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+}
+
+.THIS .modal-1 .card-01 .field-wrap p {
+    font-weight: 600;
+    text-wrap: nowrap;
+    margin-bottom: 0;
+}
+
+.THIS .modal-1 .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    width: 100%;
+}
+
+.THIS .modal-1 .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+/* Table Design */
+
+.THIS .modal-body .card-02 table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body .card-02 table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .modal-body .card-02 table td {
+    background-color: #fff;
+    padding: .5rem 0.5rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+}
+
+.THIS .modal-body .card-02 table th+th,
+.THIS .modal-body .card-02 table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+
+/* 🎈 Modal 02 */
+
+/* Card 01 */
+
+.THIS .modal-2 .card-01{
+    padding: 1rem 1.25rem;
+    display: flex;
+    padding: 1rem 1.25rem;
+    flex-direction: column;
+    gap: 0;
+}
+.THIS .modal-2 .card-01 .card-head{
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.THIS .modal-2 .card-01 .card-head a{
+    width: fit-content;
+}
+.THIS .modal-2 .card-01 .card-body{
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 0;
+}
+.THIS .modal-2 .card-01 .card-body .field-wrap,
+.THIS .modal-2 .card-01 .card-body .field-container{
+    flex: 1;
+}
+.THIS .modal-2 .card-01 .card-body .field-container{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .modal-2 .card-01 .card-body .field-wrap .input-wrap{
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.THIS .modal-2 .card-01 .card-body .field-wrap .postcode .slds-form-element:nth-of-type(1){
+    flex: 1;
+}
+.THIS .modal-2 .card-01 .card-body .field-wrap .postcode .slds-form-element:nth-of-type(2){
+    flex: 4;
+}
+
+
+.THIS .modal-2 .card-01 .card-body .field-wrap p{
+    text-wrap: nowrap;
+    font-weight: 600;
+}
+
+.THIS .modal-2 .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+
+/* Table Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+
+/* Modal 2 Footer */
+
+.THIS .modal-2 .slds-modal__footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.THIS .main-button{
+    background: #0176D3;
+    border-color: #0176D3 !important;
+    color: #fff;
+}
+
+
+/* Modal 02 Background */
+
+.THIS .modal-2-bg{
+    z-index: 9001 !important;
+}

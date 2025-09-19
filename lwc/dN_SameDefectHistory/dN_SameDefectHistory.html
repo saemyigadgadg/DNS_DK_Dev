@@ -1,0 +1,91 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 11-11-2024
+  @last modified by  : Hayeong Min
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   11-11-2024   Hayeong Min    Initial Version
+-->
+<template>
+    <article class="slds-card slds-card_boundary">
+        <template lwc:if={isTicketSpinner}>
+        <div class="exampleHolder">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+        </template>
+        <div class="slds-card__header slds-grid slds-page-header" style="padding-bottom:0.5rem; border-bottom:solid 1px #c9c9c9;">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate" >
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-work_order" title="work_order">
+                <lightning-icon size='small' icon-name="standard:work_order"></lightning-icon>
+                <span class="slds-assistive-text">work_order</span>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                    <span>{cLabel.DNS_S_TicketList} ({ticketLength})</span>
+                </h2>
+            </div>
+            <div class="slds-no-flex">
+                <lightning-button-icon icon-name="utility:refresh" alternative-text="refresh" title="refresh" variant="border-filled" onclick={ticketRefresh}></lightning-button-icon>
+            </div>
+            </header>
+        </div>
+        <div class="slds-card__body">
+            <div class="dt-wrap">
+                <lightning-datatable
+                        hide-checkbox-column="true"
+                        min-column-width=120
+                        key-field="id"
+                        data={ticketData}
+                        columns={ticketColumns}
+                        sorted-by={ticketSortBy}
+                        sorted-direction={ticketSortDirection}
+                        onsort={doTicketSorting}>
+                </lightning-datatable>
+            </div>
+        </div>
+    </article>
+
+    <article class="slds-card slds-card_boundary">
+        <template lwc:if={isWorkOrderSpinner}>
+        <div class="exampleHolder">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+        </template>
+        <div class="slds-card__header slds-grid slds-page-header" style="padding-bottom:0.5rem; border-bottom:solid 1px #c9c9c9;">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate" >
+            <div class="slds-media__figure">
+                <span class="slds-icon_container slds-icon-standard-work_order" title="work_order">
+                <lightning-icon size='small' icon-name="standard:work_order"></lightning-icon>
+                <span class="slds-assistive-text">work_order</span>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                    <span>{cLabel.DNS_S_WorkOrderList} ({workOrderLength})</span>
+                </h2>
+            </div>
+            <div class="slds-no-flex">
+                <lightning-button-icon icon-name="utility:refresh" alternative-text="refresh" title="refresh" variant="border-filled" onclick={workOrderRefresh}></lightning-button-icon>
+            </div>
+            </header>
+        </div>
+        <div class="slds-card__body">
+            <div class="dt-wrap">
+                <lightning-datatable
+                        hide-checkbox-column="true"
+                        min-column-width=120
+                        key-field="id"
+                        data={workOrderData}
+                        columns={workOrderColumns}
+                        sorted-by={workOrderSortBy}
+                        sorted-direction={workOrderSortDirection}
+                        onsort={doWorkOrderSorting}>
+                </lightning-datatable>
+            </div>
+        </div>
+    </article>
+</template>

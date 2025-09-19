@@ -1,0 +1,296 @@
+<!--
+  @description       : 
+  @author            : suheon.ha@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 2025-04-10
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <div class="chargingParts">
+        <article class="slds-card slds-card_boundary">
+
+            <!-- Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+
+
+            <div class="slds-card__header slds-grid slds-page-header" style="padding-bottom:0.5rem; border-bottom:solid 1px #c9c9c9;">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate" >
+                    <div class="header-title">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name='standard:opportunity' alternative-text='opportunity' size='small' title='opportunity'></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <span>영업기회 제품</span>
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="slds-no-flex button-container">                    
+                        <lightning-button-group>
+                            <!-- 재고 -->
+                            <!-- <lightning-button label="재고" onclick={stockModal} title={cLabel.DNS_B_Stock} disabled={isButtonDisabled}></lightning-button> -->
+                            <!-- Simulation -->
+                            <lightning-button label="Simulation" onclick={handleSimulationButton} title={cLabel.DNS_B_Search}></lightning-button>
+                            <!-- <lightning-button label="Simulation" onclick={serviceModal} title={cLabel.DNS_B_Search} disabled={isButtonDisabled}></lightning-button> -->
+                            <!-- paste Product Code -->
+                            <lightning-button label="Paste" onclick={openExcelModal} title={cLabel.DNS_B_Spindle}></lightning-button>
+                            <!-- <lightning-button label="paste" onclick={spindleModal} title={cLabel.DNS_B_Spindle} disabled={isSpindleDisabled}></lightning-button> -->
+                            <!-- GPES -->
+                            <lightning-button label="GPES" onclick={gpesModal} title={cLabel.DNS_B_Stock}></lightning-button>
+                            <!-- <lightning-button label="GPES" onclick={gpesModal} title={cLabel.DNS_B_Stock} disabled={isButtonDisabled}></lightning-button> -->
+                        </lightning-button-group>
+                        <!-- 엑셀 붙여넣기 -->
+                        <!-- <lightning-button label="엑셀 붙여넣기" onclick={openExcelModal} title="엑셀 붙여넣기" disabled={isButtonDisabled}></lightning-button> -->
+                        
+                        <lightning-button-group class="slds-m-left_x-small action">
+                            <!-- 수정 -->
+                            <lightning-button label='Edit' onclick={handleOptyItemEdit}></lightning-button>
+                            <!-- 라인삭제 -->
+                            <lightning-button-icon 
+                                icon-name="utility:dash" 
+                                variant="border-filled" 
+                                onclick={deleteSelectedRows} 
+                                disabled={isButtonDisabled}
+                                title="선택항목 삭제">
+                            </lightning-button-icon>
+                            <!-- 라인추가 -->
+                            <lightning-button-icon 
+                                icon-name="utility:add" 
+                                variant="border-filled" 
+                                onclick={addRowClick} 
+                                title="라인추가">
+                            </lightning-button-icon>
+                            <!-- disabled={isAddLineDisabled} -->
+                            <!-- 저장 -->
+                            <lightning-button label={cLabel.DNS_B_ProductRequestSave} onclick={handleOptyItemSave} disabled={isSaveLineDisabled}></lightning-button>
+                            <!-- 새로고침 버튼 -->
+                            <lightning-button-icon 
+                                icon-name="utility:refresh" 
+                                variant="border-filled" 
+                                onclick={handleRefresh}>
+                            </lightning-button-icon>
+                        </lightning-button-group>
+                    </div>
+                </header>
+            </div>
+            <div>
+                <div style="color: red;">{addLineDisabledMessage}</div>
+            </div>
+            <div class="table-wrap">
+                <table class="slds-table slds-table_bordered">
+                    <colgroup>
+                        <col width="32px" />    <!-- 체크박스 -->
+                        <col width="48px" />    <!-- 항목 -->
+                        <col width="176px" />   <!-- 주문품번 -->
+                        <col width="152px" />   <!-- 공급품번 -->
+                        <col width="176px" />   <!-- 품명 -->
+                        <col width="72px" />    <!-- 주문수량 -->
+                        <col width="48px" />    <!-- 단위 -->
+                        <col width="100px" />   <!-- 정가 -->
+                        <col width="100px" />   <!-- 단가 -->
+                        <col width="136px" />   <!-- 금액 -->
+                        <col width="72px" />    <!-- 통화 -->
+                        <col width="136px" />   <!-- 가용재고 -->
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">
+                                <div class="slds-truncate">
+                                    <lightning-input type="checkbox" name="headerCheckbox" onchange={checkAllClick}></lightning-input>
+                                </div>
+                            </th>
+                            <th scope="col"><div class="slds-truncate" title="항목">항목</div></th>
+                            <th scope="col"><div class="slds-truncate" title="주문품번">주문품번</div></th>
+                            <th scope="col"><div class="slds-truncate" title="공급품번">공급품번</div></th>
+                            <th scope="col"><div class="slds-truncate" title="품명">품명</div></th>
+                            <th scope="col"><div class="slds-truncate" title="주문수량">주문수량</div></th>
+                            <th scope="col"><div class="slds-truncate" title="단위">단위</div></th>
+                            <th scope="col"><div class="slds-truncate" title="정가">정가</div></th>
+                            <th scope="col"><div class="slds-truncate" title="단가">단가</div></th>
+                            <th scope="col"><div class="slds-truncate" title="금액">금액</div></th>
+                            <th scope="col"><div class="slds-truncate" title="통화">통화</div></th>
+                            <th scope="col"><div class="slds-truncate" title="가용재고">가용재고</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={resultData} for:item="row" for:index="index">
+                            <tr key={row.PartAmountNo} class="slds-hint-parent">
+                                <!-- 체크박스 -->
+                                <td>
+                                    <lightning-input 
+                                        type="checkbox"
+                                        name={index} 
+                                        onchange={checkCellClick} 
+                                        checked={row.isChecked}>
+                                    </lightning-input>
+                                </td>
+                                 <!-- 항목 -->
+                                <td>
+                                    <div class="slds-truncate">{row.PartNo}</div>
+                                </td>
+                                <!-- 주문품번 -->
+                                <td>
+                                    <lightning-record-edit-form object-api-name="OpportunityLineItem">
+                                        <lightning-input-field 
+                                            field-name="Product2Id" 
+                                            name={index}
+                                            value={row.ProductId} 
+                                            data-id={row.PartAmountNo} 
+                                            onchange={productChange} 
+                                            variant="label-hidden" 
+                                            disabled={row.isEditing}></lightning-input-field>
+                                    </lightning-record-edit-form>
+                                </td>
+                                <!-- 공급품번 -->
+                                <td>
+                                    <lightning-input 
+                                        type="text" 
+                                        name={index}
+                                        value={row.SupplyProduct} 
+                                        data-id={row.PartAmountNo} 
+                                        variant="label-hidden"
+                                        read-only>
+                                    </lightning-input>
+                                </td>
+                                <!-- 품명 -->
+                                <td>
+                                    <lightning-input 
+                                        type="text" 
+                                        name={index}
+                                        value={row.ProductName} 
+                                        data-id={row.PartAmountNo} 
+                                        onchange={handleDirectNameInputChange} 
+                                        variant="label-hidden" 
+                                        disabled={row.isApproved}>
+                                    </lightning-input>
+                                </td>
+                                <!-- 주문수량 -->
+                                <td>
+                                    <lightning-input 
+                                        type="number"
+                                        name={index} 
+                                        value={row.Quantity}
+                                        data-id={row.PartAmountNo}
+                                        onchange={handleInputChange}
+                                        variant="label-hidden"
+                                        disabled={row.isEditing}>
+                                    </lightning-input>
+                                </td>
+                                <!-- 단위 -->
+                                <td> 
+                                    <div class="slds-truncate">{row.Unit}</div>
+                                </td>
+                                <!-- 정가 -->
+                                <td> 
+                                    <lightning-input 
+                                        type="number" 
+                                        value={row.ListPrice}
+                                        data-id={row.PartAmountNo}
+                                        name={index}
+                                        variant="label-hidden"
+                                        disabled={row.isEditing}
+                                        read-only>
+                                    </lightning-input>
+                                </td>
+                                <!-- 단가 -->
+                                <td> 
+                                    <lightning-input 
+                                        type="number" 
+                                        value={row.UnitPrice}
+                                        data-id={row.PartAmountNo}
+                                        name={index}
+                                        onchange={handleInputPrice}
+                                        variant="label-hidden"
+                                        disabled={row.isEditing}>
+                                    </lightning-input>
+                                </td>
+                                <!-- 금액 -->
+                                <td role="gridcell"> 
+                                    <!-- <div class="slds-truncate">{row.Amount}</div> -->
+                                    <lightning-input 
+                                        type="number" 
+                                        value={row.Amount}
+                                        data-id={row.Amount}
+                                        variant="label-hidden"
+                                        read-only>
+                                    </lightning-input>
+                                </td>
+                                <!-- 통화 -->
+                                <td> 
+                                    <div class="slds-truncate">{row.OptyProdCurrency}</div>
+                                </td>
+                                <!-- 가용재고 -->
+                                <td> 
+                                    <div class="slds-truncate">{row.AvailableStock}</div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>                    
+                </table>
+            </div>
+        </article>
+        
+        <!-- GPES 모달 START : 버튼명 [GPES] -->
+        <template if:true={isGPESModal}>
+            <section class="slds-modal slds-fade-in-open" role="dialog">
+                <div class="slds-modal__container">                    
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick={gpesModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">닫기</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">GPES</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium">        
+                        <div class="container" style="height: 100%;">
+                            <iframe src={apexPageURL} width="100%" height="100%"></iframe>
+                        </div>        
+                    </div>
+                    
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={gpesModal}>Cancel</button>
+                    </footer>                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>   
+        </template>
+        <!-- GPES 모달 END-->
+
+        <!-- 엑셀 붙여넣기 모달 START : 버튼명 [엑셀붙여넣기] -->
+        <template if:true={isExcelModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-labelledby="modal-heading-01" aria-modal="true">
+                <div class="slds-modal__container total-wrap">
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick={closeExcelModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">닫기</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">기회제품 추가: 엑셀붙여넣기</h2>
+                    </div>
+                    <div class="slds-modal__content">
+                        <div class="slds-m-around_medium card-01">
+                            <p class="label">Paste Product Codes</p>
+                            <div class="input-container">
+                                <lightning-textarea name="excelData" variant="label-hidden"
+                                    placeholder="여기에 제품 코드 붙여넣기..." value={excelData} onchange={handleCopyInputChange}>
+                                </lightning-textarea>
+                                <lightning-button label="Load Data" variant="brand" onclick={handleLoadData}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <!-- <lightning-button variant="brand" label="저장" onclick={handleSave}></lightning-button> -->
+                        <button class="slds-button slds-button_neutral" onclick={closeExcelModal}>취소</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <!-- 엑셀 붙여넣기 모달 END -->
+    </div>    
+    
+</template>

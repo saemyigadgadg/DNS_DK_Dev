@@ -1,0 +1,17 @@
+<aura:component controller="DN_Quote_LineItem_History_Controller" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
+    <aura:attribute type="Object[]" name="quoteLineItemHistory" />
+    <aura:attribute type="Id" name="recordId" />
+    <aura:attribute type="String" name="total"/>
+    <aura:attribute type="List" name="columns" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card iconName="standard:channel_program_history" title="{!v.total}" class="header">
+        <lightning:datatable
+            data="{!v.quoteLineItemHistory}"
+            columns="{!v.columns}"
+            keyField="Id"
+            hideCheckboxColumn="true"
+            class="slds-scrollable_x"
+        />
+    </lightning:card>
+</aura:component>

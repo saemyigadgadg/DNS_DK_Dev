@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1010</fullName>
+        <default>false</default>
+        <label>(Global) Trade Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>1030</fullName>
+        <default>false</default>
+        <label>(Global) Ship to Party</label>
+    </customValue>
+    <customValue>
+        <fullName>1090</fullName>
+        <default>false</default>
+        <label>(Global) Prospect</label>
+    </customValue>
+    <customValue>
+        <fullName>10PT</fullName>
+        <default>false</default>
+        <label>(Global) Plant</label>
+    </customValue>
+    <customValue>
+        <fullName>10SL</fullName>
+        <default>false</default>
+        <label>(Global) Storage Location</label>
+    </customValue>
+    <customValue>
+        <fullName>1110</fullName>
+        <default>false</default>
+        <label>(DNS) Non-trade Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>1130</fullName>
+        <default>false</default>
+        <label>(DNS) Dealer Employee</label>
+    </customValue>
+    <customValue>
+        <fullName>1140</fullName>
+        <default>false</default>
+        <label>(DNS) Driver</label>
+    </customValue>
+    <customValue>
+        <fullName>1199</fullName>
+        <default>false</default>
+        <label>(DNS) One-time Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>2110</fullName>
+        <default>false</default>
+        <label>(DNSC) Non-trade Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>2720</fullName>
+        <default>false</default>
+        <label>(DNSC) Employee</label>
+    </customValue>
+    <customValue>
+        <fullName>2730</fullName>
+        <default>false</default>
+        <label>(DNSC) Dealer Employee</label>
+    </customValue>
+    <customValue>
+        <fullName>2799</fullName>
+        <default>false</default>
+        <label>(DNSC) One-time Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>4120</fullName>
+        <default>false</default>
+        <label>(DNSA) Employee</label>
+    </customValue>
+    <customValue>
+        <fullName>4130</fullName>
+        <default>false</default>
+        <label>(DNSA) Dealer Employee</label>
+    </customValue>
+    <customValue>
+        <fullName>4199</fullName>
+        <default>false</default>
+        <label>(DNSA) One-time Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>4710</fullName>
+        <default>false</default>
+        <label>(DNSA) Non-trade Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>7310</fullName>
+        <default>false</default>
+        <label>(DNSEU) Non-trade Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>7320</fullName>
+        <default>false</default>
+        <label>(DNSEU) Employee</label>
+    </customValue>
+    <customValue>
+        <fullName>7399</fullName>
+        <default>false</default>
+        <label>(DNSEU) One-time Customer</label>
+    </customValue>
+    <customValue>
+        <fullName>M100</fullName>
+        <default>false</default>
+        <label>(Global)Affiliated</label>
+    </customValue>
+    <customValue>
+        <fullName>M120</fullName>
+        <default>false</default>
+        <label>(DNS) Employee</label>
+    </customValue>
+    <description>ERP Customer - Account Group</description>
+    <masterLabel>Account Group</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

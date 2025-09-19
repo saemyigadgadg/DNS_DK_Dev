@@ -1,0 +1,181 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-17-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   12-31-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component controller="DN_QuoteItemAccessoryController">
+
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="checkDNSA"            type="Boolean"  default="false" />
+    <aura:attribute name="quoteId"              type="String"   default=""/>
+    <aura:attribute name="shipTo"               type="String"   default=""/>
+    <aura:attribute name="shipDate"             type="String"   default=""/>
+    <aura:attribute name="selectedItems"        type="List"     description="Selected Quote Lineitem" />
+    <aura:attribute name="selTableColumns"      type="List"     description="Selected Table Columns" />
+    <aura:attribute name="selTableData"         type="List"     default="[]" description="Selected Table Data" />
+    <aura:attribute name="delTableData"         type="List"     default="[]" description="Deleted Table Data" />
+    <aura:attribute name="defaultData"          type="List"     default="[]" description="Default Table Data" />
+    <aura:attribute name="category"             type="String"   description="Category (combobox) value" />
+    <aura:attribute name="categoryOption"       type="List"     description="Category (combobox) option" />
+    <aura:attribute name="categoryOptionData"   type="List"     description="All data not selected" />
+    <aura:attribute name="tableColumns"         type="List"     description="Table Columns" />
+    <aura:attribute name="tableData"            type="List"     default="[]" description="Table Data" />
+    <aura:attribute name="draftValues"          type="Object"   default="[]"/>
+    <aura:attribute name="isFactory"            type="Boolean"  default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDNSA_QuoteItemAccessoryModal){
+            width: 50rem;
+            max-width: calc(100vw - 8rem);
+            margin: 0 auto;
+            max-height: 68rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 4rem 0 3rem 0;
+        }
+
+        .slds-modal__content:has(.cDNSA_QuoteItemAccessoryModal){
+            padding: 0;
+            height: 100%;
+            overflow: visible !important;
+        }
+
+        *:has(.cDNSA_QuoteItemAccessoryModal) {
+            overflow: hidden;
+        }
+
+        @media all and (max-width: 479px) {
+            .slds-modal__container:has(.cDNSA_QuoteItemAccessoryModal){
+                max-width: calc(100vw - 2rem);
+            }
+        }
+    </aura:html>
+
+    <div>
+        <aura:if isTrue="{!v.isLoading}">
+            <div class="SpinnerDiv">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </div>
+        </aura:if>
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__content slds-p-around_small">
+
+                <!-- Section 01 -->
+                <div class="catecory_section">
+                    <div class="category_combobox">
+                        <lightning:combobox label="Category" variant="label-inline" options="{!v.categoryOption}" value="{!v.category}" onchange="{!c.handleCategoryChange}" />
+                    </div>
+                    <div>
+                        <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleClose}" />
+                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{!c.handleSave}" />
+                    </div>
+                </div>
+
+                <!-- Section 02  -->
+                <div class="accessory_table_section">
+                    <lightning:datatable 
+                        keyField="key" 
+                        columns="{!v.tableColumns}" 
+                        data="{!v.tableData}"
+                        hideCheckboxColumn="true" 
+                        onrowaction="{!c.handleRowAction}" />
+                </div>
+
+                <!-- Section 03 -->
+                <div class="down_icon_section">
+                    <lightning:icon iconName="utility:down" title="selected" size="small" />
+                </div>
+
+                <!-- Section 04 -->
+                <div class="selected_table_section">
+                    <div class="section-header">
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='standard:multi_select_checkbox' size='x-small' title="{!$Label.c.DNS_S_SelectedList}" />
+                        </div>
+                        <h1 class="slds-page-header__name-title" title="Selected List">Selected List</h1>
+                    </div>
+                    <div class="table-wrap">
+                        <lightning:recordEditForm objectApiName="Accessory__c">
+                            <table class="slds-table slds-table_bordered">
+                                <colgroup>
+                                    <col width="50px" />
+                                    <col width="132px" />
+                                    <col width="360px" />
+                                    <col width="68px" />
+                                    <aura:if isTrue="{!not(v.isFactory)}">
+                                        <col width="230px" />
+                                        <col width="230px" />
+                                    </aura:if>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <!-- <th>#</th> -->
+                                        <th>Kit</th>
+                                        <th>Description</th>
+                                        <th>Qty</th>
+                                        <aura:if isTrue="{!not(v.isFactory)}">
+                                            <th>Ship to</th>
+                                            <th>Machine Request Ship Date</th>
+                                        </aura:if>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <aura:iteration items="{!v.selTableData}" var="data" indexVar="index">
+                                        <tr>
+                                            <td scope="col">
+                                                <div class="slds-truncate" title="" style="text-align: center;">
+                                                    <lightning:buttonIcon iconName='utility:dash' variant="container" title='dash' onclick="{! c.handleRemoveClick }" name="{!data.key}" />
+                                                </div>
+                                            </td>
+                                            <!-- <td scope="col">
+                                                <div class="slds-truncate" title="" style="text-align: center;">{!index + 1}</div>
+                                            </td> -->
+                                            <td scope="col">
+                                                <div class="slds-truncate" title="{!data.kit}">{!data.kit}</div>
+                                            </td>
+                                            <td scope="col">
+                                                <div class="slds-truncate" title="{!data.description}">{!data.description}</div>
+                                            </td>
+                                            <td scope="col" class="editable">
+                                                <div class="slds-truncate" title="">
+                                                    <!-- {!data.quantity} -->
+                                                    <lightning:input variant="label-hidden" value="{!data.quantity}" />
+                                                </div>                                            
+                                            </td>
+                                            <aura:if isTrue="{!not(v.isFactory)}">
+                                                <td scope="col" class="editable">
+                                                    <div class="slds-truncate" title="">
+                                                        <lightning:inputField variant="label-hidden" fieldName="ShipTo__c" aura:id="lookupField" value="{!data.accId}" />
+                                                    </div>
+                                                </td>
+                                                <td scope="col" class="editable">
+                                                    <div class="slds-truncate" title="">
+                                                        <lightning:inputField variant="label-hidden" fieldName="MachineRequestShipDate__c" value="{!data.shipDate}" aura:id="dateField" onchange="{!c.handleShipDateChange}" />
+                                                    </div>
+                                                </td>
+                                            </aura:if>
+                                        </tr>
+                                    </aura:iteration>
+
+                                </tbody>
+                            </table>
+                        </lightning:recordEditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

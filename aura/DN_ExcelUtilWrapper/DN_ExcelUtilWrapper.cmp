@@ -1,0 +1,16 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-17-2025
+  @last modified by  : Hanyeong Choi 
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   03-17-2025   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:appHostable">
+    <aura:attribute name="excelData" type="List" default="[]" />
+    <aura:attribute name="excelName" type="String" default="Inventory_List" />
+
+    <c:DN_ExcelUtilButton excelData="{!v.excelData}" excelName="{!v.excelName}" />
+</aura:component>

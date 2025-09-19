@@ -1,0 +1,283 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 05-09-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   12-04-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force.hasSObjectName,lightning:actionOverride,force:appHostable"
+                controller="DN_CommodityController" 
+                description="Stock Booking Action Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"                type="Boolean"  default="false" />
+    <aura:attribute name="isDescriptionModalOpen"   type="Boolean"  default="false" />
+    <aura:attribute name="recordId"                 type="String" />
+    <aura:attribute name="sqText"                   type="String"   default="" />
+    <aura:attribute name="noteText"                 type="String"   default="" />
+    <aura:attribute name="keyword"                  type="String"   default="" />
+    <aura:attribute name="userId"                   type="String"   default="" />
+    <aura:attribute name="stockList"                type="List"     default="[]" />
+    <aura:attribute name="searchList"               type="List"     default="[]" />
+
+    <aura:attribute name="excelData"                type="List"     default="[]" />
+    <aura:attribute name="excelName"                type="String"   default="Inventory List" />
+    <aura:attribute name="selectedFilter"           type="String"   default="" />
+    <aura:attribute name="filterOptions"            type="List"     default="[
+        {'label': 'DNSA Model', 'value': 'DNSA_MODEL'},
+        {'label': 'Stock Order Number', 'value': 'VBELN_ST'},
+        {'label': 'Serial Number', 'value': 'SERIAL_NUMBER'}
+    ]" />
+
+    <aura:attribute name="sortBy"                   type="String" />
+    <aura:attribute name="sortDirection"            type="String"   default="asc" />
+
+    
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_StockBookingModal) {
+            width: 70rem;
+            max-width: calc(100vw - 6rem);
+            padding-bottom: 3rem;
+        }
+        .slds-modal__content:has(.cDN_StockBookingModal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_StockBookingModal) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="SQSearchModalButton">
+        <div class="slds-modal__container">
+
+            <!-- 🚩 Modal Header -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">Inventory List</h2>
+            </header>
+
+            <!-- 🚩 Modal Body -->
+            <div class="slds-modal__content">
+                <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+                <div class="modal-body">
+                    <div class="topcard card-01" onkeyup="{! c.handleEnterSearch }">
+                        <div class="left">
+                            <lightning:select name="search-filter" 
+                                                label="Filter" 
+                                                value="{!v.selectedFilter}" 
+                                                onchange="{!c.handleFilterChange}">
+                                <aura:iteration items="{!v.filterOptions}" var="option">
+                                    <option value="{!option.value}" text="{!option.label}" />
+                                </aura:iteration>
+                            </lightning:select>
+                            <div class="search-wrap">
+                                <lightning:input aura:id="inputKeyword" name="inline-search-input" type="search" variant ="label-hidden" value="{! v.keyword }" />
+                                <lightning:button label="Search" title="Search" onclick="{! c.handleClickSearch }" />
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="button-wrap">
+                                <c:DN_ExcelUtilButton excelData="{!v.excelData}" excelName="{!v.excelName}"></c:DN_ExcelUtilButton>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="topcard card-02">
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+
+                                <thead>
+                                    <tr>
+                                        <th scope="col" data-field="DNSA_MODEL">
+                                            <div class="slds-truncate model">DNSA Model</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="VBELN_ST">
+                                            <div class="slds-truncate stock-order-number">Stock Order<br/> Number</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="OPEN_NOTES">
+                                            <div class="slds-truncate">Open Notes</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="NC">
+                                            <div class="slds-truncate">NC</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="SERIAL_NUMBER">
+                                            <div class="slds-truncate">Serial Number</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="LIST_PRICE">
+                                            <div class="slds-truncate">List Price</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="PERCENT_OFF">
+                                            <div class="slds-truncate extra-disc">Extra<br/>Disc.</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate inventory-status ">Inventory<br/> Status</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">Location</div>
+                                        </th>
+                                        <th scope="col" data-field="ETA_DATE">
+                                            <div class="slds-truncate eta-date">ETA<br/>Date</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="ORDER_STS">
+                                            <div class="slds-truncate">Order<br/> Status</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="DEPT">
+                                            <div class="slds-truncate">Dept</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th scope="col" data-field="BASE_CODE">
+                                            <div class="slds-truncate base-code">Base Code</div>
+                                            <div class="icon-wrap">
+                                                <lightning:icon iconName='utility:chevrondown' alternativeText='chevrondown' size='xx-small' title='chevrondown' onclick="{!c.handleSort}"></lightning:icon>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate dealer-name">Dealer Name</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">MC TC</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">Port</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">Standard<br/> Disc.</div>
+                                        </th>
+                                        <!-- <th>
+                                            <div class="slds-truncate">Customer Name</div>
+                                        </th> -->
+                                        <th class="modal-th-02">
+                                            <div class="slds-truncate">More</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{! v.searchList }" var="row" indexVar="k">
+                                        <tr>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate" title="{! row.DNSA_MODEL }">{! row.DNSA_MODEL }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate" title="{! row.VBELN_ST }">{! row.VBELN_ST }</div>
+                                            </td>
+                                            <td class="{! 'open-note-td ' + row.cssClass }">
+                                                <div class="slds-truncate open-note" title="{! row.noteText }">{! row.OPEN_NOTES }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.NC }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate" title="{! row.SERIAL_NUMBER }">{! row.SERIAL_NUMBER }</div>
+                                            </td>
+                                            <td class="{! 'slds-text-align_right ' + row.cssClass }">
+                                                <div class="slds-truncate desc" title="{! row.LIST_PRICE }">{! row.LIST_PRICE }</div>
+                                            </td>
+                                            <td class="{! 'slds-text-align_right ' + row.cssClass }">
+                                                <div class="slds-truncate">{! row.PERCENT_OFF }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.INVENTORY_STS }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.LOCATION }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.ETA_DATE }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.ORDER_STS }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.DEPT }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate" title="{! row.BASE_CODE }">{! row.BASE_CODE }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.dealerName }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.MC_TC }</div>
+                                            </td>
+                                            <td class="{! row.cssClass }">
+                                                <div class="slds-truncate">{! row.PORT }</div>
+                                            </td>
+                                            <td class="{! 'slds-text-align_right ' + row.cssClass }">
+                                                <div class="slds-truncate">{! row.ADJUSTED_LIST }</div>
+                                            </td>
+                                            <!-- <td>
+                                                <div class="slds-truncate">{! row.userName }</div>
+                                            </td> -->
+                                            <td class="{! 'modal-td-02 ' +  row.cssClass }">
+                                                <lightning:buttonIcon iconName="utility:display_text" onclick="{! c.openDescriptionModal }" value="{!k}" />
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🚩Modal Footer -->
+            <footer class="slds-modal__footer">
+                <aura:if isTrue="{! !empty(v.recordId) }">
+                    <lightning:button class="slds-button slds-button_neutral" label="Close" onclick="{! c.handleClickClose }" />
+                </aura:if>
+            </footer>
+        </div>
+
+        
+    </div>
+
+    <aura:if isTrue="{!v.isDescriptionModalOpen}">
+        <c:DNSA_DescriptionModal sqText="{!v.sqText}" />
+    </aura:if>
+
+</aura:component>

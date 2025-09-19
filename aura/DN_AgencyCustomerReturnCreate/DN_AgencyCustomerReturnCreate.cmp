@@ -1,0 +1,234 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-03-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   06-28-2024   Hyerin Ro      Initial Version
+  1.1   12-16-2024   Hyunwook JIN   검색 결과 조회 테이블외에 화면들 제거
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_AgencyCustomerReturnController" 
+  description="대리점 주문 반품 생성"
+  extends="c:DN_Helper">
+
+  <!--Attribute-->
+  <aura:attribute name="isSpinner" type="Boolean" default="false" />
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="userInfo" type="Object" />
+  <aura:attribute name="requiredParams" type="List" description="반품주문 정보 필수값"/>
+  <aura:attribute name="headerParams" type="Object" description="반품주문 정보"/>
+  <aura:attribute name="itemsPerPage" type="Integer" />
+  <aura:attribute name="currentPage" type="Integer" />
+  <aura:attribute name="pagesPerGroup" type="Integer" />
+  <aura:attribute name="nextPage" type="Integer" />
+  <aura:attribute name="baseURL" type="String" />
+  <aura:attribute name="returnRequestList" type="List" default="[]" />
+  <aura:attribute name="customerName" type="String" />
+  <aura:attribute name="customerCode" type="String" description="일반 고객일만 사용하는 코드"/>
+  <aura:attribute name="customer" type="String" description="DealerCustomer__c 일때 사용 "/>
+  <!-- 
+        {'orderId': 1, 'complaintRow': false, 'orderSeq' : '8000285510', 'customerName' : '성진머신(강용주)', 'itemSeq' : '000010', 'partName' : '220209-00219-KIT', 'partDetails' : 'WINDOW;PACKING KIT', 'orderQuantity' : '1', 'unit' : 'KIT', 'giQuantity' : '1', 'returnQuantity' : '1', 'giDate' : '2024.03.05', 'reason1' : 'Reason1'},
+    -->
+  <aura:attribute name="defaultOptions" type="List" default="[{'label': '--None--', 'value': ''}]" />
+  <aura:attribute name="reason1Options" type="List" default="[]" />
+  <aura:attribute name="selectedOrder" type="List" />
+  <aura:attribute name="reason2DependecyAllOptions" type="Object" />
+  <aura:attribute name="reason2Options" type="List" default="[]" />
+  <aura:attribute name="partsNumber" type="String" />
+  <aura:attribute name="startDate" type="Date" />
+  <aura:attribute name="endDate" type="Date" />
+  <aura:attribute name="orderNumber" type="String" />
+  <!--파일-->
+  <aura:attribute name="fileList" type="List" />
+  <aura:attribute name="isDealerPotal" type="Boolean" default="true"/>
+  <aura:attribute name="uploadFileMap" type="Object" /> 
+  <aura:attribute name="removeId" type="String" /> 
+  <aura:attribute name="removeOrderNumber" type="String" /> 
+  <aura:attribute name="selectOrderNumber" type="String" /> 
+  
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+            onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!-- Navigation -->
+  <lightning:navigation aura:id="navService"/>
+
+  <!--handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+  <aura:html tag="style">
+    .cDN_DealerPortalDisplay .card-02:has(.cDN_AgencyCustomerReturnCreate) {
+      height: calc(100vh - 21rem);
+    }
+  </aura:html>
+
+  <!--조회테이블-->
+  <div class="card-02">
+    <div class="table-wrap" aura:id="partsProduct">
+      <table class="slds-table">
+        <colgroup>
+          <col width="1%" />
+          <col width="6%" />
+          <col width="6%" />
+          <col width="6%" />
+          <col width="6%" />
+          <col width="20%" />
+          <col width="5%" />
+          <col width="5%" />
+          <col width="5%" />
+          <col width="5%" />
+          <col width="6%" />
+        </colgroup>
+        <thead>
+          <tr class="slds-line-height_reset">
+            <th scope="col"></th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">주문번호</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">고객사명</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">항목</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">주문품번</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">품명</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">주문수량</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">단위</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">출고수량</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">반품수량</div>
+            </th>
+            <th class="" scope="col">
+              <div class="slds-truncate" title="">출고일</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.returnRequestList}" var="returnRequest" indexVar="index">
+            <tr class="slds-hint-parent">
+              <td class="center">
+                <lightning:input type="checkbox" aura:id="checkbox" 
+                  data-index="{!index}" checked="{!returnRequest.iscomplaintRow}" />
+                  <!-- onchange="{!c.handleRowToggle}" -->
+              </td>
+              <td scope="row"  class="center">
+                <div>{!returnRequest.orderSeq}</div>
+              </td>
+              <td scope="row"  class="center">
+                <!-- 고객사명 -->
+                <div>{!returnRequest.customerName}</div>
+              </td>
+              <td scope="row">
+                <!-- 항목 -->
+                <div>{!returnRequest.itemSeq}</div>
+              </td>
+              <td scope="row">
+                <!-- 주문품번 -->
+                <div>{!returnRequest.partName}</div>
+              </td>
+              <td scope="row">
+                <!-- 품명 -->
+                <div>{!returnRequest.partDetails}</div>
+              </td>
+              <td scope="row" class="right" >
+                <!-- 주문수량 -->
+                <div>{!returnRequest.orderQuantity}</div>
+              </td>
+              <td scope="row" class="center" >
+                <!-- 단위 -->
+                <div>{!returnRequest.unit}</div>
+              </td>
+              <td scope="row" class="right" >
+                <!-- 출고수량 -->
+                <div>{!returnRequest.giQuantity}</div>
+              </td>
+              <td scope="row"  class="right">
+                <!-- 반품수량 -->
+                <lightning:input type="text" value="{!returnRequest.returnQuantity}" accesskey="{!index}"   aura:id="inputCheck" name="{!index}" onchange="{!c.handleQTYChange}"  variant="label-hidden"/>
+              </td>
+              <td scope="row" class="center" > 
+                <!-- 출고일 -->
+                <div>{!returnRequest.giDate}</div>
+              </td>
+            </tr>
+
+            <!--  반품 사유 작성행-->
+            <aura:if isTrue="{!returnRequest.iscomplaintRow}">
+              <tr data-index="{!index}" class="{!if(v.returnRequestList.length == 1, '', if(index == (v.returnRequestList.length - 1), 'last-row', if(index == (v.returnRequestList.length - 2), 'last-row', '')))}">
+                <td colspan="11">
+                  <!-- Table inside Table -->
+                  <table class="slds-table innerTable">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 25%;">
+                          <div class="slds-truncate" title="">Complaint Reason </div>
+                        </th>
+                        <th scope="col">
+                          <div class="slds-truncate" title="">내용</div>
+                        </th>
+                        <th scope="col" style="width: 25%;">
+                          <div class="slds-truncate" title="">Attach File</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td scope="row">
+                          <div class="input-wrap-1">
+                            <lightning:combobox accesskey="{! returnRequest.orderSeq+'_'+returnRequest.itemSeq}" options="{!returnRequest.reason1Options}" value="{!returnRequest.reason1}" variant="label-hidden" placeholder="Reason1"
+                            onchange="{!c.handleReasonChange}" aura:id="reason1" data-index="{!index}"/>
+                            <lightning:combobox options="{!returnRequest.reason2Options}" value="{!returnRequest.reason2}" variant="label-hidden" placeholder="Reason2" />
+                          </div>
+                        </td>
+                        <td scope="row">
+                          <div class="input-wrap-2">
+                            <lightning:textarea variant="label-hidden" />
+                          </div>
+                        </td>
+                        <td scope="row">
+                          <div class="input-wrap-3">
+                            <lightning:fileUpload id="{!returnRequest.itemId}" name="fileUpload" multiple="true"
+                              onuploadfinished="{!c.onuploadfinished}" />
+                            <div class="file-wrap">
+                              <aura:iteration items="{!returnRequest.fileList}" var="file" indexVar="index">
+                                <div class="file-name">
+                                  <a href="{!file.previewUrl}" target="_blank">{!file.title}</a>
+                                  <div href="" onclick="{!c.removeFile}" data-id="{!file.documentId}" data-name="{!file.itemId}">
+                                    <lightning:icon iconName="utility:close" alternativeText="Remove" title="Remove" size="xx-small" />
+                                  </div>
+                                </div>
+                              </aura:iteration>
+                            </div>
+                        
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </aura:if>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</aura:component>

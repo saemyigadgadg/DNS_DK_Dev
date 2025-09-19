@@ -1,0 +1,70 @@
+<!--
+  @description       : 
+  @author            : deokjun.kim@sbtglobal.com
+  @group             : 
+  @last modified on  : 06-25-2024
+  @last modified by  : deokjun.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   06-20-2024   deokjun.kim@sbtglobal.com   Initial Version
+-->
+<aura:component Implements="force:appHostable" controller="DN_InterfaceExecutionController">
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:attribute name="items" type="Object" access="PRIVATE"/>
+    <aura:attribute name="itemMap" type="Object" access="PRIVATE"/>    
+    <aura:attribute name="inputValue" type="String" default=""/>
+    <aura:attribute name="requestValue_d" type="String" default=""/>
+    <aura:attribute name="requestValue" type="String" default=""/>
+    <aura:attribute name="responseValue" type="String" default=""/>
+    <aura:attribute name="url" type="String" default=""/>
+    <aura:attribute name="InterfacId_s" type="String" default=""/>
+    <aura:attribute name="loaded" type="Boolean" default="false" />
+    <aura:attribute name="columns" type="List" default="" />
+    <aura:attribute name="data" type="Object" default="" />
+    <aura:attribute name="selectedRow" type="Object" default="" />
+
+    <aura:if isTrue="{! v.loaded }">
+        <div class="backgroundInverse">
+            <lightning:spinner alternativeText="Loading" variant="inverse" />
+        </div>
+    </aura:if>
+    <div>
+        <div class="main">
+            <div class="sidebar">
+                <div class="row">
+                    <lightning:input name="selectedItem" value="{! v.inputValue }" label="Selected Interface" onkeyup="{! c.handleKeyUp }"/>
+                </div>
+                <lightning:tree items="{! v.items }" header="Interfaces" onselect="{! c.handleSelect }"/>                  
+            </div>
+            <div class="conent-inner">                
+                <p>
+                    <lightning:formattedRichText aura:id="interfaceInfo"/>
+                </p>
+                
+                <h1 class="slds-m-top_large slds-text-heading_medium textA">Request</h1>
+                <a onclick="{!c.handleRefresh}"><lightning:icon class="icon" iconName="action:reset_password" alternativeText="Reset" title="Reset" size="xx-small"/></a>
+                <lightning:textarea name="Request" label="Enter Input Params" value="{!v.requestValue}"/>
+
+                <lightning:button class="button" variant="brand" label="Execute" iconName="utility:retail_execution" title="Execute Action" onclick="{! c.handleExecute }" />
+
+                <h1 class="slds-m-top_large slds-text-heading_medium textA">Response</h1>                
+                <lightning:textarea name="Response" readonly="true" value="{!v.responseValue}"/>                
+                <lightning:button class="button" label="Copy" iconName="utility:copy" title="Copy Action" onclick="{! c.handleCopy }" />
+
+                <h1 class="slds-m-top_large slds-text-heading_medium textA">Interface Log List</h1>
+                <p>(limit 100)</p>
+                <lightning:button class="setRequest" variant="brand" label="Set Request" iconName="utility:arrowup" title="Set Request" onclick="{! c.handleSetRequest }" />
+                <div style="max-width:88rem; height: 10.4rem;">
+                    <lightning:datatable
+                    columns="{! v.columns }"
+                    data="{! v.data }"
+                    keyField="id"
+                    maxRowSelection="1"
+                    onrowselection="{! c.updateSelectedText }"/>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+</aura:component>

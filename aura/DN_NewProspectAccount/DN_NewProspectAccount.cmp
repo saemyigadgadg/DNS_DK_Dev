@@ -1,0 +1,333 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 2025-04-14
+  @last modified by  : chungwoo.lee@sobetec.com
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   07-12-2024   Hanyeong Choi   Initial Version
+  1.0   07-18-2024   Hyerin Ro       Publish
+  1.0   10-17-2024   Youjin Shim     Publish
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_PortalNewProspectController" description="New Account:Prospect List Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean" default="false" />
+    <aura:attribute name="baseUrl"              type="String" /> <!-- Sandbox & Production url 구분 -->
+    <aura:attribute name="isAddress"            type="Boolean" default="false" />
+    <aura:attribute name="isRequest"            type="Boolean" default="false" />
+    <aura:attribute name="objectName"           type="String" default="Account" />
+    <aura:attribute name="isAccountSelected"    type="Boolean" default="false" /> <!--고객사 선택-->
+    <aura:attribute name="isReadOnly"           type="Boolean" default="false" />
+    <aura:attribute name="searchCustomerName"   type="String" default="" />
+    <aura:attribute name="searchRepresentative" type="String" default="" />
+    <aura:attribute name="searchBusiness"       type="String" default="" />
+    <aura:attribute name="newCustomerName"      type="String" default="" />
+    <aura:attribute name="newRepresentative"    type="String" default="" />
+    <aura:attribute name="newPhone"             type="String" default="" />
+    <aura:attribute name="detailedAddress"      type="String" default="" />
+    <aura:attribute name="resultCustomerList"   type="List" default="[]" />
+    <aura:attribute name="resultCustomer"       type="Object" />
+    <aura:attribute name="resultSize"           type="Integer" default="0" />
+    <aura:attribute name="isSearched"           type="Boolean" default="false" />
+    <aura:attribute name="isCustomer"           type="Boolean" default="false" />
+    <aura:attribute name="newCustomerOpen"      type="Boolean" default="false" />
+    <aura:attribute name="requestReason"        type="String" default="" />
+    <aura:attribute name="isDomesticUser"       type="Boolean" default="false" />
+    <aura:attribute name="loginUserCountry"     type="Object" default="" />
+    <aura:attribute name="loginUserRegion"      type="Object" default="" />
+    <aura:attribute name="loginUserInfo"        type="Object" default="" />
+
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}" />
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+    <aura:if isTrue="{!v.isAddress}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open community-modal"
+            style="display: flex; justify-content: center; align-items: center;">
+            <c:DN_AccountAddressPopUp isCommunity="{! v.isAddress }" aura:id="shippingAddress" />
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+
+    <div class="total-wrap">
+        <div class="slds-card">
+
+            <!-- 🚩Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- 🚩Aura Header -->
+            <div class="header">
+                <div class="title">
+                    <lightning:icon iconName="standard:record_create" size="small" />
+                    <h2 class="slds-truncate">{!$Label.c.DNS_PORTAL_ACC_T_CREATE_REQUEST_USE}</h2>
+                </div>
+            </div>
+
+            <!-- 🚩Aura Body -->
+            <div class="body">
+                <div class="card-main top-card">
+                    <h3>{!$Label.c.DNS_PORTAL_ACC_T_ACCOUNT_SEARCH}</h3>
+                    <div class="main-container">
+                        <div>
+                            <div class="main-container-title">
+                                <!-- <abbr class="slds-required"title="required">*</abbr> -->
+                                {!$Label.c.DNS_ACC_C_NAME}
+                            </div>
+                            <div class="field-wrap">
+                                <!-- 고객사명 입력 필드 -->
+                                <!-- <div onkeypress="{!c.handleKeyPress}">
+                                                    <lightning:recordEditForm aura:id="recordSearchForm" objectApiName="{! v.objectName }">
+                                                        <lightning:inputField aura:id="inputSearchAccountName" data-aura-id="inputSearchAccountName" fieldName="SimpleCustomerInfo__c" variant="label-hidden" value="{!v.searchCustomerId}" />
+                                                    </lightning:recordEditForm>
+                                                </div> -->
+                                <div onkeypress="{!c.handleKeyPress}">
+                                    <!-- <lightning:input type="text" variant="label-hidden" value="{!v.searchCustomerName}" required="true" maxlength="40" /> -->
+                                    <lightning:input type="text" variant="label-hidden" value="{!v.searchCustomerName}"
+                                        maxlength="40" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="main-container-title">{!$Label.c.DNS_ACC_C_REPRESENTATIVE}</div>
+                            <div class="field-wrap">
+                                <div onkeypress="{!c.handleKeyPress}">
+                                    <lightning:input type="text" variant="label-hidden"
+                                        value="{!v.searchRepresentative}" maxlength="10" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <aura:if isTrue="{! v.isDomesticUser }">
+                            <div>
+                                <div class="main-container-title">{!$Label.c.DNS_ACC_T_BUSINESSNUMBER}</div>
+                                <div class="field-wrap">
+                                    <div onkeypress="{!c.handleKeyPress}">
+                                        <lightning:input type="text" variant="label-hidden"
+                                            value="{!v.searchBusiness}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+
+                        <div class="button-wrap">
+                            <!-- 검색 버튼 -->
+                            <lightning:button variant="brand" label="{!$Label.c.DNS_B_Search}" onclick="{! c.handleSearchAccount }" />
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- 새 고객사 생성이 필요할 때 출력 -->
+                <aura:if isTrue="{!v.newCustomerOpen}">
+                    <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }"
+                        onsubmit="{! c.handleSubmit }" onsuccess="{! c.handleSuccess }" onerror="{! c.handleError }">
+                        <div class="card-01 top-card" style="margin-top: 0.75rem;">
+                            <h3>{!$Label.c.DNS_PORTAL_ACC_T_ADDITIONAL_INFORMATION}</h3>
+                            <div class="main-container ">
+                                <!-- Left Side -->
+                                <div class="field-wrap none-search">
+                                    <lightning:inputField aura:id="recordField" fieldName="Name" required="true"
+                                        value="{!v.newCustomerName}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="Representative__c"
+                                        required="true" value="{!v.newRepresentative}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="AccountNameEnglish__c" />
+                                    <lightning:inputField aura:id="recordField" fieldName="BusinessNumber__c" />
+                                    <!-- <lightning:input aura:id="recordField" type="text" fieldName="BusinessNumber__c" maxlength="10" pattern="[0-9]*" label="Business Number" messageWhenPatternMismatch="Only numbers are allowed."/> -->
+                                    <lightning:inputField aura:id="recordField" fieldName="AccountType__c" />
+                                    <!-- <lightning:inputField aura:id="recordField" fieldName="Phone" required="true" value="{!v.newPhone}" maxlengh="16" /> -->
+                                    <lightning:inputField aura:id="recordField" fieldName="Phone" value="{!v.newPhone}" maxlengh="16" />
+                                    <lightning:inputField aura:id="recordField" fieldName="CountryLookup__c"
+                                        required="true" value="{!v.loginUserInfo.Account.CountryLookup__c}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="RegionLookup__c"
+                                        value="{!v.loginUserInfo.Account.RegionLookup__c}" />
+                                </div>
+                                <!-- Right Side -->
+                                <p class="vertical-line"></p>
+                                <div class="field-wrap">
+                                    <lightning:inputField aura:id="recordField" fieldName="Competitor__c"
+                                        required="true" />
+                                </div>
+                                <p class="vertical-line"></p>
+                                <div class="field-wrap">
+                                    <lightning:inputField aura:id="recordField" fieldName="AccountSource__c" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-wrap">
+                            <!-- Industry Classification Section -->
+                            <div class="card-02 top-card">
+                                <h3>{!$Label.c.DNS_PORTAL_ACC_T_INDUSTRY_CLASSIFICATION}</h3>
+                                <div class="main-container">
+                                    <!-- Left Side -->
+                                    <div class="field-wrap">
+                                        <lightning:inputField aura:id="recordField" fieldName="MainCategory__c"
+                                            required="true" />
+                                        <lightning:inputField aura:id="recordField" fieldName="SubCategory__c"
+                                            required="true" />
+                                    </div>
+                                    <!-- Right Side -->
+                                    <div class="field-wrap">
+                                        <lightning:inputField aura:id="recordField" fieldName="IsTooling__c"
+                                            required="true" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Information Section -->
+                            <div class="card-03 top-card">
+                                <div class="header">
+                                    <h3><abbr class="slds-required"
+                                            title="required">*</abbr>{!$Label.c.DNS_PORTAL_ACC_T_ADDRESS_INFORMATION}
+                                    </h3>
+                                    <aura:if isTrue="{!v.isDomesticUser}">
+                                        <lightning:button iconName="" variant="neutral"
+                                            onclick="{! c.handleSearchAddress }" label="국내 주소 검색" />
+                                    </aura:if>
+                                </div>
+                                <div class="main-container">
+                                    <div class="field-wrap">
+                                        <lightning:inputAddress aura:id="shippingAddress"
+                                            addressLabel="{!$Label.c.DNS_C_SoldToAddress}"
+                                            streetLabel="{!$Label.c.DNS_C_SoldToStreet}"
+                                            cityLabel="{!$Label.c.DNS_C_SoldToCity}"
+                                            countryLabel="{!$Label.c.DNS_C_SoldToCountry}"
+                                            provinceLabel="{!$Label.c.DNS_C_SoldToState}"
+                                            postalCodeLabel="{!$Label.c.DNS_C_SoldToPostalCode}"
+                                            showAddressLookup="{! NOT(v.isDomesticUser) }"
+                                            addressLookupPlaceholder="Search Address" disabled="{!v.isDomesticUser}">
+                                        </lightning:inputAddress>
+                                        <br />
+                                        <lightning:inputField aura:id="recordField_sggNm" fieldName="sggNm__c"
+                                            class="hide" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key Account Information Section -->
+                            <!-- <div class="card-04 top-card">
+                                                <h3>Key Account Information</h3>
+                                                <div class="main-container">
+                                                    <div class="field-wrap">
+                                                        <lightning:inputField aura:id="recordField" fieldName="ParentId" />
+                                                    </div>
+                                                </div>
+                                            </div> -->
+                        </div>
+                        <div class="button-wrap">
+                            <!-- <lightning:button iconName="utility:check" variant="brand" type="submit" label="Save" /> -->
+                            <lightning:button variant="brand" onclick="{! c.cancelNewCustomer }" label="{!$Label.c.DNS_B_Cancel}" />
+                            <lightning:button variant="brand" onclick="{! c.handleSave }" label="{!$Label.c.DNS_B_Save}" />
+                        </div>
+                    </lightning:recordEditForm>
+                </aura:if>
+
+
+                <!-- 검색 버튼을 눌렀을 때 -->
+                <aura:if isTrue="{!v.isSearched}">
+                    <div class="has-account">
+                        <div class="card-02 top-card">
+                            <div class="button-wrap">
+                                <div class="results">{!$Label.c.DNS_M_Total}
+                                    <span>{!v.resultSize}</span>
+                                    {!$Label.c.DNS_M_ResultFound}
+                                    <div>{!$Label.c.DNS_M_NoSearchCreate} &nbsp;
+                                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_New}"
+                                            onclick="{! c.handleNewCustomer }" />
+                                    </div>
+                                    <!-- <div><lightning:button label="{!$Label.c.DNS_B_New}" onclick="{! c.handleNewCustomer }" /></div> -->
+                                </div>
+
+                            </div>
+
+                            <!-- 검색된 고객사 결과가 있을 때 출력 -->
+                            <aura:if isTrue="{!v.isCustomer}">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <aura:if isTrue="{!v.isDomesticUser}">
+                                        <colgroup>
+                                            <col width="1%" />
+                                            <col width="34%" />
+                                            <col width="20%" />
+                                            <col width="30%" />
+                                            <col width="10%" />
+                                        </colgroup>
+                                        <aura:set attribute="else">
+                                            <colgroup>
+                                                <col width="1%" />
+                                                <col width="40%" />
+                                                <col width="30%" />
+                                                <col width="29%" />
+                                            </colgroup>
+                                        </aura:set>
+                                    </aura:if>
+
+                                    <thead>
+                                        <tr>
+                                            <th>{!$Label.c.DNS_SRT_Select}</th>
+                                            <th>{!$Label.c.DNS_ACC_C_NAME}</th>
+                                            <th>{!$Label.c.DNS_ACC_C_REPRESENTATIVE}</th>
+                                            <th>{!$Label.c.DNS_C_RegistrationDate}</th>
+                                            <aura:if isTrue="{!v.isDomesticUser}">
+                                                <th>BVC 보호고객 여부</th>
+                                            </aura:if>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.resultCustomerList}" var="result" indexVar="idx">
+                                            <tr>
+                                                <td>
+                                                    <lightning:input type="checkbox" aura:id="checkbox"
+                                                        onchange="{!c.handleAccountSelect}" variant="label-hidden"
+                                                        value="{! idx}" disabled="{! result.isBVC == 'Y'}" />
+                                                </td>
+                                                <td>{!result.accountName}</td>
+                                                <td>{!result.representative}</td>
+                                                <td style="text-align: center;">{!result.accountCreatedDate}</td>
+                                                <aura:if isTrue="{!v.isDomesticUser}">
+                                                    <td>{!result.isBVC}</td>
+                                                </aura:if>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </aura:if>
+                        </div>
+
+                        <!-- 고객사가 선택되었을 때 추가 정보 입력 폼 출력 -->
+                        <aura:if isTrue="{!v.isAccountSelected}">
+                            <div class="card-02 top-card">
+                                <div class="header">
+                                    <h3>{!$Label.c.DNS_ACC_C_Account}</h3>
+                                    <div>{!v.resultCustomer.accountName}</div>
+                                </div>
+                                <div class="main-container">
+                                    <div class="field-wrap">
+                                        <div onkeypress="{!c.handleKeyPress}">
+                                            <lightning:textarea aura:id="inputRequestReason"
+                                                data-aura-id="inputRequestReason"
+                                                label="{!$Label.c.DNS_T_RequestReason}" value="{!v.requestReason}"
+                                                required="true" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-wrap">
+                                <lightning:button iconName="utility:check" variant="brand"
+                                    label="{!$Label.c.DNS_B_REQUEST_TO_USE}" onclick="{! c.handleRequestUse }" />
+                            </div>
+                        </aura:if>
+                    </div>
+                </aura:if>
+
+
+            </div>
+        </div>
+    </div>
+</aura:component>

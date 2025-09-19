@@ -1,0 +1,38 @@
+<template>
+    <div class="approval_wrapper" style="position: relative;">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <template if:true={isRequest}>
+            <lightning-modal-header label={cLabel.DNS_H_ApprovalRequest}></lightning-modal-header>
+        </template>
+        <template if:true={isApproval}>
+            <lightning-modal-header label={cLabel.DNS_B_Approval}></lightning-modal-header>
+        </template>
+        <template if:true={isReject}>
+            <lightning-modal-header label={cLabel.DNS_B_REJECT}></lightning-modal-header>
+        </template>
+
+        <template if:true={isConfirm}>
+            <lightning-modal-body style="text-align: center; align-content: center;">
+                <span>{cLabel.DNS_M_RequestOrderConfrim}</span>
+            </lightning-modal-body>
+        </template>
+        <template if:false={isConfirm}>
+            <lightning-modal-body>
+                <lightning-textarea label={cLabel.DNS_F_Comments} data-value="comments"></lightning-textarea>
+            </lightning-modal-body>
+        </template>
+
+        <lightning-modal-footer>
+            <lightning-button label={cLabel.DNS_B_Cancel} onclick={handleCancel}></lightning-button>
+            <template if:true={isConfirm}>
+                <lightning-button label={cLabel.DNS_B_Confirm} variant="brand" onclick={handleConfirm} class="slds-m-left_x-small" ></lightning-button>
+            </template>
+            <template if:false={isConfirm}>
+                <lightning-button label={cLabel.DNS_B_Save} variant="brand" onclick={handleSave} class="slds-m-left_x-small" ></lightning-button>
+            </template>
+        </lightning-modal-footer>
+    </div>
+</template>

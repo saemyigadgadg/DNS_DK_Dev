@@ -1,0 +1,77 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 03-04-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-24   youjin.shimk@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_PortalModalController"
+    description="워크센터 모달">
+
+    <!-- Event -->
+    <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+    
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Attribute -->
+    <aura:attribute name="workCenterId" type="String" /> <!-- -->
+    <aura:attribute name="dealerList" type="List" />
+    
+    <div class="dealerModal" >
+        <div aura:id="dealerModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_medium">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">{!$Label.c.service_fld_work_center}</h2>
+
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='brand' size='small'
+                            title='close' name="closeModal" onclick="{!c.dealerModalCancel}">
+                        </lightning:icon>
+                    </button>
+                </header>
+                <!-- Modal Content -->
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                    <div class="card-01 top-card">
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>{!$Label.c.service_fld_work_center_code}</th>
+                                        <th>{!$Label.c.service_fld_work_center_name}</th>
+                                    </tr>
+                                </thead>                                
+                                <tbody>
+                                    <aura:iteration items="{!v.dealerList}" var="dealer" indexVar="j">
+                                        <tr name="dealerList" onclick="{!c.rowClick}" data-record="{!j}">
+                                            <td>{!dealer.WCCode__c}</td>
+                                            <td>{!dealer.Name}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                        onclick="{!c.dealerModalCancel}" />
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+
+
+
+</aura:component>

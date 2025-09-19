@@ -1,0 +1,203 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-09-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   06-28-2024   Hyerin Ro      Initial Version
+  1.1   12-13-2024   Hyunwook JIN   검색 결과 조회 테이블외에 속성들 제거
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="주문 반품 관리"
+  controller="DN_AgencyCustomerReturnController"
+  extends="c:DN_Helper">
+  <!--Attribute-->
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="userInfo" type="Object" />
+  <aura:attribute name="requiredParams" type="List" description="반품 주문 필터 정보 필수값"/>
+  <aura:attribute name="headerParams" type="Object" description="반품 주문 필터 정보"/>
+  <aura:attribute name="itemsPerPage" type="Integer" />
+  <aura:attribute name="currentPage" type="Integer" />
+  <aura:attribute name="pagesPerGroup" type="Integer" />
+  <aura:attribute name="nextPage" type="Integer" />
+  <aura:attribute name="returnOrderList" type="List" default="[
+    ]" />
+    <!-- {'returnOrderSeq' : '7000004816 - 1', 'orderSeq' : '8000146483', 'customerName' : '엠티서비스(조동표)', 'itemSeq' : '000010', 'partName' : 'R30483B', 'partDetails' : 'VALVE,REDUCING;PRESSURE', 'returnQuantity' : '1', 'returnDate' : '2020.05.07', 'reason1' : '[대리점귀책]청구착오'}, -->
+  <aura:attribute name="selectedOrder" type="List" default="[]" />
+  <aura:attribute name="customerName" type="String" />
+  <aura:attribute name="countOrder" type="Integer" />
+  <aura:attribute name="confirmModal" type="Boolean" default="false" />
+  <aura:attribute name="partNubmer" type="String" />
+  <aura:attribute name="returnOrderNumber" type="String" />
+
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!-- Navigation -->
+  <lightning:navigation aura:id="navService"/>
+
+  <!--handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <aura:html tag="style">
+    .cDN_DealerPortalDisplay .card-02:has(.cDN_AgencyCustomerReturnManagement) {
+      height: calc(100vh - 21rem);
+    }
+  </aura:html>
+
+  <!-- Card 02 : 조회테이블-->
+  <div class="card-02 slds-scrollable ">
+    <div class="table-wrap scroll-y">
+      <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+        <colgroup>
+          <col width="3%" />
+          <col width="8%" />
+          <col width="8%" />
+          <col width="9%" />
+          <col width="8%" />
+          <col width="9%" />
+          <col width="16%" />
+          <col width="8%" />
+          <col width="8%" />
+          <col width="16%" />
+          <col width="7%" />
+        </colgroup>
+        <thead>
+
+          <tr class="slds-line-height_reset">
+            <th scope="col">
+              <lightning:input type="checkbox" aura:id="headerCheckbox" variant="label-hidden"
+                onchange="{! c.selectAll }" />
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">반품번호</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">주문번호</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">고객사명</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">항목</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">품번</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">품명</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">반품수량</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">반품일</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">반품사유</div>
+            </th>
+            <th scope="col">
+              <div class="slds-truncate" title="">첨부파일</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.returnOrderList}" var="returnOrder" indexVar="j">
+            <tr class="slds-hint-parent">
+              <td type="checkbox2" class="center">
+                <lightning:input type="checkbox" aura:id="checkbox" variant="label-hidden" checked="{!returnOrder.isSelected}"
+                   />
+              </td>
+              <td scope="row" class="center">
+                <div>{!returnOrder.returnOrderSeq} - {!returnOrder.returnItemSeq}</div>
+              </td>
+              <td scope="row" class="center">
+                <div>{!returnOrder.orderSeq}</div>
+              </td>
+              <td scope="row" class="center">
+                <div>{!returnOrder.customerName}</div>
+              </td>
+              <td scope="row" class="center">
+                <div>{!returnOrder.itemSeq}</div>
+              </td>
+              <td scope="row">
+                <div>{!returnOrder.partName}</div>
+              </td>
+              <td scope="row">
+                <div>{!returnOrder.partDetails}</div>
+              </td>
+              <td scope="row" class="right">
+                <div>{!returnOrder.returnQuantity}</div>
+              </td>
+              <td scope="row" class="center">
+                <div>{!returnOrder.returnDate}</div>
+              </td>
+              <td scope="row">
+                <div>{!returnOrder.reason1Label}</div>
+              </td>
+              <td scope="row">
+                <div>
+                  <div class="file-wrap">
+                    <aura:iteration items="{!returnOrder.fileList}" var="file" indexVar="index">
+                      <div class="file-name">
+                        <a href="{!file.previewUrl}" target="_blank">
+                          <!-- {!file.title} -->
+                          <lightning:icon iconName="doctype:attachment" title="{!file.title}" size="small"/>
+                        </a>
+                      </div>
+                    </aura:iteration>
+                  </div>
+                  
+                  <!-- <input type="file" aura:id="newFile" id="newFile" ></input> -->
+                </div>
+              </td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 📌 확인 Alert Modal-->
+  <aura:if isTrue="{!v.confirmModal}">
+    <div class="check-modal-wrap">
+      <div aura:id="confirmModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">삭제</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.cancelDelete}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-body slds-modal__content slds-p-around_medium">
+            <!-- <div class="icon-wrap">
+              <lightning:icon iconName='utility:check' alternativeText='download' size='Medium' title='download'>
+              </lightning:icon>
+            </div> -->
+            <p>{!v.countOrder}건의 반품 주문을 삭제하시겠습니까?</p>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelDelete}" />
+            <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.confirmDelete}" />
+          </footer>
+
+        </div>
+      </div>
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+</aura:component>

@@ -1,0 +1,164 @@
+/* Header */
+
+.THIS .header{
+  padding: 0.5rem 1rem;
+}
+.THIS .header h2{
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+/* Card 01 */
+
+.THIS .card-01{
+  padding: 0 1rem 1rem 1rem;
+}
+
+.THIS .card-01 .table-wrap{
+  border: 1px solid #c9c9c9;
+}
+
+.THIS .card-01 .table-wrap .table-01 tbody .width-fixed {
+  width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Table Design */
+
+.THIS .body table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .5rem 0.75rem;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .body table td {
+  background-color: #fff;
+  padding: .3rem .3rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #d9d9d9;
+  height: 2rem;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+  display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .body table .slds-input[readonly] {
+  border: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+  text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+  text-align: right !important;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .body .table-wrap {
+  position: relative;
+  display: flex;
+  max-height: calc(100vh - 41rem);
+  overflow-y: auto;
+}
+
+@media screen and (max-width: 1800px) {
+  .THIS .body .table-wrap {
+    max-height: calc(100vh - 23rem);
+  }
+}
+
+.THIS .body .table-wrap table{
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.THIS .body .table-wrap table thead {
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+
+/* Sticky : Table 01 */
+
+.THIS .body .table-01 {
+  flex: 1;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  border-right: 1px solid #d9d9d9;
+}
+
+@media screen and (max-width: 1820px){
+  .THIS .body .table-01 {
+    flex: 2;
+  }
+}
+
+@media screen and (max-width: 1200px){
+  .THIS .body .table-01 {
+    flex: 3;
+  }
+}
+
+@media screen and (max-width: 980px){
+  .THIS .body .table-01 {
+    flex: 5;
+  }
+}
+
+@media screen and (max-width: 890px){
+  .THIS .body .table-01 {
+    flex: 13;
+  }
+}
+
+
+.THIS .body .table-01::-webkit-scrollbar {
+  background-color: #fff;
+  border-top: 1px solid #c9c9c9;
+}
+
+/* Sticky : Table 02 */
+
+.THIS .body .table-02 {
+  flex: 1;
+  overflow-x: scroll;
+  table-layout: fixed;
+}

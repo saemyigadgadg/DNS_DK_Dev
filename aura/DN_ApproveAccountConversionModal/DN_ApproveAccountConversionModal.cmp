@@ -1,0 +1,297 @@
+<!--
+    @description       : 
+    @author            : Hanyeong Choi
+    @group             : 
+    @last modified on  : 10-23-2024
+    @last modified by  : Hyerin Ro
+    Modifications Log
+    Ver   Date         Author          Modification
+    1.0   06-18-2024   Hanyeong Choi   Initial Version
+    1.0   06-19-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+                controller="DN_AccountController" 
+                description="딜러의 실 고객 전환 요청을 승인">
+
+  <!-- 🚩Aura Attribute -->
+  <aura:attribute name="isLoading"      type="Boolean"  default="false" />
+  <aura:attribute name="isKorea"        type="Boolean"  default="false" />
+  <aura:attribute name="isBVC"          type="Boolean"  default="false" />
+  <aura:attribute name="orderList"      type="List"     default="[]" />
+  <aura:attribute name="recordId"       type="String" />
+  <aura:attribute name="sObjectName"    type="String" />
+  <aura:attribute name="customerSystem" type="String" />
+  <aura:attribute name="csStartDate"    type="String" />
+  <aura:attribute name="csEndDate"      type="String" />
+  <aura:attribute name="bvcDealer"      type="String" />
+  <aura:attribute name="bvcStartDate"   type="String" />
+  <aura:attribute name="bvcEndDate"     type="String" />
+
+  <!-- 🚩Aura Handler -->
+  <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+  <lightning:overlayLibrary aura:id="overlayLib" />
+
+  <!-- 🚩 Aura Style -->
+  <aura:html tag="style">
+    <!-- 기본 프레임 세팅 -->
+    .slds-modal__container.cDN_ApproveAccountConversionModal {
+      width: 100%;
+      max-width: none;
+      min-width: unset;
+      padding: 0;
+    }
+    .slds-modal__content:has(.cDN_ApproveAccountConversionModal) {
+      height:auto !important;
+      max-height:none !important;
+      padding: 0;
+      overflow-y: clip;
+    }
+
+    .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_ApproveAccountConversionModal) {
+      padding:0;
+    }
+  </aura:html>
+
+  <aura:if isTrue="{! v.sObjectName == 'Account' }">
+
+    <!-- 🚩 1. Modal  -->
+    <div class="slds-modal__container">
+      <!-- 🚩Modal Header -->
+      <header class="slds-modal__header">
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">실 고객 전환</h2>
+      </header>
+
+      <!-- 🚩Modal Body -->
+      <div class="modal-body slds-modal__content">
+        <!-- 🚩Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <div class="comment-wrap top-card">
+          <div class="icon-wrap">
+            <lightning:icon iconName='utility:check' alternativeText='check' size='medium' title='check'>
+            </lightning:icon>
+          </div>
+          <p class="comment">실 고객 전환을 승인 하시겠습니까?</p>
+        </div>
+
+        <!-- 고객제도 or BVC이면 이미 실 고객이기 때문에 실고객전환요청 불가 -->
+        <!-- 🚩Card 01 -->
+        <!--
+        <aura:if isTrue="{! v.isKorea }">
+          <aura:if isTrue="{! v.customerSystem != '' }">
+            <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Account">
+              <div class="card-01 top-card">
+                <div class="field-wrap">
+                  <p>고객 제도 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="CustomerSystem__c" variant="label-hidden" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>고객 제도 시작일 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="CustomerSystemStartDate__c" variant="label-hidden" />
+                  </div>
+                </div>
+                <div class="field-wrap"></div>
+                <div class="field-wrap">
+                  <p>고객 제도 종료일 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="CustomerSystemEndDate__c" variant="label-hidden" />
+                  </div>
+                </div>
+              </div>
+            </lightning:recordViewForm>
+          </aura:if>
+          -->
+
+          <!-- 🚩Card 02 -->
+          <!--
+          <aura:if isTrue="{! v.isBVC }">
+            <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Account">
+              <div class="card-02 top-card">
+                <div class="field-wrap">
+                  <p>BVC 여부 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="IsBVC__c" variant="label-hidden" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>BVC 시작일 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="BVCStartDate__c" variant="label-hidden" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>BVC 대리점 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="BVCDealer__c" variant="label-hidden" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>BVC 종료일 </p>
+                  <div class="input-wrap">
+                    <lightning:outputField class="field-content" fieldName="BVCEndDate__c" variant="label-hidden" />
+                  </div>
+                </div>
+              </div>
+            </lightning:recordViewForm>
+          </aura:if>
+        </aura:if>
+        -->
+
+        <!-- 고객제도 or BVC이면 이미 실 고객이기 때문에 실고객전환요청 불가 -->
+        <!-- 🚩Card 03 -->
+        <!--
+        <div class="card-03 top-card">
+          <h2>타 대리점 주문 이력</h2>
+          <div class="table-wrap">
+            <table class="table-info">
+              <thead>
+                <tr>
+                  <th>대리점 이름</th>
+                  <th>주문 번호</th>
+                  <th>주문 생성 일시</th>
+                  <th>주문 진행 상황</th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.orderList}" var="item" indexVar="index">
+                  <tr>
+                    <td>{!item.orderOwner}</td>
+                    <td>{!item.orderNumber}</td>
+                    <td>{!item.orderCreatedDate}</td>
+                    <td>{!item.orderStatus}</td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        -->
+      </div>
+
+      <!-- 🚩Modal Footer -->
+      <footer class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral closeBtn" onclick="{!c.handleClose}">닫기</button>
+        <div class="button-wrap">
+          <button class="slds-button slds-button_brand" onclick="{!c.handleConfirm}">승인</button>
+          <button class="slds-button slds-button_neutral" onclick="{!c.handleReject}">거절</button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- 🚩 2. DNS_RequestToUseCustomer__c Component -->
+    <aura:set attribute="else">
+      <div class="total-wrap">
+
+        <!-- 🚩Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <div class="body">
+          <aura:if isTrue="{! v.isKorea }">
+
+            <!-- 🚩Accordion 01 : 고객 제도 -->
+            <!-- <aura:if isTrue="{! v.customerSystem != '' }">
+              <div class="card-01 top-card">
+                <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="CustomerSystem">
+                  <lightning:accordionSection name="CustomerSystem" label="고객 제도" class="section-container">
+                    <div class="accordion-body">
+                      <div class=" field-wrap">
+                        <p>고객 제도 </p>
+                        <div class="input-wrap">{!v.customerSystem}</div>
+                      </div>
+                      <div class=" field-wrap">
+                        <p>고객 제도 시작일 </p>
+                        <div class="input-wrap">{!v.csStartDate}</div>
+                      </div>
+                      <div class=" field-wrap"></div>
+                      <div class=" field-wrap">
+                        <p>고객 제도 종료일 </p>
+                        <div class="input-wrap">{!v.csEndDate}</div>
+                      </div>
+                    </div>
+                  </lightning:accordionSection>
+                </lightning:accordion>
+              </div>
+            </aura:if> -->
+
+            <!-- 🚩Accordion 02. BVC -->
+            <!-- 
+            <aura:if isTrue="{! v.isBVC }">
+              <div class="card-02 top-card">
+                <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="BVC">
+                  <lightning:accordionSection name="BVC" label="BVC" class="section-container">
+                    <div class="accordion-body">
+                      <div class=" field-wrap">
+                        <p>BVC 여부 </p>
+                        <div class="input-wrap">Y</div>
+                      </div>
+                      <div class=" field-wrap">
+                        <p>BVC 시작일 </p>
+                        <div class="input-wrap">{!v.bvcStartDate}</div>
+                      </div>
+                      <div class=" field-wrap">
+                        <p>BVC 대리점 </p>
+                        <div class="input-wrap">{!v.bvcDealer}</div>
+                      </div>
+                      <div class=" field-wrap">
+                        <p>BVC 종료일 </p>
+                        <div class="input-wrap">{!v.bvcEndDate}</div>
+                      </div>
+                    </div>
+                  </lightning:accordionSection>
+                </lightning:accordion>
+              </div>
+            </aura:if> 
+            -->
+          </aura:if>
+
+          <!-- 🚩Card 03 -->
+          <div class="card-03 top-card">
+            <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="CustomerSystem">
+                  <lightning:accordionSection name="CustomerSystem" label="타 대리점 주문 이력" class="section-container">
+                      <div class="table-wrap">
+                        <table>
+                          <colgroup>
+                            <col width="33%" />
+                            <col width="33%" />
+                            <col width="34%" />
+                          </colgroup>
+                          <thead>
+                            <tr>
+                              <th>Requested Delivery Date</th>
+                              <th>대리점 이름</th>
+                              <th>기종</th>
+                              <!-- <th>주문 번호</th>
+                              <th>주문 생성 일시</th>
+                              <th>주문 진행 상황</th> -->
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <aura:iteration items="{!v.orderList}" var="item" indexVar="index">
+                              <tr>
+                                <td>{!item.orderReqDeliveryDate}</td>
+                                <td>{!item.orderOwner}</td>
+                                <td>{!item.orderItem}</td>
+                                <!-- <td>{!item.orderNumber}</td>
+                                <td>{!item.orderCreatedDate}</td>
+                                <td>{!item.orderStatus}</td> -->
+                              </tr>
+                            </aura:iteration>
+                          </tbody>
+                        </table>
+                      </div>
+                  </lightning:accordionSection>
+            </lightning:accordion>
+          </div>
+        </div>
+      </div>
+    </aura:set>
+  </aura:if>
+</aura:component>

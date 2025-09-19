@@ -1,0 +1,65 @@
+.THIS label {
+  color: #868e96;
+}
+.THIS {
+  border: 1px solid #c9c9c9;
+}
+/* header */
+.THIS.slds-card .slds-card__header {
+  background-color: #f3f3f3;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem 0.25rem 0 0;
+  border-bottom: 0;
+}
+
+.THIS.slds-card .slds-card__header .slds-media {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #c9c9c9;
+}
+
+/* body */
+.THIS.slds-card .slds-card__body {
+  max-height: 200px;
+  margin: 0;
+  overflow: hidden;
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
+.THIS.slds-card .slds-card__body table thead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  border-right: 1px solid #c9c9c9;
+  border-left: 1px solid #c9c9c9;
+}
+
+.THIS.slds-card .slds-card__body table tbody tr {
+  border: 1px solid #c9c9c9;
+}
+
+
+/********** modal **********/
+
+.THIS.slds-modal .modal-bg {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  opacity: 0.2;
+}
+
+.THIS.slds-modal .modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 3rem 1rem;
+}
+
+.THIS.slds-modal .modal-body p {
+  font-size: 14px;
+  font-weight: 600;
+}

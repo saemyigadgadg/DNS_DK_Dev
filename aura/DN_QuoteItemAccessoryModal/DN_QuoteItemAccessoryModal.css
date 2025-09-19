@@ -1,0 +1,141 @@
+/* Layout */
+
+.THIS {
+    position: relative;
+    height: 100%;
+}
+
+.THIS .slds-modal__container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: unset;
+    min-width: unset;
+}
+
+.THIS .slds-modal__content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Common */
+
+/* .THIS .section {
+    border: 1px solid #F3F3F3;
+    padding: 1rem;
+} */
+
+.THIS .catecory_section,
+.THIS .accessory_table_section,
+.THIS .selected_table_section {
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+}
+
+/* .THIS td {
+    padding-right: 1.2rem;
+} */
+
+.THIS td .slds-grid_align-end {
+    justify-content: flex-start;
+}
+
+/* Section 01 */
+
+.THIS .catecory_section {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+
+    background-color: #F3F3F3;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .category_combobox {
+    flex: 1;
+    max-width: 28rem;
+    min-width: 16rem;
+}
+
+.THIS .category_combobox lightning-combobox {
+    padding: 0;
+    margin: 0;
+}
+
+/* Section 02 */
+
+.THIS .accessory_table_section {
+    flex: 2 auto;
+    overflow: auto;
+    min-height: 10rem;
+    max-height: 28rem;
+}
+
+.THIS .accessory_table_section .slds-table_header-fixed_container {
+    border-radius: 5px;
+}
+
+/* Section 03 */
+
+.THIS .down_icon_section {
+    text-align: center;
+    padding: 0.25rem 0;
+}
+
+/* Section 04 */
+
+.THIS .selected_table_section {
+    flex: 1 auto;
+    min-height: 10rem;
+    overflow-y: auto;
+    position: relative;
+}
+
+.THIS .selected_table_section .slds-scrollable_x,
+.THIS .selected_table_section .slds-scrollable_y {
+    overflow: hidden;
+    overflow-y: hidden;
+}
+
+.THIS .selected_table_section .section-header {
+    background-color: #f3f3f3;
+    padding: 0.5rem; 
+    display: flex;
+    align-items: feComponentTransfer;
+    gap: 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .selected_table_section .section-header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.THIS .selected_table_section .slds-popover {
+    width: 6rem;
+}
+
+/* Mobile */
+
+@media all and (max-width: 479px) {
+    .THIS .card-01{
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .THIS .selected_table_section .section-header {
+        touch-action: none;
+    }
+}

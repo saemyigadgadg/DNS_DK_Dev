@@ -1,0 +1,277 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 01-10-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-17   yeongdeok.seo@sbtglobal.com   Initial Version
+  1.1   2025-01-16   kyjung@yangwoodatapotion.com  controller 추가
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="입출고 내역"
+  access="global"
+  controller="DN_GRGIDetailModalController"
+  extends="c:DN_Helper"
+  >
+
+  <!-- attribute -->
+  <aura:attribute name="type" type="String" />
+  <aura:attribute name="docNo" type="String" />
+  <aura:attribute name="resultList" type="List" default="[]"/>
+
+  <!-- handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}" />
+
+  <div class="grgiDetailModal">
+    <div aura:id="grgiDetailModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container slds-modal_large">
+
+        <!-- 1. Modal을 열때 받아온 type으로 구분 -->
+        <aura:if isTrue="{!v.type == '입고'}">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">입고내역</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.grgiDetailModalCancel}">
+              </lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+              <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <colgroup>
+                    <col width="12%" />
+                    <col width="9%" />
+                    <col width="15%" />
+                    <col width="25%" />
+                    <col width="8%" />
+                    <col width="9%" />
+                    <col width="9%" />
+                    <col width="13%" />
+                  </colgroup>
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th scope="col">
+                        <div class="slds-truncate" title="">문서번호</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">생성일자</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">품번</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">품명</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">수량</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">금액</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">통화</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">기타</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+                      <tr class="slds-hint-parent">
+                        <td type="문서번호" class="center">
+                          <div class="slds-truncate" title="문서번호">
+                            {!result.docNo}
+                          </div>
+                        </td>
+                        <td data-label="생성일자" class="center">
+                          <div class="slds-truncate" title="생성일자">
+                            {!result.createDate}
+                          </div>
+                        </td>
+                        <td data-label="품번">
+                          <div class="slds-truncate" title="품번">
+                            {!result.partsNum}
+                          </div>
+                        </td>
+                        <td data-label="품명">
+                          <div class="slds-truncate" title="품명">
+                            {!result.partsName}
+                          </div>
+                        </td>
+                        <td data-label="수량" class="right">
+                          <div class="slds-truncate" title="수량">
+                            <lightning:formattedNumber value="{!result.qty}" />
+                          </div>
+                        </td>
+                        <td data-label="금액" class="right">
+                          <div class="slds-truncate" title="금액">
+                            <lightning:formattedNumber value="{!result.price}" />
+                          </div>
+                        </td>
+                        <td data-label="통화" class="center">
+                          <div class="slds-truncate" title="통화">
+                            {!result.currencyVal}
+                          </div>
+                        </td>
+                        <td data-label="기타">
+                          <div class="slds-truncate" title="기타">
+                            {!result.comment}
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+              
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                onclick="{!c.grgiDetailModalCancel}" />
+            </footer>
+          </div>
+        </aura:if>
+
+        <!-- 2. Modal을 열때 받아온 type으로 구분 -->
+        <aura:if isTrue="{!v.type == '출고'}">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">출고내역</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.grgiDetailModalCancel}">
+              </lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-body slds-modal__content">
+
+            <div class="card-01 top-card">
+              <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                  <colgroup>
+                    <col width="8%" />
+                    <col width="7%" />
+                    <col width="17%" />
+                    <col width="22%" />
+                    <col width="7%" />
+                    <col width="7%" />
+                    <col width="7%" />
+                    <col width="8%" />
+                    <col width="17%" />
+                  </colgroup>
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th scope="col">
+                        <div class="slds-truncate" title="">문서번호</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">생성일자</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">품번</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">품명</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">수량</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">금액</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">통화</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">출고지시번호</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div class="slds-truncate" title="">기타</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+                      <tr class="slds-hint-parent">
+                        <td type="문서번호">
+                          <div class="slds-truncate" title="문서번호">
+                            {!result.docNo}
+                          </div>
+                        </td>
+                        <td data-label="생성일자">
+                          <div class="slds-truncate" title="생성일자">
+                            {!result.createDate}
+                          </div>
+                        </td>
+                        <td data-label="품번">
+                          <div class="slds-truncate" title="품번">
+                            {!result.partsNum}
+                          </div>
+                        </td>
+                        <td data-label="품명">
+                          <div class="slds-truncate" title="품명">
+                            {!result.partsName}
+                          </div>
+                        </td>
+                        <td data-label="수량">
+                          <div class="slds-truncate" title="수량">
+                            <lightning:formattedNumber value="{!result.qty}" />
+                          </div>
+                        </td>
+                        <td data-label="금액">
+                          <div class="slds-truncate" title="금액">
+                            <lightning:formattedNumber value="{!result.price}" />
+                          </div>
+                        </td>
+                        <td data-label="통화">
+                          <div class="slds-truncate" title="통화">
+                            {!result.currencyVal}
+                          </div>
+                        </td>
+                        <td data-label="출고지시번호">
+                          <div class="slds-truncate" title="출고지시번호">
+                            {!result.doNo}
+                          </div>
+                        </td>
+                        <td data-label="기타">
+                          <div class="slds-truncate" title="기타">
+                            {!result.comment}
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                onclick="{!c.grgiDetailModalCancel}" />
+            </footer>
+          </div>
+        </aura:if>
+      </div>
+    </div>
+
+    <div aura:id="grgiDetailModalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+
+  </div>
+
+</aura:component>

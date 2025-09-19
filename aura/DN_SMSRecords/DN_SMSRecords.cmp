@@ -1,0 +1,227 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 11-11-2024
+  @last modified by  : Hyerin Ro 
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-11-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="lightning:utilityItem,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName,force:appHostable"
+    access="global" controller="DN_ManageSMSController">
+    <!-- SMS 관리 => SMS 이력 / SMS 발신 관리 -->
+
+    <!--attribute-->
+    <!-- <lightning:utilityBarAPI aura:id="utilitybar" /> -->
+    <aura:attribute name="hasUtilityBar" type="Boolean" default="false" />
+    <aura:attribute name="supportsPopOut" type="Boolean" default="false" /><!--popup기능 막기-->
+
+    <!--sms 이력-->
+    <aura:attribute name="serviceResourceId" type="String" default="" />
+    <aura:attribute name="accountId" type="String" default="" />
+    <aura:attribute name="workOrderId" type="String" default="" />
+    <aura:attribute name="targetList" type="List" default="[
+    {'label': '서비스요원', 'value': '서비스요원'},
+    {'label': '고객', 'value': '고객'},
+    {'label': '내부직원', 'value': '내부직원'}
+    ]" />
+    <aura:attribute name="searchTarget" type="String" default="all" />
+    <aura:attribute name="searchResultList" type="List" default="[]" />
+    <aura:attribute name="startDate" type="Date" default="" />
+    <aura:attribute name="endDate" type="Date" default="" />
+
+
+    <aura:attribute name="isLoading" type="Boolean" default="true" />
+    <aura:attribute name="modalTitle" type="String" default="{!$Label.c.DNS_T_SendSMS}" />
+    <aura:attribute name="workCenterList" type="List" default="[]" />
+    <aura:attribute name="workCenter" type="String" default="" />
+    <aura:attribute name="dispatchStaffList" type="List" default="[]" />
+    <aura:attribute name="dispatchStaff" type="String" default="all" />
+    <aura:attribute name="searchList" type="List" default="[]" />
+    <aura:attribute name="selectedList" type="List" default="[]" />
+    <aura:attribute name="smsContent" type="String" default="" />
+    <aura:attribute name="inboundNum" type="String" default="" />
+    <aura:attribute name="outboundNum" type="String" default="1600-4522" />
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!--SMS 이력 / SMS 발신 관리 선택 TAB-->
+    <article class="slds-card">
+        <lightning:tabset>
+            <lightning:tab label="{!$Label.c.DNS_T_SMSRecord}" id="manage" onactive="{! c.handleManageTab }">
+                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="SMSHistory__c">
+                    <lightning:messages />
+                    <div class="header-table">
+                        <div class="header-table-wrapper">
+                            <table>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_SearchPeriod}">{!$Label.c.DNS_C_SearchPeriod}</div>
+                                    </th>
+                                    <td scope="col" class="date-wrapper">
+                                        <div>
+                                            <lightning:input type="date" name="input2" variant="label-hidden" value="{!v.startDate}" />
+                                            <p>~</p>
+                                            <lightning:input type="date" name="input2" variant="label-hidden" value="{!v.endDate}" />
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_SearchPeriod}">{!$Label.c.DNS_C_Recipient}</div>
+                                    </th>
+                                    <td scope="col">
+                                        <div>
+                                            <lightning:combobox name="targetList" variant="label-hidden" value="{!v.searchTarget}"
+                                                options="{! v.targetList }" onchange="{! c.handleSearchTarget }" />
+                                        </div>
+                                    </td>
+                    
+                    
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_ServiceResourceName}">{!$Label.c.DNS_C_ServiceResourceName}</div>
+                                    </th>
+                                    <td scope="col">
+                                        <div>
+                                            <lightning:inputField fieldName="ServiceResource__c" variant="label-hidden"
+                                                value="{!v.serviceResourceId}" />
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Contact}">{!$Label.c.DNS_C_Contact}</div>
+                                    </th>
+                                    <td scope="col">
+                                        <div>
+                                            <lightning:inputField fieldName="Account__c" variant="label-hidden" value="{!v.accountId}" />
+                                        </div>
+                                    </td>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_OrderNumber}">{!$Label.c.DNS_C_OrderNumber}</div>
+                                    </th>
+                                    <td scope="col">
+                                        <div>
+                                            <lightning:inputField fieldName="WorkOrder__c" variant="label-hidden"
+                                                value="{!v.workOrderId}" />
+                                        </div>
+                                    </td>
+                                </tr>
+                    
+                            </table>
+                        </div>
+                        <div class="table-btn">
+                            <lightning:button variant="brand" label="{!$Label.c.DNS_B_Search}" title="{!$Label.c.DNS_B_Search}"
+                                onclick="{! c.handleSMSList }" />
+                        </div>
+                    </div>
+                </lightning:recordEditForm>
+
+                <div class="sms-wrapper">
+                    <h2 class="title">{!$Label.c.DNS_T_SMSRecord}</h2>
+                    <div class="sms-table-wrapper">
+                        <table class="sms-table slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Sender}">{!$Label.c.DNS_C_Sender}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Inboundcall}">{!$Label.c.DNS_C_Inboundcall}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Outboundcall}">{!$Label.c.DNS_C_Outboundcall}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_OrderNumber}">{!$Label.c.DNS_C_OrderNumber}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Model}">{!$Label.c.DNS_C_Model}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_SerialNumber}">{!$Label.c.DNS_C_SerialNumber}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_ServiceResourceID}">{!$Label.c.DNS_C_ServiceResourceID}
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_ServiceResourceName}">{!$Label.c.DNS_C_ServiceResourceName}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Account}">{!$Label.c.DNS_C_Account}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_Recipient}">
+                                            {!$Label.c.DNS_C_Recipient}</div>
+                                    </th>
+                                    <th scope="col" class="message">
+                                        <div title="{!$Label.c.DNS_C_SMSContent}">{!$Label.c.DNS_C_SMSContent}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_RegistrationDate}">{!$Label.c.DNS_C_RegistrationDate}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div title="{!$Label.c.DNS_C_RegistrationTime}">{!$Label.c.DNS_C_RegistrationTime}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.searchResultList}" var="s" indexVar="j">
+                                    <tr>
+                                        <td scope="col">
+                                            <div title="{!s.OwnerName}">{!s.OwnerName}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.InboundCall}">{!s.InboundCall}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.OutboundCall}">{!s.OutboundCall}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.OrderNumber}">{!s.OrderNumber}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.MachineName}">{!s.MachineName}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.SerialNumber}">{!s.SerialNumber}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.StaffId}">{!s.StaffId}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.Staff}">{!s.Staff}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.Account}">{!s.Account}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.SendTargetPickVal}">{!s.SendTargetPickVal}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.Content}">{!s.Content}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.RegisterDate}">{!s.RegisterDate}</div>
+                                        </td>
+                                        <td scope="col">
+                                            <div title="{!s.RegisterTime}">{!s.RegisterTime}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </lightning:tab>
+        </lightning:tabset>
+    </article>
+</aura:component>

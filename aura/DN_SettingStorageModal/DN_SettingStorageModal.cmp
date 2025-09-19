@@ -1,0 +1,529 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 01-15-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-04   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper" controller="DN_DealerLocationController" description="저장위치 생성/변경">
+  <!-- attribute -->
+  <aura:attribute name="isModalLoading" type="Boolean" default="false" />
+  <aura:attribute name="type" type="String" />
+  <aura:attribute name="parts" type="Object" />
+  <aura:attribute name="user" type="Object" />
+  <aura:attribute name="selectedStorages" type="List" default="[]" />
+  <aura:attribute name="newStorageList" type="List" default="[
+        { 'Loc1__c' : '', 'Loc2__c' : '', 'Loc3__c' : '', 'Loc4__c' : '', 'Loc5__c' : '', 'Loc6__c' : '', 'Description__c' : ''}
+    ]" />
+  <aura:attribute name="storageList" type="List" />
+  <aura:attribute name="settingLOC1" type="String" default="" />
+  <aura:attribute name="settingLOC2" type="String" default="" />
+  <aura:attribute name="settingLOC3" type="String" default="" />
+  <aura:attribute name="settingLOC4" type="String" default="" />
+  <aura:attribute name="settingLOC5" type="String" default="" />
+  <aura:attribute name="settingLOC6" type="String" default="" />
+  <aura:attribute name="selectedIndex" type="String" />
+  <aura:attribute name="selectLOC" type="String" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="totalSize" type="Decimal" />
+
+  <!-- 페이징 처리 attribute -->
+  <aura:attribute name="dividePageCount" type="Integer" default="20" />
+  <aura:attribute name="allResultCount" type="Integer" default="20" />
+  <aura:attribute name="totalPage" type="Decimal" default="100" />
+  <aura:attribute name="pageAllCountList" type="List" />
+  <aura:attribute name="pageCountListIndex" type="Decimal" default="0" />
+  <aura:attribute name="pageCountList" type="List" default="[1,2,3,4,5]" />
+  <aura:attribute name="currentPage" type="Decimal" default="1" />
+  <aura:attribute name="pageList" type="List" />
+
+  <!-- handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- Toast -->
+  <lightning:notificationsLibrary aura:id="notifLib" />
+  <!-- 모달이벤트-->
+  <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+  <aura:registerEvent name="cmpEvent" type="c.DN_HandlerEvent" />
+  
+  
+  <!-- 삭제 시 컨핌창-->
+  <aura:import library="lightning:confirm" property="LightningConfirm" />
+  <!-- Modal -->
+  <div class="settingStorageModal">
+
+    <div aura:id="settingStorageModal" class="slds-modal slds-fade-in-open">
+
+      <!-- 📌 Modal 1 : 저장위치생성 -->
+      <aura:if isTrue="{!v.type == 'Create'}">
+        
+        <div class="modal-1 slds-modal__container slds-modal_large">
+
+          <!-- Loading Spinner -->
+          <aura:if isTrue="{! v.isModalLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+          </aura:if>
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">저장위치 생성</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.settingStorageModalCancel}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="body slds-modal__content">
+
+            <!-- Card 1 -->
+            <div class="card-01 top-card">
+              <div class="card-body">
+                <div class="field-wrap">
+                  <p>대리점 명</p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.user.Account.Name}" variant="label-hidden" readonly="true"
+                      disabled="true" />
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-02 top-card">
+              <div class="card-header">
+                <div class="button-wrap">
+                  <lightning:button name="check" label="중복체크" onclick="{!c.handleCreateStorage}" />
+                  <lightning:button name="create" label="생성" onclick="{!c.handleCreateStorage}" />
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-wrap card-table">
+                  <!-- <div > <p style="font-size: 14px; font-weight: bold;">총 건수 : {!v.totalSize}</p></div> -->
+                  <table>
+                    <colgroup>
+                      <col width="1%" />
+                      <col width="1%" />
+                      <col width="14%" />
+                      <col width="14%" />
+                      <col width="14%" />
+                      <col width="14%" />
+                      <col width="14%" />
+                      <col width="14%" />
+                      <col width="14%" />
+                    </colgroup>
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th>
+                          <lightning:input type="checkbox" aura:id="CreatedCheckbox" name="0"
+                            onchange="{! c.selectAllCheck }" />
+                        </th>
+                        <th>
+                          <div title="추가">
+                            <lightning:buttonIcon iconName="utility:add" size="small" onclick="{!c.addNewStorageRow}" />
+                          </div>
+                        </th>
+                        <th>
+                          <div>저장위치1</div>
+                        </th>
+                        <th>
+                          <div>저장위치2</div>
+                        </th>
+                        <th>
+                          <div>저장위치3</div>
+                        </th>
+                        <th>
+                          <div>저장위치4</div>
+                        </th>
+                        <th>
+                          <div>저장위치5</div>
+                        </th>
+                        <th>
+                          <div>저장위치6</div>
+                        </th>
+                        <th>
+                          <div>설명</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.newStorageList}" var="storage" indexVar="i">
+                        <tr class="slds-hint-parent">
+                          <td data-label="선택">
+                            <div title="선택">
+                              <lightning:input type="checkbox" aura:id="seletedList" accesskey="{!i}" name="{!i}"
+                                onchange="{! c.selected }" />
+                            </div>
+                          </td>
+                          <td data-label="삭제">
+                            <div title="삭제">
+                              <lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" title="Dash"
+                                size="small" accesskey="{!i}" onclick="{!c.deleteNewStorageRow}" />
+                            </div>
+                          </td>
+                          <td data-label="저장위치1">
+                            <div title="저장위치1">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden" value="{!storage.Loc1__c}"
+                                onchange="{!c.handleChangeNewStorageLOC}" />
+                            </div>
+                          </td>
+                          <td data-label="저장위치2">
+                            <div title="저장위치2">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden" value="{!storage.Loc2__c}"
+                                onchange="{!c.handleChangeNewStorageLOC}" />
+                            </div>
+                          </td>
+                          <td data-label="저장위치3">
+                            <div title="저장위치3">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden" value="{!storage.Loc3__c}"
+                                onchange="{!c.handleChangeNewStorageLOC}" />
+                            </div>
+                          </td>
+                          <td data-label="저장위치4">
+                            <div title="저장위치4">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden" value="{!storage.Loc4__c}"
+                                onchange="{!c.handleChangeNewStorageLOC}" />
+                            </div>
+                          </td>
+                          <td data-label="저장위치5">
+                            <div title="저장위치5">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden" value="{!storage.Loc5__c}"
+                                onchange="{!c.handleChangeNewStorageLOC}" />
+                            </div>
+                          </td>
+                          <td data-label="저장위치6">
+                            <div title="저장위치6">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden" value="{!storage.Loc6__c}"
+                                onchange="{!c.handleChangeNewStorageLOC}" />
+                            </div>
+                          </td>
+                          <td data-label="설명">
+                            <div title="설명">
+                              <lightning:input type="text" name="{!i}" variant="label-hidden"
+                                value="{!storage.Description__c}" />
+                            </div>
+                          </td>
+
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card-03 top-card">
+              <div class="button-wrap">
+                <!-- <lightning:button name="deleteStorage" label="삭제" onclick="{!c.deleteStorageRow}" />
+                  -->
+                <p style="font-size: 14px; font-weight: bold;">총 건수 : {!v.totalSize}</p>
+              </div>
+
+              <div class="card-body">
+                <div class="table-wrap card-table">
+                  <table>
+                    <colgroup>
+                      <col width="1%" />
+                      <col width="49%" />
+                      <col width="49%" />
+                    </colgroup>
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th>
+
+                        </th>
+                        <th>
+                          <div>저장위치</div>
+                        </th>
+                        <th>
+                          <div>설명</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.storageList}" var="storage" indexVar="i">
+                        <tr class="slds-hint-parent">
+                          <td>
+                            <lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" title="Dash"
+                              size="small" accesskey="{!i}" onclick="{!c.deleteStorageRow}" />
+                          </td>
+                          <td data-label="저장위치">
+                            <div title="저장위치">
+                              <lightning:input type="text" readonly="true" variant="label-hidden"
+                                value="{!storage.FM_Loc__c}" />
+                            </div>
+                          </td>
+                          <td data-label="설명">
+                            <div title="설명">
+                              <lightning:input type="text" readonly="true" name="input8" variant="label-hidden"
+                                value="{!storage.Description__c}" />
+                            </div>
+                          </td>
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+              onclick="{!c.settingStorageModalCancel}" />
+          </footer>
+        </div>
+
+
+      </aura:if>
+
+      <!-- 📌 Modal 2 : 재고위치 설정/변경 -->
+      <aura:if isTrue="{!v.type == 'Setting'}">
+        <div class="modal-2 slds-modal__container slds-modal_large">
+
+          <aura:if isTrue="{! v.isModalLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+          </aura:if>
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">재고위치 설정/변경</h2>
+
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.settingStorageModalCancel}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="body slds-modal__content">
+            <!-- Card 1 -->
+            <div class="card-01 top-card">
+              <div class="card-body">
+                <div class="field-wrap">
+                  <p>대리점 명</p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.user.Account.Name}" variant="label-hidden" readonly="true" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>부품번호</p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.parts.partNumber}" variant="label-hidden" readonly="true" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>저장위치</p>
+                  <div class="input-wrap">
+                    <lightning:input value="{!v.parts.stockLocation}" variant="label-hidden" readonly="true" />
+                  </div>
+                </div>
+                <div class="button-wrap">
+                  <lightning:button name="setting" label="설정/변경" onclick="{!c.handleSettingButton}" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-02 top-card">
+              <div>
+                <table>
+                  <colgroup>
+                    <col width="5%" />
+                    <col width="15%" />
+                    <col width="15%" />
+                    <col width="15%" />
+                    <col width="15%" />
+                    <col width="15%" />
+                    <col width="15%" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>
+                        <div></div>
+                      </th>
+                      <th>
+                        <div>저장위치1</div>
+                      </th>
+                      <th>
+                        <div>저장위치2</div>
+                      </th>
+                      <th>
+                        <div>저장위치3</div>
+                      </th>
+                      <th>
+                        <div>저장위치4</div>
+                      </th>
+                      <th>
+                        <div>저장위치5</div>
+                      </th>
+                      <th>
+                        <div>저장위치6</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="slds-hint-parent">
+                      <td type="checkbox2" class="center">
+                        <lightning:input type="checkbox" name="0" aura:id="checkbox2"
+                          onchange="{! c.handleCheckboxChange }" />
+                      </td>
+                      <td data-label="저장위치1">
+                        <div title="저장위치1">
+                          <lightning:input type="text" name="input1" variant="label-hidden" value="{!v.settingLOC1}"
+                            onchange="{!c.handleChangeNewStorageLOC}" />
+                        </div>
+                      </td>
+                      <td data-label="저장위치2">
+                        <div title="저장위치2">
+                          <lightning:input type="text" name="input2" variant="label-hidden" value="{!v.settingLOC2}"
+                            onchange="{!c.handleChangeNewStorageLOC}" />
+                        </div>
+                      </td>
+                      <td data-label="저장위치3">
+                        <div title="저장위치3">
+                          <lightning:input type="text" name="input3" variant="label-hidden" value="{!v.settingLOC3}"
+                            onchange="{!c.handleChangeNewStorageLOC}" />
+                        </div>
+                      </td>
+                      <td data-label="저장위치4">
+                        <div title="저장위치4">
+                          <lightning:input type="text" name="input4" variant="label-hidden" value="{!v.settingLOC4}"
+                            onchange="{!c.handleChangeNewStorageLOC}" />
+                        </div>
+                      </td>
+                      <td data-label="저장위치5">
+                        <div title="저장위치5">
+                          <lightning:input type="text" name="input5" variant="label-hidden" value="{!v.settingLOC5}"
+                            onchange="{!c.handleChangeNewStorageLOC}" />
+                        </div>
+                      </td>
+                      <td data-label="저장위치6">
+                        <div title="저장위치6">
+                          <lightning:input type="text" name="input6" variant="label-hidden" value="{!v.settingLOC6}"
+                            onchange="{!c.handleChangeNewStorageLOC}" />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-02 top-card slds-scrollable">
+              <div class="slds-scrollable table-wrap card-table">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th scope="col" style="width: 4%;">
+                        <div>선택</div>
+                      </th>
+                      <th>
+                        <div>저장위치</div>
+                      </th>
+                      <th>
+                        <div>설명</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:iteration items="{!v.storageList}" var="storage" indexVar="i">
+                      <tr class="slds-hint-parent">
+                        <td type="checkbox2" class="center">
+                          <lightning:input type="checkbox" name="{!i + 1}" aura:id="checkbox2"
+                            onchange="{! c.handleCheckboxChange }" />
+                        </td>
+                        <td data-label="저장위치">
+                          <div title="저장위치">
+                            <lightning:input type="text" readonly="true" name="input2" variant="label-hidden"
+                              value="{!storage.FM_Loc__c}" />
+                          </div>
+                        </td>
+                        <td data-label="설명">
+                          <div title="설명">
+                            <lightning:input type="text" readonly="true" name="input8" variant="label-hidden"
+                              value="{!storage.Description__c}" />
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- 페이지 -->
+            <div class="pagination-wrap">
+
+              <div class="total">
+                <p>총 건수 : <span style="font-weight: bold;">{!v.totalSize}</span>
+                  ({!v.currentPage}/{!v.totalPage})</p>
+              </div>
+
+              <ul class="pagination">
+                <!-- <li class="first">
+                  <a onclick="{!c.handleChangePage}" name="first" value="1">
+                    <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small'
+                      title='jump_to_left'></lightning:icon>
+                  </a>
+                </li> -->
+                <li class="prev">
+                  <a onclick="{!c.handleChangePage}" name="previous" value="{!v.currentPage - 1}">
+                    <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='xx-small'
+                      title='chevronleft'></lightning:icon>
+                  </a>
+                </li>
+                <li class="pages">
+                  <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                    <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                      <span class="here"> {!pageNumber + 1} </span>
+                      <aura:set attribute="else">
+                        <span>
+                          <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber +
+                            1}</a>
+                        </span>
+                      </aura:set>
+                    </aura:if>
+                  </aura:iteration>
+                </li>
+                <li class="next">
+                  <a onclick="{!c.handleChangePage}" name="next" value="{!v.currentPage + 1}">
+                    <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='xx-small'
+                      title='chevronright'></lightning:icon>
+                  </a>
+                </li>
+                <!-- <li class="last">
+                  <a onclick="{!c.handleChangePage}" name="last" value="{!v.pageList.length}">
+                    <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small'
+                      title='jump_to_right'></lightning:icon>
+                  </a>
+                </li> -->
+              </ul>
+
+            </div>
+          </div>
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+              onclick="{!c.settingStorageModalCancel}" />
+          </footer>
+        </div>
+      </aura:if>
+
+    </div>
+
+    <div aura:id="settingStorageModalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+
+  </div>
+
+</aura:component>

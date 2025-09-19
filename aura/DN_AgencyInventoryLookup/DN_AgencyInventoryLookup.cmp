@@ -1,0 +1,134 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 02-03-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-13-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable"
+  extends="c:DN_Helper"
+  controller="DN_AgencyInventoryLookupController"
+  description="대리점 재고 조회">
+  <!--저장위치 상세-->
+  <aura:attribute name="storageBin" type="Boolean" default="false" />
+  <aura:attribute name="selectedRow" type="Object" />
+  <aura:attribute name="isNull" type="Boolean" default="false" />
+  <!-- attribute -->
+  <aura:attribute name="InventoryList" type="List" description="대리점재고리스트"/>
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="totalPage" type="Integer" />
+  <aura:attribute name="totalRecordSize" type="Integer" />
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <table>
+    <colgroup>
+      <col width="18%"/>
+      <col width="18%"/>
+      <col width="18%"/>
+      <col width="18%"/>
+      <col width="5%"/>
+      <col width="5%"/>
+      <col width="18%"/>
+    </colgroup>
+    <thead>
+      <tr>
+        <th>대리점 명</th>
+        <th>부품번호</th>
+        <th>품명</th>
+        <th>규격</th>
+        <th>재고량</th>
+        <th>판매단가</th>
+        <th>저장위치</th>
+      </tr>
+    </thead>
+    <tbody>
+      <aura:iteration items="{!v.recordList}" var="item" indexVar="j">
+        <tr>
+          <td>{!item.dealerName}</td>
+          <td>{!item.partNumber}</td>
+          <td>{!item.partName}</td>
+          <td>{!item.partSpec}</td>
+          <td>{!item.currentStockQuantity}</td>
+          <td><lightning:formattedNumber value="{!item.listPrice }" /></td>
+          <td><a name="{!j}" data-name="{!item.dealerCode}" data-id="{!item.location}" onclick="{!c.storageBinDetail}">{!item.location}</a></td>
+        </tr>
+      </aura:iteration>
+    </tbody>
+  </table>
+  <!-- 📌 Modal : 저장위치 상세 -->
+  <aura:if isTrue="{!v.storageBin}">
+    <div class="storageBinModal">
+      <div aura:id="storageBinModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">저장위치</h2>
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.storageBinModalCancel}" />
+            </button>
+          </header>
+          <!-- Modal Content -->
+          <div class="modal-body slds-modal__content">
+            <div class="card-01 top-card">
+              <div class="field-wrap">
+                <p>저장위치</p>
+                <div class="input-wrap">
+                  <lightning:input class="readonly-input" value="{!v.selectedRow.location}" readonly="true"
+                      variant="label-hidden" disabled="true"/>
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>설명</p>
+                <div class="input-wrap">
+                  <lightning:input class="readonly-input" value="{!v.selectedRow.description}" readonly="true" variant="label-hidden" disabled="true"/>
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>부품번호</p>
+                <aura:iteration items="{!v.selectedRow.partNumber}" var="part" indexVar="j">
+                  <div class="input-wrap">
+                    <lightning:input class="readonly-input" value="{!part}" readonly="true"
+                      variant="label-hidden" disabled="true"/>
+                  </div>
+                </aura:iteration>
+              </div>
+            </div>
+          </div>
+          <!-- Modal Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+              onclick="{!c.storageBinModalCancel}" />
+          </footer>
+        </div>
+      </div>
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+
+
+</aura:component>

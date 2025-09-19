@@ -1,0 +1,195 @@
+<template>
+    <div class="slds-card total-wrap">
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='standard:shift_type' alternative-text='shift_type' size='small'
+                        title='shift_type'></lightning-icon>
+                </div>
+                <h2 class="slds-card__header-title">관리자통계</h2>
+            </header>
+            <div class="button-wrap">
+                <lightning-button label="조회" onclick={search} title="조회" variant="brand"></lightning-button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body body">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+            </template> 
+            
+            <!-- 콜센터 상세정보 -->
+            <div class="card-01">
+                <div class="field-wrap">
+                    <p>콜센터 상세정보</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table
+                    class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                    <colgroup>
+                        <col width="30%" />
+                        <col width="30%" />
+                        <col width="30%" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">구분</th>
+                            <th scope="col">건수</th>
+                            <th scope="col">비율(%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="slds-hint-parent">
+                            <td>고장접수</td>
+                            <td>{res.failureReceipt_count}</td>
+                            <td>{res.failureReceipt_rate}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>고객불만</td>
+                            <td>{res.customerComplain_count}</td>
+                            <td>{res.customerComplain_rate}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>콜서비스</td>
+                            <td>{res.callService_count}</td>
+                            <td>{res.callService_rate}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>VOC</td>
+                            <td>{res.voc_count}</td>
+                            <td>{res.voc_rate}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 서비스업무 계획대비 실행률  -->
+            <div class="card-01">
+                <div class="field-wrap">
+                    <p>서비스업무 계획대비 실행률</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table
+                    class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                    <colgroup>
+                        <col width="15%" />
+                        <col width="15%" />
+                        <col width="15%" />
+                        <col width="15%" />
+                        <col width="15%" />
+                        <col width="15%" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">구분</th>
+                            <th scope="col">발생</th>
+                            <th scope="col">처리</th>
+                            <th scope="col">미결</th>
+                            <th scope="col">실행율(%)</th>
+                            <th scope="col">전월미결</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="slds-hint-parent">
+                            <td>하자</td>
+                            <td>{res.workOrder_count}</td>
+                            <td>{res.woCompleted_count}</td>
+                            <td>{res.woNotCompleted_count}</td>
+                            <td>{res.woNotCompleted_rate}</td>
+                            <td>{res.woNotCompleted_preM}</td>
+                        </tr>
+                        <template for:each={res.orderTypeWrap} for:item="ot">
+                            <tr class="slds-hint-parent" key={ot.id}>
+                                <td>{ot.orderType}</td>
+                                <td>{ot.otTotal_count}</td>
+                                <td>{ot.otCompleted_count}</td>
+                                <td>{ot.otNotCompleted_count}</td>
+                                <td>{ot.otTotalCompleted_rate}</td>
+                                <td>{ot.otNotCompleted_preM}</td>
+                            </tr>
+                        </template>
+                        <tr class="slds-hint-parent">
+                            <td>합계</td>
+                            <td>{res.total_count}</td>
+                            <td>{res.totalCompleted_count}</td>
+                            <td>{res.totalNotCompleted_count}</td>
+                            <td>{res.totalNotCompleted_rate}</td>
+                            <td>{res.totalNotCompleted_preM}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <!-- KPI현황 -->
+            <div class="card-01">
+                <div class="field-wrap">
+                    <p>KPI현황</p>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table
+                    class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                    <colgroup>
+                        <col width="20%" />
+                        <col width="20%" />
+                        <col width="20%" />
+                        <col width="20%" />
+                        <col width="20%" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">구분</th>
+                            <th scope="col">발생</th>
+                            <th scope="col">처리</th>
+                            <th scope="col">지연</th>
+                            <th scope="col">처리율(%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="slds-hint-parent">
+                            <td>2시간이내출동율</td>
+                            <td>{res.towHrTotal_count}</td>
+                            <td>{res.towHrCompleted_count}</td>
+                            <td>{res.towHrNotCompleted_count}</td>
+                            <td>{res.towHrCompleted_rate}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>1일이내수리완료율</td>
+                            <td>{res.hr24Total_count}</td>
+                            <td>{res.hr24Completed_count}</td>
+                            <td>{res.hr24NotCompleted_count}</td>
+                            <td>{res.hr24Total_rate}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>콜서비스처리율</td>
+                            <td>{res.callTotal_count}</td>
+                            <td>{res.callCompleted_count}</td>
+                            <td>{res.callNotCompleted_count}</td>
+                            <td>{res.callTotalCompleted_count}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>야간출동율</td>
+                            <td>{res.nightTotal_count}</td>
+                            <td>{res.nightCompleted_count}</td>
+                            <td>{res.nightNotCompleted_count}</td>
+                            <td>{res.nightTotal_rate}</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>휴일출동율</td>
+                            <td>{res.holidayTotal_count}</td>
+                            <td>{res.holidayCompleted_count}</td>
+                            <td>{res.holidayNotCompleted_count}</td>
+                            <td>{res.holidayTotalCompleted_rate}</td>
+                        </tr>                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>

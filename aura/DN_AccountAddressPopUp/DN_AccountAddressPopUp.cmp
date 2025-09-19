@@ -1,0 +1,229 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-24-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-20-2024   Hanyeong Choi   Initial Version
+  1.0   06-20-2024   Hyerin Ro       Publish
+  1.0   12-05-2024   iltae.seo       딜러포탈/대리점 재고관리에서도 사용할 수 있도록 분기처리 수정
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force:hasSObjectName,lightning:actionOverride"
+                controller="DN_AccountController" access="global"
+                description="행정안전부 주소 API">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="recordId"             type="String" />
+    <aura:attribute name="sObjectName"          type="String" />
+    <aura:attribute name="searchText"           type="String" />
+    <aura:attribute name="detailedAddress"      type="String"   default="" />
+    <aura:attribute name="saveSearchText"       type="String" />
+    <aura:attribute name="vfHost"               type="String" />
+    <aura:attribute name="searchResults"        type="List"     default="[]" />
+    <aura:attribute name="selectedResult"       type="Object" />
+    <aura:attribute name="isSelected"           type="Boolean"  default="false" />
+    <aura:attribute name="isCommunity"          type="Boolean"  default="false" />
+    <!-- Paging Attribute -->
+    <aura:attribute name="pagingNumber"         type="Integer"  default="1" />
+    <aura:attribute name="dividePageCount"      type="Integer"  default="15" />
+    <aura:attribute name="allResultCount"       type="Integer"  default="0" />
+    <aura:attribute name="totalPage"            type="Decimal"  default="1" />
+    <aura:attribute name="pageAllCountList"     type="List"     default="[]" />
+    <aura:attribute name="pageCountList"        type="List"     default="[0]" />
+    <aura:attribute name="pageCountListIndex"   type="Decimal"  default="0" />
+    <!-- DealerPortal용 분기-->
+    <aura:attribute name="uuid" type="String"  />
+    <aura:attribute name="addressType" type="String"  />
+    
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_AccountAddressPopUp) {
+            overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_AccountAddressPopUp) {
+            width: 40rem;
+            max-width: calc(100vw - 8rem);
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDN_AccountAddressPopUp) {
+            padding: 0;
+            overflow-y: clip;
+            height: unset !important;
+            max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_AccountAddressPopUp) {
+            padding:0;
+        }
+        .isCommunity:has(.cDN_AccountAddressPopUp) {
+            max-width: 40rem;
+            padding: 0 !important;
+        }
+        .siteforcePanelsContainer .cDN_AccountAddressPopUp.isCommunity {
+            position: relative;
+            padding: 0;
+            width: 100%;
+            transform: none;
+        }
+        /* standard quick action design  */
+        .cDN_DealerPortalShipToList.quick-action-btn .top-card .cDN_AccountAddressPopUp {
+            position: relative;
+            transform: translateY(-50%);
+        }
+        .cDN_DealerPortalShipToList.quick-action-btn .top-card .slds-backdrop {
+            display: none;
+        } 
+    </aura:html>
+
+    <div class="{! (v.isCommunity ? 'isCommunity' : 'slds-modal__container') }" >
+
+        <!-- 🚩 Modal Header -->
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">주소 검색 결과</h2>
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal"  onclick="{! c.handleClose }">
+                </lightning:icon>
+            </button>
+        </header>
+
+        <!-- 🚩 Modal Body -->
+        <div class="slds-modal__content">
+            <!-- 🚩Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <aura:if isTrue="{! !v.isSelected }">
+                <div class="modal-body">
+                    <div class="input-container" onkeyup="{! c.handleEnterSearch }">
+                        <lightning:input type="text" class="addrInputBtn" aura:id="addressInput" label="주소 검색" value="{! v.searchText }" />
+                        <lightning:button label="검색" onclick="{! c.searchAddress }" />
+                    </div>
+
+                    <div class="address-container">
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_bordered slds-table_col-bordered" aria-label="Example table of Opportunities with vertical borders">
+                                <colgroup>
+                                    <col width="5%" />
+                                    <col width="10%" />
+                                    <col width="80%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>우편번호</th>
+                                        <th>도로명 주소</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{! v.searchResults }" var="result" indexVar="index">
+                                        <tr data-index="{! index }" onclick="{! c.handleClickAddress }">
+                                            <td class="center">{! index + 1 }</td>
+                                            <td class="center">{! result.zipNo }</td>
+                                            <td>
+                                                <div style="font-weight: 600;">{! result.roadAddr }</div>
+                                                <div>{! result.jibunAddr }</div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- 🚩Aura Page -->
+                <div class="pagination-wrap">
+                    <div class="total">
+                        <p>
+                            총 건수 : <span style="font-weight: bold;">{!v.allResultCount}</span>
+                            ({!v.pagingNumber}/{!v.totalPage})
+                        </p>
+                    </div>
+                    <ul class="pagination">
+                        <li class="first">
+                            <a onclick="{!c.handleChangePage}" name="first" value="1">
+                                <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small' title='jump_to_left'></lightning:icon>
+                            </a>
+                        </li>
+                        <li class="prev">
+                            <a onclick="{!c.handleChangePage}" name="previous" value="{!v.pagingNumber - 10}">
+                                <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small' title='chevronleft'></lightning:icon>
+                            </a>
+                        </li>
+                        <li class="pages">
+                            <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                                <aura:if isTrue="{!v.pagingNumber == pageNumber + 1}">
+                                    <span class="here"> {!pageNumber + 1} </span>
+
+                                    <aura:set attribute="else">
+                                        <span>
+                                            <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber + 1}</a>
+                                        </span>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:iteration>
+                        </li>
+                        <li class="next">
+                            <a onclick="{!c.handleChangePage}" name="next" value="{!v.pagingNumber + 10}">
+                                <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small' title='chevronright'></lightning:icon>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{! v.isSelected }">
+                <div class="input-container" onkeyup="{! c.handleTrueEnterSearch }">
+                    <lightning:input type="text" class="addrInputBtn" aura:id="addressTrueInput" label="주소 검색" value="{! v.searchText }" />
+                    <lightning:button label="검색" onclick="{! c.handleTrueSearchAddress }" />
+                </div>
+
+                <div class="select-wrap">
+                    <table>
+                        <colgroup>
+                            <col width="20%" />
+                            <col width="80%" />
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>도로명주소</th>
+                                <td>{! v.selectedResult.roadAddr }</td>
+                            </tr>
+                            <tr>
+                                <th>상세주소</th>
+                                <td>
+                                    <lightning:input type="text" class="detail_input" aura:id="detailedAddress" variant="label-hidden" value="{! v.detailedAddress }" placeholder="상세주소를 입력해 주세요." />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <iframe src="{!v.vfHost}" width="100%" height="100%" frameborder="0"></iframe>
+                </div>
+            </aura:if>
+        </div>
+
+        <!-- 🚩Modal Footer -->
+        <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" onclick="{! c.handleClose }">{!$Label.c.DNS_B_Close}</button>
+            <aura:if isTrue="{! v.isSelected }">
+                <lightning:button class="slds-button slds-button_neutral" variant="brand" label="저장" onclick="{! c.handleSaveBtn }" />
+            </aura:if>
+        </footer>
+    </div>
+</aura:component>

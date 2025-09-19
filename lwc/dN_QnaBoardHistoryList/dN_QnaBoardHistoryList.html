@@ -1,0 +1,96 @@
+<!--
+  @description       : 
+  @author            : daewook.kim@sbtglobal.com
+  @last modified on  : 04-09-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   04-07-2025   daewook.kim@sbtglobal.com   Initial Version
+-->
+<template>
+    <div>
+        <!-- <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template> -->
+
+        <lightning-card  variant="Narrow" title="list" class={cardStyle}>
+        <!-- <lightning-card title="list"> -->
+            <!-- <template if:true={showPortalBtn}>
+                <lightning-button slot="actions" label={cLabel.DNS_B_New} onclick={handleSelect}></lightning-button>
+            </template>
+            <template if:true={showCRMBtn}>
+                <lightning-button-menu slot="actions" icon-size="small" menu-alignment="auto" onselect={handleSelect}>
+                    <lightning-menu-item value="new" label={cLabel.DNS_B_New}></lightning-menu-item>
+                </lightning-button-menu>
+            </template>
+            <template if:true={showMobileBtn}>
+                <lightning-button-icon slot="actions" icon-name="utility:chevronright" variant="bare" size="medium" onclick={handleViewAll}></lightning-button-icon>
+            </template> -->
+
+            <!-- <template if:true={isDataShow}> -->
+                <div class="slds-card__body">
+                    <ul class="uiAbstractList">
+                        <template if:true={isPortal}>
+                            <lightning-datatable
+                                key-field="recordId"
+                                columns={columns}
+                                data={answers}
+                                onrowaction={handleRowAction}
+                                show-row-number-column
+                                hide-checkbox-column>
+                            </lightning-datatable>
+                        </template>
+                        <!-- <template if:false={isPortal}> -->
+                            <template for:each={answers} for:item="row">
+                                <li key={row.Id} class="slds-var-p-horizontal_medium slds-var-p-vertical_xx-small custom_tile">
+                                    <div class="slds-media__body">
+                                        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                            <lightning-formatted-url label={row.Name} value={row.linkName} target="_self"></lightning-formatted-url>
+                                        </div>
+                                        <div class="slds-tile__detail">
+                                            <ul class="itemRows truncate">
+                                                <li class="tableRowGroup">
+                                                    <div class="slds-list--horizontal forceListRecordItem">
+                                                        <div class="slds-item--label slds-truncate recordCell">Title: </div>
+                                                        <div class="slds-item--detail slds-truncate recordCell">{row.Title}</div>
+                                                    </div>
+                                                </li>
+                                                <li class="tableRowGroup">
+                                                    <div class="slds-list--horizontal forceListRecordItem">
+                                                        <div class="slds-item--label slds-truncate recordCell">Record Type: </div>
+                                                        <div class="slds-item--detail slds-truncate recordCell">{row.Type}</div>
+                                                    </div>
+                                                </li>
+                                                <li class="tableRowGroup">
+                                                    <div class="slds-list--horizontal forceListRecordItem">
+                                                        <div class="slds-item--label slds-truncate recordCell">Status: </div>
+                                                        <div class="slds-item--detail slds-truncate recordCell">{row.Status}</div>
+                                                    </div>
+                                                </li>
+                                                <li class="tableRowGroup">
+                                                    <div class="slds-list--horizontal forceListRecordItem">
+                                                        <div class="slds-item--label slds-truncate recordCell">Created Date: </div>
+                                                        <div class="slds-item--detail slds-truncate recordCell">{row.createdDate}</div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <!-- <div>
+                                        <lightning-button-menu icon-size="x-small" menu-alignment="auto" onselect={handleEdit}>
+                                            <lightning-menu-item value={row.recordId} label={cLabel.DNS_B_Edit}></lightning-menu-item>
+                                        </lightning-button-menu>
+                                    </div> -->
+                                </li>
+                            </template>
+                        <!-- </template> -->
+                    </ul>
+                </div>
+                <div slot="footer">
+                    <lightning-button variant="base" label="View All" onclick={handleViewAll}></lightning-button>
+                </div>
+            <!-- </template> -->
+
+        </lightning-card>
+    </div>
+</template>

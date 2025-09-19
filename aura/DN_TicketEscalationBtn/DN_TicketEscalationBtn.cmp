@@ -1,0 +1,88 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-04-07
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-02-19   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="티켓 에스컬레이션" controller="DN_TicketDetailController">
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="escalLevel" type="String" default=""/>
+    <aura:attribute name="recordId" type="String" />
+
+    <!-- handler -->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+
+    <!-- toast -->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_TicketEscalationBtn) {
+            overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_TicketEscalationBtn) {
+            width: 38rem;
+            max-width: calc(100vw - 8rem);
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDN_TicketEscalationBtn) {
+            padding: 0;
+            overflow-y: clip;
+            height: unset !important;
+            max-height: unset !important;
+            border-radius: 0.25rem !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_TicketEscalationBtn) {
+            padding:0;
+        }
+        .modal-body:has(.cDN_TicketEscalationBtn),
+        .slds-modal__container:has(.cDN_TicketEscalationBtn),
+        .slds-modal__content:has(.cDN_TicketEscalationBtn),
+        .quick-actions-panel:has(.cDN_TicketEscalationBtn){    
+            overflow: visible !important;            
+		}
+    </aura:html>   
+
+    <div class="slds-modal__container">
+
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_ESV_Title}</h2>
+        </header>
+
+        <div class="modal-body slds-modal__content slds-modal_large">
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+            </aura:if>
+            <div>
+                <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Case">
+                    <div>
+                        <div>
+                            <lightning:inputField id="escLev" fieldName="EscLev__c" />
+                        </div>
+                        <div>
+                            <lightning:inputField id="escUser" fieldName="EscalationUser__c" />
+                        </div>
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+           
+        </div>
+
+        <footer class="slds-modal__footer">
+            <div>
+                <lightning:button label="{!$Label.c.DNS_FDM_Cancel}" onclick="{!c.closeModal}"/>
+                <lightning:button variant="brand" label="{!$Label.c.DNS_FDM_Save}" onclick="{!c.handleSave}" />
+            </div>
+        </footer>
+    </div>
+
+</aura:component>

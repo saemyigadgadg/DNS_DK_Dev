@@ -1,0 +1,175 @@
+<!--
+  @description       : 
+  @group             : 
+  @last modified on  : 02-28-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+<apex:page showHeader="false" 
+      standardStylesheets="false" 
+      sidebar="false" 
+      renderAs="pdf" 
+      applyHtmlTag="false"
+      contentType="text/html;charset=UTF-8"
+      controller="DN_POListReviewController">
+
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet"/>
+      <style type = "text / css">
+        /* reset */
+        @page {
+        padding: 0;
+        margin: 60px 20px 36px;       
+        box-sizing: border-box;
+        }
+        .page-break {
+            page-break-after:always;
+        }
+        body {
+            font-family: Arial Unicode MS;
+            font-weight: 600;
+        }
+        h1,h2,h3,h4,h5,h6,a,p,span, div{
+            font-family: Arial Unicode MS;
+            font-size: 12px;
+        }
+        p, div, span, table, h1, h2, h3, h4{
+          margin: 0;
+          padding: 0;
+        }
+        table{ width: 100%; margin: 0; padding: 0; border: 1px solid red !important;}      
+        table, th, td{
+          border: 1px solid #000; 
+          border-right: 1px solid #000;
+          border-collapse : collapse;
+        }
+        
+        table thead {
+          border: 1px solid #000;
+        }     
+        html, body{padding-top: 0; margin: 0; font-size: 13px;}
+        ul{list-style: none; padding: none; margin: 0;}
+
+        /* Begin Custom Grid System */
+        .clearfix {
+          clear: both;
+        }
+        .row {
+          display: block;
+        }
+        .size-1-of-2 {
+            width: 48%;
+        }
+      /* style css */
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      .header h2 {
+        font-size: 18px;
+      }
+      .table-wrap table th {
+        text-align: center;
+      }
+      </style>  
+    </head>
+    <body>
+      <div class="header">
+        <h1>Due Out</h1>
+        <h2>(300628-00091)</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <colgroup>
+              <col width="10%" />
+              <col width="6%" />
+              <col width="6%" />
+              <col width="10%" />
+              <col width="22%" />
+              <col width="14%" />
+              <col width="10%" />
+              <col width="6%" />
+              <col width="6%" />
+              <col width="10%" />
+          </colgroup>
+          <thead>
+              <tr class="slds-line-height_reset">
+                  <th scope="col">
+                    Doc No.
+                  </th>
+                  <th scope="col">
+                    Item
+                  </th>
+                  <th scope="col">
+                    ICA
+                  </th>
+                  <th scope="col">
+                    Material
+                  </th>
+                  <th scope="col">
+                    Material Description
+                  </th>
+                  <th scope="col">
+                    Customer Name
+                  </th>
+                  <th scope="col">
+                    Order Qty
+                  </th>
+                  <th scope="col">
+                    출고
+                  </th>
+                  <th scope="col">
+                    미출고
+                  </th>
+                  <th scope="col">
+                      Doc. Date
+                  </th>
+              </tr>
+          </thead>
+          <tbody>
+              <!-- <apex:repeat value="{!dueOutList}" var="dueOut">
+                  <tr>
+                      <td>
+                          {!dueOut.DocNo}
+                      </td>
+                      <td>
+                          {!dueOut.Item}
+                      </td>
+                      <td>
+                         {!dueOut.ICA}
+                      </td>
+                      <td>
+                          {!dueOut.Material}
+                      </td>
+                      <td>
+                          {!dueOut.MaterialDesc}
+                      </td>
+                      <td>
+                         {!dueOut.CustomerName}
+                      </td>
+                      <td>
+                          {!dueOut.OrderQty}
+                      </td>
+                      <td>
+                          {!dueOut.Release} 
+                      </td>
+                      <td>
+                          {!dueOut.UnRelease}
+                      </td>
+                      <td>
+                          {!dueOut.DocDate}
+                      </td>
+                  </tr>
+              </apex:repeat> -->
+          </tbody>
+      </table>
+      </div>
+
+
+    </body>
+    </html>
+</apex:page>

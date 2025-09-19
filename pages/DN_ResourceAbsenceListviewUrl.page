@@ -1,0 +1,30 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2024-11-08
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-11-07   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<!-- <apex:page controller="DN_ResourceAbsenceListview" action="{!returnUrlPage}" rendered="true"> -->
+<apex:page controller="DN_ResourceAbsenceListview">
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            // Controller의 메서드 호출
+            function callApexMethod() {
+                // 파라미터 없이 메서드를 호출
+                Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.DN_ResourceAbsenceListview.returnUrlPage}',
+                    function(result, event) {  // 콜백 함수
+                        window.open(result, '_self');
+                    }
+                );
+            }
+
+            // 호출 함수 실행
+            callApexMethod();
+        });
+
+    </script>
+</apex:page>

@@ -1,0 +1,28 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 03-28-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   03-28-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="force:hasRecordId,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader"
+    controller="DN_PreparationTicketController">
+
+    <aura:html tag="style">
+        .slds-modal__content:has(c-d-n_-preparation-ticket-generator) {
+            height: auto !important;
+            max-height: unset !important;
+            padding: 0
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(c-d-n_-preparation-ticket-generator) {
+            padding: 0;
+        }
+    </aura:html>
+
+    <c:dN_PreparationTicketGenerator recordId="{!v.recordId}" onclose="{!c.closeModal}"></c:dN_PreparationTicketGenerator>
+
+</aura:component>

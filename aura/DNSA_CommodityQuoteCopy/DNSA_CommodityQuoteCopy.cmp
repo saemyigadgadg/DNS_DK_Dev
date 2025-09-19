@@ -1,0 +1,73 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-31-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   03-31-2025   Hanyeong Choi   Initial Version
+-->
+<aura:component controller="DNSA_QuoteCopyController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="isLoading"    type="Boolean"  default="false" />
+    <aura:attribute name="recordId"     type="String" />
+    <aura:attribute name="copyReason"   type="String"   default="" />
+    <aura:attribute name="title"        type="String"   default="" />
+    <aura:attribute name="subtitle"     type="String"   default="" />
+    <aura:attribute name="confirm"      type="String"   default="" />
+    <aura:attribute name="cancel"       type="String"   default="" />
+    <aura:attribute name="reason"       type="String"   default="" />
+    <aura:attribute name="reasonPlace"  type="String"   default="" />
+    <aura:attribute name="isStatus"     type="Boolean"  default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:navigation aura:id="navService" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDNSA_CommodityQuoteCopy) {
+        width: calc(100vw - 12rem);
+        max-width: 36rem;
+        margin: 0 auto;
+        }
+        .slds-modal__content:has(.cDNSA_CommodityQuoteCopy) {
+        height:auto !important;
+        max-height:none !important;
+        padding: 0;
+        overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_CommodityQuoteCopy) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDNSA_CommodityQuoteCopy){
+        overflow: hidden;
+        }
+    </aura:html>
+
+    <aura:if isTrue="{!v.isStatus}">
+        <div class="slds-fade-in-open">
+            <div class="slds-modal__container">
+                <aura:if isTrue="{!v.isLoading}">
+                    <lightning:spinner alternativeText="Loading" variant="brand" />
+                </aura:if>
+                
+                <!-- 모달 헤더 -->
+                <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        Quote Clone
+                    </h2>
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="닫기"
+                        onclick="{! c.handleClickClose }">
+                        <lightning:icon iconName="utility:close" size="small" alternativeText="닫기" />
+                    </button>
+                </div>
+
+                <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                    <lightning:button title="{!v.cancel}" onclick="{! c.handleClickClose }" label="{!v.cancel}" variant="neutral" />
+                    <lightning:button title="{!v.confirm}" label="{!v.confirm}" variant="brand" onclick="{! c.savequoteCopy}" />
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

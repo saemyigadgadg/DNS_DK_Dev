@@ -1,0 +1,35 @@
+.THIS .slds-modal__container {
+  position: relative;
+  top: 50%;
+  bottom: 50%;
+  transform: translateY(-50%);
+  width: 70vw;
+  max-width: 1440px;
+  min-width: 1240px;
+  height: fit-content;
+  padding: 0;
+}
+
+/* header */
+.THIS .slds-modal__close {
+  border: none;
+  border-radius: 0.25rem;
+}
+
+/* body */
+.THIS .body .card-01 {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.THIS .body .top-card .field-wrap.description {
+  flex: 3;
+}
+.THIS .scroller-card{
+  overflow: scroll;
+  max-height: 500px;
+}
+.THIS .center {
+  width: 10px !important;
+}

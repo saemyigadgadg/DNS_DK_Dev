@@ -1,0 +1,122 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-26-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   10-28-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes"
+    access="global" controller="DN_AccountController">
+
+    <aura:attribute name="recordId"             type="String" />
+    <aura:attribute name="accInfo"              type="Object" />
+    <aura:attribute name="selectedComponent"    type="String" />
+    <aura:attribute name="url"                  type="String" />
+    <aura:attribute name="language"             type="String" />
+    <aura:attribute name="profileName"          type="String" />
+    <aura:attribute name="isKorea"              type="Boolean" default="false" />
+
+    <lightning:navigation aura:id="navService" />
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+
+    <!-- Page Header -->
+    <div class="total-wrap">
+        <!-- 📌 Header -->
+        <div class="header">
+
+            <!-- Title -->
+            <div class="title-wrap">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:account' alternativeText='account' size='medium' title='account'>
+                    </lightning:icon>
+                </div>
+                <div class="slds-media__body">
+                    <p class="title-label">{! v.language != 'ko' ? 'Account' : '고객사' }</p>
+                    <h1 class="slds-page-header__title">{! v.accInfo.accName }</h1>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-wrap">
+                <aura:if isTrue="{! AND(v.profileName != 'AE', v.profileName != 'R&amp;D') }">
+                    <lightning:buttonGroup>
+                        <!-- 헤더에 Edit 버튼 추가 -->
+                        <lightning:button label="Edit" onclick="{!c.handleEdit}" />
+                        <aura:if isTrue="{! v.isKorea }">
+                            <lightning:button label="국내 주소 검색" onclick="{!c.showAddressSearchComponent}" />
+    
+                            <aura:if isTrue="{! v.accInfo.recordType != 'Trade Customer' }">
+                                <lightning:button label="사업자번호 상태확인" onclick="{!c.showBusinessStatusCheckComponent}" />
+                            </aura:if>
+                        </aura:if>
+                        <aura:if isTrue="{! v.accInfo.recordType == 'Prospect Customer' }">
+                            <lightning:button label="{! v.language != 'ko' ? 'Convert To Trade Customer' : '실고객전환'}" onclick="{!c.showConvertToCustomerComponent}" />
+                        </aura:if>
+                        <!-- <aura:if isTrue="{! v.accInfo.recordType == 'Trade Customer' }">
+                            <lightning:button label="{! v.language != 'ko' ? 'Sales Area Data' : '판매 구역 확장'}" onclick="{!c.showSalesAreaDataComponent}" />
+                        </aura:if> -->
+                    </lightning:buttonGroup>
+                </aura:if>
+            </div>
+
+        </div>
+
+        <!-- 📌 Detail Body -->
+        <div class="slds-grid slds-page-header__detail-row">
+            <!-- Field 01 -->
+            <div class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-truncate slds-m-bottom_xx-small" title="Account Record Type">{! v.language != 'ko' ? 'Account Record Type' : '고객사 레코드 타입'}</p>
+                <p class="detail-content">{! v.accInfo.recordTypeName }</p>
+            </div>
+            <!-- Field 02 -->
+            <div class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-truncate slds-m-bottom_xx-small" title="Representative">{! v.language != 'ko' ? 'Representative' : '대표자명'}</p>
+                <p class="detail-content">{! v.accInfo.representative }</p>
+            </div>
+            <!-- Field 03 -->
+            <!-- <div class="slds-page-header__detail-block">
+                <p class="slds-text-title slds-truncate slds-m-bottom_xx-small" title="Account Owner">{! v.language != 'ko' ? 'Account Owner' : '고객사 소유자' }</p>
+                <p class="detail-content account-owner">
+                    <div class="icon-wrap">
+                        <lightning:icon iconName='utility:user' alternativeText='user' variant='inverse' size='xx-small' title='user'></lightning:icon>
+                    </div>
+                    <lightning:formattedUrl value="{! v.url + '/partners/s/profile/' + v.accInfo.userId}" tooltip="{! v.accInfo.accOwner}" label="{! v.accInfo.accOwner }" target="_blank" />
+                </p>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <aura:if isTrue="{!v.selectedComponent == 'ConvertToCustomer'}">
+        <div class="slds-modal slds-fade-in-open">
+            <c:DN_AccountConvertToTradeCustomer recordId="{!v.recordId}" />
+        </div>
+        <div class="slds-backdrop slds-backdrop_open" aura:id="modalBackground"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{! v.selectedComponent == 'AddressSearch' }">
+        <div class="slds-modal slds-fade-in-open">
+            <c:DN_AccountAddressPopUp recordId="{!v.recordId}" />
+        </div>
+        <div class="slds-backdrop slds-backdrop_open" aura:id="modalBackground"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{! v.selectedComponent == 'BusinessStatusCheck' }">
+        <div class="slds-modal slds-fade-in-open">
+            <c:DN_CheckAccountBusinessNumber recordId="{!v.recordId}" />
+        </div>
+        <div class="slds-backdrop slds-backdrop_open" aura:id="modalBackground"></div>
+    </aura:if>
+
+    <aura:if isTrue="{! v.selectedComponent == 'SalesAreaData' }">
+        <div class="slds-modal slds-fade-in-open">
+            <c:DN_CreateSalesAreaDataModal recordId="{!v.recordId}" />
+        </div>
+        <div class="slds-backdrop slds-backdrop_open" aura:id="modalBackground"></div>
+    </aura:if>
+
+</aura:component>

@@ -1,0 +1,12 @@
+<template>
+    <lightning-modal-header label="재고현황"></lightning-modal-header>
+    <lightning-modal-body class="modalbody"> 
+        <div class="">
+            <c-d-n_-inventory-status order-item-id={orderItemId}>
+            </c-d-n_-inventory-status>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label="닫기" onclick={handleClose}></lightning-button>
+    </lightning-modal-footer>
+</template>

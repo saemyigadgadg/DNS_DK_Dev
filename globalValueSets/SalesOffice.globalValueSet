@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>1140</fullName>
+        <default>false</default>
+        <label>해외영업(DNS)</label>
+    </customValue>
+    <customValue>
+        <fullName>1146</fullName>
+        <default>false</default>
+        <label>Parts Sales(DNS)</label>
+    </customValue>
+    <customValue>
+        <fullName>114A</fullName>
+        <default>false</default>
+        <label>영업지원(DNS)</label>
+    </customValue>
+    <customValue>
+        <fullName>114B</fullName>
+        <default>false</default>
+        <label>인천지사</label>
+    </customValue>
+    <customValue>
+        <fullName>114C</fullName>
+        <default>false</default>
+        <label>수원지사</label>
+    </customValue>
+    <customValue>
+        <fullName>114D</fullName>
+        <default>false</default>
+        <label>중부지사</label>
+    </customValue>
+    <customValue>
+        <fullName>114E</fullName>
+        <default>false</default>
+        <label>대구지사</label>
+    </customValue>
+    <customValue>
+        <fullName>114F</fullName>
+        <default>false</default>
+        <label>부경지사(부산)</label>
+    </customValue>
+    <customValue>
+        <fullName>114G</fullName>
+        <default>false</default>
+        <label>부경지사(창원)</label>
+    </customValue>
+    <customValue>
+        <fullName>114H</fullName>
+        <default>false</default>
+        <label>타겟 세일즈팀(DNS)</label>
+    </customValue>
+    <customValue>
+        <fullName>4146</fullName>
+        <default>false</default>
+        <label>DNSA Parts Sales</label>
+    </customValue>
+    <customValue>
+        <fullName>414A</fullName>
+        <default>false</default>
+        <label>DNSA Sales Office</label>
+    </customValue>
+    <customValue>
+        <fullName>414P</fullName>
+        <default>false</default>
+        <label>DNSA Project Office</label>
+    </customValue>
+    <customValue>
+        <fullName>7306</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DIG AM Parts Sales(7306)</label>
+    </customValue>
+    <customValue>
+        <fullName>7346</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSEU Parts Sales(7346)</label>
+    </customValue>
+    <customValue>
+        <fullName>2740</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSC HQ(DNSC)(2740)</label>
+    </customValue>
+    <customValue>
+        <fullName>735A</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSEU Export Sales(735A)</label>
+    </customValue>
+    <customValue>
+        <fullName>734A</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSEU Sales(734A)</label>
+    </customValue>
+    <customValue>
+        <fullName>2746</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Parts Sales(DNSC)(2746)</label>
+    </customValue>
+    <customValue>
+        <fullName>274A</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>上海支社(DNSC)(274A)</label>
+    </customValue>
+    <customValue>
+        <fullName>274B</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>烟台支社(DNSC)(274B)</label>
+    </customValue>
+    <customValue>
+        <fullName>274C</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>廣州支社(DNSC)(274C)</label>
+    </customValue>
+    <customValue>
+        <fullName>274D</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>重慶POST(DNSC)(274D)</label>
+    </customValue>
+    <customValue>
+        <fullName>274E</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>杭州POST(DNSC)(274E)</label>
+    </customValue>
+    <customValue>
+        <fullName>274F</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>营业管理(DNSC)(274F)</label>
+    </customValue>
+    <customValue>
+        <fullName>274G</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>武汉支社(DNSC)(274G)</label>
+    </customValue>
+    <customValue>
+        <fullName>274Z</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSC(煙臺)(274Z)</label>
+    </customValue>
+    <customValue>
+        <fullName>4106</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DIA EG Parts Sales(4106)</label>
+    </customValue>
+    <customValue>
+        <fullName>413A</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>EG Sales Office(413A)</label>
+    </customValue>
+    <customValue>
+        <fullName>415A</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>DNSA Export Sales(415A)</label>
+    </customValue>
+    <masterLabel>Sales Office</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

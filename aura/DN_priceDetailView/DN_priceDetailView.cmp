@@ -1,0 +1,242 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-12
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   02-18-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PortalSaleProfressStatusController"
+  description="판매가 상세조회">
+
+  <!-- navigation -->
+   <lightning:navigation aura:id="navProgressStatusView" />
+
+  <!-- attribute -->
+  <aura:attribute name="isLoading"      type="Boolean" default="false" />
+  <aura:attribute name="pdfModalOpen"   type="Boolean" default="false" /> <!--프린트 모달-->
+  <aura:attribute name="pdfUrl"         type="String"  default="{!$Label.c.Portal_PDView_Pdf}" />
+
+  <aura:attribute name="dealerInfo"     type="Object" default="" description="로그인 사용자 정보" />
+  <aura:attribute name="detailInfo"     type="Object" default="" description="카드 1 정보" />
+  <aura:attribute name="partsList"      type="List"   default="[]" description="가격 제안 부품 정보 리스트" />
+  <aura:attribute name="attachFile"     type="List"   default="[]" description="첨부 파일 리스트" />
+
+  <aura:attribute name="dlUrl"      type="String"   default="{!$Label.c.Portal_Download}" />
+  <aura:attribute name="backPageUrl" type="STring" default="{!$Label.c.Portal_Backpage_Url}" />
+
+  <aura:attribute name="peNo" type="String" />
+  <aura:attribute name="isTest" type="Boolean" default="false" />
+
+  <!-- handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+  <div class="total-wrap">
+    <article class="slds-card">
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading }">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName='standard:budget_category_value' alternativeText='budget_category_value'
+            size='small' />
+          <h2 class="slds-truncate">{!$Label.c.PES_SalesPriceDetails} <!-- 판매가 상세조회 --></h2>
+        </div>
+
+        <div class="button-wrap">
+          <aura:if isTrue="{!v.isTest}">
+            <lightning:button name="" label="{!$Label.c.DNS_FSL_Attachment}" iconName="utility:check" iconPosition="left" onclick="{!c.doTestDown}" />
+          </aura:if>
+          <lightning:button name="" label="{!$Label.c.PES_Print}" iconName="utility:print" iconPosition="left" onclick="{!c.openPrintPDF}" />
+          <lightning:button name="" label="{!$Label.c.DNS_B_Back}" iconName="utility:back" iconPosition="left" onclick="{!c.backPage}" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p>PE Inquiry No.</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="peNo" value="{!v.detailInfo.peNo}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>Inquiry PO No.</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="poNO" value="{!v.detailInfo.poNo}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_PartsDealer} <!-- 부품대리점 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="partDealer" value="{!v.detailInfo.partDealer}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_Requester} <!-- 요청인 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="request" value="{!v.detailInfo.requester}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_RequesterEmail} <!-- 요청인 Email --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="Email" value="{!v.detailInfo.requesterEmail}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_ModelNo} <!-- 기종 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="equipmentName" value="{!v.detailInfo.equipmentName}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.service_lbl_serial_no} <!-- 장비번호 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="equipmentNo" value="{!v.detailInfo.equipmentNo}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_CreationDtae} <!-- 생성일 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="creationDate" value="{!v.detailInfo.creationDate}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.DNS_C_Status} <!-- 상태 --></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="status" value="{!v.detailInfo.status}" variant="label-hidden" disabled="true" />
+            </div>
+          </div>
+        </div>
+        <div class="card-02 top-card">
+          <div class="card-header">
+            <h2>
+              {!$Label.c.PAR_AttachRelevantDoc} <!-- 관련 서류 첨부 -->
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="field-wrap">
+              <!-- 파일 목록-->
+              <div class="file-wrap">
+                <aura:iteration items="{!v.attachFile}" var="key" indexVar="index">
+                  <div class="file-name">
+                    <lightning:button value="{!key.Id}" accesskey="{!j}" onclick="{!c.doDownload}" title="{!key.Title}">
+                      <lightning:icon iconName='doctype:attachment' alternativeText="{!key.Title}" size='x-small' title="{!key.Title}"></lightning:icon>
+                        <span>{!key.Title}</span>
+                    <!-- <a href="">{!key.Title}</a> -->
+                    <!-- <div href="" onclick="{!c.removeFile}" data-id="{!key.contentDocumentId}">
+                      <lightning:icon iconName="utility:close" alternativeText="Remove" title="Remove"
+                        size="xx-small" />
+                    </div> -->
+                  </lightning:button>
+                  </div>
+                </aura:iteration>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-03 top-card">
+          <div class="card-header">
+            <h2>
+              Remark
+            </h2>
+          </div>
+          <div class="card-body">
+            <lightning:textarea type="text" name="" value="{!v.detailInfo.remark}" variant="label-hidden" disabled="true" />
+          </div>
+        </div>
+        <div class="card-03 top-card">
+          <div class="card-header">
+            <h2>
+              {!$Label.c.PES_RejectReason} <!-- 거절 사유 -->
+            </h2>
+          </div>
+          <div class="card-body">
+            <lightning:textarea type="text" name="" value="{!v.detailInfo.rjReason}" variant="label-hidden" disabled="true" />
+          </div>
+        </div>
+        <div class="card-04 top-card">
+          <div class="table-wrap">
+            <table>
+              <colgroup>
+                <col width="5%" />
+                <col width="13%" />
+                <col width="13%" />
+                <col width="13%" />
+                <col width="13%" />
+                <col width="13%" />
+                <col width="13%" />
+                <col width="28%" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="center">No</th>
+                  <th>{!$Label.c.DNS_FSL_ProductNumber} <!-- 품번 --></th>
+                  <th>{!$Label.c.service_lbl_part_name} <!-- 품명 --></th>
+                  <th>{!$Label.c.DNS_C_Currency} <!-- 통화 --></th>
+                  <th>{!$Label.c.PAR_SystemPrice} <!-- 시스템가격 --></th>
+                  <th>{!$Label.c.PAR_SuggestedPrice} <!-- 제안가격 --></th>
+                  <th>{!$Label.c.PES_NewPrice} <!-- 신규가격 --></th>
+                  <th>{!$Label.c.DNS_T_QuoteReviewSubtitle} <!-- 요청사항 --></th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+                  <tr>
+                    <td>{!parts.itemNo}</td>
+                    <td>{!parts.partNo}</td>
+                    <td>{!parts.partName}</td>
+                    <td class="center">{!parts.curr}</td>
+                    <td class="right">{!parts.systemPrice}</td>
+                    <td class="right">{!parts.suggestPrice}</td>
+                    <td class="right">{!parts.newPrice}</td>
+                    <td>{!parts.request}</td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 프린트 PDF -->
+      <aura:if isTrue="{!v.pdfModalOpen}">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <!-- 모달 헤더 -->
+            <header class="slds-modal__header">
+              <lightning:buttonIcon iconName="utility:close" onclick="{!c.modalCancel}" alternativeText="Close"
+                class="slds-modal__close" />
+              <h2 class="slds-text-heading_medium">{!$Label.c.PES_Print} <!-- 프린트 --></h2>
+            </header>
+
+            <!-- 모달 바디 -->
+            <div class="slds-modal__content slds-p-around_medium">
+              <!-- <iframe src="/partners/apex/DN_returnDetailPrintPDF" width="100%;" height="500px;"></iframe> -->
+              <iframe src="{!v.pdfUrl}" width="100%;" height="500px;"></iframe>
+            </div>
+
+            <!-- 모달 푸터 -->
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Close}" onclick="{!c.modalCancel}" />
+            </footer>
+          </div>
+        </section>
+        <!-- 배경 -->
+        <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+      </aura:if>
+    </article>
+  </div>
+
+</aura:component>

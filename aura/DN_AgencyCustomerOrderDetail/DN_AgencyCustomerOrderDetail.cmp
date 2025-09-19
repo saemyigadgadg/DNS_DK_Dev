@@ -1,0 +1,658 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-27-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-02-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="주문서 상세"
+  access="global"
+  extends="c:DN_Helper"
+  controller="DN_AgencyCustomerOrderCreateController"
+  >
+
+  <!--Attribute-->
+  <aura:attribute name="isSpinner" type="Boolean" default="false" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="pageType" type="String" />
+  
+  <aura:attribute name="value" type="String" default="No" />
+  <aura:attribute name="type" type="String" />
+  <aura:attribute name="orderHeaderInfo" type="Object"/>
+  <aura:attribute name="orderDetailList" type="List" />
+  <aura:attribute name="selectedOrder" type="List" />
+  <aura:attribute name="confirmModal" type="Boolean" default="false" />
+  <aura:attribute name="confirmOtherDealer" type="Boolean" default="false" />
+  <aura:attribute name="confirmDn" type="Boolean" default="false" />
+  <aura:attribute name="confirmGi" type="Boolean" default="false" />  
+  <aura:attribute name="editOrder" type="Boolean" default="false" />
+  <aura:attribute name="editMessage" type="String" />
+  <aura:attribute name="pageReference" type="Object"/>
+
+  <aura:attribute name="orderCategory" type="List" default="[
+        {'label':'일반주문', 'value' : 'S'},
+        {'label':'긴급주문', 'value' : 'E'}
+  ]" />
+  <aura:attribute name="bulkShippingOptions" type="List" default="[
+    {'label': 'Yes', 'value': 'Yes'},
+    {'label': 'No', 'value': 'No'}
+  ]" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <!-- navService 정의 -->
+  <lightning:navigation aura:id="navService" />
+
+
+  <aura:if isTrue="{!v.pageType == 'Modal'}">
+    
+    <div class="orderDetailModal">
+      <div aura:id="orderDetailModal" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container slds-modal_large">
+  
+          <!-- Header -->
+          <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">주문서 상세</h2>
+  
+            <div class="button-wrap">
+              <lightning:buttonGroup>
+                <aura:if isTrue="{!v.type != 'backOrder'}">
+                  <lightning:button name="release" label="출고" onclick="{!c.moveGoodsIssueConfrim}" />
+                  <!-- <lightning:button name="edit" label="수정" onclick="{!c.editOrder}" />
+                  <lightning:button name="delete" label="삭제" onclick="{!c.deleteOrder}" /> -->
+                  <lightning:button name="dnOrder" label="DNS 구매" onclick="{!c.moveDNOrderConfrim}" />
+                  <lightning:button name="otherAgencyOrder" label="타대리점주문" onclick="{!c.moveDealerOrderConfrim}" />
+                </aura:if>
+                
+                <!-- <lightning:button name="tradingStatement" label="거래명세서" onclick="" /> -->
+              </lightning:buttonGroup>
+            </div>
+  
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.orderDetailCancel}"></lightning:icon>
+            </button>
+          </header>
+  
+          <!-- Modal Body -->
+          <div class="modal-body slds-modal__content">
+  
+            <div class="card-01 top-card">
+  
+              <div class="field-wrap">
+                <p>주문유형</p>
+                <div class="input-wrap">
+                  <!-- <lightning:input value="일반주문" variant="label-hidden" /> -->
+                  <lightning:combobox variant="label-hidden" options="{!v.orderCategory}"
+                    readonly="true"
+                    value="{!v.orderHeaderInfo.orderType}"
+                  />
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>고객주문번호</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.customerOrerNumber}" readonly="true" variant="label-hidden" />
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>생성일자</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.customerOrerNumber}" readonly="true" variant="label-hidden" />
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>일괄배송여부</p>
+                <div class="input-wrap">
+                  <lightning:radioGroup aura:id="batchDelivery" options="{! v.bulkShippingOptions }" value="{!v.orderHeaderInfo.bulkShipping}"
+                    disabled="true"  variant="label-hidden" />
+
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>고객사명</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.customerName}" variant="label-hidden" readonly="true"/>
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>연락처</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.phone}" variant="label-hidden" readonly="true" />
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>배송처</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.customerShipToName}" variant="label-hidden" readonly="true" />
+                </div>
+              </div>
+  
+              <!-- <div class="field-wrap">
+                <p>Sold To Party</p>
+                <div class="input-wrap">
+                  <lightning:input variant="label-hidden" />
+                </div>
+              </div> -->
+  
+              <div class="field-wrap">
+                <p>배송방법</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.shippingType}" variant="label-hidden" readonly="true"/>
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>Memo</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.memo}" variant="label-hidden" readonly="true" />
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>배송업체</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.shippingCompany}" variant="label-hidden" readonly="true"/>
+                </div>
+              </div>
+  
+              <div class="field-wrap">
+                <p>송장번호</p>
+                <div class="input-wrap">
+                  <lightning:input value="{!v.orderHeaderInfo.invoice}" variant="label-hidden" readonly="true" />
+                </div>
+              </div>
+            </div>
+  
+            <div class="card-02 top-card">
+              <div class="card-header">
+                <h2>주문 내역</h2>
+              </div>
+  
+              <div class="table-wrap">
+                <div class="table-01 table-left">
+                  <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                      <col width="1%"/>
+                      <col width="20%"/>
+                      <col width="20%"/>
+                      <col width="60%"/>
+                    </colgroup>
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th scope="col">
+                          <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">주문번호</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">항목</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">주문품번</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.orderDetailList}" var="parts" indexVar="j">
+                        <tr class="slds-hint-parent">
+                          <td style="width: 5%;" type="checkbox2">
+                            <lightning:input type="checkbox" aura:id="checkbox" checked="{!v.parts.isSelected}"  />
+                            <!-- onchange="{! c.handleCheckboxChange }" -->
+                          </td>
+                          <td data-label="주문번호">
+                            <div class="slds-truncate" title="주문번호">{!parts.orderSeq}</div>
+                          </td>
+                          <td data-label="항목">
+                            <div class="slds-truncate" title="항목">{!parts.itemSeq}</div>
+                          </td>
+                          <td data-label="주문품번">
+                            <div class="slds-truncate" title="주문품번">{!parts.replacingPartName}</div>
+                          </td>
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="table-02 table-right">
+                  <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                    <thead>
+                      <tr>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">품명</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">수량</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">단위</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">가용재고</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">예약수량</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">출고수량</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">통화</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">고객판매가</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">할인판매가</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">할인판매금액</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div class="slds-truncate" title="">할인율(%)</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:iteration items="{!v.orderDetailList}" var="parts" indexVar="j">
+                        <tr>
+                          <td data-label="품명">
+                            <div class="slds-truncate" title="품명">{!parts.replacingPartDetails}</div>
+                          </td>
+                          <td data-label="수량">
+                            <div class="slds-truncate" title="수량">{!parts.quantity}</div>
+                          </td>
+                          <td data-label="단위">
+                            <div class="slds-truncate" title="단위">{!parts.unit}</div>
+                          </td>
+                          <td data-label="가용재고">
+                            <div class="slds-truncate" title="가용재고">{!parts.avaiableQuantity}</div>
+                          </td>
+                          <td data-label="예약수량">
+                            <div class="slds-truncate" title="예약수량" style="display: flex; align-items: center;">
+                              {!parts.reservedQuantity}</div>
+                          </td>
+                          <td data-label="출고수량">
+                            <div class="slds-truncate" title="출고수량">{!parts.giQuantity}</div>
+                          </td>
+                          <td data-label="통화">
+                            <div class="slds-truncate" title="통화">{!parts.currencyCode}</div>
+                          </td>
+                          <td data-label="고객판매가">
+                            <div class="slds-truncate" title="고객판매가">{!parts.customerPrice}</div>
+                          </td>
+                          <td data-label="할인판매가">
+                            <div class="slds-truncate" title="할인판매가">{!parts.discountPrice}</div>
+                          </td>
+                          <td data-label="할인판매금액">
+                            <div class="slds-truncate" title="할인판매금액">{!parts.discountAmount}</div>
+                          </td>
+                          <td data-label="할인율(%)">
+                            <div class="slds-truncate" title="할인율(%)">{!parts.discountRate}</div>
+                          </td>
+  
+                        </tr>
+                      </aura:iteration>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Footer -->
+          <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.orderDetailCancel}" />
+          </footer>
+        </div>
+      </div>
+      <!-- 배경 -->
+      <div aura:id="orderDetailModalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+  </aura:if>
+
+  <aura:if isTrue="{!v.pageType == 'DetailPage'}">
+    <div class="detailPage">
+      <div class="card-02 top-card">
+        <div class="card-header">
+          <div class="title">
+            <lightning:icon iconName='standard:lead_list' alternativeText='lead_list' size='small' title='lead_list'/>
+            <h2>주문 내역</h2>
+          </div>
+
+          <div class="button-wrap">
+            <lightning:buttonGroup>
+              <aura:if isTrue="{!v.type != 'readOnly'}">
+                <lightning:button name="release" label="출고" onclick="{!c.moveGoodsIssueConfrim}" />
+                <lightning:button name="dnOrder" label="DNS구매" onclick="{!c.moveDNOrdeConfrim}" />
+                <lightning:button name="otherAgencyOrder" label="타대리점주문" onclick="{!c.moveDealerOrderConfrim}" />
+              </aura:if>
+              <!-- <lightning:button name="tradingStatement" label="거래명세서" onclick="" /> Detail Page 버튼으로 이동
+                -->
+            </lightning:buttonGroup>
+          </div>
+        </div>
+
+       
+    
+        <div class="table-wrap">
+          <div class="table-01 table-left" aura:id="leftTableDiv">
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="1%"/>
+                <col width="15%"/>
+                <col width="15%"/>
+                <col width="70%"/>
+              </colgroup>
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th scope="col">
+                    <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">주문번호</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">항목</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">주문품번</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.orderDetailList}" var="parts" indexVar="j">
+                  <tr class="slds-hint-parent">
+                    <td style="width: 5%;" type="checkbox2">
+                      <lightning:input type="checkbox" aura:id="checkbox" checked="{!parts.isSelected}" disabled="{!parts.isComplete}"/>
+                      <!-- onchange="{! c.handleCheckboxChange }" -->
+                    </td>
+                    <td data-label="주문번호">
+                      <!-- accesskey="{!j}" onclick="{!c.moveDetail}" -->
+                      <div class="slds-truncate" title="주문번호">{!parts.orderSeq}</div>
+                    </td>
+                    <td data-label="항목">
+                      <div class="slds-truncate" title="항목">{!parts.itemSeq}</div>
+                    </td>
+                    <td data-label="주문품번">
+                      <div class="slds-truncate" title="주문품번">{!parts.replacingPartName}</div>
+                    </td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <thead>
+                <tr>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">품명</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">수량</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">단위</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">가용재고</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">예약수량</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">출고수량</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">통화</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">고객판매가</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">할인판매가</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">할인판매금액</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">할인율(%)</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:iteration items="{!v.orderDetailList}" var="parts" indexVar="j">
+                  <tr>
+                    <td data-label="품명">
+                      <div class="slds-truncate" title="품명">{!parts.replacingPartDetails}</div>
+                    </td>
+                    <td data-label="수량">
+                      <div class="slds-truncate right" title="수량">
+                        <!-- {!parts.quantity} -->
+                        <lightning:formattedNumber name="quantity" value="{!parts.quantity}" />
+                      </div>
+                    </td>
+                    <td data-label="단위">
+                      <div class="slds-truncate" title="단위">{!parts.unit}</div>
+                    </td>
+                    <td data-label="가용재고">
+                      <div class="slds-truncate right" title="가용재고">
+                        <!-- {!parts.avaiableQuantity} -->
+                        <lightning:formattedNumber name="avaiableQuantity" value="{!parts.avaiableQuantity}" />
+                      </div>
+                    </td>
+                    <td data-label="예약수량">
+                      <div class="slds-truncate right" title="예약수량" >
+                        <!-- style="display: flex; align-items: center;" -->
+                        <!-- {!parts.reservedQuantity} -->
+                        <lightning:formattedNumber name="reservedQuantity" value="{!parts.reservedQuantity}" />
+                      </div>
+                    </td>
+                    <td data-label="출고수량">
+                      <div class="slds-truncate right" title="출고수량">
+                        <!-- {!parts.giQuantity} -->
+                        <lightning:formattedNumber name="giQuantity" value="{!parts.giQuantity}" />
+                      </div>
+                    </td>
+                    <td data-label="통화">
+                      <div class="slds-truncate" title="통화">{!parts.currencyCode}</div>
+                    </td>
+                    <td data-label="고객판매가">
+                      <div class="slds-truncate right" title="고객판매가">
+                        <!-- {!parts.customerPrice} -->
+                        <lightning:formattedNumber name="customerPrice" value="{!parts.customerPrice}" />
+                      </div>
+                    </td>
+                    <td data-label="할인판매가">
+                      <div class="slds-truncate right" title="할인판매가">
+                        <!-- {!parts.discountPrice} -->
+                        <lightning:formattedNumber name="discountPrice" value="{!parts.discountPrice}" />
+                      </div>
+                    </td>
+                    <td data-label="할인판매금액">
+                      <div class="slds-truncate right" title="할인판매금액">
+                        <!-- {!parts.discountAmount} -->
+                        <lightning:formattedNumber name="discountAmount" value="{!parts.discountAmount}" />
+                      </div>
+                    </td>
+                    <td data-label="할인율(%)">
+                      <div class="slds-truncate right" title="할인율(%)">
+                        <!-- {!parts.discountRate} -->
+                        <lightning:formattedNumber name="discountRate" value="{!parts.discountRate}" />
+                      </div>
+                    </td>
+    
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aura:if>
+
+  
+
+  <!-- 확인 Alert-->
+  <aura:if isTrue="{!v.confirmModal}">
+
+    <div class="check-modal-wrap">
+      <!-- 📌 출고 모달 -->
+      <aura:if isTrue="{!v.confirmGi}">
+        <div aura:id="confirmModal" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container slds-modal_large">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">출고</h2>
+
+              <!-- Close Button -->
+              <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                  title='close' name="closeModal" onclick="{!c.cancelGi}"></lightning:icon>
+              </button>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+              <!-- <div class="icon-wrap">
+                <lightning:icon iconName='utility:check' alternativeText='download' size='Medium' title='download'>
+                </lightning:icon>
+              </div> -->
+              <p>출고 하시겠습니까?</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+              <!-- <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelDnOrder}" /> -->
+              <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.moveGi}" />
+            </footer>
+          </div>
+        </div>
+      </aura:if>
+
+      <!-- 📌 DNS 오더 모달 -->
+      <aura:if isTrue="{!v.confirmDn}">
+        <div aura:id="confirmModal" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container slds-modal_large">
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">DNS 구매</h2>
+
+              <!-- Close Button -->
+              <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                  title='close' name="closeModal" onclick="{!c.cancelDnOrder}"></lightning:icon>
+              </button>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+              <!-- <div class="icon-wrap">
+                <lightning:icon iconName='utility:check' alternativeText='download' size='Medium' title='download'>
+                </lightning:icon>
+              </div> -->
+              <p>DNS로 부품을 주문하시겠습니까?</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+              <!-- <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelDnOrder}" /> -->
+              <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.moveDnOrder}" />
+            </footer>
+          </div>
+        </div>
+      </aura:if>
+
+      <!-- 📌 타대리점주문 모달 -->
+      <aura:if isTrue="{!v.confirmOtherDealer}">
+        <div aura:id="confirmModal" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container slds-modal_large">
+
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">타대리점 주문</h2>
+
+              <!-- Close Button -->
+              <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                  title='close' name="closeModal" onclick="{!c.cancelOtherDealer}"></lightning:icon>
+              </button>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+              <!-- <div class="icon-wrap">
+                <lightning:icon iconName='utility:check' alternativeText='download' size='Medium' title='download'>
+                </lightning:icon>
+              </div> -->
+              <p>타대리점으로 부품을 주문하시겠습니까?</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+              <!-- <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelOtherDealer}" /> -->
+              <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.moveOtherDealer}" />
+            </footer>
+
+          </div>
+        </div>
+      </aura:if>
+
+      <!-- 📌 수정확인 모달 -->
+      <aura:if isTrue="{!v.editOrder}">
+        <div class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container slds-modal_large">
+
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+              <h2 class="slds-text-heading_medium">주문서 수정</h2>
+
+              <!-- Close Button -->
+              <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                  title='close' name="closeModal" onclick="{!c.cancelEditOrder}"></lightning:icon>
+              </button>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+              <div class="icon-wrap">
+                <lightning:icon iconName='utility:check' alternativeText='download' size='Medium' title='download'>
+                </lightning:icon>
+              </div>
+              <p>{!v.editMessage}</p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+              <!-- <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelEditOrder}" /> -->
+              <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.moveEditOrder}" />
+            </footer>
+
+          </div>
+        </div>
+      </aura:if>
+
+      <!-- 배경 -->
+      <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open modalInModalBg"></div>
+    </div>
+  </aura:if>
+
+
+</aura:component>

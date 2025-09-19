@@ -1,0 +1,254 @@
+<!--
+  @author            : youjin shim
+  @description       : (포탈) 부품정보 > 멀티부품 정보조회
+  @last modified on  : 2025-09-10
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-28   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_PortalPartsInfoController" description="멀티부품정보조회">
+
+    <!--Attribute-->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="isProfile"    type="Boolean" default="false" />
+    <aura:attribute name="isCSUser"    type="Boolean" default="false" />
+    <aura:attribute name="detailList" type="List" default="[]" />
+    <aura:attribute name="listEmpty" type="Boolean" default="false" description="검색할 부품 리스트가 비었는지 확인" />
+
+    <aura:attribute name="userInfo" type="Object" />
+
+    <aura:attribute name="partsList" type="List" default="[]" /> <!--partsList-->
+
+    <aura:attribute name="selectAll" type="Boolean" default="false" /> <!--checkbox 모두 선택-->
+    <aura:attribute name="excelUploadModal" type="Boolean" default="false" description="excel upload button" />
+    <aura:attribute name="fileName" type="String" />
+    <aura:attribute name="excelData" type="List" default="[]"/>
+
+    <aura:attribute name="excelDown" type="List" default="[]" description="엑셀 다운로드" />
+
+    <aura:attribute name="productNumber" type="String" />
+    <aura:attribute name="selectedPartsIndex" type="Integer" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <!-- Excel JS & Sheet JS -->
+    <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+
+    <!-- Body -->
+    <article class="slds-card">
+
+        <!-- modal -->
+        <div aura:id="PartsNumberListModal"></div> <!--부품번호 모달-->
+
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title">
+                <lightning:icon iconName="standard:settings" size="small" />
+                <h2>{!$Label.c.MPI_MultiPartInfo} <!-- 멀티 부품 정보 조회 --></h2>
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left"
+                    onclick="{!c.doSearch}" />
+            </div>
+        </div>
+
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_UserId} <!-- 유저아이디 --><abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" value="{!v.userInfo.dealerName}" variant="label-hidden"
+                            readonly="true" disabled="true" required="true" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- card-02 -->
+            <div class="card-02 top-card">
+                <div class="card-header">
+                    <h2>Parts List</h2>
+                    <div class="button-wrap">
+                        <lightning:button iconName="utility:add" name="searchItems" label="{!$Label.c.DNS_FSL_Add}"
+                            onclick="{!c.addPartsList}" />
+                        <lightning:button iconName="utility:delete" name="searchItems" label="{!$Label.c.DNS_M_Delete}"
+                            onclick="{!c.deletePartsList}" />
+                        <div>
+                            <lightning:button iconName="utility:upload" name="searchItems" label="{!$Label.c.MPI_Upload}"
+                                onclick="{!c.openUploadExcel}" />
+                            <!-- 엑셀 업로드 -->
+                            <aura:if isTrue="{!v.excelUploadModal}">
+                                <div aura:id="excelModal" class="slds-modal slds-fade-in-open excelModal">
+                                    <div class="slds-modal__container slds-modal_large">
+                                        <!-- Header -->
+                                        <header class="slds-modal__header">
+                                            <h2 class="slds-text-heading_medium">{!$Label.c.MPI_ExcelUpload} <!-- 엑셀 업로드 --></h2>
+                                            <!-- Close Button -->
+                                            <button class="close_button_template slds-modal__close">
+                                                <lightning:icon iconName='utility:close' alternativeText='close'
+                                                    variant='inverse' size='small' title='close' name="closeModal"
+                                                    onclick="{!c.closeUploadExcel}"></lightning:icon>
+                                            </button>
+                                        </header>
+                                        <div class="modal-body slds-modal__content">
+                                            <div class="txt-box">
+                                                <c:DN_DealerPortalExcelUploadTemplate buttonLabel="{!$Label.c.MPI_ExcelTemplateDown}" uploadName="MultiPartsInfoTemplate" />
+                                                <p>* Upload file form</p>
+                                                <p>- Use header information.</p>
+                                            </div>
+                                            <div class="card-01 top-card">
+                                                <lightning:input type="file" label="Upload Excel File"
+                                                    onchange="{!c.uploadExcel}" accept=".xlsx, .xls" />
+                                            </div>
+                                        </div>
+                                        <footer class="slds-modal__footer">
+                                            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                                                onclick="{!c.closeUploadExcel}" />
+                                        </footer>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </div>
+
+                        <lightning:button iconName="utility:download" name="searchItems" label="{!$Label.c.MPI_Download}" onclick="{!c.downloadExcel}" />
+                        <!-- <c:DN_ExcelUtilButton excelData="{! v.excelDataDown }" excelName="{! v.excelName }"
+                            headerData="{!v.excelHead}" /> -->
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <!-- Fixed : Left -->
+                    <div class="table-01 left-table" aura:id="leftTableDiv">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="5%" />
+                                <col width="95%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="input-wrap">
+                                            <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                onchange="{!c.toggleAllCheckboxes}" checked="{!v.selectAll}" />
+                                        </div>
+                                    </th>
+                                    <th>{!$Label.c.service_lbl_part_no} <!-- 부품번호 --></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+                                    <tr data-index="{!j}">
+                                        <td>
+                                            <div>
+                                                <lightning:input type="checkbox" aura:id="tableCheckbox"
+                                                    checked="{!parts.checkbox}" data-field="checkbox"
+                                                    onchange="{!c.toggleSelectAll}" />
+                                            </div>
+                                        </td>
+                                        <td data-label="주문품번">
+                                            <div class="input-wrap" title="주문품번">
+                                                <lightning:input type="text" name="input2" variant="label-hidden"
+                                                    value="{!parts.orderPartNo}"
+                                                    aura:id="partNoId" accesskey="{!j}" onchange="{!c.handleUpperCase}" />
+                                                <lightning:buttonicon iconName="utility:close" size="medium"
+                                                    alternativeText="Close Product Number"
+                                                    onclick="{!c.clearProductNumber}" name="orderPartNo"
+                                                    class="clear-btn" accesskey="{!j}" />
+                                                <span
+                                                    class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                                                    <lightning:buttonicon iconName="utility:search" size="medium"
+                                                        alternativeText="Search" onclick="{!c.openPartsNo}"
+                                                        accesskey="{!j}" />
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Scrollable : Right -->
+                    <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                        <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="%" />
+                                <col width="%" />
+                                <aura:if isTrue="{!v.isProfile}">
+                                    <col width="%" />
+                                </aura:if>
+                                <col width="%" />
+                                <col width="%" />
+                                <col width="%" />
+                                <col width="%" />
+                                <col width="%" />
+                                <col width="%" />
+                                <col width="%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>{!$Label.c.service_lbl_part_name}</th><!-- 품명 -->
+                                    <aura:if isTrue="{!v.isProfile}"> <!-- 여기 라벨로 처리할지 이런식으로 따로 보여줄지 고민 -->
+                                        <th>HQ_WH1</th><!--창원_가용재고-->
+                                        <th>HQ_WH2</th><!--천안_가용재고-->
+                                        <aura:set attribute="else">
+                                            <th>DMTA_WH1</th><!--미국_시카고_가용재고-->
+                                        </aura:set>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.isCSUser}">
+                                        <th>{!$Label.c.BPI_DealerPrice}</th><!-- 단가 -->
+                                    </aura:if>
+                                    <th>{!$Label.c.BPI_RetailPrice}</th><!-- 소비자 가격 -->
+                                    <th>{!$Label.c.BPI_Priceapplicationdate}</th> <!-- 가격 적용일 -->
+                                    <th>{!$Label.c.BPI_PurchaseLT}</th> <!-- 구매 Lead Time (Days) -->
+                                    <th>Service Lead Time(day)</th>
+                                    <th>{!$Label.c.DNS_FSL_Replacement}</th><!-- 대체품 -->
+                                    <th>{!$Label.c.DNS_FSL_Standard}</th><!-- 규격 -->
+                                    <th>{!$Label.c.DNS_FSL_Unit}</th> <!-- 단위 -->
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+                                    <tr>
+                                        <td>{!parts.productName}</td>
+                                        <aura:if isTrue="{!v.isProfile}"> <!-- 여기 라벨로 처리할지 이런식으로 따로 보여줄지 고민 -->
+                                            <td class="right">{!parts.stockQuantity}</td>
+                                            <td class="right">{!parts.stockQuantity2}</td>
+                                            <aura:set attribute="else">
+                                                <td class="right">{!parts.stockQuantity}</td>
+                                            </aura:set>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.isCSUser}">
+                                            <td class="right">{!parts.unitPrice}</td>
+                                        </aura:if>
+                                        <td class="right">{!parts.consumerPrice}</td>
+                                        <td class="center">{!parts.priceEffectiveDate}</td>
+                                        <td class="right">{!parts.purchaseLeadTime}</td>
+                                        <td class="right">{!parts.serviceLeadTime}</td>
+                                        <td>{!parts.replacementProduct}</td>
+                                        <td>{!parts.specification}</td>
+                                        <td>{!parts.unit}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</aura:component>

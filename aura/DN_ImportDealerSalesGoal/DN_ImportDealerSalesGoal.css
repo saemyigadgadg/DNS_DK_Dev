@@ -1,0 +1,48 @@
+.THIS.total-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 2rem);
+}
+
+.THIS .slds-modal__container {
+  max-width: calc(100vw - 8rem);
+  width: 36rem;
+  min-width: 20rem;
+  max-height: 100%;
+  height: 100%;
+  z-index: 2;
+  margin: 0 auto;
+}
+
+.THIS .slds-modal__content {
+  position: relative;
+}
+
+.THIS .card-wrap {
+  padding: 1.5rem 1.75rem;
+  overflow: visible;
+}
+
+.THIS .modal-body .slds-form__item {
+  padding: 0;
+}
+
+.THIS .modal-body .card-03.slds-form__row {
+  margin: 0 !important;
+}
+
+.THIS .card-03 .slds-file-selector,
+.THIS .card-03 .slds-file-selector__dropzone {
+  width: 100%;
+}
+
+/* Modal Background */
+
+.THIS #modal-bg {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}

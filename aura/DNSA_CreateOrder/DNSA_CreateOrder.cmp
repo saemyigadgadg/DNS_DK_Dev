@@ -1,0 +1,337 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 05-19-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   12-04-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force.hasSObjectName,lightning:actionOverride"
+                controller="DN_CommodityController"
+                description="DNSA Create Order Action Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"    type="Boolean"  default="false" />
+    <aura:attribute name="recordId"     type="String" />
+    <aura:attribute name="channelValue" type="String"   default="DNSA" />
+    <aura:attribute name="accValue"     type="String"   default="" />
+    <aura:attribute name="shipValue"     type="String"   default="" />
+    <aura:attribute name="opptyId"      type="String"   default="" />
+    <aura:attribute name="prbId"        type="String"   default="" />
+    <aura:attribute name="recordTypeId" type="String"   default="" />
+    <aura:attribute name="currency"     type="String"   default="" />
+    <aura:attribute name="userAccId"    type="String"   default="" />
+    <aura:attribute name="opptyPO"      type="String"   default="" />
+    <aura:attribute name="rddValue"     type="String"   default="" />
+    <aura:attribute name="fieldList"    type="List" />
+    <aura:attribute name="isFactory"    type="Boolean"  default="false" />
+    <aura:attribute name="Country"      type="String"   default="" />
+    <aura:attribute name="Incoterms"    type="String"   default="" />
+    <aura:attribute name="payment"      type="String"   default="" />
+    <aura:attribute name="salesOffice"  type="String"   default="" />
+    <aura:attribute name="sqTXT"        type="String"   default="" />
+    <aura:attribute name="countryCode"  type="String"   default="" />
+    <aura:attribute name="dcValue"      type="String"   default="" />
+    <aura:attribute name="Warranty"      type="String"   default="" />
+    <aura:attribute name="openNote"      type="String"   default="" />
+    <aura:attribute name="today"        type="Date" />
+    
+    <!-- address -->
+    <aura:attribute type="String" name="shippingState"/>
+    <aura:attribute type="String" name="shippingCity"/>
+    <aura:attribute type="String" name="shippingStreet"/>
+    <aura:attribute type="String" name="shippingPostalCode"/>
+    <aura:attribute type="String" name="shippingCountry"/>
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:navigation aura:id="navService" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDNSA_CreateOrder) {
+            width: 40rem;
+            max-width: calc(100vw - 8rem);
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDNSA_CreateOrder) {
+            padding: 0;
+            <!-- overflow-y: clip; -->
+            height: unset !important;
+            max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_CreateOrder) {
+            padding:0;
+        } 
+        .lightning-primitive-icon {
+            disply: none;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+
+        <aura:if isTrue="{!not(v.isFactory)}">
+            <!-- 🚩 Modal Header -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">New Commodity Order</h2>
+            </header>
+
+            <div class="slds-modal__content">
+                <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+    
+                <lightning:recordEditForm   aura:id="recordEditForm" 
+                                            objectApiName="Order" 
+                                            onsubmit="{! c.handleClickSubmit }"
+                                            onsuccess="{! c.handleSubmitSuccess }" 
+                                            onerror="{! c.handleSubmitError }">
+    
+                    <div class="slds-p-around_medium" id="modal-content-id-1">
+                        <!-- Loading Spinner -->
+                        <aura:if isTrue="{! v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+    
+                        <div class="slds-form slds-align_absolute-center">
+                            <div class="section-header">
+                                <h2 class="section-title">Order Information</h2>
+                            </div>
+                            <div class="section-container">
+                                <lightning:inputField aura:id="recordField" fieldName="QuoteId" value="{! v.recordId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="OpportunityId" value="{! v.opptyId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="Pricebook2Id" value="{! v.prbId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="RecordTypeId" value="{! v.recordTypeId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="CurrencyIsoCode" value="{! v.currency }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="SalesChannelType__c" value="DNSA" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="SoldTo__c" value="{! v.userAccId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="DNSA_SalesOffice__c" value="{! v.salesOffice }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="Country__c" value="{! v.countryCode }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="SalesRep__c" value="{! v.userAccId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="DistributionChannel__c" value="{! v.dcValue }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="OpenNotes__c" value="{! v.openNote }" style="display: none;" />
+                                <!-- <lightning:inputField aura:id="recordField" fieldName="RelatedDealer__c" value="{! v.userAccId }" style="display: none;" /> -->
+    
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="AccountId" value="{! v.accValue }" disabled="true" />
+                                </div>
+
+                                <!-- 이주현 위치 수정 -->
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="ShipTo__c" value="{! v.accValue }" disabled="true" onchange="{!c.handleAddress}" />
+                                </div> 
+
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="RequestedShipDate__c" value="{! v.rddValue }" required="true" />
+                                </div>
+                                <!-- <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="ReqDeliveryDate__c" value="{! v.rddValue }" />
+                                </div> -->
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="PaymentTerms_DNSA__c" value="{! v.payment }" required="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="Status" value="Created" disabled="true" />
+                                </div>
+                                <div class="col">
+                                    <!-- 0318 이주현 수정 -->
+                                    <lightning:inputField aura:id="recordField" fieldName="PurchaseOrderNo__c" value="{! v.opptyPO }" required="true" />
+                                    <!-- <lightning:inputField aura:id="recordField" fieldName="PurchaseOrderNo__c" value="{! v.opptyPO }" disabled="true" /> -->
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="OrderType__c" value="{! v.Country }" disabled="true" />
+                                </div>
+
+                                <!-- <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="Incoterms__c" value="FOB" disabled="true" />
+                                </div> -->
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="EffectiveDate" value="{! v.today }" disabled="true"/>
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="MachinePartsWarranty__c" value="{! v.Warranty }" required="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="FOBPoint__c" required="true"/>
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="ServiceDealer__c" value="{! v.userAccId }" disabled="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="CreditDealer__c" value="{! v.userAccId }" disabled="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="DetailOption__c" value="{! v.sqTXT }" disabled="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputAddress 
+                                        addressLabel="{!$Label.c.DNS_C_ShippingAddress}"
+                                        provinceLabel="{!$Label.c.DNS_C_ShippingState}"
+                                        cityLabel="{!$Label.c.DNS_C_ShippingCity}"
+                                        streetLabel="{!$Label.c.DNS_C_ShippingStreet}"
+                                        postalCodeLabel="{!$Label.c.DNS_C_ShippingPostalCode}"
+                                        countryLabel="{!$Label.c.DNS_C_ShippingCountry}"
+                                        province="{!v.shippingState}"
+                                        city="{!v.shippingCity}"
+                                        street="{!v.shippingStreet}"
+                                        postalCode="{!v.shippingPostalCode}"
+                                        country="{!v.shippingCountry}"
+                                        disabled="true"/>
+                                </div>
+
+                                <!-- 
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="ShipTo__c" value="{! v.accValue }" disabled="true" />
+                                </div> 
+                                -->
+
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- 🚩Modal Footer -->
+                    <div class="slds-modal__footer">
+                        <lightning:button onclick="{! c.handleClickClose }" label="Cancel" />
+                        <lightning:button variant="brand" type="submit" label="Save" name="Commodity" />
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.isFactory}">
+            <!-- 🚩 Modal Header -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">New Factory Order</h2>
+            </header>
+
+            <div class="slds-modal__content">
+                <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+    
+                <lightning:recordEditForm   aura:id="recordEditFormFactory" 
+                                            objectApiName="Order" 
+                                            onsubmit="{! c.handleClickFactorySubmit }"
+                                            onsuccess="{! c.handleSubmitSuccess }" 
+                                            onerror="{! c.handleSubmitError }"
+                                            >
+    
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <!-- Loading Spinner -->
+                        <aura:if isTrue="{! v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+    
+                        <div class="slds-form slds-align_absolute-center">
+                            <div class="section-header">
+                                <h2 class="section-title">Order Information</h2>
+                            </div>
+                            <div class="section-container">
+                                <lightning:inputField aura:id="recordField" fieldName="QuoteId" value="{! v.recordId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="OpportunityId" value="{! v.opptyId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="Pricebook2Id" value="{! v.prbId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="RecordTypeId" value="{! v.recordTypeId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="CurrencyIsoCode" value="{! v.currency }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="SoldTo__c" value="{! v.userAccId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="SalesChannelType__c" value="DNSA" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="DNSA_SalesOffice__c" value="{! v.salesOffice }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="Country__c" value="{! v.countryCode }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="SalesRep__c" value="{! v.userAccId }" style="display: none;" />
+                                <lightning:inputField aura:id="recordField" fieldName="DistributionChannel__c" value="{! v.dcValue }" style="display: none;" />
+    
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="EffectiveDate" value="{!v.today}" disabled="true"/>
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="Status" value="Created" disabled="true" />
+                                </div>
+
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="RequestedShipDate__c" value="{! v.rddValue }" required="true" />
+                                </div>
+                                <!-- <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="ReqDeliveryDate__c" value="{! v.rddValue }" />
+                                </div> -->
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="AccountId" value="{! v.accValue }" disabled="true" />
+                                </div>
+                                
+                                <div class="col">
+                                    <lightning:inputField aura:id="ShipTo__c" fieldName="ShipTo__c" value="{! v.shipValue }" onchange="{!c.handleAddress}" disabled="true" />
+                                </div> 
+                                <div class="col">
+                                    <!-- 0318 이주현 수정 -->
+                                    <lightning:inputField aura:id="recordField" fieldName="PurchaseOrderNo__c" value="{! v.opptyPO }" required="true" />
+                                    <!-- <lightning:inputField aura:id="recordField" fieldName="PurchaseOrderNo__c" value="{! v.opptyPO }" disabled="true" /> -->
+                                </div>
+
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="OrderType__c" value="{!v.Country}" disabled="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="Incoterms__c" value="{!v.Incoterms}" required="true"  />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="PaymentTerms_DNSA__c" required="true" />
+                                </div>
+                                <!-- <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="FOBPoint__c" required="true" />
+                                </div> -->
+                                <div class="col">
+                                    <!-- <lightning:inputField aura:id="recordField" fieldName="MachinePartsWarranty__c" required="true" /> -->
+                                    <lightning:inputField aura:id="recordField" fieldName="Warranty__c" value="{!v.Warranty}" disabled="true" required="true" />
+                                </div>
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="ServiceDealer__c" value="{! v.accValue }" disabled="true" />
+                                </div>
+                                <!-- <div clas="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="DNSA_SalesOffice__c" value="{! v.salesOffice }" disabled="true" />
+                                </div> -->
+                                <div class="col">
+                                    <lightning:inputField aura:id="recordField" fieldName="CreditDealer__c" value="{! v.accValue }" disabled="true" />
+                                </div>
+                                
+                                <!--                                 
+                                <div class="col">
+                                    <lightning:inputField aura:id="ShipTo__c" fieldName="ShipTo__c" value="{! v.shipValue }" onchange="{!c.handleAddress}"/>
+                                </div> 
+                                -->
+
+                                <div class="col">
+                                    <lightning:inputAddress 
+                                        addressLabel="{!$Label.c.DNS_C_ShippingAddress}"
+                                        provinceLabel="{!$Label.c.DNS_C_ShippingState}"
+                                        cityLabel="{!$Label.c.DNS_C_ShippingCity}"
+                                        streetLabel="{!$Label.c.DNS_C_ShippingStreet}"
+                                        postalCodeLabel="{!$Label.c.DNS_C_ShippingPostalCode}"
+                                        countryLabel="{!$Label.c.DNS_C_ShippingCountry}"
+                                        province="{!v.shippingState}"
+                                        city="{!v.shippingCity}"
+                                        street="{!v.shippingStreet}"
+                                        postalCode="{!v.shippingPostalCode}"
+                                        country="{!v.shippingCountry}"
+                                        disabled="true"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- 🚩Modal Footer -->
+                    <div class="slds-modal__footer">
+                        <lightning:button onclick="{! c.handleClickClose }" label="Cancel" />
+                        <lightning:button variant="brand" type="submit" label="Save" name="Factory" />
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+        </aura:if>
+
+        
+    </div>    
+</aura:component>

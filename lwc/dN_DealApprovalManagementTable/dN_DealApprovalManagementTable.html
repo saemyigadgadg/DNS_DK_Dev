@@ -1,0 +1,113 @@
+<!-- 대리점간 거래 승인 관리-->
+<template>
+    <div>
+      <template lwc:if={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+      </template>
+      <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+          <colgroup>
+            <col width="23%" />
+            <col width="23%" />
+            <col width="14%" />
+            <col width="10%" />
+            <col width="10%" />
+            <col width="10%" />
+            <col width="5%" />
+            <col width="5%" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>
+                <div>구매대리점</div>
+              </th>
+              <th>
+                <div>구매주문번호</div>
+              </th>
+              <th>
+                <div>주문번호</div>
+              </th>
+              <th>
+                <div>주문일</div>
+              </th>
+              <th>
+                <div>주문수량</div>
+              </th>
+              <th>
+                <div>구매금액</div>
+              </th>
+              <th>
+                <div>통화</div>
+              </th>
+              <th>
+                <div>상태</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- <aura:if isTrue="{!empty(v.popupList)}">
+              <tr class="slds-hint-parent">
+                <td scope="row" colspan="9" style="text-align: center;">
+                  조회된 정보가 없습니다
+                </td>
+              </tr>
+            </aura:if> -->
+              <template for:each={dataList} for:item="datum" for:index="idx">
+                <tr key={datum.id}>
+                  <td>
+                    <div>
+                      <!-- 구매대리점 -->
+                       {datum.dealerName}
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <!-- 구매주문번호 -->
+                      {datum.seq}
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      <!-- 주문번호
+                          DealerOrder 주문번호
+                        -->
+                      {datum.customerOrderSeq}
+                    </div>
+                  </td>
+                  <td class="center">
+                    <div>
+                      <!-- 주문일 -->
+                       {datum.orderDate}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="right">
+                      <!-- 주문수량 -->
+                      <lightning-formatted-number value={datum.totalItemCount}></lightning-formatted-number>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="right">
+                      <!-- 구매금액 -->
+                      <lightning-formatted-number value={datum.totalItemAmount}></lightning-formatted-number>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="center">
+                      <!-- 통화 -->
+                      {datum.currencyCode}
+                    </div>
+                  </td>
+                  <td accesskey={idx} onclick={navigateToDetail}>
+                    <div class="center status">
+                      <!-- 상태 -->
+                      {datum.statusLabel}
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            
+            
+          </tbody>
+        </table>
+    </div>
+</template>

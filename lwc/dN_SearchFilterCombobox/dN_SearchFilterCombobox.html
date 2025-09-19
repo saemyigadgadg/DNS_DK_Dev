@@ -1,0 +1,79 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 11-22-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   10-08-2024   Hayeong Min   Initial Version
+-->
+<template>
+
+    <lightning-record-edit-form object-api-name="WorkOrder">
+        <div class="input-field-wrap">
+            <label class="input-label" for="text-input-id-47">Work Center</label>
+            <lightning-input-field 
+                variant="label-inline"
+                field-name="ServiceTerritoryId" 
+                value={serviceTerritoryId}
+                onchange={changeWorkcenter}
+                disabled={isSP}>
+            </lightning-input-field>
+        </div>
+        
+        <div class="input-wrap">
+            <!-- <label class="input-label slds-required">Service Resource</label> -->
+            <template if:true={isSelect}>
+                <lightning-input-field 
+                variant="label-inline"
+                field-name="Worker__c"
+                value={workerId}
+                onchange={changeWorker}
+                required="true"
+                >
+            </lightning-input-field>
+            </template>
+
+            <template if:false={isSelect}>
+                <label class="input-label" for="text-input-id-47">{cLabel.DNS_F_ServiceResource}</label>
+                <div class="slds-form-element slds-form-element_horizontal selected-wrap">
+                    <div onkeyup={handleKeyUp}>
+                        <lightning-input
+                            name="enter-search"
+                            variant="label-hidden"
+                            type="search"
+                            onfocus={workerFocus}
+                            onblur={wokerOutFocus}
+                            onchange={searchWorker}
+                            required
+                        ></lightning-input>
+                    </div>
+                    <template if:true={isDropdownOpen}>
+                    <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <template for:each={srMap} for:item="sr">
+                                <li role="presentation" class="slds-listbox__item" key={sr.value} data-value={sr.value}
+                                    onclick={handleWorker} onmousedown={handleMouseDown}>
+                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity"
+                                        role="option">
+                                        <span class="slds-media__figure slds-listbox__option-icon slds-listbox__option-icon-disabled">
+                                            <span class="slds-icon_container slds-icon-standard-account slds-icon_disabled">
+                                                <lightning-icon icon-name='standard:service_resource'  size='small' title='service_resource'></lightning-icon>
+                                            </span>
+                                        </span>
+                                        <span class="slds-media__body">
+                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">{sr.label}</span>
+                                        </span>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-record-edit-form>
+    
+</template>

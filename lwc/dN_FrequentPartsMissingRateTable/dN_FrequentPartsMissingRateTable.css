@@ -1,0 +1,10 @@
+.table-wrap:not(.tfoot-table) {
+    height: calc(100vh - 27rem);
+    overflow: scroll;
+}
+  
+.table-wrap thead {
+    position: sticky;
+    z-index: 3;
+    top: -1px;
+}

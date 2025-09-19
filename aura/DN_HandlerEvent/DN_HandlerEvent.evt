@@ -1,0 +1,7 @@
+<aura:event type="COMPONENT" description="Event Handler">
+    
+    <aura:attribute name="modalName" type="String"/>
+    <aura:attribute name="actionName" type="String"/>
+    <aura:attribute name="message" type="Object"/>
+
+</aura:event>

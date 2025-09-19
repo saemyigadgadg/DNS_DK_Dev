@@ -1,0 +1,12 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"  access="global" >
+	<lightning:omniToolkitAPI aura:id="omniToolkit" />  
+    <lightning:utilityBarAPI aura:id="utilitybar" />
+    <aura:attribute name="previouStatusName" type="String" default="Etc" />
+    <aura:attribute name="previouStatusId" type="String" default="" />
+    <aura:attribute name="EtcStatusId" type="String" default="" />
+    <aura:attribute name="isFromCTI" type="String" default="FALSE" />
+    <aura:attribute name="isInCall" type="String" default="FALSE" />
+    <aura:attribute name="isFirst" type="String" default="TRUE" />
+    <lightning:messageChannel type="WebSocketDisconnect__c" onMessage="{!c.handleDisconnect}" scope="APPLICATION"/>
+    <div class="slds-m-top_medium" style="text-align:center" > Omni Channel Connector</div>
+</aura:component>

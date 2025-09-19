@@ -1,0 +1,56 @@
+.THIS .slds-modal__container {
+  max-width: none;
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.THIS .modalContent {
+  background-color: #f3f3f3;
+}
+
+.THIS .top-card {
+  padding: 1rem 1.25rem;
+  margin: 0.75rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Table Styles */
+
+.THIS .table-wrap {
+  overflow: auto;
+}
+
+.THIS .modalContent table tr {    
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modalContent table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-top: 1px solid #D9D9D9;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .modalContent table td {
+  background-color: #fff;
+  padding: .25rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .modalContent table th+th,
+.THIS .modalContent table td+td {
+  border-left: 1px solid #D9D9D9;
+}

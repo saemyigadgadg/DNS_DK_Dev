@@ -1,0 +1,148 @@
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_TransferVideoController">
+
+
+    <aura:html tag="style">
+        .slds-modal__content:has(.cDN_TransferVideo) {
+        height: auto !important;
+        max-height: none !important;
+        padding: 0;
+        overflow-y:clip;
+        }
+        .slds-modal__container:has(.cDN_TransferVideo) {
+        width: 60vw;
+        min-width: 50rem;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_TransferVideo) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_TransferVideo) {
+            overflow-y: clip;
+        }
+    </aura:html>
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="phone" type="String" default="" />
+    <aura:attribute name="contactId" type="String" default="" />
+    <aura:attribute name="searchKey" type="String" default="" />
+    <aura:attribute name="videoList" type="List" default="[]" />
+    <aura:attribute name="selectedVideoList" type="List" default="[]" />
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!--Container-->
+    <div class="ExtractConditionModal">
+        <div>
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">영상 교육자료 송부</h2>
+            </header>
+            <div class="slds-modal__container">
+                <div class="slds-modal__content">
+                    <div class="search-table">
+                        <table>
+                            <tr>
+                                <th>고객명</th>
+                                <td>
+                                    <lightning:recordEditForm objectApiName="Case">
+                                        <lightning:inputField fieldName="ContactId" aura:id="contact"
+                                            value="{!v.contactId}" onchange="{!c.handleContact}"
+                                            variant="label-hidden" />
+                                    </lightning:recordEditForm>
+                                </td>
+                                <th>전화번호</th>
+                                <td>
+                                    <lightning:input type="text" label="" value="{!v.phone}" placeholder="'-'없이 입력해주세요."
+                                        variant="label-hidden" />
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+
+                            <tr>
+                                <th>검색어</th>
+                                <td style="border-right: 0;">
+                                    <lightning:input type="text" label="" value="{!v.searchKey}" placeholder="검색어를 입력해주세요."
+                                        variant="label-hidden" />
+                                </td>
+                                <td class="search-btn">
+                                    <lightning:button variant="brand" label="조회" onclick="{!c.handleSearch}" class="slds-m-left_x-small" />
+                                </td>
+                            </tr>
+                            
+                        </table>
+                    </div>
+                    <div class="list-wrapper">
+                        <div class="title">교육자료 목록</div>
+                        <aura:if isTrue="{!v.isLoading}">
+                            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                        </aura:if>        
+                        <div aura:id="table" class="list-table-wrapper">
+                            <table class="slds-table" aria-label="Example table of Opportunities with vertical borders">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col">
+                                            <div class="slds-truncate">
+                                                체크
+                                            </div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="번호">번호</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="제목">제목</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="소스">소스</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.videoList}" var="video" indexVar="j">
+                                        <tr class="slds-hint-parent">
+                                            <td data-label="Check">
+                                                <div class="slds-truncate">
+                                                    <lightning:input type="checkbox" variant="label-hidden" aura:id="checkbox"
+                                                        name="input1" onchange="{!c.hadleCheck}" />
+                                                </div>
+                                            </td>
+                                            <td class="number" data-label="번호">
+                                                <div class="slds-truncate" title="번호">
+                                                    {!j+1}
+                                                </div>
+                                            </td>
+                                            <td data-label="제목">
+                                                <div class="slds-truncate" title="제목">
+                                                    {!video.Name}
+                                                </div>
+                                            </td>
+                                            <td data-label="소스">
+                                                <div class="slds-truncate" title="소스">
+                                                    {!video.SourceURL__c}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="destructive-text" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}"
+                    class="slds-m-left_x-small" />
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Send}" onclick="{!c.handleSend}" class="slds-m-left_x-small" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

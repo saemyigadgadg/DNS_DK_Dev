@@ -1,0 +1,181 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 2024-11-07
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-26-2024   Hanyeong Choi   Initial Version
+  1.0   06-27-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome"
+                description="법인 신용정보 조회"
+                controller="DN_DealerIFController"
+>
+
+  <!-- 🚩Aura Attribute -->
+  <aura:attribute name="isLoading"  type="Boolean"  default="false" />
+  <aura:attribute name="name"       type="String" />
+  <aura:attribute name="badList"    type="List"     default="['test']" />
+  <aura:attribute name="goodList"   type="List"     default="['test']" />
+  <aura:attribute name="infoList"   type="List"     default="['test']" />
+  
+  <div class="total-wrap">
+    <!-- 🚩Loading Spinner -->
+    <aura:if isTrue="{! v.isLoading }">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+    <div class="flex-wrap">
+      <!-- 🚩Search Card -->
+      <lightning:card title="법인 신용정보 조회" iconName="standard:orders"  class="header-01">
+        <aura:set attribute="actions">
+          <lightning:button label="Search" iconName="utility:search" onclick="{! c.handleClickSearch }" />
+        </aura:set>
+        <div class="card-01">
+          <div class="field-wrap">
+            <p>Corporate Number<abbr class="slds-required" title="required">*</abbr></p>
+            <div class="input-wrap">
+              <lightning:input name="enterName" variant="label-hidden" value="{! v.name }" />
+            </div>
+          </div>
+        </div>
+      </lightning:card>
+    
+      <!-- 🚩List1 Card -->
+      <lightning:card title="불량거래 정보" iconName="standard:orders" class="list-container">
+        <div class="card-02">
+          <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+            <colgroup>
+              <col width="5%" />
+              <col width="5%" />
+              <col width="5%" />
+              <col width="23%" />
+              <col width="12%" />
+              <col width="7%" />
+              <col width="7%" />
+              <col width="7%" />
+              <col width="12%" />
+              <col width="11%" />
+              <col width="6%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>사유구분</th>
+                <th>사유코드</th>
+                <th>회사명</th>
+                <th>지점명</th>
+                <th>발생일</th>
+                <th>제공일</th>
+                <th>해제일</th>
+                <th>금액</th>
+                <th>연체금액</th>
+                <th>해제구분</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <aura:iteration items="{! v.badList }" var="result" indexVar="index">
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td class="center">{! result }</td>
+                  <td class="center">{! result }</td>
+                  <td class="center">{! result }</td>
+                  <td class="right">{! result }</td>
+                  <td class="right">{! result }</td>
+                  <td>{! result }</td>
+                </aura:iteration>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </lightning:card>
+
+      <!-- 🚩List2 Card -->
+      <lightning:card title="우량거래 정보" iconName="standard:orders" class="list-container">
+        <div class="card-02">
+          <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+            <colgroup>
+              <col width="7%" />
+              <col width="7%" />
+              <col width="7%" />
+              <col width="20%" />
+              <col width="11%" />
+              <col width="11%" />
+              <col width="14%" />
+              <col width="14%" />
+              <col width="9%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>정보구분</th>
+                <th>사유코드</th>
+                <th>회사명</th>
+                <th>지점명</th>
+                <th>개설일</th>
+                <th>만기일</th>
+                <th>금액</th>
+                <th>서류구분코드</th>
+                <th>FILLER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <aura:iteration items="{! v.goodList }" var="result" indexVar="index">
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td class="center">{! result }</td>
+                  <td class="center">{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                </aura:iteration>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </lightning:card>
+
+      <!-- 🚩List3 Card -->
+      <lightning:card title="조회처 정보" iconName="standard:orders" class="list-container">
+        <div class="card-02">
+          <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+            <colgroup>
+              <col width="14%" />
+              <col width="16%" />
+              <col width="46%" />
+              <col width="14%" />
+              <col width="10%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>정보구분</th>
+                <th>조회일</th>
+                <th>회사명</th>
+                <th>사유</th>
+                <th>FILLER</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <aura:iteration items="{! v.infoList }" var="result" indexVar="index">
+                  <td>{! result }</td>
+                  <td class="center">{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                  <td>{! result }</td>
+                </aura:iteration>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </lightning:card>
+    </div>
+  </div>
+</aura:component>

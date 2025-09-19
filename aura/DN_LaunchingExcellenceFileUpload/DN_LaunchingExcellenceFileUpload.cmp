@@ -1,0 +1,129 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-04-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-04-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_LaunchingExcellenceUploadController">
+
+    <aura:html tag="style">
+        @media (min-width: 48em) {
+        .slds-accordion__summary:has(.cDN_LaunchingExcellenceFileUpload) {
+        background-color: #dcdcdc80;
+        border: 1px solid #dcdcdc80;
+        border-radius: 7px;
+        padding: 7px!important;
+        margin-bottom: 10px!important
+        }
+        }
+
+        lightning-primitive-icon:has(.cDN_LaunchingExcellenceFileUpload) {
+        disply: none;
+        }
+    </aura:html>
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="isFileUpload" type="Boolean" default="false" />
+    <aura:attribute name="recordTypeId" type="String" default="" />
+    <aura:attribute name="recId" type="String" default="" />
+    <aura:attribute name="cvId" type="String" default="" />
+    <aura:attribute name="docId" type="String" default="" />
+    <aura:attribute name="docTitle" type="String" default="" />
+    <aura:attribute name="docIcon" type="String" default="doctype:pdf" />
+    <aura:attribute name="filetype" type="List" default="['.xls', '.pdf', '.xlsx']" />
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast & Navigation-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <lightning:workspaceAPI aura:id="workspace" />
+
+    
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+        class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            
+            <!-- Header -->
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">File Upload</h1>
+            </div>
+
+            <!-- Body -->
+            <div class="slds-modal__content slds-p-around_medium selectRecordType" id="modal-content-id-1">
+               
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+                <div class="body slds-form slds-align_absolute-center">
+                    <aura:if isTrue="{!!v.isFileUpload}">
+                    <div class="file-uploader">
+                        <lightning:fileUpload label="Attach receipt"
+                                            name="fileUploader"
+                                            multiple="false"
+                                            accept="{!v.filetype}"
+                                            recordId="{!v.recId}"
+                                            onuploadfinished="{!c.handleUploadFinished}" />
+                    </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.isFileUpload}">
+                        <div class="card">
+                            <div class="slds-file slds-file_card slds-has-title">
+                                <figure>
+                                    <a href="#" class="slds-file__crop">
+                                        <span class="slds-file__icon slds-icon_container" title="image">
+                                            <lightning:icon iconName="{!v.docIcon}"/>
+                                            <span class="slds-assistive-text">Image Title</span>
+                                        </span>
+                                    </a>
+                                    <figcaption class="slds-file__title slds-file__title_card">
+                                        <div class="slds-media slds-media_small slds-media_center">
+                                            <div class="slds-media__figure slds-line-height_reset">
+                                                <span class="slds-icon_container" title="image">
+                                                    <lightning:icon iconName="{!v.docIcon}" size="x-small"/>
+                                                    <span class="slds-assistive-text">image</span>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <span class="slds-file__text slds-truncate" title="{!v.docTitle}">{!v.docTitle}</span>
+                                            </div>
+                                        </div>
+                                    </figcaption>
+                                </figure>
+                                <div class="slds-file__actions-menu">
+                                    <div class="slds-button-group" role="group">
+                                      <button class="slds-button slds-button_icon slds-button_icon slds-button_icon-x-small" title="Delete" onclick="{!c.fileClear}">
+                                        <lightning:icon iconName="utility:delete" alternativeText="Delete" title="Delete" size="x-small"/>
+                                        <span class="slds-assistive-text">Delete</span>
+                                      </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                </div>
+
+                <!-- Footer -->
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral"
+                        onclick="{! c.handleCancel }">{!$Label.c.DNS_B_Cancel}</button>
+                    <button class="slds-button slds-button_brand" disabled="{!!v.isFileUpload}"
+                        onclick="{! c.handleSave }">{!$Label.c.DNS_B_Save}</button>
+                </div>
+            </div>
+
+            
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

@@ -1,0 +1,170 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-08-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   01-08-2025   Hyerin Ro   Initial Version
+-->
+<template>
+    <div class="slds-card total-wrap">
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='standard:shift_type' alternative-text='shift_type' size='small'
+                        title='shift_type'></lightning-icon>
+                </div>
+                <h2 class="slds-card__header-title">혁신관리지표</h2>
+            </header>
+            <div class="button-wrap">
+                <lightning-button label="조회" onclick={search} title="조회" variant="brand"></lightning-button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body body">
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <div class="card-01">
+                <div class="field-wrap">
+                    <p>조회일자</p>
+                    <div class="input-wrap">
+                        <lightning-input type="date" name="from" variant="label-hidden" value={dateFromValue}
+                            onchange={handleDateChange}></lightning-input>
+                        <span class="to">~</span>
+                        <lightning-input type="date" name="to" variant="label-hidden" value={dateToValue}
+                            onchange={handleDateChange}></lightning-input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table
+                    class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                    <colgroup>
+                        <col width="15%" />
+                        <col width="25%" />
+                        <col width="30%" />
+                        <col width="30%" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">STEP</th>
+                            <th scope="col">지표항목</th>
+                            <th scope="col">내용</th>
+                            <th scope="col">비고</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="slds-hint-parent">
+                            <td rowspan="9">기술상담/후처리</td>
+                            <td>기술상담 직접연결율(성공율)</td>
+                            <td>{res.TechAssigned_total}</td>
+                            <td>전체성공율 = 받은전환호 / 오더번호생성건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>1차접수후 기술상담 처리율(10분)</td>
+                            <td>{res.TechAssigned_10min}</td>
+                            <td>기술상담처리율 = 10분내처리건 / 오더번호생성건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>1차접수후 기술상담 처리율(20분)</td>
+                            <td>{res.TechAssigned_20min}</td>
+                            <td>기술상담처리율 = 20분내처리건 / 오더번호생성건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>1차접수후 기술상담 처리율(30분)</td>
+                            <td>{res.TechAssigned_30min}</td>
+                            <td>기술상담처리율 = 30분내처리건 / 오더번호생성건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>1차접수후 기술상담 처리율(40분)</td>
+                            <td>{res.TechAssigned_40min}</td>
+                            <td>기술상담처리율 = 40분내처리건 / 오더번호생성건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>1차접수후 기술상담 처리율(50분)</td>
+                            <td>{res.TechAssigned_50min}</td>
+                            <td>기술상담처리율 = 50분내처리건 / 오더번호생성건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>콜서비스 처리율</td>
+                            <td>{res.callService}</td>
+                            <td>콜서비스처리율 = 콜서비스건 / (오더번호생성건 + 콜서비스건)</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>출동배정율</td>
+                            <td>
+                                <table
+                                    class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                                    <colgroup>
+                                        <col width="50%" />
+                                        <col width="50%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">당일배정율</th>
+                                            <th scope="col">당일미배정율</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="slds-hint-parent">
+                                            <td class="intabletd">{res.WorkerAssigned}</td>
+                                            <td>{res.WorkerNotAssigned}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td>출동당일배정율 = 출동기사배정 / (오더번호생성건+1차접수건)<br />
+                                출동당일미배정율 = 출동기사미배정 / (오더번호생성건+1차접수건)</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>출동배정 거절율</td>
+                            <td>{res.WorkerDeclineAssigned}</td>
+                            <td>출동배정 거절율 = 출동거절건 / 출동배정건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td rowspan="2" class="intabletd">출동/완료</td>
+                            <td>출동기사 2시간이내 출동율</td>
+                            <td>{res.Worker_2hour}</td>
+                            <td>출동율 = 2시간이내 출동건 / 출동배정건</td>
+                        </tr>
+                        <tr class="slds-hint-parent">
+                            <td>출동기사 출발/예약 회신율</td>
+                            <td>
+                                <table
+                                    class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                                    <colgroup>
+                                        <col width="50%" />
+                                        <col width="50%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col">출발회신율</th>
+                                            <th scope="col">예약회신율</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="slds-hint-parent">
+                                            <td class="intabletd">{res.Worker_Departure_reply}</td>
+                                            <td>{res.Worker_Reservation_reply}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td>출발회신율 = 출발회신건 / 전체배정건<br />
+                                예약회신율 = 예약회신건 / 전체배정건 </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>

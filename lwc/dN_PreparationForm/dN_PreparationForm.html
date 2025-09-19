@@ -1,0 +1,128 @@
+<template>
+    <div class="preparation_form_wrapper">
+
+        <lightning-record-edit-form
+            object-api-name="PreparationCheckList__c"
+            record-id={recordId}
+            onsubmit={handleSubmit}
+            onerror={handleError}
+            onsuccess={handleSuccess}>
+        
+            <lightning-modal-header label={title}></lightning-modal-header>
+            <lightning-modal-body>
+                <template if:true={isLoading}>
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </template>
+
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="12">
+                        <div class="slds-theme_shade slds-section__title slds-p-around_x-small">
+                            {cLabel.DNS_S_PrepararionChecklistInformation}
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small">
+                        <lightning-input-field field-name="Account__c" required="true" variant={inputVarient} data-id="Account" onchange={handleAccChange}></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small">
+                        <lightning-input-field field-name="PreferredInstallationDate__c" required="true" variant={inputVarient} ></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small">
+                        <!-- <lightning-input-field field-name="ContactPerson__c" required="true" variant={inputVarient} ></lightning-input-field> -->
+                        <!-- <lightning-record-picker
+                            data-id="Contact"
+                            object-api-name="Contact"
+                            label={cLabel.DNS_F_ContactPerson}
+                            filter={contactFilter}
+                            required="true"
+                        ></lightning-record-picker>  -->
+                        <lightning-combobox
+                            data-id="Contact"
+                            label={cLabel.DNS_F_ContactPerson}
+                            options={contactOption}
+                            required="true"
+                            variant={inputVarient}
+                        ></lightning-combobox>
+                        <!-- onchange={handleChange}  -->
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="12" medium-device-size="6" large-device-size="6" padding="around-small">
+                        <!-- <lightning-input-field field-name="SalesReps__c" required="true" variant={inputVarient} ></lightning-input-field> -->
+                        <!-- <lightning-record-picker
+                            data-id="SalesRep"
+                            object-api-name="User"
+                            label={cLabel.DNS_F_SalesRep}
+                            filter={userFilter}
+                            required="true"
+                        ></lightning-record-picker>  -->
+                        <lightning-combobox
+                            data-id="SalesRep"
+                            label={cLabel.DNS_F_SalesRep}
+                            options={salesRepOption}
+                            required="true"
+                            variant={inputVarient}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="12" padding="around-small" class="table_wrapper">
+                        <table border="1">
+                            <!-- header -->
+                            <tr>
+                                <th style="width: 10%; min-width: 70px;">항목</th>
+                                <th >설치시운전 고객사 준비사항</th>
+                                <th style="width: 10%; min-width: 90px;">예정일</th>
+                                <th style="width: 10%; min-width: 90px;">완료일</th>
+                                <th style="width: 10%; min-width: 90px;">영업확인</th>
+                                <th style="width: 10%; min-width: 90px;">고객확인</th>
+                                <!-- <th style="width: 10%; min-width: 70px;">{cLabel.DNS_C_Item}</th>
+                                <th>{cLabel.DNS_C_PreparationBeforeInstallation}</th>
+                                <th style="width: 10%; min-width: 90px;">{cLabel.DNS_C_PlannedDate}</th>
+                                <th style="width: 10%; min-width: 90px;">{cLabel.DNS_C_CompletionDate}</th> -->
+                            </tr>
+                            
+                            <!-- body -->
+                            <template for:each={items} for:item="item">
+                                <tr key={item.pField}>
+                                    <template if:true={item.isFirst}>
+                                      <td rowspan={item.count}>{item.sectionName}</td>
+                                    </template>
+                                    <td>{item.content}</td>
+                                    <td>
+                                      <lightning-input-field field-name={item.pField} variant="label-hidden"></lightning-input-field>
+                                    </td>
+                                    <td>
+                                      <lightning-input-field field-name={item.cField} variant="label-hidden"></lightning-input-field>
+                                    </td>
+                                    <td>
+                                        <lightning-input-field field-name={item.salesCheck} variant="label-hidden"></lightning-input-field>
+                                    </td>
+                                    <td>
+                                        <lightning-input-field field-name={item.customerCheck} variant="label-hidden"></lightning-input-field>
+                                    </td>
+                                </tr>
+                            </template>
+                        </table>
+                    </lightning-layout-item>
+                    
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <div class="slds-theme_shade slds-section__title slds-p-around_x-small">
+                            {cLabel.DNS_S_Description}
+                        </div>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input-field field-name="SpecialNotes__c" variant={inputVarient} ></lightning-input-field>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-input-field field-name="Map__c" variant={inputVarient} ></lightning-input-field>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+            </lightning-modal-body>
+            <lightning-modal-footer>
+                <div class="preparation_footer_wrapper">
+                    <lightning-button label={cLabel.DNS_B_Cancel} onclick={handleClose} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button label={cLabel.DNS_B_Save} type="submit" variant="brand" class="slds-m-left_x-small"></lightning-button>
+                </div>
+            </lightning-modal-footer>
+        </lightning-record-edit-form>
+    </div>
+</template>

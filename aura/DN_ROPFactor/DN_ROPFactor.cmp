@@ -1,0 +1,225 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 2024-07-10
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="ROP Factor"
+  extends="c:DN_Helper"
+  controller="DN_ROPFactorController"
+  >
+
+  <!-- attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="utility_icons" type="String" default="utility:up" />
+  <aura:attribute name="utility_open" type="Boolean" default="true" />
+  <!-- <aura:attribute name="itemQuantitySum" type="String" default="0" /> -->
+  <!-- <aura:attribute name="materialAmountSum" type="Decimal" default="0" /> -->
+  <aura:attribute name="abcIndicatorOptions" type="List" default="[
+        {'label': 'ALL', 'value': 'ALL'},
+        {'label': 'A:HIGH STABLE DEMAND &amp; HIGH AMT', 'value': 'A:HIGH STABLE DEMAND &amp; HIGH AMT'},
+        {'label': 'B:HIGH STABLE DEMAND &amp; MID AMT', 'value': 'B:HIGH STABLE DEMAND &amp; MID AMT'},
+        {'label': 'C:HIGH STABLE DEMAND &amp; LOW AMT', 'value': 'C:HIGH STABLE DEMAND &amp; LOW AMT'},
+        {'label': 'D:MID STABLE DEMAND &amp; HIGH AMT', 'value': 'D:MID STABLE DEMAND &amp; HIGH AMT'},
+        {'label': 'E:MID STABLE DEMAND &amp; MID AMT', 'value': 'E:MID STABLE DEMAND &amp; MID AMT'},
+        {'label': 'F:MID STABLE DEMAND &amp; LOW AMT', 'value': 'F:MID STABLE DEMAND &amp; LOW AMT'},
+        {'label': 'G:NON-CONSTANT DEMAND &amp; HIGH AMT', 'value': 'G:NON-CONSTANT DEMAND &amp; HIGH AMT'},
+        {'label': 'H:NON-CONSTANT DEMAND &amp; MID AMT', 'value': 'H:NON-CONSTANT DEMAND &amp; MID AMT'},
+        {'label': 'I:NON-CONSTANT DEMAND &amp; LOW AMT', 'value': 'I:NON-CONSTANT DEMAND &amp; LOW AMT'},
+        {'label': 'M:NO DEMAND - SUBSTITUTED MAT.', 'value': 'M:NO DEMAND - SUBSTITUTED MAT.'},
+        {'label': 'N:NO DEMAND HISTORY(12M)', 'value': 'N:NO DEMAND HISTORY(12M)'},
+        {'label': 'R:INITIAL SERVICE PARTS', 'value': 'R:INITIAL SERVICE PARTS'},
+        {'label': 'Z:SPP Irrelevant', 'value': 'Z:SPP Irrelevant'}
+    ]" />
+  
+  <aura:attribute name="dividePageCount" type="Integer" default="20" />
+  <aura:attribute name="allResultCount" type="Integer" default="0" />
+  <aura:attribute name="currentPage" type="Integer" default="1" />
+  <aura:attribute name="pageCountList" type="List" default="[0]" />
+  <aura:attribute name="pageList" type="List" />
+  <aura:attribute name="selectedRow" type="Object" />
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+
+  <!-- init -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="tslList" type="List" />
+  <aura:attribute name="weightList" type="List" />
+
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCmpEvent}" />
+
+  <div class="total-wrap ">
+    <!-- <article class="slds-card"> -->
+
+      <!-- Header -->
+      <!-- <div class="header">
+
+        <div class="title slds-grid">
+          <lightning:icon iconName="standard:custom" size="small" alternativeText="Indicates approval" />
+          <h2 class="slds-truncate">ROP Factor</h2>
+        </div>
+
+        <! W.AMD Detail Info : W.AMD Detail Modal 
+        <div aura:id="targetServiceLevelModal"></div>
+
+        <! Other Dealer Stock Detail Info : Other Dealer Stock Modal -->
+        <!-- <div aura:id="OtherDealerStockModal"></div> 
+
+        <div class="button-wrap">
+          <lightning:button name="SaveItems" label="Save" iconName="utility:check" iconPosition="left" onclick="{!c.handleSave}"
+          variant="brand" />
+          <lightning:button name="searchItems" label="Search" iconName="utility:search" iconPosition="left"
+            onclick="{!c.searchPOList}" />
+        </div>
+      </div> -->
+
+      <!-- Body -->
+      <div class="body">
+        <!--if Modal 007-->
+        <div aura:id="targetServiceLevelModal"></div>
+        <!-- Card 01 : 검색 필터 -->
+        <!-- <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p>ABC Indicator</p>
+            <div class="input-wrap">
+              <lightning:combobox name="abcIndicator" value="ALL" options="{! v.abcIndicatorOptions }" onchange=""
+                variant="label-hidden" />
+            </div>
+          </div>
+        </div> -->
+
+        <!-- Card 02 : 검색 결과 테이블 -->
+        <div class="card-02">
+
+          <div class="table-wrap">
+            <!-- Table 01 -->
+            <div class="table-01 table">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="33%" />
+                  <col width="33%" />
+                  <col width="34%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">ABC</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">TSL</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">SVC Factor</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.tslList}" var="tsl" indexVar="t">
+                    <tr class="slds-hint-parent">
+                      <td data-label="ABC" class="center">
+                        <div class="slds-truncate" title="ABC">
+                          {!tsl.ABCIndicator__c}
+                          <!-- <lightning:input type="text" name="abc" variant="label-hidden" value="{!tsl.MAABC}" readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="TSL" class="right">
+                        <div class="slds-truncate" title="TSL">
+                          <lightning:formattedNumber value="{!tsl.TargetServiceLevel__c}"  maximumFractionDigits="2" 
+                          minimumFractionDigits="2"/>
+                          
+                          <!-- <lightning:input type="text" name="tsl" variant="label-hidden" value="{!tsl.TSL}" readonly="true" /> -->
+                          <span>
+                            <lightning:buttonicon iconName="utility:search" size="medium"
+                              onclick="{!c.opentargetServiceLevel}" name="{!t}" />
+                          </span>
+                        </div>
+                      </td>
+                      <td data-label="SVC Factor" class="right">
+                        <div class="slds-truncate" title="SVC Factor">
+                          <lightning:formattedNumber value="{!tsl.SVCFactor__c}"  maximumFractionDigits="2" 
+                          minimumFractionDigits="2"/>
+                          <!-- <lightning:input type="text" name="svcFactor" variant="label-hidden" value="{!tsl.SFT}" readonly="true" /> -->
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table 02  -->
+            <div class="table-02 table">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="25%" />
+                  <col width="25%" />
+                  <col width="25%" />
+                  <col width="25%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">ABC</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Price From</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Price To</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Weight</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.weightList}" var="weight" indexVar="w">
+                    <tr class="slds-hint-parent">
+                      <td data-label="ABC2" class="center">
+                        <div class="slds-truncate" title="ABC2">
+                          {!weight.ABCIndicator__c}
+                          <!-- <lightning:input type="text" name="abc2" variant="label-hidden" value="{!weight.MAABC}" readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="Price From" class="right">
+                        <div class="slds-truncate" title="Price From">
+                          
+                          <lightning:formattedNumber value="{!weight.PriceFrom__c}"/>
+                          
+                          <!-- <lightning:input type="text" name="priceFrom" variant="label-hidden" value="{!weight.PRICEFROM}" readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="Price To" class="right">
+                        <div class="slds-truncate" title="Price To">
+                          <lightning:formattedNumber value="{!weight.PriceTo__c}"/>
+                          
+                          <!-- <lightning:input type="text" name="priceTo" variant="label-hidden" value="{!weight.PRICETO}" readonly="true" /> -->
+                        </div>
+                      </td>
+                      <td data-label="Weight" class="right">
+                        <div class="slds-truncate" title="Weight">
+                          <!--min="0" max="100" step="0.1"-->
+                          <lightning:input type="text" name="{!w}" onchange="{!c.handleValue}" variant="label-hidden" value="{!weight.Weight__c}" /> 
+                        </div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    <!-- </article> -->
+  </div>
+
+</aura:component>

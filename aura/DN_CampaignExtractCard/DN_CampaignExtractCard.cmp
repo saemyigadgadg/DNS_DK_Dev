@@ -1,0 +1,116 @@
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CampaignExtractConditionController">
+
+    <aura:attribute name="recordId"                     type="String" />
+    <aura:attribute name="extractTarget"                type="String"  default="" />
+    <aura:attribute name="conditionDate"                type="String"  default="" />
+    <aura:attribute name="fromDate"                     type="Date"    default="" />
+    <aura:attribute name="toDate"                       type="Date"    default="" />
+    <aura:attribute name="ticketType"                   type="String"  default="" />
+    <aura:attribute name="happyCallList"                type="List"    default="[]" />
+    <aura:attribute name="executeExtract"               type="Boolean" default="false" />
+    <aura:attribute name="setExtractCondition"          type="Boolean" default="false" />
+    <aura:attribute name="isLoading"                    type="Boolean" default="false" />
+    <aura:attribute name="SObjectName"                  type="String" />
+    <aura:attribute name="setExtractConditionLabel"     type="String" />
+
+    <aura:attribute name="extractCondition" type="String" default="" />
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <lightning:empApi aura:id="empApi"/> <!--플랫폼 이벤트-->
+
+    <!--고객사명 모달-->
+    <div aura:id="SetExtractCondition" />
+    
+    <lightning:card variant="Narrow" title="{!$Label.c.DNS_T_HappyCallPlan}" iconName="standard:campaign">
+        <aura:set attribute="actions">
+            <aura:if isTrue="{! v.SObjectName == 'CampaignMaster__c' }">
+                <lightning:buttonGroup>
+                    <lightning:buttonIcon iconName="utility:refresh" variant="brand" alternativeText="Refresh" title="Refresh" onclick="{!c.clickRefresh}" />
+                    <lightning:button label="{!v.setExtractConditionLabel}" title="추출조건설정" onclick="{! c.handleExtract }" />
+                </lightning:buttonGroup>
+            </aura:if>
+        </aura:set>
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="card-02 top-card">
+            <div class="table-02">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                        <col width="10%" />
+                        <col width="20%" />
+                        <col width="15%" />
+                        <col width="23%" />
+                        <col width="12%" />
+                        <col width="12%" />
+                        <col width="5%" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_ExtractTarget}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_ExtractCondition}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_TicketType}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_TicketTypeMiddle}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_StartDate}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_EndDate}</div>
+                            </th>
+                            <aura:if isTrue="{! v.SObjectName == 'CampaignMaster__c' }">
+                                <th scope="col">
+                                    <div class="slds-truncate" title=""></div>
+                                </th>
+                            </aura:if>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!empty(v.happyCallList)}" >
+                            <tr>
+                                <td scope="row" colspan="7" style="text-align: center;"><p>등록된 추출 조건이 없습니다.</p></td>
+                            </tr>
+                        </aura:if>
+                        <aura:iteration items="{!v.happyCallList}" var="happyCallList" indexVar="j">
+                            <tr>
+                                <td scope="row">
+                                    <div>{!happyCallList.ExtractionTarget__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!happyCallList.ExtractConditionLabel__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!happyCallList.TicketTypeLabel__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!happyCallList.TicketTypeMiddleLabel__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!happyCallList.FromDate__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!happyCallList.ToDate__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>
+                                        <lightning:buttonicon iconName="utility:delete" accesskey="{!j}" onclick="{!c.conditionDelete}" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

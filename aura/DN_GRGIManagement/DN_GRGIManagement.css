@@ -1,0 +1,215 @@
+/* .THIS .slds-card {
+    height: auto;
+    overflow: hidden;
+} */
+
+/* Header */
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* 헤더 상단 고정 */
+.THIS.total-wrap .table-wrap {
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.THIS.total-wrap .table-wrap:not(.tfoot-table) {
+    height: calc(100vh - 34rem);
+}
+
+.THIS.total-wrap .table-wrap thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+}
+
+/* Body */
+
+/* .THIS {
+    background-color: #F3F3F3;
+} */
+
+.THIS .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Table Design */
+/* Table Design */
+
+.THIS table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS table th+th {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+}
+
+.THIS table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+
+/* Sticky Tables */
+.THIS .table-wrap table thead {
+    position: sticky;
+    top: 0;
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.15);
+}
+
+.THIS .table-wrap tr {
+    height: 28px;
+}
+
+.THIS .table-wrap {
+    min-height: 200px;
+}
+/* Table 01 */
+.THIS .table-01 {
+    flex: 2;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #c9c9c9;
+}
+
+.THIS .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+    background-color: #f3f3f3;
+  }
+
+.THIS .table-01 table tr>th:last-child {
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .table-01 table tr>td:last-child {
+    border-right: 1px solid #D9D9D9;
+    font-size: 13px;
+}
+
+.THIS .table-02 {
+    flex: 3;
+    overflow: scroll;
+    table-layout: fixed;
+}
+
+/* Table 03 */
+
+.THIS .table-03{
+    overflow: auto;
+    display: flex;
+}
+.THIS .table-03 table {
+    table-layout: fixed;
+    border-top: 1px solid #C9C9C9;
+    flex: 1;
+    width: unset;
+}
+
+.THIS .table-03 table th{
+    width: fit-content;
+}
+.THIS .table-03 table td {
+    width: 10%;
+    text-align: right;
+}
+
+.THIS .table-03 table tr {
+    border-bottom: 1px solid #C9C9C9;
+}
+.THIS .table-03 table tr:nth-of-type(odd){
+    border-top: 2px solid #C9C9C9;
+}
+
+.THIS .table-03 table th+td,
+.THIS .table-03 table td+th {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS .table-03 table th{
+    border-top: none;
+    border-bottom: none;
+}
+.THIS .table-03 table td {
+    padding: 0.25rem 0.5rem;
+}
+
+.THIS .table-03 table .part01 {
+    background-color: #EBF7E6 !important;
+}
+
+.THIS .table-03 table .part02 {
+    background-color: #EEF4FF !important;
+}
+
+.THIS .table-03 table .part03 {
+    background-color: #FEF0F3 !important;
+}
+
+
+
+/* Table Class */
+
+.THIS .center{text-align: center !important;}
+.THIS .left{text-align: left !important;}
+.THIS .right{text-align: right !important;}
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (max-width:767px) {
+  .THIS .card-01{
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

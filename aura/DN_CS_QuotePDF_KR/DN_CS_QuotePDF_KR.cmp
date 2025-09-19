@@ -1,0 +1,85 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 2025-03-10
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<aura:component controller="DN_QuotationPDFController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="verSion" type="String" />
+    <aura:attribute name="url" type="String" default="" />
+    <aura:attribute name="lineItems" type="Object[]" />
+    <aura:attribute name="languageSelection" type="String" default="KR" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <aura:iteration items="{!v.lineItems}" var="item">
+        <tr>
+            <td>{!item.Sequence}</td>
+            <td>{!item.ProductName}</td>
+            <td>{!item.Quantity}</td>
+            <td>{!item.UnitPrice}</td>
+            <td>{!item.TotalPrice}</td>
+        </tr>
+    </aura:iteration>
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_CS_QuotePDF_KR) {
+            width: calc(100vw - 42rem);
+            max-width: 132rem;
+            padding-bottom: 2rem;
+        }
+        .slds-modal__content:has(.cDN_CS_QuotePDF_KR) {
+            height:auto !important;
+            max-height: none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CS_QuotePDF_KR) {
+            padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CS_QuotePDF_KR){
+            overflow: hidden;
+        }
+
+        .slds-modal__container *:has(.cDN_CS_QuotePDF_KR .slds-modal__footer) {
+            overflow: visible;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <!-- Header -->
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Quotation {!v.verSion}</h2>
+        </header>
+        <!-- Body -->
+        <div class="slds-modal__content">
+            <div class="iframe-wrap">
+                <iframe src="{!v.url}" style="width: 100%; height:65vh;"></iframe>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div aura:id="SelectedBtn" class="modal-footer slds-modal__footer slds-size_1-of-1"> 
+            <!-- <aura:if isTrue="{!not(v.isMobile)}" > -->
+                <div class="footer-btn">
+                    <!-- <lightning:buttonIcon iconName="utility:settings" alternativeText="Settings" onclick="{!c.handleSetting}"
+                    size='Large' variant="label-hidden" /> -->
+                    <lightning:buttonMenu iconName="utility:work_order_type" 
+                                        alternativeText="Show menu" 
+                                        menuAlignment="auto" 
+                                        onselect="{! c.handleLanguageChange }">
+                        <lightning:menuItem value="KR" label="KR" />
+                        <lightning:menuItem value="EN" label="EN" />
+                    </lightning:buttonMenu>
+                </div>
+            <!-- </aura:if> -->
+            <div class="button-wrap">
+                <lightning:button variant="Neutral" class="slds-button" label="Cancel" onclick="{!c.closeClick}"/>
+                <lightning:button variant="Brand" class="slds-button" label="Save" onclick="{!c.createPDF}"/>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

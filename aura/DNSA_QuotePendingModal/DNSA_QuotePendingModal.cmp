@@ -1,0 +1,110 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 05-07-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   02-10-2025   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+                controller="DN_CommodityController">
+
+    <aura:attribute name="isLoading"    type="Boolean"  default="false"/>
+    <aura:attribute name="isPending"    type="Boolean"  default="false"/>
+    <aura:attribute name="recordId"     type="String" />
+    <aura:attribute name="reason"       type="String"   default="" />
+    <aura:attribute name="stockNum"     type="String"   default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDNSA_QuotePendingModal) {
+            width:100%;
+            max-width: 32rem;
+            padding: 0 !important;
+        }
+        .slds-modal__content:has(.cDNSA_QuotePendingModal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_QuotePendingModal) {
+            padding:0;
+        }
+    </aura:html>
+
+    <aura:if isTrue="{! !v.isPending }">
+        <!-- Pending -->
+        <div class="slds-modal__container">
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="medium" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- 🚩 Modal Header -->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">Request Pending</h2>
+                <!-- Close Button -->
+                <button class="close_button_template slds-modal__close">
+                    <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal" onclick="{!c.closeModal}">
+                    </lightning:icon>
+                </button>
+            </header>
+    
+            <!-- 🚩 Modal Body -->
+            <div class="slds-modal__content">
+                <div class="modal-body">
+                    <lightning:textarea class="textarea-container" aura:id="inputReason" label="Reason" value="{!v.reason}" required="true"/>
+                </div>
+            </div>
+    
+            <!-- 🚩Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}"/>
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Confirm}" onclick="{!c.handleClickPending}"/>
+            </footer>
+        </div>
+
+        <!-- Confirm -->
+        <aura:set attribute="else">
+            <div class="slds-modal__container">
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="medium" alternativeText="Loading" />
+                </aura:if>
+
+                <!-- 🚩 Modal Header -->
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">Pending Decision</h2>
+
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal" onclick="{!c.closeModal}">
+                        </lightning:icon>
+                    </button>
+                </header>
+        
+                <!-- 🚩 Modal Body -->
+                <div class="slds-modal__content">
+                    <div class="modal-body">
+                        <lightning:textarea class="textarea-container" aura:id="inputReason" label="Reason" value="{!v.reason}" required="true"/>
+                    </div>
+                </div>
+        
+                <!-- 🚩Modal Footer -->
+                <footer class="slds-modal__footer footer-container">
+                    <div>
+                        <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}"/>
+                    </div>
+                    <div>
+                        <lightning:button variant="destructive" label="{!$Label.c.DNS_B_REJECT}" onclick="{!c.handleClickReject}"/>
+                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Confirm}" onclick="{!c.handleClickConfirm}"/>
+                    </div>
+                </footer>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

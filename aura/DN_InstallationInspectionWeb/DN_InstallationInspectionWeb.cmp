@@ -1,0 +1,45 @@
+<!--
+  @description       : 
+  @author            : Hayeong Min
+  @group             : 
+  @last modified on  : 02-24-2025
+  @last modified by  : Hayeong Min
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-24-2025   Hayeong Min   Initial Version
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    access="global">
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_InstallationInspectionWeb) {
+            width: 65%;
+            max-width: calc(100vw - 6rem);
+            min-width: unset;
+            padding-bottom: 2rem;
+        }
+        .slds-modal__container:has(.cDN_InstallationInspectionWeb .radio),
+        .slds-modal__container:has(.cDN_InstallationInspectionWeb .docDownload) {
+            width: 32rem !important;
+        }
+        .slds-modal__content:has(.cDN_InstallationInspectionWeb) {
+            height: auto !important;
+            max-height: none !important;
+            padding: 0;
+            overflow-y:clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_InstallationInspectionWeb) {
+            padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_InstallationInspectionWeb) {
+            overflow-y: clip;
+        }
+    </aura:html>
+
+    <aura:attribute name="isDeskTop" type="Boolean" default="true"/>
+
+    <c:dN_InstallationInspectionBtn aura:id="childCmp" recordId="{!v.recordId}" isDeskTop="{!v.isDeskTop}" oncloseButton="{!c.handleButtonClick}" />
+
+
+</aura:component>

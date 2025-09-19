@@ -1,0 +1,88 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 07-12-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-02-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_BinManagementController"
+  description="저장위치 관리">
+
+  <!--Attribute-->
+  <!-- 상속 페이지 설정 기본값-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="itemsPerPage" type="Integer"/>
+  <aura:attribute name="currentPage" type="Integer"/>
+  <aura:attribute name="pagesPerGroup" type="Integer"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="isExcelData" type="Boolean" default="false" /> <!-- whereCondition-->
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" /> <!-- whereCondition-->
+  <aura:attribute name="totalRecordSize" type="Integer" default="0" />
+  <aura:attribute name="pageMap" type="Object" />
+
+  <!--r.totalRecordSize-->
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+    onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!--Handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+      <!-- Card 02 : 조회테이블-->
+      <!-- <div class="card-02 top-card slds-scrollable"> -->
+        
+
+        <div class="table-wrap">
+          <div class="button-wrap slds-scrollable">
+            <lightning:button iconName="utility:print" label="출력" onclick="{!c.handleOutput}" />
+            <lightning:button iconName="utility:delete" label="삭제" onclick="{!c.handleDelete}" />
+          </div>
+          <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table slds-scrollable">
+            
+            <thead>
+              <tr class="slds-line-height_reset">
+                <th scope="col" style="width: 2%;">
+                  <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }"
+                    variant="label-hidden" />
+                </th>
+                <th scope="col" style="width: 25%;">
+                  <div class="slds-truncate" title="">저장위치</div>
+                </th>
+                <th scope="col" style="width: 70%;">
+                  <div class="slds-truncate" title="">설명</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <aura:iteration items="{!v.recordList}" var="stock" indexVar="j">
+                <tr class="slds-hint-parent">
+                  <td class="center">
+                    <lightning:input type="checkbox" name="{!j}" aura:id="checkbox" onchange="{! c.handleCheckboxChange }"
+                      variant="label-hidden" />
+                  </td>
+                  <td scope="row">
+                    <div>{!stock.FM_Loc__c}</div>
+                  </td>
+                  <td scope="row">
+                    <div>{!stock.Description__c}</div>
+                  </td>
+                </tr>
+              </aura:iteration>
+            </tbody>
+          </table>
+        </div>
+      <!-- </div> -->
+   
+</aura:component>

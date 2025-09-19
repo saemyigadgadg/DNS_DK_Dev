@@ -1,0 +1,152 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 03-04-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-10-29   youjin.shimk@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_PortalModalController"
+    description="서비스맨 모달">
+
+    <!-- Event -->
+    <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+    <!-- attribute -->
+    <aura:attribute name="inputModalOpen"       type="Boolean"  default="false" /> <!-- Dealer Modal -->
+    <aura:attribute name="type"                 type="String"   default="" />
+    <aura:attribute name="workOrderId"          type="String"   default="" />
+    <aura:attribute name="workerList"           type="List"     default="[]" />
+    <aura:attribute name="workCenterList"       type="List"     default="[]" />
+    <aura:attribute name="curruntWorkcenterId"  type="String"   default="" /> <!-- 로그인 된 유저의 Work Center ID -->
+    <aura:attribute name="curruntWorkcenter"    type="String"   default="" /> <!-- 로그인 된 유저의 Work Center -->
+    <aura:attribute name="sapPartnerNumber"     type="String"   default="" /> <!-- 파트너 (SAP의 HR 넘버) -->
+    <aura:attribute name="workerName"           type="String"   default="" /> <!-- 이름 -->
+    <aura:attribute name="workCenterCode"       type="String"   default="" /> <!-- Work Center Code -->
+    <aura:attribute name="workCenterName"       type="String"   default="" /> <!-- Work Center Name -->
+    <aura:attribute name="isBranch"             type="boolean"  default="false" /> <!-- 상위 컴포넌트에서 넘어온 지사 여부 -->
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="serviceManModal">
+        <div aura:id="serviceManModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_medium">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <div class="header-wrap">
+                        <!-- <h2 class="slds-text-heading_medium">서비스맨</h2> -->
+                        <h2 class="slds-text-heading_medium">{!$Label.c.service_fld_worker}</h2>
+                    </div>
+                    
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='brand' size='small'
+                            title='close' name="closeModal" onclick="{!c.modalCancel}">
+                        </lightning:icon>
+                    </button>
+                </header>
+                <!-- Modal Content -->
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                    <!-- <div class="card-01 top-card">
+                        <div class="field-wrap">
+                            <p>Work Center</p>
+                            <div class="input-wrap">
+                                <lightning:input type="text" value="{!v.curruntWorkcenter}" variant="label-hidden" />
+                                
+                                <aura:if isTrue="{!v.isBranch}">
+                                    <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search" onclick="{!c.openDealerModal}" />
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="card-02 top-card">
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <!-- <th>파트너</th> -->
+                                        <th>Work Center</th>
+                                        <th>{!$Label.c.service_fld_worker}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.workerList}" var="worker" indexVar="index">
+                                        <tr class="slds-hint-parent" onclick="{!c.rowClick}" data-record="{!index}">
+                                            <td>{!worker.workCenterName}</td>
+                                            <td>{!worker.workerPartnerNumber}&nbsp;{!worker.Name}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                        onclick="{!c.modalCancel}" />
+                </footer>
+            </div>
+
+            <!-- 워크센터 모달 -->
+            <aura:if isTrue="{!v.inputModalOpen}">
+                <div class="slds-modal slds-fade-in-open" style="z-index: 9002 !important;">
+                    <div class="modal-2 slds-modal__container">
+                        <!-- Modal Header -->
+                        <header class="slds-modal__header">
+                            <!-- <h2 class="slds-text-heading_medium">워크센터</h2> -->
+                            <h2 class="slds-text-heading_medium">Work Center</h2>
+            
+                            <!-- Close Button -->
+                            <button class="close_button_template slds-modal__close">
+                                <lightning:icon iconName='utility:close' alternativeText='close' variant='brand' size='small'
+                                    title='close' name="closeModal" onclick="{!c.closeDealerModal}">
+                                </lightning:icon>
+                            </button>
+                        </header>
+                        <!-- Modal Content -->
+                        <div class="modal-body slds-modal__content slds-p-around_medium">
+                            <div class="card-01 top-card">
+                                <div class="table-wrap">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <!-- <th>워크센터 코드</th>
+                                                <th>워크센터명</th> -->
+                                                <th>Work Center Code</th>
+                                                <th>Work Center Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.workCenterList}" var="center" indexVar="index">
+                                                <tr class="slds-hint-parent" onclick="{!c.sendWorkInfo}" data-record="{!index}">
+                                                    <td>{!center.WCID__c}</td>
+                                                    <td>{!center.Name}</td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Modal Footer -->
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                                onclick="{!c.closeDealerModal}" />
+                        </footer>
+                    </div>
+                </div>
+                <div class="modal-2-bg slds-backdrop slds-backdrop_open"></div>
+            </aura:if>
+            
+        </div>
+    </div>
+
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

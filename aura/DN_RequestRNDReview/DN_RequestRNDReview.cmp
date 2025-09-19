@@ -1,0 +1,71 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 02-28-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-06-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force.hasSObjectName,lightning:actionOverride"
+                controller="DN_SQController" 
+                description="SQ RND Request Review">
+
+    
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_RequestRNDReview) {
+            width:100%;
+            max-width: 32rem;
+            padding: 0 !important;
+        }
+        .slds-modal__content:has(.cDN_RequestRNDReview) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_RequestRNDReview) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+
+        <!-- 🚩 Modal Header -->
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">{!$Label.c.DNS_SQR_T_REVIEWTITLE}</h2>
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal" onclick="{!c.closeModal}">
+                </lightning:icon>
+            </button>
+        </header>
+
+        <!-- 🚩 Modal Body -->
+        <div class="slds-modal__content">
+            <!-- 🚩Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <div class="modal-body">
+                <p class="text">{!$Label.c.DNS_SQR_M_REVIEWMESSAGE}</p>
+            </div>
+        </div>
+
+        <!-- 🚩Modal Footer -->
+        <footer class="slds-modal__footer">
+            <button class="slds-button slds-button_neutral" onclick="{! c.handleClickClose }">{!$Label.c.DNS_B_Cancel}</button>
+            <lightning:button class="slds-button slds-button_neutral" variant="brand" label="{!$Label.c.DNS_B_Confirm}" onclick="{! c.handleClickRequest }" />
+        </footer>
+    </div>
+</aura:component>

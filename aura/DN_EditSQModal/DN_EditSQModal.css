@@ -1,0 +1,72 @@
+.THIS .slds-modal__container {
+    width: 68rem;
+    max-width: calc(100vw - 8rem);
+    min-width: 32rem;
+}   
+
+.THIS .slds-modal__content {
+    max-height: calc(100vh - 13rem) !important;
+    height: 27rem !important;
+    position: relative;
+    align-items: unset !important;
+}
+
+/* Section Header */
+
+.THIS .section-header{
+    padding: 0.25rem;
+    padding-left: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.THIS .section-header h2 {
+    font-size: 1rem;
+    line-height: 1.875rem;
+}
+
+
+/* Section Body */
+
+.THIS .slds-align_absolute-center {
+    display: unset !important;
+    margin: 0;
+}
+
+.THIS .section-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.THIS .section-container .col {
+    padding: 0.5rem 0.75rem;
+    width: 50%;
+}
+
+.THIS .section-container .one-column {
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.THIS .section-container .slds-form-element_horizontal .slds-form-element__label {
+    max-width: calc(33% - 0.5rem);
+}
+
+/* Helptext Custom Input */
+
+.THIS .section-container .one-column .label-wrap {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.THIS .slds-form-element__icon {
+    display: none;
+}

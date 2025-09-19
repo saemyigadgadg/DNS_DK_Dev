@@ -1,0 +1,95 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @last modified on  : 04-29-2025
+  @last modified by  : Hanyeong Choi
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,force.hasSObjectName"
+                controller="DN_SQController"
+                description="Clone SQ Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="originalId"       type="String" />
+    <aura:attribute name="data"             type="List" />
+    <aura:attribute name="selectedRows"     type="List"     default="[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_CloneSQModal) {
+            overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_CloneSQModal) {
+            width: 72rem;
+            max-width: calc(100vw - 20rem);
+            min-width: 32rem;
+        }
+        .slds-modal__content:has(.cDN_CloneSQModal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CloneSQModal) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div>
+
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">SQ Clone</h2>
+            </div>
+            <div class="slds-modal__content">
+                <div class="table-wrap">
+                    <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                        <colgroup></colgroup>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <!-- <lightning:input type="checkbox" /> -->
+                                </th>
+                                <th>{!$Label.c.DN_M_Product}</th>
+                                <th>ERP Quotation NO</th>
+                                <th>{!$Label.c.DN_M_ProductPrice}</th>
+                                <th>{!$Label.c.DN_M_CVTotal}</th>
+                                <th>{!$Label.c.DN_M_AccessoryTotal}</th>
+                                <th>{!$Label.c.DN_M_SQTotal}</th>
+                                <th>{!$Label.c.DN_M_IsOrderCreated}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.data}" var="item" indexVar="idx">
+                                <tr>
+                                    <td>
+                                        <lightning:input type="checkbox" aura:id="checkbox" onchange="{!c.handleRowSelection}" value="{!idx}" />
+                                    </td>
+                                    <td>{! item.ProductName }</td>
+                                    <td class="center">{! item.ERPQutaionNO }</td>
+                                    <td class="right">{! item.SalesPrice != null ? item.SalesPrice : '0' }</td>
+                                    <td class="right">{! item.CVTotal != null ? item.CVTotal : '0' }</td>
+                                    <td class="right">{! item.AccTotal != null ? item.AccTotal : '0' }</td>
+                                    <td class="right">{! item.SQTotal != null ? item.SQTotal : '0' }</td>
+                                    <td class="center">{! item.IsOrderCreated ? 'Y' : 'N' }</td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleClickClose }" />
+                <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.handleClickSave }" />
+            </div>
+        </div>
+        
+    </div>
+
+
+
+</aura:component>

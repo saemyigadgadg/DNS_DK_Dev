@@ -1,0 +1,99 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-31-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-27-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader"
+                controller="DNSA_SQController" 
+                description="New DNSA SQ Registration Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="objectName"       type="String"   default="SQRegistration__c" />
+    <aura:attribute name="recordTypeId"     type="String"   default="" />
+    <aura:attribute name="quoteId"          type="String"   default="" />
+    <aura:attribute name="opptyId"          type="String"   default="" />
+    <aura:attribute name="accId"            type="String"   default="" />
+    <aura:attribute name="usaId"            type="String"   default="" />
+    <aura:attribute name="dnsaId"           type="String"   default="" />
+    <aura:attribute name="currencyId"       type="String"   default="" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDNSA_SQRegistrationModal) {
+            width: 40rem;
+            max-width: calc(100vw - 8rem);
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDNSA_SQRegistrationModal) {
+            padding: 0;
+            <!-- overflow-y: clip; -->
+            height: unset !important;
+            max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_SQRegistrationModal) {
+            padding:0;
+        } 
+        .lightning-primitive-icon {
+            disply: none;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+
+        <!-- 🚩 Modal Header -->
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_SQR_T_TITLE}</h2>
+        </header>
+
+        <!-- 🚩 Modal Body -->
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <!-- 🚩Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }" onsubmit="{! c.handleClickSubmit }" >
+                <div class="slds-form slds-align_absolute-center">
+                    <!-- 🚩 1. SQ Information -->
+                    <div class="section-header">
+                        <h2 class="section-title">{!$Label.c.DNS_SQR_S_SectionInfo}</h2>
+                    </div>
+                    <div class="section-container">
+
+                        <lightning:inputField aura:id="recordField" fieldName="RecordTypeId" value="{! v.recordTypeId }" style="display: none;" />
+                        <lightning:inputField aura:id="recordField" fieldName="Quote__c" value="{! v.quoteId }" style="display: none;" />
+                        <lightning:inputField aura:id="recordField" fieldName="Opportunity__c" value="{! v.opptyId }" style="display: none;" />
+                        <lightning:inputField aura:id="recordField" fieldName="Account__c" value="{! v.accId }" style="display: none;" />
+                        <lightning:inputField aura:id="recordField" fieldName="CurrencyIsoCode" value="{! v.currencyId }" style="display: none;" />
+                        <lightning:inputField aura:id="recordField" fieldName="Message_Group__c" value="{! v.usaId }" disabled="true" style="display: none;" />
+                        <lightning:inputField aura:id="recordField" fieldName="DNSA_Sales_Team__c" value="{! v.dnsaId }" disabled="true" style="display: none;" />
+                        
+                        <div class="oneRow">
+                            <lightning:inputField aura:id="recordField" fieldName="Name" />
+                            <lightning:inputField aura:id="recordField" fieldName="Environment__c" />
+                            <lightning:inputField aura:id="recordField" fieldName="RequestFromDealer__c" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_B_Cancel}" />
+                    <lightning:button variant="brand" type="submit"  label="{!$Label.c.DNS_B_Save}" />
+                </div>
+            </lightning:recordEditForm>
+        </div>
+    </div>
+</aura:component>

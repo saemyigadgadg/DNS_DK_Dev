@@ -1,0 +1,72 @@
+<template>
+    <div>
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+          </template>
+        <div class="card-01 top-card">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="">반품번호</div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="">품번</div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="">품명</div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="">반품수량</div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="">반품일</div>
+                          </th>
+                          <th class="" scope="col">
+                            <div class="slds-truncate" title="">반품사유</div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <template for:each={returnItemList} for:item="returnItem" for:index="index">
+                          <tr class="slds-hint-parent" key={returnItem.itemId}>
+                            <td data-label="반품번호">
+                              <div class="slds-truncate" title="반품번호">
+                                {returnItem.returnOrderSeq} - {returnItem.returnItemSeq} 
+                              </div>
+                            </td>
+                            <td data-label="품번">
+                              <div class="slds-truncate" title="품번">
+                                {returnItem.partName}
+                              </div>
+                            </td>
+                            <td data-label="품명">
+                              <div class="slds-truncate" title="품명">
+                                {returnItem.partDetails}
+                              </div>
+                            </td>
+                            <td data-label="반품수량">
+                              <div class="slds-truncate" title="반품수량">
+                                <lightning-input type="number"  name="input10" variant="label-hidden"
+                                readonly="true" value={returnItem.returnQuantity} ></lightning-input>
+                              </div>
+                            </td>
+                            <td data-label="반품일">
+                                <div class="slds-truncate" title="반품일">
+                                  {returnItem.returnDate}
+                                </div>
+                              </td>
+                            <td data-label="반품사유">
+                              <div class="slds-truncate" title="반품사유">
+                                {returnItem.reason1Label}
+                              </div>
+                            </td>
+                          </tr>
+                        </template>
+                      </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,75 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-13-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   10-21-2024   Hyerin Ro   Initial Version
+-->
+<aura:component 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" controller="DN_ButtonHiddenController"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="btnBoolean" type="Boolean" default="true"/>
+    <aura:attribute name="isValidated" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <!-- 츄라이 -->
+    <aura:attribute name="leadRecord" type="Object" />
+
+    <force:recordData 
+    aura:id="leadRecordLoader"
+    recordId="{! v.recordId }"
+    targetFields="{! v.leadRecord }"
+    recordUpdated="{! c.handleRecordUpdated }"
+    layoutType="FULL"
+    mode="VIEW" />
+
+    <aura:if isTrue="{!v.isValidated}">
+            <aura:html tag="style">
+                <!-- true일때만, '변환' 버튼이 보여야해요 -->
+                .comm-content-header:has(.button-hidden) .ui-widget .slds-button-group-list li:last-of-type {
+                  <!-- border: 1px solid blue; -->
+                  display: block;
+              }
+              .comm-content-header:has(.button-hidden) .ui-widget .slds-button-group-list li:nth-of-type(2) button {
+                    border-radius: 0 0.25rem 0.25rem 0 !important;
+                }
+                <!-- Dealer Portal > Lead '가망고객 상태 완료로 표시' 버튼 숨김 -->
+                .comm-content-header:has(.button-hidden) .ui-widget .slds-path .slds-path__track .slds-path__action {
+                    display: none;
+                    <!-- border: 1px solid red; -->
+                }
+            </aura:html>
+            <aura:set attribute="else">
+                <aura:html tag="style">
+                  .comm-content-header:has(.button-hidden) .ui-widget .slds-button-group-list li:last-of-type {
+                        <!-- border: 1px solid green !important; -->
+                        display: none;
+                    }
+                    .comm-content-header:has(.button-hidden) .ui-widget .slds-button-group-list li:nth-of-type(2) button {
+                        border-radius: 0 0.25rem 0.25rem 0 !important;
+                    }
+                    <!-- Dealer Portal > Lead '가망고객 상태 완료로 표시' 버튼 숨김 -->
+                    .comm-content-header:has(.button-hidden) .ui-widget .slds-path .slds-path__track .slds-path__action {
+                        display: none;
+                        <!-- border: 2px solid blue; -->
+                    }
+                </aura:html>
+            </aura:set>
+            
+        </aura:if>
+
+    <lightning:card>
+        <!-- Path Component -->
+        <lightning:path aura:id="path" recordId="{!v.recordId}"
+        variant="{!v.variant}"
+        hideUpdateButton="{!v.btnBoolean}"
+        />
+    </lightning:card>
+    <div>
+      <div class="button-hidden" style="opacity: 0;">abc</div>
+    </div>
+
+</aura:component>

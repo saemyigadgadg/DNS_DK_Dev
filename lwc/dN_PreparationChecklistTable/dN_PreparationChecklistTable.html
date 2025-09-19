@@ -1,0 +1,113 @@
+<template>
+    <div class="checklist_table_wrapper">
+      <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+      </template>
+      
+      <template if:true={isEditMode}>
+        <!-- edit from -->
+        <lightning-record-edit-form
+          object-api-name="PreparationCheckList__c"
+          record-id={recordId}
+          onsubmit={handleSubmit}
+          onsuccess={handleSuccess}>
+
+          <table border="1">
+              <!-- header -->
+              <tr>
+                  <th style="width: 10%; min-width: 70px;">항목</th>
+                  <th style="width: 50%; min-width: 350px;">설치시운전 고객사 준비사항</th>
+                  <th style="width: 10%; min-width: 90px;">예정일</th>
+                  <th style="width: 10%; min-width: 90px;">완료일</th>
+                  <th style="width: 10%; min-width: 90px;">영업확인</th>
+                  <th style="width: 10%; min-width: 90px;">고객확인</th>
+                  <!-- <th style="width: 10%; min-width: 70px;">{cLabel.DNS_C_Item}</th>
+                  <th>{cLabel.DNS_C_PreparationBeforeInstallation}</th>
+                  <th style="width: 10%; min-width: 90px;">{cLabel.DNS_C_PlannedDate}</th>
+                  <th style="width: 10%; min-width: 90px;">{cLabel.DNS_C_CompletionDate}</th> -->
+              </tr>
+              
+              <!-- body -->
+              <template for:each={items} for:item="item">
+                  <tr key={item.pField}>
+                      <template if:true={item.isFirst}>
+                        <td rowspan={item.count}>{item.sectionName}</td>
+                      </template>
+                      <td>{item.content}</td>
+                      <td>
+                        <lightning-input-field field-name={item.pField} variant="label-hidden"></lightning-input-field>
+                      </td>
+                      <td>
+                        <lightning-input-field field-name={item.cField} variant="label-hidden"></lightning-input-field>
+                      </td>
+                      <td>
+                        <lightning-input-field field-name={item.salesCheck} variant="label-hidden"></lightning-input-field>
+                      </td>
+                      <td>
+                          <lightning-input-field field-name={item.customerCheck} variant="label-hidden"></lightning-input-field>
+                      </td>
+                  </tr>
+              </template>
+          </table>
+          <template if:true={isSaveButtonShow}>
+            <div class="button_style">
+              <lightning-button label={cLabel.DNS_B_Save} type="submit" variant="brand" class="slds-m-left_x-small"></lightning-button>
+              <lightning-button label={cLabel.DNS_B_Cancel} onclick={handleCancelBtn} class="slds-m-left_x-small"></lightning-button>
+            </div>
+          </template>
+        </lightning-record-edit-form>
+      </template>
+      <template if:false={isEditMode}>
+        <!-- only viewer -->
+        <lightning-record-view-form
+          object-api-name="PreparationCheckList__c"
+          record-id={recordId}>
+
+          <table border="1">
+              <!-- header -->
+              <tr>
+                <th style="width: 10%; min-width: 70px;">항목</th>
+                <th style="width: 50%; min-width: 350px;">설치시운전 고객사 준비사항</th>
+                <th style="width: 10%; min-width: 90px;">예정일</th>
+                <th style="width: 10%; min-width: 90px;">완료일</th>
+                <th style="width: 10%; min-width: 90px;">영업확인</th>
+                  <th style="width: 10%; min-width: 90px;">고객확인</th>
+                <!-- <th style="width: 10%; min-width: 70px;">{cLabel.DNS_C_Item}</th>
+                <th>{cLabel.DNS_C_PreparationBeforeInstallation}</th>
+                <th style="width: 10%; min-width: 90px;">{cLabel.DNS_C_PlannedDate}</th>
+                <th style="width: 10%; min-width: 90px;">{cLabel.DNS_C_CompletionDate}</th> -->
+              </tr>
+              
+              <!-- body -->
+              <template for:each={items} for:item="item">
+                  <tr key={item.pField}>
+                      <template if:true={item.isFirst}>
+                        <td rowspan={item.count}>{item.sectionName}</td>
+                      </template>
+                      <td>{item.content}</td>
+                      <td>
+                        <lightning-output-field field-name={item.pField} variant="label-hidden"></lightning-output-field>
+                      </td>
+                      <td>
+                        <lightning-output-field field-name={item.cField} variant="label-hidden"></lightning-output-field>
+                      </td>
+                      <td>
+                        <lightning-output-field field-name={item.salesCheck} variant="label-hidden"></lightning-output-field>
+                      </td>
+                      <td>
+                          <lightning-output-field field-name={item.customerCheck} variant="label-hidden"></lightning-output-field>
+                      </td>
+                  </tr>
+              </template>
+          </table>
+        </lightning-record-view-form>
+      </template>
+      
+      <!-- <template if:true={isEditButtonShow}>
+        <div class="button_style">
+         <lightning-button label={cLabel.DNS_B_Edit} onclick={handleEditBtn} class="slds-m-left_x-small"></lightning-button>
+        </div>
+     </template> -->
+     
+    </div>
+</template>

@@ -1,0 +1,47 @@
+<template>
+    <template lwc:if={_isDisable} >
+    </template>
+    <template lwc:else>
+        <div class="pagination-wrap">
+            <div class="total">
+                <p>총 건수: <span style="font-weight: bold;">{totalItems}</span> 
+                   (<span>{currentPage}</span> / <span>{totalPages}</span>)</p>
+            </div>
+            
+            <ul class="pagination"> 
+                <!-- <li class="first">
+                    <a onclick={handleFirstPage} name="first">
+                        <lightning-icon icon-name='utility:jump_to_left' alternative-text='jump_to_left' size='x-small'
+                          title='jump_to_left'></lightning-icon>
+                    </a>
+                </li> -->
+                <li class="prev" >
+                    <a onclick={handlePrevPage} name="previous" data-id="prev">
+                    <lightning-icon icon-name='utility:chevronleft' alternative-text='chevronleft' size='x-small'
+                      title='chevronleft'></lightning-icon>
+                  </a>
+                </li>
+                <li class="pages">
+                    <template for:each={pageNumbers} for:item="page">
+                        <span key={page.number}>
+                            <a class={page.className} onclick={handlePageClick} data-page={page.number}>{page.number}</a>
+                        </span>
+                    </template>
+                </li>
+                <li class="next" >
+                    <a onclick={handleNextPage} name="next" data-id="next">
+                        <lightning-icon icon-name='utility:chevronright' alternative-text='chevronright' size='x-small'
+                          title='chevronright'></lightning-icon>
+                    </a>
+                </li>
+                <!-- <li class="last">
+                    <a onclick={handleLastPage} name="last" >
+                        <lightning-icon icon-name='utility:jump_to_right' alternative-text='jump_to_right' size='x-small'
+                          title='jump_to_right'></lightning-icon>
+                    </a>
+                </li> -->
+            </ul>
+        </div>
+    </template>
+    
+</template>

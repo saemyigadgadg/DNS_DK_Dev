@@ -1,0 +1,543 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-10-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author         Modification
+  1.0   01-07-2025   Hyerin Ro      Initial Version
+  2.0   01-08-2025   Hayeong Min    기능추가
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="CMS 코드 리스트 모달" controller="DN_ConsultationTypeAnalysisController">
+
+    <aura:attribute name="byDate" type="Object[]" />
+    <aura:attribute name="byAgent" type="Object[]" />
+    <aura:attribute name="dateSum" type="Object[]" />
+    <aura:attribute name="agentSum" type="Object[]" />
+    <aura:attribute name="isByDate" type="Boolean" default="true" />
+    <aura:attribute name="options" type="List" default="[
+        {'label': '일자', 'value': 'date'},
+        {'label': '상담원', 'value': 'person'} ]" />
+    <aura:attribute name="reportType" type="String" default="date" />
+    <aura:attribute name="startDate" type="Date" default="" />
+    <aura:attribute name="endDate" type="Date" default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <!--Toast-->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <article class="slds-card total-wrap">
+        <!-- Header -->
+        <div class="slds-card__header slds-grid">
+
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='standard:shift_type' alternativeText='shift_type' size='small'>
+                    </lightning:icon>
+                </div>
+                <h2 class="slds-card__header-title">상담유형 분석</h2>
+            </header>
+        </div>
+
+        <!-- Body -->
+        <div class="slds-card__body body">
+            <div class="card-01 top-card">
+                <div class="field-container">
+                    <div class="field-wrap">
+                        <p>통계유형</p>
+                        <div class="input-wrap">
+                            <lightning:radioGroup name="radioGroup" variant="label-hidden" options="{! v.options }"
+                                value="{! v.reportType }" type="radio" onchange="{! c.switchListView}" />
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>조회일자</p>
+                        <div class="input-wrap">
+                            <lightning:input type="date" name="" value="{!v.startDate}" variant="label-hidden" aura:id="" />
+                            <span class="to">~</span>
+                            <lightning:input type="date" name="" value="{!v.endDate}" variant="label-hidden" aura:id="" />
+                        </div>
+                    </div>
+                </div>
+                <div class="button-wrap">
+                    <lightning:button variant="brand" label="조회" title="조회" onclick="{! c.handleSearch }" />
+                </div>
+            </div>
+            <div class="card-02 table-wrap =">
+                <aura:if isTrue="{!v.isByDate}">
+                    <!-- 1. 일자 View -->
+                    <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col" rowspan="3">
+                                    <div class="slds-truncate" title="">일자</div>
+                                </th>
+                                <th class="" scope="col" colspan="16">
+                                    <div class="slds-truncate" title="">상담유형</div>
+                                </th>
+                            </tr>
+                            <tr class="slds-line-height_reset">
+                                <th class="first-th" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">고장접수</div>
+                                </th>
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">제품문의</div>
+                                </th>
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">고객불만</div>
+                                </th>
+
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">콜서비스</div>
+                                </th>
+
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">예약통화</div>
+                                </th>
+
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">기타</div>
+                                </th>
+
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">VOC</div>
+                                </th>
+
+                                <th class="" scope="col" colspan="2">
+                                    <div class="slds-truncate" title="">미입력</div>
+                                </th>
+                            </tr>
+                            <tr class="slds-line-height_reset">
+                                <th class="first-th" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">건수</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="">비율(%)</div>
+                                </th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.byDate}" var="data">
+                                <tr class="slds-line-height_reset">
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.activityDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.failureCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.failurePercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.pdInquiryCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.pdInquiryPercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.complainCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.complainPercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.callServiceCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.callServicePercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.scheduledCallCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.scheduledCallPercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.otherCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.otherPercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.vocCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.vocPercent}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.noDataCnt}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="">{!data.noDataPercent}</div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>
+                                    <div class="slds-truncate" title="">합계</div>
+                                </th>
+                                <aura:if isTrue="{!v.dateSum.length > 0}">
+                                    <aura:iteration items="{!v.dateSum}" var="sum">
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.failureCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.pdInquiryCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.complainCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.callServiceCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.scheduledCallCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.otherCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.vocCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!sum.noDataCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title=""></div>
+                                        </td>
+                                    </aura:iteration>
+
+                                    <aura:set attribute="else">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </aura:set>
+                                </aura:if>
+
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <aura:set attribute="else">
+                        <!-- 2. 상담원 View -->
+                        <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="" scope="col" rowspan="3">
+                                        <div class="slds-truncate" title="">상담원</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="16">
+                                        <div class="slds-truncate" title="">상담유형</div>
+                                    </th>
+                                </tr>
+                                <tr class="slds-line-height_reset">
+                                    <th class="first-th" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">고장접수</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">제품문의</div>
+                                    </th>
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">고객불만</div>
+                                    </th>
+
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">콜서비스</div>
+                                    </th>
+
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">예약통화</div>
+                                    </th>
+
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">기타</div>
+                                    </th>
+
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">VOC</div>
+                                    </th>
+
+                                    <th class="" scope="col" colspan="2">
+                                        <div class="slds-truncate" title="">미입력</div>
+                                    </th>
+                                </tr>
+                                <tr class="slds-line-height_reset">
+                                    <th class="first-th" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">건수</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="">비율(%)</div>
+                                    </th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.byAgent}" var="data">
+                                    <tr class="slds-line-height_reset">
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.ownerName}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.failureCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.failurePercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.pdInquiryCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.pdInquiryPercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.complainCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.complainPercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.callServiceCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.callServicePercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.scheduledCallCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.scheduledCallPercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.otherCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.otherPercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.vocCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.vocPercent}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.noDataCnt}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!data.noDataPercent}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>
+                                        <div class="slds-truncate" title="">합계</div>
+                                    </th>
+                                    <aura:if isTrue="{!v.agentSum.length > 0}">
+                                        <aura:iteration items="{!v.agentSum}" var="sum">
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.failureCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.pdInquiryCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.complainCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.callServiceCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.scheduledCallCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.otherCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.vocCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!sum.noDataCnt}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title=""></div>
+                                            </td>
+                                        </aura:iteration>
+
+                                        <aura:set attribute="else">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </aura:set>
+                                    </aura:if>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </div>
+
+    </article>
+
+</aura:component>

@@ -1,0 +1,23 @@
+<!--
+  @description       : 
+  @author            : iltae seo
+  @group             : 
+  @last modified on  : 12-20-2024
+  @last modified by  : iltae seo
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   12-20-2024   iltae seo   Initial Version
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId"
+                description="Excel Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="libInitialized"   type="Boolean"  default="false" />
+    <aura:attribute name="excelData"        type="List"     default="[]" />
+    <aura:attribute name="headerData"       type="List"     default="[]" />
+    <aura:attribute name="excelName"        type="String"   default="CRM_Data" />
+
+    <ltng:require scripts="{!$Resource.ExcelJS + '/unpkg/exceljs.min.js'}" afterScriptsLoaded="{! c.handleScriptsLoaded }" />
+
+    <lightning:button name="downloadExcel" label="Excel" iconName="doctype:excel" iconPosition="left" onclick="{! c.handleExcel }" />
+</aura:component>

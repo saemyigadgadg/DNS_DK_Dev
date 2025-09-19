@@ -1,0 +1,368 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 03-27-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-21-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_ButtonHiddenController">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="objectName" type="String" />
+    <aura:attribute name="currentProfile" type="String" default="" />
+    <aura:attribute name="version" type="Boolean" default="true" />
+    <aura:attribute name="isAccountPortal" type="Boolean" default="false" />
+    <aura:attribute name="portalGlobal" type="Boolean" default="false" />
+    <aura:attribute name="filter" type="Object" default="{}" />
+    <aura:attribute name="isValidated" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <!-- 츄라이 -->
+    <aura:attribute name="leadRecord" type="Object" />
+
+
+
+    <!-- [Quote] -->
+    <aura:if isTrue="{! v.objectName == 'Quote' }">
+        <aura:if isTrue="{!not(v.version)}">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:not(:first-of-type),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:not(:first-of-type) {
+                display: none;
+                <!-- border: 2px solid red; -->
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:first-of-type .slds-button,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:first-of-type .slds-button {
+                border-radius: 0.25rem;
+                }
+            </aura:html>
+        </aura:if>
+
+        <!-- Dealer Portal - WangDealer -->
+        <aura:if isTrue="{!v.portalGlobal}">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:last-of-type,
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-last-of-type(2) {
+                <!-- border: 1px solid red; -->
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-last-of-type(3) {
+                border-radius: 0 0.25rem 0.25rem 0;
+                overflow: hidden;
+                }
+            </aura:html>
+        </aura:if>
+    </aura:if>
+
+
+    <!-- [SQ Registration] -->
+
+    <aura:if isTrue="{! OR(v.filter.stage == 'Drop', v.filter.stage == 'Final Confirm') }">
+        <aura:html tag="style">
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+            .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(1),
+            .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+            .actionsContainer .slds-button-group-list li:nth-of-type(1) {
+            display: none;
+            }
+
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+            .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2),
+            .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+            .actionsContainer .slds-button-group-list li:nth-of-type(2) {
+            display: none;
+            }
+        </aura:html>
+    </aura:if>
+
+    <aura:if isTrue="{! OR(v.filter.stage == 'R&amp;D Confirm', v.filter.stage == 'Sales Approval') }">
+        <aura:html tag="style">
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+            .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(1),
+            .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+            .actionsContainer .slds-button-group-list li:nth-of-type(1) {
+            display: none;
+            }
+
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+            .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(1) .slds-button,
+            .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+            .actionsContainer .slds-button-group-list li:nth-of-type(1) .slds-button {
+            border-radius: 0.25rem 0 0 0.25rem;
+            }
+        </aura:html>
+    </aura:if>
+
+    <aura:if isTrue="{! v.objectName == 'SQRegistration__c' }">
+        <!-- Dealer Portal > SQ Registration Detail > 단계 완료로 표시 버튼 숨김 -->
+        <aura:html tag="style">
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .forceCommunityPathAssistant .pathOriginal .slds-card__body .slds-path .slds-path__action {
+                display: none;
+            }
+        </aura:html>        
+    </aura:if>
+
+    <!-- <aura:if isTrue="{! v.objectName == 'SQRegistration__c' }">
+        <aura:if isTrue="{! v.filter.license == 'Partner Community' }">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(1),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(1) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(3),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(3) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button {
+                border-radius: 0.25rem 0 0 0.25rem;
+                }
+            </aura:html>
+        </aura:if>
+
+        <aura:if isTrue="{! v.filter.stage == 'Drop' }">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:last-of-type,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:last-of-type {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(1),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(1) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(3),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(3) {
+                display: none;
+                }
+
+            </aura:html>
+        </aura:if>
+
+        1. R&D Review - SQ 검토요청 버튼 hide 
+        <aura:if isTrue="{! v.filter.stage != 'Sales Review' }">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button {
+                border-radius: 0.25rem 0 0 0.25rem;
+                }
+            </aura:html>
+        </aura:if>
+
+        2. SQ 검색 버튼 hide 
+        <aura:if isTrue="{! AND(v.filter.stage != 'Request', v.filter.stage != 'Sales Review') }">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:last-of-type,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:last-of-type {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-last-of-type(2) .slds-button,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-last-of-type(2) .slds-button {
+                border-radius: 0 0.25rem 0.25rem 0;
+                }
+            </aura:html>
+        </aura:if>
+
+        3. SQ ConfirmSubmit for Approval 버튼 hide 
+        <aura:if isTrue="{! v.filter.stage != 'R&amp;D Confirm' }">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(1),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(1) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button {
+                border-radius: 0.25rem 0 0 0.25rem;
+                }
+            </aura:html>
+        </aura:if>
+
+        4. SQ Confirm 버튼 hide 
+        <aura:if isTrue="{! v.currentProfile == 'Partner Community (DOM)' }">
+            <aura:html tag="style">
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(3),
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(3) {
+                display: none;
+                }
+
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home
+                .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button,
+                .slds-wrap:has(.cDN_ButtonHidden .button-hidden) .slds-page-header_record-home .primaryFieldRow
+                .actionsContainer .slds-button-group-list li:nth-of-type(2) .slds-button {
+                border-radius: 0.25rem 0 0 0.25rem;
+                }
+            </aura:html>
+        </aura:if>
+    </aura:if> -->
+
+
+    <!-- [Lead] -->
+    <aura:if isTrue="{! v.objectName == 'Lead' }">  
+    
+        <force:recordData 
+        aura:id="leadRecordLoader"
+        recordId="{! v.recordId }"
+        targetFields="{! v.leadRecord }"
+        recordUpdated="{! c.handleRecordUpdated }"
+        layoutType="FULL"
+        mode="VIEW" />
+    
+        <!-- <div style="font-size: 2rem; font-weight: bold; color :red;">test</div>   -->
+        <aura:if isTrue="{!v.isValidated}">
+            <aura:html tag="style">
+                <!-- true일때만, '변환' 버튼이 보여야해요 -->
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .ui-widget
+                .slds-page-header .primaryFieldRow .actionsContainer .slds-button-group-list li:last-of-type {
+                    <!-- border: 1px solid blue; -->
+                    display: block;
+                }
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .ui-widget
+                .slds-page-header .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2) button {
+                    border-radius: 0 0.25rem 0.25rem 0 !important;
+                }
+                <!-- Dealer Portal > Lead '가망고객 상태 완료로 표시' 버튼 숨김 -->
+                .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .ui-widget .slds-path .slds-path__track .slds-path__action {
+                    display: none;
+                    <!-- border: 1px solid red; -->
+                }
+            </aura:html>
+            <aura:set attribute="else">
+                <aura:html tag="style">
+                    .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .ui-widget
+                    .slds-page-header .primaryFieldRow .actionsContainer .slds-button-group-list li:last-of-type {
+                        <!-- border: 1px solid green !important; -->
+                        display: none;
+                    }
+                    .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .ui-widget
+                    .slds-page-header .primaryFieldRow .actionsContainer .slds-button-group-list li:nth-of-type(2) button {
+                        border-radius: 0 0.25rem 0.25rem 0 !important;
+                    }
+                    <!-- Dealer Portal > Lead '가망고객 상태 완료로 표시' 버튼 숨김 -->
+                    .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) .comm-content-header .ui-widget .slds-path .slds-path__track .slds-path__action {
+                        display: none;
+                        <!-- border: 2px solid blue; -->
+                    }
+                </aura:html>
+            </aura:set>
+            
+        </aura:if>
+            <!-- <force:recordData 
+            recordId="{!$SObjectType.CurrentUser.Id}"
+            targetFields="{!v.simpleRecord}"
+            targetError="{!v.recordError}"
+            recordUpdated="{!c.handleRecordUpdated}"
+        /> -->
+    </aura:if>
+    <aura:if isTrue="{!v.isAccountPortal}">
+        <aura:html tag="style">
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-section.slds-is-open.slds-var-p-top_xx-small.slds-var-p-bottom_x-small {
+                display: none !important;
+            }
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-button.slds-button_icon.filterMenuLink.slds-m-left_small.slds-button_icon-brand {
+                display: none !important;
+            }
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-button.slds-button_icon.filterMenuLink.slds-m-left_small.slds-button_icon-border {
+                display: none !important;
+            }
+
+            .siteforceContentArea:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-button.slds-button_brand {
+                display: none !important;
+            }
+
+            *:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-section.slds-is-open.slds-var-p-top_xx-small.slds-var-p-bottom_x-small {
+                display: none !important;
+            }
+
+            *:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-button.slds-button_icon.filterMenuLink.slds-m-left_small.slds-button_icon-brand {
+                display: none !important;
+            }
+            
+            *:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-button.slds-button_icon.filterMenuLink.slds-m-left_small.slds-button_icon-border {
+                display: none !important;
+            }
+
+            *:has(.cDN_ButtonHidden .button-hidden) 
+            .slds-text-align_center.slds-p-around_medium 
+            .slds-button.slds-button_brand {
+                display: none !important;
+            }
+
+        </aura:html>
+    </aura:if>
+    <div>
+        <div class="button-hidden" style="display: none;"></div>
+    </div>
+
+</aura:component>

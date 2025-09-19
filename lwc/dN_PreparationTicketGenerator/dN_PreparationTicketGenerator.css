@@ -1,0 +1,9 @@
+.preparation_ticket_wrapper{
+    position: relative;
+}
+
+.slds-modal__content {
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+}

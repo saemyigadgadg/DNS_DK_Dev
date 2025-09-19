@@ -1,0 +1,194 @@
+/* Table Design */
+.THIS.table-wrap {
+  height: calc(100vh - 32rem);
+}
+
+.THIS.table-wrap.foot-table {
+  height: fit-content;
+}
+
+.THIS.table-wrap table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS.table-wrap table th {
+  height: 32px;
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-top: 1px solid #D9D9D9;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS.table-wrap table td {
+  background-color: #fff;
+  padding: .25rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS.table-wrap table th+th,
+.THIS.table-wrap table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+.THIS.table-wrap.bottom-table table td {
+  background-color: #eef4ff !important;
+  font-weight: 600;
+}
+
+.THIS.table-wrap table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+
+.THIS.table-wrap table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+  display: none;
+}
+
+/* Table Class */
+
+.THIS  .center {
+  text-align: center !important;
+}
+
+.THIS  .left {
+  text-align: left !important;
+}
+
+.THIS  .right {
+  text-align: right !important;
+}
+
+/* SLDS Custom */
+.THIS  .input-wrap .slds-form-element {
+  width: 100%;
+}
+
+.THIS  .input-wrap .slds-button+.slds-button {
+  margin-left: 0;
+}
+
+.THIS  .slds-input,
+.THIS  .slds-input_faux {
+  border: 1px solid #C9C9C9;
+}
+
+.THIS  .slds-button_neutral {
+  border: 1px solid #c9c9c9;
+}
+
+.THIS  .slds-input {
+  line-height: 100% !important;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS.table-wrap {
+  height: calc(100vh - 28rem);
+  overflow-y: auto;
+  border: 1px solid #c9c9c9;
+  border-radius: 2px;
+  position: relative;
+  display: flex;
+}
+
+.THIS.table-wrap table{
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.THIS.table-wrap table thead {
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+
+.THIS.table-wrap.bottom-table table td {
+  border-right: 1px solid #c9c9c9;
+  border-left: 1px solid #c9c9c9;
+}
+
+/* Sticky Tables : Table 01 */
+
+.THIS.table-wrap .table-01 {
+  flex: 3;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  border-right: 1px solid #D9D9D9;
+}
+
+@media screen and (max-width: 1440px) {
+  .THIS.table-wrap .card-03 .table-01 {
+      flex: 3;
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .THIS.table-wrap .card-03 .table-01 {
+      flex: 4;
+  }
+}
+
+@media screen and (max-width: 740px) {
+  .THIS.table-wrap .card-03 .table-01 {
+      flex: 6;
+  }
+}
+
+.THIS.table-wrap .table-01::-webkit-scrollbar {
+  background-color: #fff;
+  border-top: 1px solid #c9c9c9;
+}
+
+.THIS.table-wrap .table-01 thead {
+  height: 29.73px;
+}
+
+.THIS.table-wrap tbody tr {
+  height: 43px; 
+}
+
+
+/* Sticky Tables : Table 02 */
+.THIS.table-wrap .table-02 {
+  flex: 4;
+  overflow: scroll;
+  table-layout: fixed;
+}
+
+.THIS.table-wrap .table-02 thead {
+  height: 29.73px;
+}
+
+.THIS.table-wrap .table-02 td.save-location .slds-button {
+  min-width: 60px;
+  margin-right: 0.5rem;
+} 
+
+.THIS.table-wrap .table-02 td .date-input lightning-input {
+  min-width: 8rem;
+}
+
+/* SLDS Table datepicker */
+.THIS .slds-datepicker__month td{
+  border: none !important;
+  background-color: #fff !important;
+  padding: .25rem !important;
+  font-size: .75rem !important;
+}
+.THIS .slds-datepicker__month th{
+  padding: .5rem !important;
+  font-weight: 400 !important;
+  background-color: #fff !important;
+  border: none !important;
+}
+.THIS .slds-datepicker__month tr{
+  border-bottom: none !important;
+}

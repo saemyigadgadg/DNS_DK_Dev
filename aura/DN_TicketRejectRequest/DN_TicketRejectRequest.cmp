@@ -1,0 +1,73 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @last modified on  : 05-19-2025
+  @last modified by  : Hanyeong Choi
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,force:hasRecordId,force:hasSObjectName,lightning:actionOverride"
+                controller="DN_TicketRejectRequestController">
+
+    <aura:attribute name="isLoading"    type="Boolean"  default="false"/>
+    <aura:attribute name="recordId"     type="String" />
+    <aura:attribute name="reason"       type="String"   default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_TicketRejectRequest) {
+            width:100%;
+            max-width: 32rem;
+            padding: 0 !important;
+        }
+        .slds-modal__content:has(.cDN_TicketRejectRequest) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_TicketRejectRequest) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <aura:if isTrue="{! v.isLoading }">
+            <lightning:spinner size="medium" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- 🚩 Modal Header -->
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" aura:id="test">{!$Label.c.DNS_TICKET_REJECTREQUEST}</h2>
+
+            <!-- Close Button -->
+            <!-- <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small' title='close' name="closeModal" onclick="{!c.closeModal}">
+                </lightning:icon>
+            </button> -->
+        </header>
+        
+        <!-- 🚩 Modal Body -->
+        <div class="slds-modal__content">
+            <p class="pContainer">
+                {!$Label.c.DNS_TICKET_REJECTREQUESTCONTENT1}<br />
+                {!$Label.c.DNS_TICKET_REJECTREQUESTCONTENT2}
+            </p>
+            <div class="modal-body">
+                <lightning:textarea class="textarea-container" aura:id="inputReason" label="{!$Label.c.DNS_B_REASON}" value="{!v.reason}" required="true"/>
+            </div>
+        </div>
+        
+        <!-- 🚩Modal Footer -->
+        <footer class="slds-modal__footer footer-container">
+            <div>
+                <!-- <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.handleCancel}"/> -->
+            </div>
+            <div>
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Send}" onclick="{!c.handleClickSend}"/>
+            </div>
+        </footer>
+    </div>
+
+</aura:component>

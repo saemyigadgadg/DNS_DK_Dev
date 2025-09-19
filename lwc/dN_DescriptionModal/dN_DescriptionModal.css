@@ -1,0 +1,26 @@
+.slds-backdrop {
+    width: 200vw;
+    left: -100% !important;
+}
+
+.slds-modal__container {
+    width: 36rem;
+    max-width: calc(100vw - 8rem);
+}
+
+.modal-body {
+    padding: 1rem;
+}
+
+.text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.text-wrap .row {
+    padding: 0.5rem;
+    color: #444;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+}

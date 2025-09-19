@@ -1,0 +1,33 @@
+.THIS .slds-modal__content {
+    position: relative;
+}
+
+.THIS .table-wrap .slds-table_cell-buffer tr>td:last-child,
+.THIS .table-wrap .slds-table_cell-buffer tr>td:first-child {
+    padding-right: 1rem !important;
+}
+
+.THIS .table-wrap {
+    border-top: 1px solid #e5e5e5;
+}
+
+.THIS .card-01 p {
+    text-align: center;
+    font-size: 14px;
+    padding: 1rem;
+}
+
+.THIS .card-02 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 1rem;
+    border-top: 1px solid #ccc;
+    text-align: center;
+}
+
+.THIS .card-02 .card .name span {
+    display: inline-block;
+    margin-left: .25rem;
+}

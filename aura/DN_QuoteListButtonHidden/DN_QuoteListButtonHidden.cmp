@@ -1,0 +1,23 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-05-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    access="global" controller="DN_ButtonHiddenController">
+
+
+    <aura:html tag="style">
+        .siteforceContentArea:has(.cDN_QuoteListButtonHidden) .slds-page-header_object-home .slds-grid .slds-p-bottom--xx-small ul {
+            <!-- border: 2px solid red; -->
+            display: none !important;
+        }
+    </aura:html>
+
+</aura:component>

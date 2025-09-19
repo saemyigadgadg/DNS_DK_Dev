@@ -1,0 +1,153 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-16-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-14-2025   Hyerin Ro   Initial Version
+-->
+<template>
+    <div class="slds-card total-wrap consultationAttendance">
+        <div class="header">
+            <lightning-icon icon-name='standard:real_time' alternative-text='real_time' size='small' title='real_time'></lightning-icon>
+            <h2 class="slds-card__headedN_ConsultationAttendancer-title">상담배정 근태관리</h2>
+        </div>
+
+        <div class="slds-card__body body">
+            <template if:true={isLoading}>
+                <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+            </template>
+
+            <div class="top-card card-01">
+                <div class="field-container">
+                    <div class="field-wrap">
+                        <p class="label">근태일</p>
+                        <div class="input-wrap">
+                            <lightning-input type="date" name="from" variant="label-hidden" value={dateFromValue}
+                                onchange={handleDateChange}></lightning-input>
+                            <span class="to">~</span>
+                            <lightning-input type="date" name="to" variant="label-hidden" value={dateToValue}
+                                onchange={handleDateChange}></lightning-input>
+                        </div>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p class="label">상담유형</p>
+                        <lightning-combobox value={inquiryType} options={inquiryTypeOptions} name="inquiryType"
+                            onchange={handleTypeChange} variant="label-hidden">
+                        </lightning-combobox>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p class="label">ID</p>
+                        <lightning-input type="text" name="ID" variant="label-hidden"
+                            value={consultantId} onchange={handleInputChange}></lightning-input>
+                    </div>
+
+                    <div class="field-wrap">
+                        <p class="label">이름</p>
+                        <lightning-input type="text" name="Name" variant="label-hidden"
+                            value={consultantName} onchange={handleInputChange}></lightning-input>
+                    </div>
+                </div>
+
+                <div class="button-wrap">
+                    <lightning-button label="조회" onclick={handleSearch} title="조회" variant="brand"></lightning-button>
+                    <lightning-button label="근태 초기화" onclick={handleReset} title="근태 초기화"
+                        variant="brand"></lightning-button>
+                </div>
+            </div>
+
+            <div class="card-02">
+
+                <div class="container-01 top-card">
+                    <div class="card-header">
+                        <lightning-icon icon-name='standard:lead_list' alternative-text='lead_list' size='x-small' title='lead_list'></lightning-icon>
+                        <h3>상담배정 근태관리</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <lightning-datatable key-field="Id" data={tableData} columns={tableListColumns}
+                            onrowaction={tableRowAction} show-row-number-column hide-checkbox-column>
+                        </lightning-datatable>
+                    </div>
+                </div>
+
+                <div class="container-02 top-card ">
+                    <div class="card-header">
+                        <lightning-icon icon-name='standard:person_name' alternative-text='person_name' size='x-small' title='person_name'></lightning-icon>
+                        <h3>상세정보</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <tr>
+                                <th>상담유형</th>
+                                <td>
+                                    <lightning-input type="text" variant="label-hidden" value={selectConsultationType}
+                                        read-only></lightning-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>상담원ID</th>
+                                <td>
+                                    <lightning-input type="text" variant="label-hidden" value={selectConsultantId}
+                                        read-only></lightning-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>상담원 성명</th>
+                                <td>
+                                    <lightning-input type="text" variant="label-hidden" value={selectConsultantName}
+                                        read-only></lightning-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>근태일</th>
+                                <td>
+                                    <lightning-input type="text" variant="label-hidden" value={selectAttendanceDate}
+                                        read-only></lightning-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>근태구분</th>
+                                <td>
+                                    <lightning-record-edit-form object-api-name="ConsultationAttendance__c">
+                                        <lightning-input-field field-name="AttendanceType__c"
+                                            value={selectAttendanceType} data-id="selectAttendanceType"
+                                            onchange={handleAttendanceTypeChange}
+                                            variant="label-hidden"></lightning-input-field>
+                                    </lightning-record-edit-form>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>off 시작 시간</th>
+                                <td>
+                                    <!-- oninput onblur onkeydown -->
+                                    <lightning-input type="text" class="startTime" name="startTime"
+                                        variant="label-hidden" value={selectOffStartTime} onchange={handleTimeChange}
+                                        onfocus={handleFocus} onblur={handleBlur}></lightning-input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>off 종료 시간</th>
+                                <td>
+                                    <lightning-input type="text" class="endTime" name="endTime" variant="label-hidden"
+                                        value={selectOffEndTime} onchange={handleTimeChange} onfocus={handleFocus}
+                                        onblur={handleBlur}></lightning-input>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="button-wrap">
+                        <lightning-button label="근태 전체 적용" onclick={handleAllSubmit} title="근태 전체 적용"
+                            variant="brand"></lightning-button>
+                        <lightning-button label="저장" onclick={handleSave} title="저장" variant="brand"></lightning-button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</template>

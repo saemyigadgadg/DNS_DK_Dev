@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+	<masterLabel>dN_DealerPortalQueryPage</masterLabel>
+	<apiVersion>62.0</apiVersion>
+	<description>딜러포탈 대리점 재고관리에서 사용할 페이징 처리(쿼리에서 처리)
+dN_DealerPortalPage는 스크립트에서 처리</description>
+	<isExposed>true</isExposed>
+	<targets>
+		<target>lightningCommunity__Default</target>
+		<target>lightningCommunity__Page</target>
+		<target>lightningCommunity__Page_Layout</target>
+		<target>lightningCommunity__Theme_Layout</target>
+	</targets>
+</LightningComponentBundle>

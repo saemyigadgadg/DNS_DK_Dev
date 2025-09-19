@@ -1,0 +1,83 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-14-2025   Hyerin Ro   Initial Version
+-->
+<aura:component controller="DNSA_QuoteChangeController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isStatus" type="Boolean" default="false" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="copyReason" type="String" />
+    <aura:attribute name="newRecordId" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!not(empty(v.newRecordId))}">
+        <lightning:navigation aura:id="navService" />
+    </aura:if>
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDNSA_QuoteChange) {
+        width: calc(100vw - 12rem);
+        max-width: 36rem;
+        margin: 0 auto;
+        }
+        .slds-modal__content:has(.cDNSA_QuoteChange) {
+        height:auto !important;
+        max-height:none !important;
+        padding: 0;
+        overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_QuoteChange) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDNSA_QuoteChange){
+        overflow: hidden;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.isStatus}">
+        <div class="slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- 모달 헤더 -->
+                <div class="slds-modal__header slds-theme_shade slds-theme_alert-texture">
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        Please enter the reason for duplication before proceeding.
+                    </h2>
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="close"
+                        onclick="{! c.handleClickClose }">
+                        <lightning:icon iconName="utility:close" size="small" alternativeText="close" />
+                    </button>
+                </div>
+
+                <!-- 모달 본문 -->
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <aura:if isTrue="{!v.isLoading}">
+                        <lightning:spinner alternativeText="Loading" variant="brand" />
+                    </aura:if>
+
+
+                    <!-- <p class="slds-text-body_regular slds-m-bottom_medium">
+                        Change Reason
+                    </p> -->
+                    <!-- 취소 사유 입력 -->
+                    <lightning:textarea label="Change Reason" name="changeReason" placeholder="Please enter the reason for type change"
+                        value="{! v.copyReason }" required="true" class="slds-m-bottom_medium" />
+                </div>
+
+                <!-- 모달 푸터 -->
+                <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                    <!-- 취소 버튼 -->
+                    <lightning:button title="Cancel" label="Cancel" onclick="{! c.handleClickClose }" variant="neutral" />
+                    <!-- 삭제 버튼 -->
+                    <lightning:button title="Confirm" label="Confirm" variant="brand" onclick="{! c.savequoteCopy}" />
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

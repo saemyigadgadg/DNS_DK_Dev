@@ -1,0 +1,107 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-31-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-31-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component description="Claim 정보"
+                extends="c:DN_Helper"
+                controller="DN_WarrantyPartsManagement">
+
+    <aura:attribute name="warrantySeq" type="String" />
+    <aura:attribute name="claimOrder" type="Object" />
+    <aura:html tag="style">
+        .modal-body:has(.cDN_WarrantyDetails) {
+            background: #f1f3f5;
+        }
+    </aura:html>
+    
+    <!--handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <div>
+        <div class="card-01 top-card">
+            <div class="field-wrap">
+                <p>통지번호</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.notiNumber}"/>
+                </div>
+            </div>
+
+            <div class="field-wrap">
+                <p>오더번호</p>
+                <div class="input-wrap">
+                <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.serviceOrderSeq}"/>
+                </div>
+            </div>
+
+            <div class="field-wrap">
+                <p>접수일</p>
+                <div class="input-wrap dateitem">
+                    <lightning:formattedDateTime value="{!v.claimOrder.receivedDateTime}"  year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit"/>
+                <!-- <lightning:input type="datetime" variant="label-hidden" readonly="true"  value="{!v.claimOrder.receivedDateTime}"/> -->
+                </div>
+            </div>
+            <!-- 1row -->
+            <div class="field-wrap">
+                <p>기종</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.machineName}"/>
+                </div>
+            </div>
+            <div class="field-wrap">
+                <p>장비번호</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.equipment}"/>
+                </div>
+            </div>
+            <div class="field-wrap">
+                <!-- <p>호기</p>
+                <div class="input-wrap">
+                <lightning:input variant="label-hidden" />
+                </div> -->
+            </div>
+            <!-- 2row -->
+            <div class="field-wrap">
+                <p>대표자명</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.representative}"/>
+                </div>
+            </div>
+            <div class="field-wrap">
+                <p>전화</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.phone}"/>
+                </div>
+            </div>
+            <div class="field-wrap">
+                <p>핸드폰</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.mobile}"/>
+                </div>
+            </div>
+            <!-- 3row -->
+            <div class="field-wrap">
+                <p>고객주소</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.address}"/>
+                </div>
+            </div>
+            <!-- 4row -->
+            <div class="field-wrap">
+                <p>요청내용</p>
+                <div class="input-wrap">
+                    <lightning:input variant="label-hidden" readonly="true" value="{!v.claimOrder.receptionDetails}"/>
+                </div>
+            </div>
+            <!-- 5row -->
+        </div>
+        <div>
+            
+        </div>
+    </div>
+                  
+</aura:component>

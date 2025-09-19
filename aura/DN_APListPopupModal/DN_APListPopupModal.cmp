@@ -1,0 +1,125 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 12-18-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-20   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="Billing Doc" controller="DN_APController" >
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="docNum" type="String" />
+    <aura:attribute name="resultList" type="List" />
+    <aura:attribute name="resultAmountSum" type="Decimal" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- Modal -->
+    <div class="apListPopupModal">
+        <div aura:id="apListPopupModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_medium">
+                <!-- Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+                </aura:if>
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <!-- Header -->
+                    <h2 class="slds-truncate">Billing Doc. No. : {!v.docNum}</h2>
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='border-filled'
+                            size='small' title='close' name="closeModal" onclick="{!c.apListPopupModalCancel}" />
+                    </button>
+                </header>
+
+
+
+                <!-- Body -->
+                <div class="modal-body slds-modal__content">
+                    <div class="card-02 top-card">
+                        <div class="table-wrap">
+                            <table
+                                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="1%"/>
+                                    <col width="10%"/>
+                                    <col width="5%"/>
+                                    <col width="10%"/>
+                                    <col width="20%"/>
+                                    <col width="5%"/>
+                                    <col width="5%"/>
+                                    <col width="10%"/>
+                                    <col width="10%"/>
+                                    <col width="10%"/>
+                                    <col width="15%"/>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>주문번호</th>
+                                        <th>순번</th>
+                                        <th>품번</th>
+                                        <th>품명</th>
+                                        <th>수량</th>
+                                        <th>단위</th>
+                                        <th>공급가격</th>
+                                        <th>부가세</th>
+                                        <th>합계금액</th>
+                                        <th>출고번호</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+                                        <tr class="slds-hint-parent">
+                                            <td class="centrer">{!i + 1}</td>
+                                            <td >{!result.AUBEL}</td>
+                                            <td>{!result.POSNR}</td>
+                                            <td>{!result.MATNR}</td>
+                                            <td>{!result.MAKTX}</td>
+                                            <td class="center">
+                                                {!result.FKIMG}
+                                            </td>
+                                            <td class="center">{!result.VRKME}</td>
+                                            <td class="right">
+                                                {!result.NETWR}
+                                            </td>
+                                            <td class="right">
+                                                {!result.MWSBP}
+                                            </td>
+                                            <td class="right">
+                                                {!result.TOTAL}
+                                            </td>
+                                            <td>{!result.VGBEL}</td>
+                                        </tr>
+                                    </aura:iteration>
+
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="9" class="right">합계</td>
+                                        <td colspan="2">
+                                            {!v.resultAmountSum}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <!-- Close Button -->
+                    <lightning:button name="close" label="Close" onclick="{!c.apListPopupModalCancel}" />
+                </footer>
+
+            </div>
+        </div>
+        <div aura:id="apListPopupModalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

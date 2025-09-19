@@ -1,0 +1,65 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 01-13-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-22-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="Review Description">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="reviewId"         type="String" />
+    <aura:attribute name="reviewId2"         type="String" />
+    <aura:attribute name="currentStage"         type="String" />
+    <aura:attribute name="description"      type="String" default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.descriptionInit}" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <div class="ReviewDescriptionModal">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+                <aura:if isTrue="{!v.isLoading}">
+                    <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+                </aura:if>
+
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_REVIEW_T_REVIEWDESCRIPTIONTITLE}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+
+                    <div class="modal-body">
+                        <lightning:inputRichText aura:id="inputReason" label="Description" value="{! v.description }" />
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button title="Cancel" onclick="{! c.handleClickCancel }" label="{!$Label.c.DNS_B_Cancel}" />
+                    <aura:if isTrue="{!v.currentStage == 'R&amp;D Review'}">
+                        <lightning:button title="Apply" onclick="{! c.handleClickSave }" label="{!$Label.c.DNS_B_Save}"  variant="Brand" />
+                    </aura:if>
+                </div>
+
+            </div>
+
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+
+
+                
+
+</aura:component>

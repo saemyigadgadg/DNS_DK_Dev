@@ -1,0 +1,102 @@
+<!--
+  @description       : 
+  @author            : jiyoung.p@dncompany.com
+  @group             : 
+  @last modified on  : 2025-09-15
+  @last modified by  : jiyoung.p@dncompany.com
+-->
+<template>
+    <!-- Loading Spinner -->
+    <template if:true={isLoading}>
+        <lightning-spinner variant="brand" alternative-text="Loading"></lightning-spinner>
+    </template>
+
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <div class="slds-modal__header">
+            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{cLabel.DNS_T_NewTicket}</h1>
+        </div>
+        <div class="button-wrap">
+            <lightning-button label={cLabel.DNS_SearchEquipment} onclick={handleEquipmentSearch} title="장비조회" variant="Neutral"></lightning-button>
+            <lightning-button label={cLabel.DNS_SearchContact} onclick={handleContactSearch} title="연락처조회" variant="Neutral"></lightning-button>
+        </div>
+
+
+        <div class="slds-modal__content slds-p-around_medium recordField" id="modal-content-id-1">
+            <div class="slds-form slds-align_absolute-center">
+                <!-- 🚩Layout -->
+                <div class="form-container">
+                    <lightning-record-edit-form aura:id="recordEditForm" object-api-name="Case" record-type-id={recordTypeId}>
+                      <h2 class="infoTitle">{cLabel.ServiceReception}</h2>
+                          <div class="field-wrap">
+                              <div class="input-wrap">
+                                  <!--상태-->
+                                  <lightning-input-field field-name="Status" required="true" onchange={handleStatusChange}></lightning-input-field>
+                                  <!--종결사유-->
+                                  <template if:true={isClosed}>
+                                      <lightning-input-field field-name="EndOfReason__c" onchange={handleEndOfReasonChange}></lightning-input-field>
+                                      <!--조치결과-->
+                                      <template if:true={isCallService}>
+                                          <lightning-input-field field-name="ResultOfMeasure__c"></lightning-input-field>
+                                      </template>
+                                      <!--종결사유(상세)-->
+                                      <template if:true={isClosedReasonDetails}>
+                                          <lightning-input-field field-name="ClosedReasonDetails__c"></lightning-input-field>
+                                      </template>
+                                  </template>
+
+                                  <!--배정보류사유-->
+                                  <template if:true={isAssignHoldingReason}>
+                                      <lightning-input-field field-name="AssignHoldingReason__c"></lightning-input-field>
+                                  </template>
+
+                                  <!--반려사유-->
+                                  <template if:true={isRejectReasonDetails}>
+                                      <lightning-input-field field-name="RejectReasonDetails__c" ></lightning-input-field>
+                                  </template>
+
+                                  <!--장비 & 고객사-->
+                                  <!-- <lightning-input-field id="ticketAssetId" field-name="AssetId" onchange={handleAsset} required="{!v.isRequired}"></lightning-input-field> -->
+                                  <lightning-input-field id="ticketAccountId" field-name="AccountId" onchange={handleAccount}></lightning-input-field>
+                                  <!--요청자-->
+                                  <lightning-input-field id="ticketContactId" field-name="Requester__c"></lightning-input-field>
+
+                                  <!-- Dealer 정보는 DNSA일 때만 표출 -->
+                                  <!-- <template if:true={isClosed}> -->
+                                  <!-- <aura:if isTrue="{!v.country == 'DNSA'}"> -->
+                                      <!--Dealer-->
+                                      <!-- <lightning-input-field field-name="Dealer__c"
+                                          value="{!t.Dealer__c}"></lightning-input-field> -->
+                                      <!--Dealer Contact-->
+                                      <!-- <lightning-input-field field-name="DealerContact__c"
+                                          value="{!t.DealerContact__c}"></lightning-input-field> -->
+                                  <!-- </template> -->
+                                  <!--내부요청자-->
+                                  <!-- <template if:true={isClosed}>
+                                  <aura:if
+                                      isTrue="{! t.TicketType__c == 'Internal request' || t.InternalTicketType__c == 'Installation request'}">
+                                      <lightning-input-field field-name="InternalRequester__c" ></lightning-input-field>
+                                  </template> -->
+
+                                  <!--알림톡알림(To.고객)-->
+                                  <lightning-input-field field-name="isAlarmToCustomer__c" onchange={handleAlarm}></lightning-input-field>
+                                  <!--접수내용-->
+                                  <div class="receptionDetails">
+                                      <lightning-input-field field-name="ReceptionDetails__c" required="true" ></lightning-input-field>
+                                  </div>
+
+                              </div>
+
+                              
+
+
+                          </div>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </div>
+      </div>
+    </section>
+    <!-- <div class="slds-backdrop slds-backdrop_open" role="presentation"></div> -->
+</template>

@@ -1,0 +1,96 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 03-04-2025
+  @last modified by  : suheon.ha@UserSettingsUnder.SFDoc
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div class="common">
+        <!-- 🎈 Step 01 - Status List -->
+        <template if:true={isStatusSelectVisible}>
+            <lightning-card>
+                <div class="card-01">
+                    <div class="total-wrap">
+                        <h3>{cLabel.DNS_FSL_PleaseSelectStatus}</h3>
+                        <div class="input-wrap">
+                            <lightning-radio-group
+                                name="statusOptions"
+                                options={statusOptions}
+                                value={selectedStatus}
+                                type="button"
+                                onchange={handleStatusChange}
+                                variant="label-hidden"
+                            ></lightning-radio-group>
+                        </div>
+                        
+                        <div class="button-wrap">
+                            <lightning-button
+                                variant="brand"
+                                label={cLabel.DNS_FSL_Save}
+                                onclick={handleSave}
+                                class="slds-m-top_medium"
+                                aria-label={cLabel.DNS_FSL_Save}
+                            ></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </lightning-card>
+        </template>
+    
+        <!-- 🎈 Step 02 - Confirm Modal -->
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container modal-01">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text={cLabel.DNS_FSL_Close} size="small"></lightning-icon>
+                            <span class="slds-assistive-text">{cLabel.DNS_FSL_Close}</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">{cLabel.DNS_FSL_Check}</h2>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+
+                        <div class="icon-wrap">
+                            <lightning-icon icon-name='utility:help' alternative-text='Check' size='small' title='Check'></lightning-icon>
+                        </div>
+
+                        <div class="message">
+                            <template if:true={isKorean}>
+                                <p>현재 상태를 {selectedStatusLabel} (으)로 변경하시겠습니까?</p>
+                            </template>
+                            <template if:false={isKorean}>
+                                <p>Do you want to change your current status to {selectedStatusLabel}?</p>
+                            </template>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="neutral" label={cLabel.DNS_FSL_Close} onclick={closeModal}></lightning-button>
+                        <lightning-button variant="brand" label={cLabel.DNS_FSL_Okay} onclick={confirmSave}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    
+        <!-- 🎈 Step 03 - Success Modal -->
+        <template if:true={isSuccessModalOpen}>
+            <div class="modal-02">
+                <div class="body">
+                    <div class="icon-wrap">
+                        <lightning-icon icon-name='utility:check' alternative-text='check' size='small' title='edit'></lightning-icon>
+                    </div>
+    
+                    <h3 class="title">{cLabel.DNS_FSL_Alarm}</h3>
+                    <p class="message">{cLabel.DNS_FSL_StatusChangeComplete}</p>
+                    <div class="button-wrap">
+                        <lightning-button variant="brand" label={cLabel.DNS_FSL_Okay} onclick={handleCompleteClose}></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

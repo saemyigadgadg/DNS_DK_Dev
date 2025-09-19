@@ -1,0 +1,156 @@
+/* Card 02 */
+
+/* Card Header */
+
+.THIS .card-header {
+    margin-bottom: 1rem;
+}
+
+.THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Table Design */
+.THIS .card-02 table th {
+    height: 38.06px;
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .25rem 1rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .card-02 table td {
+    background-color: #fff;
+    padding: .25rem 1rem;
+    border-bottom: 1px solid #D9D9D9;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.THIS .card-02 table thead tr {
+    height: 40px;
+}
+
+.THIS .card-02 table tbody tr {
+    height: 54px;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .modal-body .card-02 .table-wrap,
+.THIS .card-02 .table-wrap {
+    display: flex;
+    height: 16rem;
+    border: 1px solid #d9d9d9;
+}
+
+/* Sticky : Table 01 */
+
+.THIS .modal-body .card-02 .table-01,
+.THIS .card-02 .table-01 {
+    flex: 1;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #d9d9d9
+}
+
+@media screen and (max-width: 1800px) {
+    .THIS .modal-body .card-02 .table-01,
+    .THIS .card-02 .table-01 {
+    flex: 2;
+}}
+
+@media screen and (max-width: 1240px) {
+    .THIS .modal-body .card-02 .table-01,
+    .THIS .card-02 .table-01 {
+    flex: 3;
+}}
+
+@media screen and (max-width: 840px) {
+    .THIS .modal-body .card-02 .table-01,
+    .THIS .card-02 .table-01 {
+    flex: 4;
+}}
+
+.THIS .modal-body .card-02 .table-01::-webkit-scrollbar,
+.THIS .card-02 .table-01::-webkit-scrollbar {
+    /* 두 테이블 스크롤바 유무 차이로 인한 단차 없애기 */
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+
+/* Sticky : Table 02 */
+
+.THIS .modal-body .card-02 .table-02,
+.THIS .card-02 .table-02 {
+    flex: 3;
+    overflow-x: scroll;
+}
+
+.THIS .modal-body .card-02 .table-02 th,
+.THIS .card-02 .table-02 th,
+.THIS .card-02 .table-01 th {
+    text-align: center;
+    padding: 0.55rem 1rem;
+}
+
+.THIS .modal-body .card-02 .table-02 td,
+.THIS .card-02 .table-02 td,
+.THIS .card-02 .table-01 td {
+    padding: 0.59rem 1rem;
+}
+
+
+/* detail page */
+.THIS .detailPage {
+    margin: 1rem 1.5rem;
+    background-color: #fff !important;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+}
+
+.THIS .detailPage .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0 !important;
+    /* padding: 1rem;
+    padding-bottom: .75rem; */
+    justify-content: space-between;
+    background-color: #f3f3f3;
+}
+
+.THIS .detailPage .card-header .button-wrap {
+    padding-right: 1rem;
+
+}
+
+.THIS .detailPage .card-header .title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+.THIS .detailPage .card-02 .table-wrap {
+    border: none;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+.THIS .slds-checkbox_faux {
+    margin-right: 0 !important;
+}

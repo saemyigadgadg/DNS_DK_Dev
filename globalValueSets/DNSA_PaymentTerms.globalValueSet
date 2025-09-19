@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>10%DP/N60</fullName>
+        <default>false</default>
+        <label>10% DP Net 60 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>10%DP/N90</fullName>
+        <default>false</default>
+        <label>10% DP Net 90 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>20%DP/N120</fullName>
+        <default>false</default>
+        <label>20% DP Net 120 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>20%DP/N90</fullName>
+        <default>false</default>
+        <label>20% DP Net 90 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>60D</fullName>
+        <default>false</default>
+        <label>2Net 60 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>15%DP/N90</fullName>
+        <default>false</default>
+        <label>15% DP Net 90 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>30%DP/N120</fullName>
+        <default>false</default>
+        <label>30% DP Net 120 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>10%DP/N150</fullName>
+        <default>false</default>
+        <label>SHOWROOM PURCHASE PLAN -- 10%DP/N150</label>
+    </customValue>
+    <customValue>
+        <fullName>45D</fullName>
+        <default>false</default>
+        <label>Net 45 Days</label>
+    </customValue>
+    <customValue>
+        <fullName>30%DP/N150</fullName>
+        <default>false</default>
+        <label>30% DP Net 150 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>40%DP/N150</fullName>
+        <default>false</default>
+        <label>40% DP Net 150 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>40%DP/N180</fullName>
+        <default>false</default>
+        <label>40% DP Net 180 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>50%DP/N180</fullName>
+        <default>false</default>
+        <label>50% DP Net 180 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>90ET</fullName>
+        <default>false</default>
+        <label>Net 90 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>45DFASTRACK</fullName>
+        <default>false</default>
+        <label>Fast Track Processing/Net 45 Days From Shipment</label>
+    </customValue>
+    <customValue>
+        <fullName>90ET-RSI</fullName>
+        <default>false</default>
+        <label>90 DAY RSI TERMS- STOCK ORDERS</label>
+    </customValue>
+    <customValue>
+        <fullName>20%DP/N60</fullName>
+        <default>false</default>
+        <label>20% DP Net 60 (Approval form needed)</label>
+    </customValue>
+    <customValue>
+        <fullName>SPECIAL-TERM</fullName>
+        <default>false</default>
+        <label>SPECIAL TERM NOT IN PORTAL</label>
+    </customValue>
+    <customValue>
+        <fullName>D&amp;AU</fullName>
+        <default>false</default>
+        <label>US BANCORP FINANCING</label>
+    </customValue>
+    <customValue>
+        <fullName>FINANCE</fullName>
+        <default>false</default>
+        <label>DN FINANCE</label>
+    </customValue>
+    <customValue>
+        <fullName>120D</fullName>
+        <default>false</default>
+        <label>120D</label>
+    </customValue>
+    <customValue>
+        <fullName>10%DP/N45</fullName>
+        <default>false</default>
+        <label>10%DP/N45</label>
+    </customValue>
+    <masterLabel>DNSA Payment Terms</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

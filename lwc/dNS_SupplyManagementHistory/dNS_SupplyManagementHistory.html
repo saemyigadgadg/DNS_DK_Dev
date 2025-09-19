@@ -1,0 +1,141 @@
+<template>
+    <div class="chargingParts">
+        <article class="slds-card slds-card_boundary">
+
+            <!-- Spinner -->
+            <template lwc:if={isSpinner}>
+                <div class="exampleHolder">
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+
+            <div class="slds-card__header slds-grid slds-page-header" style="padding-bottom:0.5rem; border-bottom:solid 1px #c9c9c9;">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate" >
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-work_order" title="work_order">
+                        <lightning-icon size='small' icon-name="standard:work_order"></lightning-icon>
+                        <span class="slds-assistive-text">work_order</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span>생산 관리 내역</span>
+                        </h2>
+                    </div>
+                    <div class="slds-no-flex">                                            
+                        <lightning-button-group class="slds-m-left_x-small action">
+                            <!-- 라인삭제 -->
+                            <lightning-button-icon 
+                                icon-name="utility:dash" 
+                                variant="border-filled" 
+                                onclick={deleteSelectedRows}
+                                disabled={isButtonGroupDisabled}
+                                title="선택항목 삭제">
+                            </lightning-button-icon>
+                            <!-- 라인추가 -->
+                            <lightning-button-icon 
+                                icon-name="utility:add" 
+                                variant="border-filled" 
+                                onclick={addRowClick}
+                                disabled={isAddLineDisabled}
+                                title="라인추가">
+                            </lightning-button-icon>
+                            <!-- 저장 -->
+                            <lightning-button label={cLabel.DNS_B_ProductRequestSave} onclick={saveBtnClick} disabled={isSaveLineDisabled}></lightning-button>
+                        </lightning-button-group>
+                    </div>
+                </header>
+            </div>
+            <div class="table-wrap">
+                <table class="slds-table slds-table_bordered">
+                    <colgroup>
+                        <col width="12px" />
+                        <col width="12px" />
+                        <col width="31px" />
+                        <col width="31px" />
+                        <col width="12px" />
+                    </colgroup>
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">
+                                <div class="slds-truncate">
+                                    <lightning-input type="checkbox" name="headerCheckbox" onchange={checkAllClick}></lightning-input>
+                                </div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="삭제">
+                                    <lightning-icon icon-name="utility:dash" size="x-small"></lightning-icon>
+                                </div>
+                            </th>
+                            <th scope="col"><div class="slds-truncate" title="품번">품 번</div></th>
+                            <th scope="col"><div class="slds-truncate" title="품명">품 명</div></th>
+                            <th scope="col"><div class="slds-truncate" title="수량">수 량</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={resultDataWithDisabled} for:item="row" for:index="index">
+                            <tr key={row.PartAmountNo} class="slds-hint-parent">
+                                <td>
+                                    <lightning-input type="checkbox" 
+                                        data-id={row.PartAmountNo} 
+                                        onchange={checkCellClick} 
+                                        checked={row.isChecked}
+                                        disabled={row.isApproved}>
+                                    </lightning-input>
+                                </td>
+                                <td>
+                                    <lightning-button-icon 
+                                        icon-name="utility:dash" 
+                                        variant="bare"
+                                        onclick={deleteLine}
+                                        data-id={row.PartAmountNo}
+                                        disabled={row.isApproved}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td role="gridcell"> <!--품번-->
+                                    <div class="slds-truncate">
+                                        <lightning-formatted-url value={row.ProductUrl} tooltip={row.ProductCode} label={row.ProductCode} target="_self"></lightning-formatted-url>
+                                        </div>
+                                </td>
+                                <td> <!--품명-->
+                                    <template if:true={row.EditMode}>
+                                        <lightning-record-edit-form object-api-name="ProductionManagementHistory__c">
+                                            <lightning-input-field 
+                                            field-name="Product__c"
+                                            value={row.ProductId}
+                                            data-id={row.PartAmountNo}
+                                            onchange={productChange}
+                                            required="true"
+                                            variant="label-hidden">
+                                        </lightning-input-field>
+                                    </lightning-record-edit-form>
+                                    </template>
+                                    <template if:false={row.EditMode}>
+                                        <div class="slds-truncate">{row.ProductName}</div>
+                                    </template>
+                                </td>
+                                <td> <!--수량-->
+                                    <template if:true={row.EditMode}>
+                                        <lightning-input 
+                                            type="number" 
+                                            value={row.PartAmount}
+                                            data-id={row.PartAmountNo}
+                                            name="PartAmount"
+                                            onchange={handleInputChange}
+                                            variant="label-hidden"
+                                            disabled={row.isApproved}>
+                                        </lightning-input>
+                                    </template>
+                                    <template if:false={row.EditMode}>
+                                        <div class="slds-truncate">{row.PartAmount}</div>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </div>    
+</template>

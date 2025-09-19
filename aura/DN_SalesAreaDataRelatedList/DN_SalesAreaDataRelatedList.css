@@ -1,0 +1,64 @@
+/* 📌 Header */
+
+.THIS .header {
+    padding: 1rem;
+    background-color: #f3f3f3;
+    border-bottom: 1px solid #d4d4d4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.THIS .header h2{
+    font-size: 1rem;
+}
+
+/* 📌 Datatable */
+
+.THIS .body .main-content .slds-table .slds-truncate a {
+    border-bottom: 1px dotted;
+}
+
+/* 📌 iteration */
+
+.THIS .body .info_wrap{
+    padding: 7px 0;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.THIS .body .record_info,
+.THIS .body .category_info{
+    color: #5a5a5a;
+}
+
+.THIS .body .record_info span:after{
+    content: '\00a0\2219\00a0';
+    color: #5a5a5a;
+}
+
+.THIS .body .record_info span:last-of-type:after{
+    display: none;
+}
+
+
+/* 📌 Footer */
+
+.THIS .footer{
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: stretch;
+}
+
+.THIS .footer .slds-button {
+    padding: 0;
+    line-height: 100%;
+    width: 100%;
+    justify-content: end;
+}

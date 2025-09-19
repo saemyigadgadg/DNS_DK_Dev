@@ -1,0 +1,91 @@
+<template>
+  <article
+    class="slds-card slds-card_boundary headerBottomBorder forceRelatedListCardDesktop"
+    style="background-color: transparent"
+    aria-label="Open Activities"
+    data-aura-class="forceRelatedListCardDesktop"
+  >
+    <div
+      class="slds-grid slds-page-header forceRelatedListCardHeader"
+      data-aura-class="forceRelatedListCardHeader"
+    >
+      <header class="slds-media slds-media--center slds-has-flexi-truncate">
+        <div
+          aria-hidden="true"
+          class="slds-media__figure stencil slds-avatar slds-avatar_small"
+        >
+          <div
+            style="background-color: #06a59a"
+            class="extraSmall forceEntityIcon"
+            data-aura-class="forceEntityIcon"
+          >
+            <span class="uiImage" data-aura-class="uiImage">
+              <lightning-icon
+                icon-name="standard:entitlement"
+                alternative-text="entitlement"
+                title="entitlement"
+              ></lightning-icon>
+            </span>
+          </div>
+        </div>
+        <div class="slds-media__body">
+          <h2 class="slds-card__header-title">
+            <span title="MatrixSTT" class="slds-truncate slds-m-right--xx-small"
+              >MatrixSTT</span
+            >
+          </h2>
+        </div>
+      </header>
+    </div>
+    <div>
+      <div style="margin-bottom: 13px">
+        <lightning-card title="키워드" icon-name="custom:custom55">
+          <lightning-button-icon-stateful
+            icon-name={lock}
+            selected={lockState}
+            onclick={handleLockButtonClick}
+            alternative-text="Lock"
+            slot="actions"
+          ></lightning-button-icon-stateful>
+          <!-- body -->
+          <div
+            class="slds-m-top_medium slds-m-bottom_medium slds-m-right--xx-small slds-m-left--xx-small"
+          >
+            <template iterator:it={badgeList}>
+              <lightning-badge
+                key={it.value.id}
+                data-id={it.value.id}
+                label={it.value.id}
+                icon-name="standard:event"
+                onclick={fnFindKnowledge}
+                style="cursor: pointer"
+              ></lightning-badge>
+            </template>
+          </div>
+
+          <div style="height: 110px" slot="footer">
+            <lightning-datatable
+              key-field="URL"
+              data={tempList}
+              columns={columns}
+            >
+            </lightning-datatable>
+          </div>
+        </lightning-card>
+      </div>
+
+      <div>
+        <lightning-card title="상담 AI" icon-name="standard:bot">
+          <div>
+            <iframe
+              src={iframeUrl}
+              width="100%"
+              height="600px"
+              style="border: none"
+            ></iframe>
+          </div>
+        </lightning-card>
+      </div>
+    </div>
+  </article>
+</template>

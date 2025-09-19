@@ -1,0 +1,91 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-14-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-19-2024   Hyerin Ro   Initial Version
+-->
+<template>
+    <div class="launchingExcellenceBtn">
+        <template if:true={isDocList}>
+            <div class="slds-modal__container" style="width:100%; max-width:none; padding:0; max-height: calc(100vh - 5rem);">
+            <div class="slds-modal__header">
+                <h1 class="slds-modal__title slds-hyphenate" tabindex="-1">Launching Excellence</h1>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium">
+                <!--Spinner-->
+                <template if:true={isSpinner}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </template>
+                
+                <!--Document List-->
+
+                <!-- 'isWindows :'+{isWindows} +'  isIOS :'+ {isIOS} + '  isAndroid :'+{isAndroid} -->
+                <lightning-radio-group name="radioGroup"
+                                        label="Document List"
+                                        options={docOptions}
+                                        value={selectedDoc}
+                                        onchange={handleDoc}
+                                        type="radio"
+                                        class="radio"
+                                        ></lightning-radio-group>    
+            </div>
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={handleCancel}>{cLabel.DNS_B_Cancel}</button>
+                <button class="slds-button slds-button_brand" onclick={handleNext}>{cLabel.DNS_B_Next}</button>
+            </div>
+            </div>
+        </template>
+    
+        <template if:false={isDocList}>
+            <div class="slds-modal__container" style="width:100%; max-width:none; padding:0;">
+            <div class="slds-modal__header">
+                <h1 class="slds-modal__title slds-hyphenate" tabindex="-1">Launching Excellence</h1>
+            </div>
+            <template if:true={isOZeForm}>
+                <div class="slds-modal__content slds-p-around_medium iframeDiv">
+                    <!--Spinner-->
+                    <template lwc:if={isSpinner}>
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </template>
+                    <iframe class="myIframe" onload={myframeLoad}
+                       width="100%" src={TESTURL} height="600"></iframe>
+                       <!-- height="600px"  -->
+                       <!-- height="736px"  -->                    
+                </div>
+            </template>
+
+            <template if:true={isDocDownload}>
+                <div class="slds-modal__content slds-p-around_medium docDownload">
+                    <div class="card" onclick={handleDownload}>
+                        <div class="preview">
+                            <div class="icon-wrap">
+                                <lightning-icon icon-name='doctype:image' alternative-text='image' size='large' title='image'></lightning-icon>
+                            </div>
+                        </div>
+                        <div class="info-wrap">
+                            <div class="file">
+                                <div class="icon-wrap">
+                                    <lightning-icon icon-name='doctype:image' alternative-text='image' size='x-small' title='image'></lightning-icon>
+                                </div>
+                                <div class="file-name">{docTitle}</div>
+                            </div>
+                            <div class="icon-wrap">
+                                <lightning-icon icon-name='utility:download' alternative-text='download' size='x-small' title='download' class="custom-icon-download"></lightning-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={handleCancel}>{cLabel.DNS_B_Cancel}</button>
+            </div>
+            </div>
+        </template>
+    </div>
+
+</template>

@@ -1,0 +1,123 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-25-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   06-19-2024   Hanyeong Choi   Initial Version
+  1.0   06-20-2024   Hyerin Ro       Publish
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:appHostable,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,force:hasRecordId"
+    controller="DN_AccountController" description="Convert to Trade Customer">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="checkResult" type="Boolean" default="false" />
+    <aura:attribute name="accCheckResult" type="Boolean" default="false" />
+    <aura:attribute name="sadCheckResult" type="Boolean" default="false" />
+    <aura:attribute name="isEmpty" type="Boolean" default="false" />
+    <aura:attribute name="accFilteredFieldList" type="String" default="" />
+    <aura:attribute name="sadFilteredFieldList" type="String" default="" />
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_AccountConvertToTradeCustomer) {
+            overflow: hidden;
+        }
+        .slds-modal__container:has(.cDN_AccountConvertToTradeCustomer) {
+            margin: auto;
+            padding: 0;
+            padding-top: 1rem;
+        }
+        .slds-modal__content:has(.cDN_AccountConvertToTradeCustomer) {
+            padding: 0;
+            overflow-y: clip;
+            height: unset !important;
+            max-height: unset !important;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_AccountConvertToTradeCustomer) {
+            padding:0;
+        }
+        .slds-modal__header .slds-modal__close {
+            display: none;
+        }
+    </aura:html>
+
+    <!-- <div class="slds-modal slds-fade-in-open"> -->
+    <div role="dialog" tabindex="-1" class="slds-modal_large slds-modal__container">
+        <!-- 🚩Modal Header -->
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_ACC_T_CONVERT}</h2>
+        </header>
+
+        <!-- 🚩Modal Body -->
+        <section class="slds-modal__content">
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" class="slds-show backgroundSpinner"
+                    alternativeText="Loading" />
+            </aura:if>
+
+            <div class="section-1 validation-modal">
+                <aura:if isTrue="{! v.checkResult }">
+                    <h2 class="matched-title">{!$Label.c.DNS_ACC_T_COMPLETE}</h2>
+                    <!-- <span class="break-line"></span> -->
+
+                    <aura:set attribute="else">
+                        <!-- <h2 class="matched-title">{!$Label.c.DNS_ACC_T_COMPLETE}</h2> -->
+                        <aura:if isTrue="{! v.accCheckResult }">
+                          <div class="unmatched-wrap">
+                            <div class="unmatched-card">
+                              <lightning:icon iconName='utility:warning' alternativeText='warning' variant='error' size='small' title='warning'></lightning:icon>
+                              <div class="text">
+                                <h3>{!$Label.c.DNS_ACC_T_PLEASEACCCHECK}</h3>
+                                <p>{! v.accFilteredFieldList }</p>
+                              </div>
+                            </div>
+                          </div>
+                        </aura:if>
+
+                          <aura:if isTrue="{! v.sadCheckResult }">
+                            <div class="unmatched-wrap">
+                              <div class="unmatched-card">
+                                <lightning:icon iconName='utility:warning' alternativeText='warning' variant='error' size='small' title='warning'></lightning:icon>
+                                <div class="text">
+                                  <h3>{!$Label.c.DNS_ACC_T_PLEASECHECKSAD}</h3>
+                                  <p>{! v.sadFilteredFieldList }</p>
+                                </div>
+                              </div>
+                            </div>
+                          </aura:if>
+
+                          <aura:if isTrue="{! v.isEmpty }">
+                            <div class="unmatched-wrap">
+                              <div class="unmatched-card">
+                                <lightning:icon iconName='utility:warning' alternativeText='warning' variant='error' size='small' title='warning'></lightning:icon>
+                                <div class="text">
+                                  <h3>{!$Label.c.DNS_ACC_T_PLEASECHECKSAD}</h3>
+                                  <p>{!$Label.c.DSN_ACC_T_MATCHSAD}</p>
+                                </div>
+                              </div>
+                            </div>
+                        </aura:if>
+                        <!-- </aura:iteration> -->
+                    </aura:set>
+                </aura:if>
+            </div>
+        </section>
+        <!-- 🚩Modal Footer -->
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Close}" onclick="{! c.handleCloseModal }" />
+        </footer>
+    </div>
+    <!-- </div> -->
+</aura:component>

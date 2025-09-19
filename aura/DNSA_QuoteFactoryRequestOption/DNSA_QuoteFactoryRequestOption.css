@@ -1,0 +1,116 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+}
+
+.THIS .slds-modal__content {
+    max-height: calc(100vh - 16rem);
+}
+
+
+/* Section Header */
+
+.THIS .section-header {
+    padding: 0.25rem;
+    padding-left: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.THIS .section-header h2 {
+    font-size: 1rem;
+    line-height: 1.875rem;
+}
+
+/* Section Body */
+
+.THIS .slds-align_absolute-center {
+    display: unset !important;
+}
+
+.THIS .section-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.THIS .section-container table {
+    table-layout: fixed;
+}
+
+.THIS .section-container .col {
+    padding: 0.5rem 0.75rem;
+    width: 50%;
+    flex-basis: auto;
+}
+
+.THIS .section-container .oneRow {
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.THIS .section-container .slds-form-element_horizontal .slds-form-element__label {
+    max-width: calc(33% - 0.5rem);
+}
+
+/* Table Styles */
+
+.THIS .table-wrap {
+    padding: 0.25rem 0.5rem;
+    width: 100%;
+}
+
+.THIS .table-wrap table td {
+    vertical-align: top;
+    padding: 0.5rem;
+}
+
+.THIS .table-wrap .slds-table_cell-buffer tr>th:first-child {
+    padding-left: 0.5rem !important;
+}
+
+.THIS .table-wrap td .slds-textarea {
+    height: 10rem;
+}
+
+.THIS .none {
+    display: none;
+}
+
+/* SLDS Table datepicker */
+
+.THIS .table-wrap .slds-datepicker__month td {
+    border: none;
+    background-color: #fff;
+    padding: .25rem;
+    font-size: .75rem;
+    margin: 0;
+}
+
+.THIS .table-wrap .slds-datepicker__month th {
+    border: none;
+    padding: .25rem;
+    font-weight: 400;
+    background-color: #fff;
+    font-size: .75rem;
+}
+
+.THIS .table-wrap .slds-datepicker__month tr {
+    border-bottom: none;
+}
+
+.THIS .table-wrap .slds-text-link {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin: auto;
+}

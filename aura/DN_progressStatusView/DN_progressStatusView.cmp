@@ -1,0 +1,263 @@
+<!--
+  @description       : (포탈) 판매가 > 진행 상태 조회
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-11
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   02-19-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_PortalSaleProfressStatusController"
+  description="진행 상태 조회">
+  
+
+  <!-- navigation -->
+  <lightning:navigation aura:id="navPriceDetailView"/> <!--판매가 상세조회 페이지로 이동-->
+
+  <!-- attribute -->
+  <aura:attribute name="isLoading"    type="Boolean" default="false" />
+  <aura:attribute name="pdfModalOpen" type="Boolean" default="false" description="프린트 모달" />
+  <aura:attribute name="pdfUrl"       type="String"  default="{!$Label.c.Portal_PSView_Pdf}" />
+  <aura:attribute name="pageMoveUrl"  type="String"  default="{!$Label.c.Portal_PSView_Detail}" />
+  <aura:attribute name="searchSet"    type="Object"  default="" description="검색 직후 검색 조건 값" />
+
+  <aura:attribute name="dealerInfo" type="Object" description="로그인 유저 정보" /> 
+  <aura:attribute name="startDate"  type="Date"   description="시작 기간" /> 
+  <aura:attribute name="endDate"    type="Date"   description="종료 기간" /> 
+
+  <aura:attribute name="poNo"   type="String" default="" description="Inquiry PO No" />
+  <aura:attribute name="peNo"   type="String" default="" description="PE Inquiry No" />
+  <aura:attribute name="status" type="String" default="" description="상태" />
+
+  <aura:attribute name="isStatus" type="Boolean" default="false" />
+  <aura:attribute name="line" type="String" default="" description="총 레코드 수" />
+  <aura:attribute name="statusList" type="List" default="[]" />
+
+  <aura:attribute name="statusOption" type="List" default="[
+    {'label': 'All',    'value': ''},
+    {'label': '확인중', 'value': 'Q'},
+    {'label': '승인',   'value': 'A'},
+    {'label': '거절',   'value': 'R'},
+  ]" />
+
+  <aura:attribute name="excelData" type="List" default="[]" description="엑셀 다운 데이터 20개씩 덮어 쓰기" />
+
+  <!-- 페이징 처리 attribute -->
+  <aura:attribute name="dividePageCount" type="Integer" default="20" />
+  <aura:attribute name="allResultCount" type="Integer" default="0" />
+  <aura:attribute name="totalPage" type="Decimal" default="1" />
+  <aura:attribute name="pageAllCountList" type="List" />
+  <aura:attribute name="pageCountListIndex" type="Decimal" default="0" />
+  <aura:attribute name="pageCountList" type="List" default="[0]" />
+  <aura:attribute name="currentPage" type="Decimal" default="1" />
+  <aura:attribute name="pageList" type="List" />
+
+  <aura:attribute name="pdfData" type="String" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+      <!-- Excel JS & Sheet JS -->
+      <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+
+  <div class="total-wrap">
+    <article class="slds-card">
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading }">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName='standard:job_profile' size='small' />
+          <h2 class="slds-truncate">{!$Label.c.PES_PriceEscalationStatus} <!-- 진행 상태 조회 --></h2>
+        </div>
+
+        <div class="button-wrap">
+          <lightning:button name="" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+          <lightning:button name="" label="{!$Label.c.DNS_SRT_Excel}" iconName="doctype:excel"  iconPosition="left" onclick="{!c.downloadExcel}" />
+          <lightning:button name="" label="{!$Label.c.PES_Print}" iconName="utility:print" iconPosition="left" onclick="{!c.openPrintPDF}" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p>{!$Label.c.PAR_CreationDtae} <!-- 생성일 --></p>
+            <div class="input-wrap">
+              <lightning:input type="date" name="" value="{!v.startDate}" aura:id="startDate"
+                onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+              <span>~</span>
+              <lightning:input type="date" name="" value="{!v.endDate}" aura:id="endDate"
+                onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>Inquiry PO No</p>
+            <div class="input-wrap" onkeypress="{!c.doEnter}">
+              <lightning:input type="text" name="poNo" value="{!v.poNo}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>PE Inquiry No</p>
+            <div class="input-wrap" onkeypress="{!c.doEnter}">
+              <lightning:input type="text" name="peNo" value="{!v.peNo}" variant="label-hidden" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>{!$Label.c.DNS_C_Status} <!-- 상태 --></p>
+            <div class="input-wrap">
+              <lightning:combobox variant="label-hidden" options="{!v.statusOption}" value="{!v.status}" />
+            </div>
+          </div>
+        </div>
+        <div class="card-02 top-card">
+          <div class="card-header">
+            <p>Records found : <span>{!v.statusList.length}</span></p>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table>
+                <colgroup>
+                  <col width="1%" />
+                  <col width="1%" />
+                  <col width="8%" />
+                  <col width="25%" />
+                  <col width="25%" />
+                  <col width="8%" />
+                  <col width="8%" />
+                  <col width="8%" />
+                  <col width="8%" />
+                  <col width="8%" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>{!$Label.c.DNS_C_Status} <!-- 상태 --></th>
+                    <th>{!$Label.c.DNS_C_Status} <!-- 작업상태 --></th>
+                    <th>Remark</th>
+                    <th>{!$Label.c.PES_RejectReason} <!-- 거절 사유 --></th>
+                    <th>Inquiry PO No</th>
+                    <th>PE Inquiry No</th>
+                    <th>{!$Label.c.PAR_CreationDtae} <!-- 생성일 --></th>
+                    <th>{!$Label.c.PAR_ModelNo} <!-- 기종 --></th>
+                    <th>{!$Label.c.service_lbl_serial_no} <!-- 장비번호 --></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!v.isStatus}">
+                    <aura:iteration items="{!v.statusList}" var="sl" indexVar="j">
+                      <tr>
+                        <td>{!j+1}</td>
+                        <td>
+                          <aura:if isTrue="{!sl.status == 'Q'}">
+                            <lightning:icon class="yellow" iconName="utility:record" alternativeText="상태" title="상태" size="small"/>
+                          </aura:if>
+                          <aura:if isTrue="{!sl.status == 'A'}">
+                            <lightning:icon class="green" iconName="utility:record" alternativeText="상태" title="상태" size="small"/>
+                          </aura:if>
+                          <aura:if isTrue="{!sl.status == 'R'}">
+                            <lightning:icon class="red" iconName="utility:record" alternativeText="상태" title="상태" size="small"/>
+                          </aura:if>
+                        </td>
+                        <td>{!sl.workStatus}</td>
+                        <td>{!sl.remark}</td>
+                        <td>{!sl.rejectReason}</td>
+                        <td>{!sl.poNo}</td>
+                        <td class="Inquiry-No" onclick="{!c.openNo}" data-peNo="{!sl.peNo}">{!sl.peNo}</td>
+                        <td>{!sl.creationDate}</td>
+                        <td>{!sl.equipmentName}</td>
+                        <td>{!sl.equipmentNo}</td>
+                      </tr>
+                    </aura:iteration>
+                    <aura:set attribute="else">
+                      <tr>
+                        <td>1</td>
+                        <td colspan="9" style="text-align: center;">No Data</td>
+                      </tr>                
+                    </aura:set> 
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination-wrap">
+              <div class="total">
+                <p>{!$Label.c.service_lbl_total_no} <!-- 총 건수 --> : <span style="font-weight: bold;">{!v.allResultCount}</span>
+                  ({!v.currentPage}/{!v.totalPage})</p>
+              </div>
+  
+              <ul class="pagination">
+                <li class="first">
+                  <a onclick="{!c.handleChangePage}" name="first" value="1">
+                    <lightning:icon iconName='utility:jump_to_left' alternativeText='jump_to_left' size='x-small' title='jump_to_left'></lightning:icon>
+                  </a>
+                </li>
+                <li class="prev">
+                  <a onclick="{!c.handleChangePage}" name="previous" value="{!v.currentPage - 1}">
+                    <lightning:icon iconName='utility:chevronleft' alternativeText='chevronleft' size='x-small' title='chevronleft'></lightning:icon>
+                  </a>
+                </li>
+                <li class="pages">
+                  <aura:iteration items="{!v.pageCountList}" var="pageNumber">
+                    <aura:if isTrue="{!v.currentPage == pageNumber + 1}">
+                      <span class="here"> {!pageNumber + 1} </span>
+                      <aura:set attribute="else">
+                        <span>
+                          <a class="numbers" onclick="{!c.handleChangePage}" value="{!pageNumber + 1}">{!pageNumber + 1}</a>
+                        </span>
+                      </aura:set>
+                    </aura:if>
+                  </aura:iteration>
+                </li>
+                <li class="next">
+                  <a onclick="{!c.handleChangePage}" name="next" value="{!v.currentPage + 1}">
+                    <lightning:icon iconName='utility:chevronright' alternativeText='chevronright' size='x-small' title='chevronright'></lightning:icon>
+                  </a>
+                </li>
+                <li class="last">
+                  <a onclick="{!c.handleChangePage}" name="last" value="{!v.pageList.length}">
+                    <lightning:icon iconName='utility:jump_to_right' alternativeText='jump_to_right' size='x-small' title='jump_to_right'></lightning:icon>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>      
+      </div>
+      <!-- 프린트 PDF -->
+      <aura:if isTrue="{!v.pdfModalOpen}">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <!-- 모달 헤더 -->
+            <header class="slds-modal__header">
+              <lightning:buttonIcon iconName="utility:close" onclick="{!c.modalCancel}" alternativeText="Close"
+                class="slds-modal__close" />
+              <h2 class="slds-text-heading_medium">{!$Label.c.PES_Print} <!-- 프린트 --></h2>
+            </header>
+
+            <!-- 모달 바디 -->
+            <div class="slds-modal__content slds-p-around_medium">
+              <iframe id="pdfIframe" src="{!v.pdfUrl}" width="100%;" height="500px;"></iframe>
+            </div>
+
+            <!-- 모달 푸터 -->
+            <footer class="slds-modal__footer">
+              <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Close}" onclick="{!c.modalCancel}" />
+            </footer>
+          </div>
+        </section>
+        <!-- 배경 -->
+        <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+      </aura:if>
+    </article>
+  </div>
+
+</aura:component>

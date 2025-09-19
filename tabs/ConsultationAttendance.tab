@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>상담배정 근태관리</label>
+    <lwcComponent>dN_ConsultationAttendance</lwcComponent>
+    <motif>Custom99: CRT TV</motif>
+</CustomTab>

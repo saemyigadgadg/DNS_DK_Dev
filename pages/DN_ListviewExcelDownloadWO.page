@@ -1,0 +1,30 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-04-04
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-10-29   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<apex:page standardController="WorkOrder" recordSetVar="WorkOrders" extensions="DN_ListviewExcelDownload" showHeader="false" sidebar="false" readOnly="false">
+
+<apex:includeLightning />
+
+<div id="excelComponent" class="excelComponent" />
+
+<script>
+
+    $Lightning.use("c:DN_NewListButtonApp", function() {
+        $Lightning.createComponent("c:DN_ListviewExcelDownload", {
+            "listviewId" : "{!listviewId}",
+            "objType" : "{!objType}",
+            "objName" : "{!objName}",
+            "returnUrl" : "{!returnUrl}",
+        }, "excelComponent", function(cmp) {});
+    });
+    
+</script>
+
+
+</apex:page>

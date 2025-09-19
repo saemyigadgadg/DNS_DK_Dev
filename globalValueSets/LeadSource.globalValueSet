@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Advertisement</fullName>
+        <default>false</default>
+        <label>Advertisement</label>
+    </customValue>
+    <customValue>
+        <fullName>Customer Event</fullName>
+        <default>false</default>
+        <label>Customer Event</label>
+    </customValue>
+    <customValue>
+        <fullName>Employee Referral</fullName>
+        <default>false</default>
+        <label>Employee Referral</label>
+    </customValue>
+    <customValue>
+        <fullName>External Referral</fullName>
+        <default>false</default>
+        <label>External Referral</label>
+    </customValue>
+    <customValue>
+        <fullName>Google AdWords</fullName>
+        <default>false</default>
+        <label>Google AdWords</label>
+    </customValue>
+    <customValue>
+        <fullName>Partner</fullName>
+        <default>false</default>
+        <label>Partner</label>
+    </customValue>
+    <customValue>
+        <fullName>Purchased List</fullName>
+        <default>false</default>
+        <label>Purchased List</label>
+    </customValue>
+    <customValue>
+        <fullName>Trade Show</fullName>
+        <default>false</default>
+        <label>Trade Show</label>
+    </customValue>
+    <customValue>
+        <fullName>Webinar</fullName>
+        <default>false</default>
+        <label>Webinar</label>
+    </customValue>
+    <customValue>
+        <fullName>Website</fullName>
+        <default>false</default>
+        <label>Website</label>
+    </customValue>
+    <customValue>
+        <fullName>SNS(Youtube)</fullName>
+        <default>false</default>
+        <label>SNS(Youtube)</label>
+    </customValue>
+    <customValue>
+        <fullName>SNS(Instagram)</fullName>
+        <default>false</default>
+        <label>SNS(Instagram)</label>
+    </customValue>
+    <customValue>
+        <fullName>SNS(Twitter)</fullName>
+        <default>false</default>
+        <label>SNS(Twitter)</label>
+    </customValue>
+    <customValue>
+        <fullName>Search Engine(Naver)</fullName>
+        <default>false</default>
+        <label>Search Engine(Naver)</label>
+    </customValue>
+    <customValue>
+        <fullName>Search Engine(Google)</fullName>
+        <default>false</default>
+        <label>Search Engine(Google)</label>
+    </customValue>
+    <customValue>
+        <fullName>Search(Cafe Naver)</fullName>
+        <default>false</default>
+        <label>Search(Cafe Naver)</label>
+    </customValue>
+    <customValue>
+        <fullName>Signboard</fullName>
+        <default>false</default>
+        <label>Signboard</label>
+    </customValue>
+    <customValue>
+        <fullName>Introduction</fullName>
+        <default>false</default>
+        <label>Introduction</label>
+    </customValue>
+    <customValue>
+        <fullName>From Lead</fullName>
+        <default>false</default>
+        <label>From Lead</label>
+    </customValue>
+    <customValue>
+        <fullName>Other</fullName>
+        <default>false</default>
+        <label>Other</label>
+    </customValue>
+    <masterLabel>고객유입경로</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

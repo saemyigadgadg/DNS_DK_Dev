@@ -1,0 +1,15 @@
+<template>
+    <template if:true={columns}>
+
+        <c-custom-datatable
+            key-field="key"
+            columns={columns}
+            data={selTableData}
+            hide-checkbox-column
+            suppress-bottom-bar
+            draft-values={draftValues}
+            onrowaction={handleRemoveAction}
+            oncellchange={handleCellChange}
+        ></c-custom-datatable>
+    </template>
+</template>

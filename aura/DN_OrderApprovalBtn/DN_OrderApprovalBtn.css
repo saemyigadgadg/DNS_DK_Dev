@@ -1,0 +1,21 @@
+.THIS.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .THIS .slds-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .THIS .slds-modal__content {
+    padding: 1rem;
+  }
+  
+  .THIS .slds-modal__content p {
+    font-size: 1rem;
+    text-align: center;
+    line-height: 150%;
+  }

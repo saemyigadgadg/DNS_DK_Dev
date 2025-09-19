@@ -1,0 +1,39 @@
+.THIS.slds-card {
+    padding: 1rem;
+}
+
+.THIS .text {
+    padding-top: 0.5rem;
+    text-align: center;
+}
+
+.THIS .header {
+    position: relative;    
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.THIS .header .title span {
+    font-size: 1.125rem;
+}
+
+.THIS .header .button-wrap {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+}
+
+.THIS .slds-icon-text-default {
+    fill: #BA0517;
+}
+
+.THIS .slds-media__figure {
+    margin-right: 0.5rem !important;
+}

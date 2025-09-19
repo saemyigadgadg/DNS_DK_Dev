@@ -1,0 +1,633 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 05-09-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-08-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes"
+                controller="DN_SQController" 
+                description="Review SQ">
+
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="isEditReview"         type="Boolean"  default="false" />
+    <aura:attribute name="isClickEdit"         type="Boolean"  default="false" />
+    <aura:attribute name="isSearchReview"       type="Boolean"  default="false" />
+    <aura:attribute name="isChangeManager"      type="Boolean"  default="false" />
+    <aura:attribute name="isReviewDescription"  type="Boolean"  default="false" />
+    <aura:attribute name="isReject"             type="Boolean"  default="false" />
+    <aura:attribute name="salesUser"            type="Boolean"  default="false" />
+    <aura:attribute name="isReviewOwner"        type="Boolean"  default="false" />
+    <aura:attribute name="isRndManager"         type="Boolean"  default="false" />
+    <aura:attribute name="isWorker"             type="Boolean"  default="false" />
+    <aura:attribute name="checkDNSAProfile"     type="Boolean"  default="false" />
+    <aura:attribute name="checkJisajang"        type="Boolean"  default="false" />
+    <aura:attribute name="ReviewOwner"          type="String"   default="" />
+    <aura:attribute name="userFilter"           type="String"   default="" />
+    <aura:attribute name="recordId"             type="String" />
+    <aura:attribute name="reviewId"             type="String"  />
+    <aura:attribute name="reviewId2"            type="String"  />
+    <aura:attribute name="profile"              type="String"  />
+    <aura:attribute name="currentStage"         type="String"  />
+    <aura:attribute name="reviewType"           type="String"  />
+    <aura:attribute name="processedReviewList"  type="List" />
+    
+    <aura:attribute name="isRichLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="backgroundColor"      type="String"   default="background: #f3f3f3;"/>
+    <aura:attribute name="isEditable"           type="Boolean"  default="false" />
+    <aura:attribute name="richTextContent"      type="String" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:navigation aura:id="navService" />
+    <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleModalEvent}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <lightning:empApi aura:id="empApi" />
+
+    <!-- <aura:if isTrue="{! !v.isWorker }"> --> 
+        <div class="slds-card slds-card_boundary slds-card_related-list-fix">
+            <div class="slds-page-header slds-page-header_record-home">
+                <div class="header">
+    
+                    <!-- Header Title -->
+                    <div class="title-wrap">
+                        <div class="icon-wrap">
+                            <lightning:icon iconName='custom:custom83' alternativeText='Review SQ' size='small' title='Review SQ'></lightning:icon>
+                        </div>
+                        <h1>{!$Label.c.DNS_SQR_T_REVIEWTITLE}</h1>
+                    </div>
+    
+                    <!-- Header Button -->
+                    <div class="button-wrap">
+                        <aura:if isTrue="{! !v.checkJisajang }">
+                            <aura:if isTrue="{! AND(v.isReviewOwner, v.userFilter != 'admin') }">
+                                <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                    <lightning:button label="Split" title="Split" onclick="{! c.handleClickReviewEdit }"/>
+                                    <lightning:button label="{!$Label.c.DNS_REVIEW_B_HISTORYSEARCH}" title="{!$Label.c.DNS_REVIEW_B_HISTORYSEARCH}" onclick="{! c.handleClickReviewSearch }"/>
+                                </aura:if>
+                            </aura:if>
+                            <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                <lightning:button label="Split" title="Split" onclick="{! c.handleClickReviewEdit }"/>
+                                <lightning:button label="{!$Label.c.DNS_REVIEW_B_HISTORYSEARCH}" title="{!$Label.c.DNS_REVIEW_B_HISTORYSEARCH}" onclick="{! c.handleClickReviewSearch }"/>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="table-wrap">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover" aria-label="Example table of Opportunities with vertical borders">
+                    <colgroup>
+                        <aura:if isTrue="{! AND(v.userFilter != 'Dealer', v.userFilter != '직영') }">
+                            <col width="2%" />
+                            <col width="17%" />
+                            <col width="12%" />
+                            <col width="30%" />
+                            <col width="7%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="6%" />
+                            <col width="3%" />
+
+                            <aura:set attribute="else">
+                                <col width="2%" />
+                                <col width="19%" />
+                                <col width="15%" />
+                                <col width="30%" />
+                                <col width="7%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="6%" />
+                                <col width="3%" />
+                            </aura:set>
+                        </aura:if>
+                    </colgroup>
+    
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_NUM}">{!$Label.c.DNS_REVIEW_C_NUM}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_REVIEWNAME}">{!$Label.c.DNS_REVIEW_C_REVIEWNAME}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_TEAM}">{!$Label.c.DNS_REVIEW_C_TEAM}<br />{!$Label.c.DNS_REVIEW_C_REPRNAME}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_C_DESCRIPTION}">{!$Label.c.DNS_SQR_C_DESCRIPTION}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_ISCOMPLETE}">{!$Label.c.DNS_REVIEW_ISCOMPLETE}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_Initial + ' ' + $Label.c.DNS_REVIEW_C_Initial2}">{!$Label.c.DNS_REVIEW_C_Initial}<br />{!$Label.c.DNS_REVIEW_C_Initial2}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_PRESHIPMENT + ' ' + $Label.c.DNS_REVIEW_C_ISREVIEW}">{!$Label.c.DNS_REVIEW_C_PRESHIPMENT}<br />{!$Label.c.DNS_REVIEW_C_ISREVIEW}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED + ' ' + $Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}">{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED}<br />{!$Label.c.DNS_REVIEW_C_DESIGNREQUIRED2}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH + ' ' + $Label.c.DNS_REVIEW_C_DELIVERYMONTH2}">{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH}<br />{!$Label.c.DNS_REVIEW_C_DELIVERYMONTH2}</div>
+                            </th>
+                            <aura:if isTrue="{! AND(v.userFilter != 'Dealer', v.userFilter != '직영') }">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_MATERIAL}">{!$Label.c.DNS_REVIEW_C_MATERIAL}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_ASSEMBLY}">{!$Label.c.DNS_REVIEW_C_ASSEMBLY}</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="{!$Label.c.DNS_REVIEW_C_WONPRICE}">{!$Label.c.DNS_REVIEW_C_WONPRICE}</div>
+                                </th>
+                            </aura:if>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="{!$Label.c.DNS_SQR_T_ACTION}">{!$Label.c.DNS_SQR_T_ACTION}</div>
+                            </th>
+                        </tr>
+                    </thead>
+    
+                    <tbody>
+                        <aura:iteration items="{!v.processedReviewList}" var="reviewGroup" indexVar="index">
+                            <aura:if isTrue="{!reviewGroup[0].Type__c == 'SQ'}">
+                                <!-- 검토자 01 -->
+                                <tr class="slds-hint-parent">
+                                    <!-- Index -->
+                                    <td  rowspan="3" style="border-left: none;">
+                                        <div class="slds-truncate">{!index + 1}</div>
+                                    </td>
+    
+                                    <!-- SQ Title -->
+                                    <td  class="icon-hover" rowspan="2">
+                                        <div class="slds-truncate" title="{!reviewGroup[0].SQTitle__c}">{!reviewGroup[0].SQTitle__c}</div>
+                                        <!-- <aura:if isTrue="{! OR(v.userFilter == 'RND', OR(v.userFilter == 'crm', v.userFilter == 'admin')) }">
+                                            <div data-review-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }">
+                                                <div class="requestInfo" data-review-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" onclick="{! c.handleClickReviewDescription }">[요청정보]</div>
+                                            </div>
+                                        </aura:if> -->
+                                        <!-- <aura:if isTrue="{! OR(v.userFilter == 'RND', OR(v.userFilter == 'crm', v.userFilter == 'admin')) }">
+                                            <div class="button-wrap" data-review-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }">
+                                                <lightning:icon iconName='utility:search' size='xx-small' title='View Description' onclick="{! c.handleClickReviewDescription }"></lightning:icon>
+                                            </div>
+                                        </aura:if> -->
+                                    </td>
+    
+                                    <td class="icon-hover group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">
+                                            <div class="review-group">
+                                                <span
+                                                    title="{!reviewGroup[0].FM_TeamName__c}">
+                                                    {!reviewGroup[0].FM_TeamName__c}
+                                                </span>
+                                                <span
+                                                    title="{!reviewGroup[0].Owner.Name}">
+                                                    {!reviewGroup[0].Owner.Name} / 기계 담당
+                                                </span>
+                                            </div>
+                                            <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                                <aura:if isTrue="{! OR(v.ReviewOwner == reviewGroup[0].OwnerId, OR(v.userFilter == 'admin', v.isRndManager)) }">
+                                                    <div class="button-wrap" data-review-id="{! reviewGroup[0].Id + '-기계' }">
+                                                        <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='Change Manager' onclick="{! c.handleClickChangeManager }"></lightning:icon>
+                                                    </div>
+                                                </aura:if>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                    <td class="desc group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate left">{! v.userFilter == 'Dealer' ? IF(reviewGroup[0].Comments__c != null, $Label.c.DNS_REVIEW_C_REVIEWD, $Label.c.DNS_REVIEW_C_REVIEWING) : reviewGroup[0].Comments__c }</div>
+                                    </td>
+                                    <td class="desc group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! IF(reviewGroup[0].IsComplete__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[0].IsFirst__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[0].PreShipmentReview__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[0].DesignReviewRequired__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : reviewGroup[0].DeliveryDate_months__c}</div>
+                                    </td>
+                                    <aura:if isTrue="{! AND(v.userFilter != 'Dealer', v.userFilter != '직영') }">
+                                        <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[0].formattedKRWMaterial_Cost)}</div>
+                                        </td>
+                                        <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[0].formattedKRWAssembly_Cost)}</div>
+                                        </td>
+                                        <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[0].formattedKRWcost)}</div>
+                                        </td>
+                                    </aura:if>
+                                    <td class="action">
+                                        <div class="slds-truncate" title="More">
+                                            <aura:if isTrue="{! !v.checkJisajang }">
+                                                <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                                    <aura:if isTrue="{! !reviewGroup[0].Color__c }">
+                                                        <aura:if isTrue="{! v.ReviewOwner == reviewGroup[0].OwnerId }">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_SKIP}" value="{! 'Skip-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_REJECT}" value="{! 'Reject-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_SQR_REVIEW_COMPLETE}" value="{! 'Complete-' + reviewGroup[0].Id}" />
+                                                            </lightning:buttonMenu>
+                                                        </aura:if>
+                
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{! v.salesUser }">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_REREQUEST}" value="{! 'ReSubmit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_CLEAR}" value="{! 'Clear-' + reviewGroup[0].Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:if>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+        
+                                                <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                                    <aura:if isTrue="{! !reviewGroup[0].Color__c }">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_SKIP}" value="{! 'Skip-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_REJECT}" value="{! 'Reject-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_SQR_REVIEW_COMPLETE}" value="{! 'Complete-' + reviewGroup[0].Id}" />
+                                                            </lightning:buttonMenu>
+                    
+                                                            <aura:set attribute="else">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_REREQUEST}" value="{! 'ReSubmit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_CLEAR}" value="{! 'Clear-' + reviewGroup[0].Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                </tr>
+                
+                                <!-- 검토자 02 -->
+                                <tr class="slds-hint-parent">
+                                    <td class="icon-hover group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate" title="검토부서">
+                                            <div class="review-group">
+                                                <span
+                                                    title="{!reviewGroup[1].FM_TeamName__c}">
+                                                    {!reviewGroup[1].FM_TeamName__c}
+                                                </span>
+                                                <span
+                                                    title="{!reviewGroup[1].Owner.Name}">
+                                                    {!reviewGroup[1].Owner.Name} / 제어 담당
+                                                </span>
+                                            </div>
+                                            <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                                <aura:if isTrue="{! OR(v.ReviewOwner == reviewGroup[1].OwnerId, OR(v.userFilter == 'admin', v.isRndManager)) }">
+                                                    <div class="button-wrap" data-review-id="{! reviewGroup[1].Id + '-제어' }">
+                                                        <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='Change Manager' onclick="{! c.handleClickChangeManager }"></lightning:icon>
+                                                    </div>
+                                                </aura:if>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                    <td class="desc group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate left" title="내용">{! v.userFilter == 'Dealer' ? IF(reviewGroup[1].Comments__c != null, $Label.c.DNS_REVIEW_C_REVIEWD, $Label.c.DNS_REVIEW_C_REVIEWING) : reviewGroup[1].Comments__c }</div>
+                                    </td>
+                                    <td class="desc group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate" title="내용">{! IF(reviewGroup[1].IsComplete__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[1].IsFirst__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[1].PreShipmentReview__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[1].DesignReviewRequired__c, 'Y', 'N') }</div>
+                                    </td>
+                                    <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : reviewGroup[1].DeliveryDate_months__c}</div>
+                                    </td>
+                                    <aura:if isTrue="{! AND(v.userFilter != 'Dealer', v.userFilter != '직영') }">
+                                        <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[1].formattedKRWMaterial_Cost)}</div>
+                                        </td>
+                                        <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[1].formattedKRWAssembly_Cost)}</div>
+                                        </td>
+                                        <td class="group" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[1].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[1].formattedKRWcost)}</div>
+                                        </td>
+                                    </aura:if>
+                                    <td class="action">
+                                        <div class="slds-truncate" title="More">
+                                            <aura:if isTrue="{! !v.checkJisajang }">
+                                                <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                                    <aura:if isTrue="{! !reviewGroup[1].Color__c }">
+                                                        <aura:if isTrue="{! v.ReviewOwner == reviewGroup[1].OwnerId }">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[1].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_SKIP}" value="{! 'Skip-' + reviewGroup[1].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_REJECT}" value="{! 'Reject-' + reviewGroup[1].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_SQR_REVIEW_COMPLETE}" value="{! 'Complete-' + reviewGroup[1].Id}" />
+                                                            </lightning:buttonMenu>
+                                                        </aura:if>
+                
+                                                        <aura:set attribute="else">
+                                                            <aura:if isTrue="{! v.salesUser }">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[1].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_REREQUEST}" value="{! 'ReSubmit-' + reviewGroup[1].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_CLEAR}" value="{! 'Clear-' + reviewGroup[1].Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:if>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:if>
+        
+                                                <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                                    <aura:if isTrue="{! !reviewGroup[1].Color__c }">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[1].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_SKIP}" value="{! 'Skip-' + reviewGroup[1].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_REJECT}" value="{! 'Reject-' + reviewGroup[1].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_SQR_REVIEW_COMPLETE}" value="{! 'Complete-' + reviewGroup[1].Id}" />
+                                                            </lightning:buttonMenu>
+                    
+                                                            <aura:set attribute="else">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[1].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_REREQUEST}" value="{! 'ReSubmit-' + reviewGroup[1].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_CLEAR}" value="{! 'Clear-' + reviewGroup[1].Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                </aura:if>
+                                            </aura:if>
+                                        </div>
+                                    </td>
+                                </tr>
+    
+                                <!-- 소계 -->
+                                <tr class="slds-hint-parent sub-total">
+                                    <td colspan="3" class="sub-total">
+                                        <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_SUBTOTAL}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{! IF(AND(reviewGroup[0].IsComplete__c, reviewGroup[1].IsComplete__c), 'Y', 'N') }</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(OR(reviewGroup[0].IsFirst__c, reviewGroup[1].IsFirst__c), 'Y', 'N') }</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(OR(reviewGroup[0].PreShipmentReview__c, reviewGroup[1].PreShipmentReview__c), 'Y', 'N') }</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(OR(reviewGroup[0].DesignReviewRequired__c, reviewGroup[1].DesignReviewRequired__c), 'Y', 'N') }</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{! v.userFilter == 'Dealer'? '' : IF(reviewGroup[0].DeliveryDate_months__c > reviewGroup[1].DeliveryDate_months__c, reviewGroup[0].DeliveryDate_months__c, reviewGroup[1].DeliveryDate_months__c) }</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup.formattedKRWMaterial_Cost)}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup.formattedKRWAssembly_Cost)}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup.totalFormattedKRWcost)}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate" title="More"></div>
+                                    </td>
+                                </tr>
+    
+                                <aura:set attribute="else">
+                                    <!-- 검토자 01 -->
+                                    <tr class="slds-hint-parent review-tr">
+                                        <td  rowspan="3" style="border-left: none;">
+                                            <div class="slds-truncate">{!index + 1}</div>
+                                        </td>
+                                        <td  class="icon-hover" rowspan="2">
+                                            <div class="slds-truncate" title="{!reviewGroup[0].SQTitle__c}">{!reviewGroup[0].SQTitle__c}</div>
+                                            <!-- <aura:if isTrue="{! OR(v.userFilter == 'RND', OR(v.userFilter == 'crm', v.userFilter == 'admin')) }">
+                                                <div data-review-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }">
+                                                    <div class="requestInfo" data-review-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" onclick="{! c.handleClickReviewDescription }">[요청정보]</div>
+                                                </div>
+                                            </aura:if> -->
+                                            <!-- <aura:if isTrue="{! OR(v.userFilter == 'RND', OR(v.userFilter == 'crm', v.userFilter == 'admin')) }">
+                                                <div class="button-wrap" data-review-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }">
+                                                    <lightning:icon iconName='utility:search' size='xx-small' title='View Description' onclick="{! c.handleClickReviewDescription }"></lightning:icon>
+                                                </div>
+                                            </aura:if> -->
+                                        </td>
+                                        <td class="icon-hover group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate">
+                                                <div class="review-group">
+                                                    <span
+                                                        title="{!reviewGroup[0].FM_TeamName__c}">
+                                                        {!reviewGroup[0].FM_TeamName__c}
+                                                    </span>
+                                                    <span
+                                                        title="{!reviewGroup[0].Owner.Name}">
+                                                        {!reviewGroup[0].Owner.Name}
+                                                    </span>
+                                                </div>
+                                                <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                                    <aura:if isTrue="{!OR(reviewGroup[0].OwnerId == v.ReviewOwner, OR(v.userFilter == 'admin', v.isRndManager)) }">
+                                                        <div class="button-wrap" data-review-id="{! reviewGroup[0].Id + '-전체' }">
+                                                            <lightning:icon iconName='utility:edit' alternativeText='edit' size='xx-small' title='Change Manager' onclick="{! c.handleClickChangeManager }"></lightning:icon>
+                                                        </div>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                        <td class="desc group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate left">{! v.userFilter == 'Dealer' ? IF(reviewGroup[0].Comments__c != null, $Label.c.DNS_REVIEW_C_REVIEWD, $Label.c.DNS_REVIEW_C_REVIEWING) : reviewGroup[0].Comments__c }</div>
+                                        </td>
+                                        <td class="desc group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate">{! IF(reviewGroup[0].IsComplete__c, 'Y', 'N') }</div>
+                                        </td>
+                                        <td class="group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[0].IsFirst__c, 'Y', 'N') }</div>
+                                        </td>
+                                        <td class="group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[0].PreShipmentReview__c, 'Y', 'N') }</div>
+                                        </td>
+                                        <td class="group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(reviewGroup[0].DesignReviewRequired__c, 'Y', 'N') }</div>
+                                        </td>
+                                        <td class="group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : reviewGroup[0].DeliveryDate_months__c}</div>
+                                        </td>
+                                        <aura:if isTrue="{! AND(v.userFilter != 'Dealer', v.userFilter != '직영') }">
+                                            <td class="group" rowspan="2" data-record-id="{! reviewGroup[0].Id + '-' + reviewGroup[1].Id }" style="{! 'background-color: ' + IF(reviewGroup[0].Color__c, '#FBF5DF', '') }">
+                                                <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[0].formattedKRWcost)}</div>
+                                            </td>
+                                        </aura:if>
+                                        <td class="action" rowspan="2">
+                                            <div class="slds-truncate" title="More">
+                                                <aura:if isTrue="{! !v.checkJisajang }">
+                                                    <aura:if isTrue="{! AND(v.currentStage == 'R&amp;D Review', v.currentStage != 'Drop') }">
+                                                        <aura:if isTrue="{! !reviewGroup[0].Color__c }">
+                                                            <aura:if isTrue="{! v.ReviewOwner == reviewGroup[0].OwnerId }">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_SKIP}" value="{! 'Skip-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_REJECT}" value="{! 'Reject-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_SQR_REVIEW_COMPLETE}" value="{! 'Complete-' + reviewGroup[0].Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:if>
+                    
+                                                            <aura:set attribute="else">
+                                                                <aura:if isTrue="{! v.salesUser }">
+                                                                    <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                        <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                        <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_REREQUEST}" value="{! 'ReSubmit-' + reviewGroup[0].Id}" />
+                                                                        <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_CLEAR}" value="{! 'Clear-' + reviewGroup[0].Id}" />
+                                                                    </lightning:buttonMenu>
+                                                                </aura:if>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+        
+                                                    <aura:if isTrue="{! v.userFilter == 'admin' }">
+                                                        <aura:if isTrue="{! !reviewGroup[0].Color__c }">
+                                                            <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_SKIP}" value="{! 'Skip-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_B_REJECT}" value="{! 'Reject-' + reviewGroup[0].Id}" />
+                                                                <lightning:menuItem label="{!$Label.c.DNS_FSL_Complete}" value="{! 'Complete-' + reviewGroup[0].Id}" />
+                                                            </lightning:buttonMenu>
+                        
+                                                            <aura:set attribute="else">
+                                                                <lightning:buttonMenu alternativeText="Show menu" variant="border-filled" onselect="{! c.handleClickSelect }">
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_B_Edit}" value="{! 'Edit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_REREQUEST}" value="{! 'ReSubmit-' + reviewGroup[0].Id}" />
+                                                                    <lightning:menuItem label="{!$Label.c.DNS_REVIEW_B_CLEAR}" value="{! 'Clear-' + reviewGroup[0].Id}" />
+                                                                </lightning:buttonMenu>
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </aura:if>
+                                                </aura:if>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr></tr>
+    
+                                    <!-- {!$Label.c.DNS_REVIEW_C_SUBTOTAL} -->
+                                    <tr class="slds-hint-parent">
+                                        <td colspan="3" class="sub-total">
+                                            <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_SUBTOTAL}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{! IF(reviewGroup[0].IsComplete__c, 'Y', 'N') }</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(OR(reviewGroup[0].IsFirst__c), 'Y', 'N') }</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(OR(reviewGroup[0].PreShipmentReview__c), 'Y', 'N') }</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : IF(OR(reviewGroup[0].DesignReviewRequired__c), 'Y', 'N') }</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate">{! v.userFilter == 'Dealer' ? '' : reviewGroup[0].DeliveryDate_months__c }</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate right">{! v.userFilter == 'Dealer' ? '' : (v.checkDNSAProfile ? '' : reviewGroup[0].formattedKRWcost)}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="More"></div>
+                                        </td>
+                                    </tr>
+    
+                                </aura:set>
+                            </aura:if>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- 🚩Rich Text Area -->
+            <aura:if isTrue="{! v.userFilter != 'Dealer' }">
+                <div class="richtext-wrap" style="{!v.backgroundColor}">
+        
+        
+                    <!-- Richtext Input -->
+                    <div class="slds-p-around_medium input-wrap">
+                        <!-- 🚩Loading Spinner -->
+                        <aura:if isTrue="{! v.isRichLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+                
+                        <lightning:inputRichText    value="{! v.richTextContent }" 
+                                                    placeholder="Enter your text here..." 
+                                                    disabled="{! !v.isEditable }" />
+                    </div>
+        
+                    <!-- Save & New Button -->
+                    <div class="slds-m-top_medium button-wrap">
+                        <aura:if isTrue="{! AND(!v.checkJisajang, v.isRndManager) }">
+                            <aura:if isTrue="{! v.userFilter != 'admin' }">
+                                <aura:if isTrue="{! AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm') }">
+                                    <aura:if isTrue="{!v.isEditable}">
+                                        <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickTextSave }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! !v.isEditable}">
+                                        <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickTextEdit }"/>
+                                    </aura:if>
+                                </aura:if>
+                            </aura:if>
+            
+                            <aura:if isTrue="{! AND(v.userFilter == 'admin', AND(v.currentStage != 'Drop', v.currentStage != 'Final Confirm')) }">
+                                <aura:if isTrue="{!v.isEditable}">
+                                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" onclick="{! c.handleClickTextSave }"/>
+                                </aura:if>
+                                <aura:if isTrue="{! !v.isEditable}">
+                                    <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Edit}" onclick="{! c.handleClickTextEdit }"/>
+                                </aura:if>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </div>
+            </aura:if>
+    
+        </div>
+    <!-- </aura:if> -->
+    
+    <aura:if isTrue="{!v.isEditReview}">
+        <c:DN_SQReviewEditModal recordId="{!v.recordId}" />
+    </aura:if>
+    <aura:if isTrue="{!v.isClickEdit}">
+        <c:DN_EditSQReviewModal reviewId="{!v.reviewId}" />
+    </aura:if>
+    <aura:if isTrue="{!v.isSearchReview}">
+        <c:DN_SQReviewSearchModal />
+    </aura:if>
+    <aura:if isTrue="{!v.isChangeManager}">
+        <c:DN_SQReviewChangeManager reviewId="{!v.reviewId}" reviewType="{!v.reviewType}" />
+    </aura:if>
+    <aura:if isTrue="{!v.isReject}">
+        <c:DN_SQReviewRejectModal reviewId="{!v.reviewId}" />
+    </aura:if>
+    <aura:if isTrue="{!v.isReviewDescription}">
+        <c:DN_ReviewDescriptionModal reviewId="{!v.reviewId}" reviewId2="{!v.reviewId2}" currentStage="{!v.currentStage}" />
+    </aura:if>
+
+</aura:component>

@@ -1,0 +1,70 @@
+<!--
+  @related           : DN_OrderApprovalController
+  @description       : Order의 승인 관련 정보, 버튼, 상태를 표시할 컴포넌트
+  @author            : yeongju.yun
+  @last modified on  : 2025-02-21
+  @last modified by  : yeongju.yun 
+  Modifications Log
+  Ver   Date         Author        Modification
+  1.0   2025-02-21   yeongju.yun   Initial Version
+-->
+<template>
+    <template if:true={isInteface}>
+        <div style="color:red;">{cLabel.DNS_M_DontNavigateAway}</div>
+    </template>
+    <div class='approval_related_wrapper'>
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <template if:true={hasOpty}>
+            <div style="padding: 5px;">
+                <lightning-badge label={optyStageBadge} class={optyBadgeClass}></lightning-badge>
+            </div>
+        </template>
+
+        <lightning-card  variant="Narrow" title={title} icon-name={icon}>
+            <!-- button section -->
+            <template if:true={openBtn}>
+                <lightning-button-group slot="actions">
+                    <template if:true={openInternalBtn}>
+                        <lightning-button value="req_internal" label={cLabel.DNS_B_RequestInternalApproval} onclick={handleInternalApproval}></lightning-button>
+                    </template>
+                    <template if:true={openRequestBtn}>
+                        <lightning-button value="req_confirm" label={cLabel.DNS_B_RequestConfirm} onclick={handleERPOrderCreation}></lightning-button>
+                    </template>
+                    <template if:true={openApproveBtn}>
+                        <lightning-button value="approve" label={cLabel.DNS_B_Approve} onclick={handleApprove}></lightning-button>
+                        <lightning-button value="reject" label={cLabel.DNS_B_REJECT} onclick={handleReject}></lightning-button>
+                    </template>
+                </lightning-button-group>
+
+
+                <!-- <lightning-button-menu slot="actions" icon-size="small" menu-alignment="auto" onselect={handleSelect}>
+                    <template if:true={openInternalBtn}>
+                        <lightning-menu-item value="req_internal" label={cLabel.DNS_B_RequestInternalApproval}></lightning-menu-item>
+                    </template>
+                    <template if:true={openRequestBtn}>
+                        <lightning-menu-item value="req_confirm" label={cLabel.DNS_B_RequestConfirm}></lightning-menu-item>
+                    </template>
+                    <template if:true={openApproveBtn}>
+                        <lightning-menu-item value="approve" label={cLabel.DNS_B_Approve}></lightning-menu-item>
+                        <lightning-menu-item value="reject" label={cLabel.DNS_B_REJECT}></lightning-menu-item>
+                    </template>
+                </lightning-button-menu> -->
+            </template>
+            
+            <!-- table section -->
+            <template if:true={isDataShow}>
+                <div class={table_style}>
+                    <lightning-datatable
+                        key-field="recordId"
+                        columns={columns}
+                        data={data}
+                        hide-checkbox-column
+                    ></lightning-datatable>
+                </div>
+            </template>
+        </lightning-card>
+    </div>
+</template>

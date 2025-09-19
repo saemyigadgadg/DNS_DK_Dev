@@ -1,0 +1,59 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-02-25
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2025-02-19   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="마스터장비 업데이트" controller="DN_AssetIFRunController">
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+
+    <!-- toast -->
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_UpdateMasterAssetToERPBtn) {
+            width: 32rem;
+            max-width: calc(100vw - 12rem);
+        }
+        .slds-modal__content:has(.cDN_UpdateMasterAssetToERPBtn) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_UpdateMasterAssetToERPBtn) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+
+        <header class="slds-modal__header">
+            <h2 class="slds-text-heading_medium">{!$Label.c.DNS_Equip_UpdateFromERP}</h2>
+        </header>
+
+        <div class="modal-body slds-modal__content slds-modal_large">
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+            </aura:if>
+
+            <h1>{!$Label.c.DNS_Equip_Content}</h1>
+        </div>
+
+        <footer class="slds-modal__footer">
+            <div>
+                <lightning:button label="{!$Label.c.DNS_Equip_Close}" onclick="{!c.closeModal}"/>
+                <lightning:button variant="brand" label="{!$Label.c.DNS_Equip_Sync}" onclick="{!c.updateAsset}" />
+            </div>
+        </footer>
+    </div>
+
+</aura:component>

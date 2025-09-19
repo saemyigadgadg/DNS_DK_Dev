@@ -1,0 +1,226 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-07-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-18-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  access="global" 
+  extends="c:DN_Helper"
+  controller="DN_OtherGRTableController"
+  description="기타입고"
+  >
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+    onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!--Attribute-->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="grList" type="List" />
+  <aura:attribute name="filterPartList" type="List" /> <!--기타입고 품번 검색 시 제외할 품번목록-->
+  <aura:attribute name="filter" type="Object" />
+  <aura:attribute name="selectedGR" type="List" default="[]" />
+  <aura:attribute name="noPartNumber" type="List"  />
+  <aura:attribute name="selectedGRIndex" type="Integer" />
+  <aura:attribute name="options" type="List" default="[
+        {'label' : '예외입고', 'value' : '1'},
+        {'label' : '재고조정', 'value' : '2'},
+        {'label' : '시장품구매', 'value' : '3'},
+        {'label' : '기타', 'value' : '4'}
+    ]" />
+  <aura:attribute name="defaultValue" type="String" />
+  <aura:attribute name="excelUploadModal" type="Boolean" default="false" />
+
+
+  <!-- handler -->
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- 부품번호/대체품 Modal -->
+  <div aura:id="SearchProductNumber"></div>
+
+  <div>
+    <div class="card-header">
+      <div class="button-wrap">
+        <lightning:button iconName="utility:search" name="searchItems" label="가격조회" onclick="{!c.searchPriceInfo}" />
+        <lightning:button iconName="utility:add" name="addItems" label="추가" onclick="{!c.addPartsProduct}" />
+        <lightning:button iconName="utility:delete" name="deleteItems" label="삭제" onclick="{!c.selectedDeleteGR}" />
+        <div>
+          <lightning:button iconName="utility:upload" name="uploadItems" label="업로드" onclick="{!c.openUploadModal}" />
+          <!-- 엑셀 업로드 -->
+          <aura:if isTrue="{!v.excelUploadModal}">
+            <div aura:id="excelModal" class="slds-modal slds-fade-in-open excelModal">
+              <div class="slds-modal__container slds-modal_large">
+                <div>
+                  <!-- Header -->
+                  <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">엑셀 업로드</h2>
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                      <lightning:icon iconName='utility:close' alternativeText='close' size='small' title='close'
+                        name="closeModal" onclick="{!c.closeUploadExcel}"></lightning:icon>
+                    </button>
+                  </header>
+                  <div class="modal-body slds-modal__content slds-p-around_medium">
+                    <c:DN_DealerPortalExcelUploadTemplate aura:id="excelTemplate"
+                      buttonLabel="업로드 양식 다운로드"
+                      uploadName="OtherGRTemplate"
+                    />
+                    <p>* Upload file form</p>
+                    <p>- Use header information.</p>
+                    <div class="file-input">
+                      <lightning:input type="file" label="Upload Excel File" onchange="{!c.uploadExcel}"
+                        accept=".xlsx, .xls" />
+                      <!-- <lightning:fileUpload aura:id="fileId" name="fileId" onchange="{!c.handleChageTest}" onuploadfinished="{!c.handleUploadFinished}"></lightning:fileUpload> -->
+                    </div>
+
+                  </div>
+                  <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                      onclick="{!c.closeUploadExcel}" />
+                  </footer>
+                </div>
+              </div>
+            </div>
+          </aura:if>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-wrap" aura:id="partsProduct">
+        <table class="slds-table">
+          <colgroup>
+            <col width="2%" />
+            <col width="2%" />
+            <col width="4%" />
+            <col width="10%" />
+            <col width="10%" />
+            <col width="10%" />
+            <col width="9%" />
+            <col width="9%" />
+            <col width="7%" />
+            <col width="10%" />
+            <col width="5%" />
+            <col width="7%" />
+            <col width="15%" />
+          </colgroup>
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th class="add" scope="col">
+                <lightning:buttonIcon iconName="utility:add" alternativeText="Add" title="Add" size="small"
+                    onclick="{!c.addPartsProduct}" />
+              </th>
+              <th scope="col">
+                <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">항목</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">입고사유</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">부품번호</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">품명</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">규격</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">현재고</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">입고량</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">고객판매가(개)</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">입고단가(개)</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">총액</div>
+              </th>
+              <th scope="col">
+                <div class="slds-truncate" title="">기타</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <aura:iteration items="{!v.grList}" var="gr" indexVar="i">
+              <tr class="slds-hint-parent">
+                <td data-label="Delete" class="add center">
+                  <lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" title="Dash" size="small" accesskey="{!i}" onclick="{!c.deletePartsProduct}" />
+                </td>
+                <td type="checkbox2" class="center">
+                  <lightning:input type="checkbox" aura:id="checkbox" name="{!i}"  onchange="{! c.handleCheckboxChange }" />
+                </td>
+                <td data-label="항목">
+                  {!gr.hang}
+                </td>
+                <td data-label="입고사유">
+                  <div title="입고사유">
+                    <lightning:combobox name="input3" variant="label-hidden" value="{!gr.REASON}"
+                      options="{!v.options}" />
+                  </div>
+                </td>
+                <td data-label="부품번호">
+                  <div class="slds-truncate" title="부품번호" style="display: flex; align-items: center;">
+                    <c:dN_DealerPortalInputBox oninputchange="{!c.handleInputChange}" aura:id="productCode" tableIndex="{!i}" name="{!i}" istable="true" uuid="{!v.uuid}" filter="{!v.filter}" style="width: 100%;" />
+                    <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close"
+                        onclick="{!c.clearField}" accesskey="{!i}" class="clear-btn"/>
+                    <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                        onclick="{!c.openSearchProductNumber}" accesskey="{!i}" />
+                  </div>
+                </td>
+                <td data-label="품명">
+                  {!gr.MAKTX}
+                </td>
+                <td data-label="규격">
+                  {!gr.THREAD}
+                </td>
+                <td data-label="현재고" class="right">
+                  {!gr.CUQTY}
+                </td>
+                <td data-label="입고량" class="right">
+                  <div class="slds-truncate" title="입고량">
+                    <lightning:input type="text" aura:id="" name="input9" variant="label-hidden"
+                      value="{!gr.GRQTY}" accesskey="{!i}" onchange="{!c.handleQTYChange}" />
+                  </div>
+                </td>
+                <td data-label="고객판매가(개)" class="right">
+                  <lightning:formattedNumber name="NETPR" value="{!gr.NETPR}" />
+                  
+                </td>
+                <td data-label="입고단가(개)" class="right">
+                  <div class="slds-truncate" title="입고단가(개)" style="display: flex; align-items: center; min-width: 150px;">
+                    <lightning:input type="text" name="input11" variant="label-hidden" value="{!gr.STPR}" 
+                    accesskey="{!i}" onchange="{!c.handleSTPRChange}" 
+                    />
+                  </div>
+                </td>
+                <td data-label="총액" class="right">
+                  <lightning:formattedNumber name="total" value="{!gr.GRQTY * gr.STPR}" />
+                </td>
+                <td data-label="기타">
+                  <div class="slds-truncate" title="기타">
+                    <lightning:input type="text" aura:id="" name="input13" variant="label-hidden" value="{!gr.DESC}" />
+                  </div>
+                </td>
+              </tr>
+            </aura:iteration>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</aura:component>

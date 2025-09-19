@@ -1,0 +1,98 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-23-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-23-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    controller="DN_OrderCloneController" 
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes" 
+    access="global">
+
+    <aura:attribute type="Boolean" name="isLoading"/>
+    <aura:attribute name="columns" type="List" default="[]"/>
+    <aura:attribute name="data" type="List" default="[]"/>
+    <aura:attribute name="selectedRows" type="List"/>
+    <aura:attribute name="sortDirection" type="String"/>
+    <aura:attribute name="sortedBy" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:navigation aura:id="navService" />
+
+    <aura:html tag="style">
+        .slds-modal__container:has(.cDN_OrderCloneBtn) {
+            width:100%;
+            max-width: 42rem;
+        }
+        .slds-modal__content:has(.cDN_OrderCloneBtn) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_OrderCloneBtn) {
+          padding:0;     
+        }
+       .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_OrderCloneBtn){
+            overflow: hidden;
+        }
+
+        .modal-body:has(.cDN_OrderCloneBtn),
+        .slds-modal__container:has(.cDN_OrderCloneBtn),
+        .slds-modal__content:has(.cDN_OrderCloneBtn),
+        .quick-actions-panel:has(.cDN_OrderCloneBtn){    
+            overflow: visible !important;            
+		}
+        
+    </aura:html>
+
+    <div class="order_clone_modal">
+       
+        <div class="slds-modal__container">
+            <lightning:recordEditForm 
+                aura:id="orderEditForm"
+                objectApiName="Order"
+                onsubmit="{!c.handleSubmit}"
+                onerror="{!c.handleError}">
+
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.DNS_B_CreateOrder}</h2>
+                </header>
+
+                <div class="slds-modal__content modal_body_wrap">
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="medium" alternativeText="Loading" />
+                      </aura:if>
+
+                    <lightning:layout multipleRows="true">
+                        <lightning:layoutItem padding="around-small" size="12" class="input-wrap">
+                            <lightning:inputField fieldName="ReqDeliveryDate__c" required="true" />
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="12" class="table-wrap">
+                            <lightning:datatable
+                                aura:id="custom_datatable"
+                                keyField="quoteItemId"
+                                columns="{! v.columns }"
+                                data="{! v.data }"
+                                onrowselection="{!c.handleSelectRow}"
+                                singleRowSelectionMode="radio"
+                                maxRowSelection="1"
+                                sortedBy="{!v.sortedBy}"
+                                sortedDirection="{!v.sortDirection}"
+                                defaultSortDirection="asc"
+                                onsort="{!c.handleSort}"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="Neutral" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.closeClick}"/>
+                    <lightning:button variant="brand" label="{!$Label.c.DNS_B_Save}" type="submit"/>
+                </footer>
+            </lightning:recordEditForm>
+        </div>
+    </div>
+</aura:component>

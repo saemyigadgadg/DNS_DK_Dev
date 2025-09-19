@@ -1,0 +1,81 @@
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CampaignExtractConditionController">
+
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="conditionList"    type="List"    default="[]" />
+    <aura:attribute name="isLoading"        type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+
+    <lightning:card variant="Narrow" title="{!$Label.c.DNS_T_HappyCallPlan}" iconName="standard:campaign">
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="card-02 top-card">
+            <div class="table-02">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                        <col width="13%" />
+                        <col width="25%" />
+                        <col width="15%" />
+                        <col width="19%" />
+                        <col width="13%" />
+                        <col width="13%" />
+                      </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_ExtractTarget}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_ExtractCondition}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_TicketType}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_TicketTypeMiddle}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_StartDate}</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="">{!$Label.c.DNS_C_EndDate}</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!empty(v.conditionList)}" >
+                            <tr>
+                                <td scope="row" colspan="6" style="text-align: center;"><p>등록된 추출 조건이 없습니다.</p></td>
+                            </tr>
+                        </aura:if>
+                        <aura:iteration items="{!v.conditionList}" var="conditionList" indexVar="j">
+                            <tr>
+                                <td scope="row">
+                                    <div>{!conditionList.ExtractionTarget__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!conditionList.ExtractConditionLabel__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!conditionList.TicketTypeLabel__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!conditionList.TicketTypeMiddleLabel__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!conditionList.FromDate__c}</div>
+                                </td>
+                                <td scope="row">
+                                    <div>{!conditionList.ToDate__c}</div>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

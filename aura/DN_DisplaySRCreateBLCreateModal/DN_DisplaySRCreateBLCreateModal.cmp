@@ -1,0 +1,398 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2024-07-03
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-28   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="Display S/R List &amp; Create B/L - Create Modal">
+
+  <!-- Attribute -->
+  <aura:attribute name="blInfo" type="Object" default="" />
+  <aura:attribute name="currencyInfo" type="Object" default="" />
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="activeSections1" type="String" default="headerInfo" />
+  <aura:attribute name="activeSections2" type="String" default="costInfo" />
+  <aura:attribute name="activeSections3" type="String" default="detailInfo" />
+  <aura:attribute name="costInfoList" type="List" default="[]" />
+  <aura:attribute name="detailInfoList" type="List" default="[]" />
+  <aura:attribute name="selectedDetailInfo" type="List" default="[]" />
+  <aura:attribute name="loadingPort" type="Object" default="" />
+  <aura:attribute name="dischargingPort" type="Object" default="" />
+
+
+
+  <!--Handler-->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  <aura:handler name="cmpEvent5" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+  <!--Event-->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+
+  <div class="displaySRCreateBLCreateModal">
+    <div aura:id="displaySRCreateBLCreateModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container slds-modal_large">
+
+        <!-- Currency 모달 -->
+        <!-- 화면 현재 확인 불가 : 대략적으로 만들어 봄 -->
+        <div aura:id="currencyModal"></div>
+        <!-- Loading Port 모달 -->
+        <div aura:id="countryCodeModal"></div>
+
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- 📌 Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">Create B/L</h2>
+
+          <div class="button-wrap">
+            <!-- 추후 기능 추가 필요 -->
+            <lightning:button name="save" label="Save" iconName="utility:check" iconPosition="left"
+              onclick="{!c.saveModal}" variant="brand" />
+          </div>
+
+          <!-- Close Button -->
+          <button class="close_button_template slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.closeModal}"></lightning:icon>
+          </button>
+
+        </header>
+
+        <!-- 📌 Modal Body -->
+        <div class="modal-body slds-modal__content">
+
+          <!-- Card 01 -->
+          <div class="card-01 top-card accordion">
+            <lightning:accordion class="accordion-header" allowMultipleSectionsOpen="true"
+              activeSectionName="{! v.activeSections1 }">
+              <lightning:accordionSection name="headerInfo" label="Header Information">
+                <aura:set attribute="body">
+                  <div class="accordion-body">
+
+                    <div class="field-wrap">
+                      <p class="label">Ship Doc. Standardization No</p>
+                      <div class="fakeInput" name="docNo">
+                        {!v.blInfo.docNo}
+                      </div>
+                    </div>
+
+                    <div class="field-wrap">
+                      <p class="label">Invoice No</p>
+                      <div class="fakeInput" name="invoiceNo">
+                        {!v.blInfo.invoiceNo}
+                      </div>
+                    </div>
+
+                    <div class="field-wrap">
+                      <p class="label">Master B/L No</p>
+                      <lightning:input type="text" name="masterBLNo" value="{!v.blInfo.masterBLNo}"
+                        variant="label-hidden" />
+                    </div>
+
+                    <!-- 보류 -->
+                    <div class="field-wrap">
+                      <p>Loading Port</p>
+                      <div class="input-wrap">
+                        <lightning:input type="text" name="loadingCountryCode" value="{!v.loadingPort.countryCode.code}"
+                          variant="label-hidden" readonly="true" disabled="true" aura:id="loadingCountryCode" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                          onclick="{!c.openLoadingCountryModal}" />
+                        <lightning:input type="text" name="loadingPortCode" value="{!v.loadingPort.portCode.code}"
+                          variant="label-hidden" readonly="true" disabled="true" aura:id="loadingPortCode" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                          onclick="{!c.openLoadingPortModal}" />
+                      </div>
+                    </div>
+
+                    <div class="field-wrap">
+                      <p class="label">House B/L No</p>
+                      <lightning:input type="text" name="houseBLNo" value="{!v.blInfo.houseBLNo}"
+                        variant="label-hidden" />
+                    </div>
+
+                    <!-- 보류 -->
+                    <div class="field-wrap">
+                      <p>Discharging Port</p>
+                      <div class="input-wrap">
+                        <lightning:input type="text" name="dischargingCountryCode"
+                          value="{!v.dischargingPort.countryCode.code}" variant="label-hidden" readonly="true"
+                          disabled="true" aura:id="dischargingCountryCode" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                          onclick="{!c.openDischargingCountryModal}" />
+                        <lightning:input type="text" name="dischargingPortCode"
+                          value="{!v.dischargingPort.portCode.code}" variant="label-hidden" readonly="true"
+                          disabled="true" aura:id="dischargingPortCode" />
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                          onclick="{!c.openDischargingPortModal}" />
+                      </div>
+                    </div>
+
+
+                    <div class="field-wrap">
+                      <p class="label">Vessel Name &amp; Voyager No<abbr class="slds-required" title="required">*</abbr>
+                      </p>
+                      <div class="input-wrap">
+                        <lightning:input type="text" name="vesselName" value="{!v.blInfo.vesselName}"
+                          variant="label-hidden" />
+                        <lightning:input type="text" name="voyageNo" value="{!v.blInfo.voyageNo}"
+                          variant="label-hidden" />
+                      </div>
+                    </div>
+
+                    <div class="field-wrap">
+                      <p>On Board Date</p>
+                      <div class="input-wrap">
+                        <lightning:input type="date" name="onBoardDate" value="{!v.blInfo.onBoardDate}"
+                          variant="label-hidden" />
+                      </div>
+                    </div>
+
+                    <div class="field-wrap">
+                      <p>ETA</p>
+                      <div class="input-wrap">
+                        <lightning:input type="date" name="eta" value="{!v.blInfo.eta}" variant="label-hidden" />
+                      </div>
+                    </div>
+
+                    <!-- Upload 기능 추가 필요 -->
+                    <div class="field-wrap">
+                      <p class="label">Ship Document</p>
+                      <div class="input-wrap">
+                        <lightning:button label="Upload" iconName="utility:upload" iconPosition="left" />
+                        <!-- [선택된 파일 없음] 추가 필요 -->
+                        <span>선택된 파일 없음</span>
+                      </div>
+                    </div>
+                  </div>
+                </aura:set>
+              </lightning:accordionSection>
+            </lightning:accordion>
+          </div>
+
+          <!-- Card 02 -->
+          <div class="card-02 top-card accordion">
+            <lightning:accordion class="accordion-header" allowMultipleSectionsOpen="true"
+              activeSectionName="{! v.activeSections2 }">
+              <lightning:accordionSection name="costInfo" label="Cost Information">
+                <aura:set attribute="body">
+                  <div class="accordion-body">
+                    <div>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Code</th>
+                            <th>Costs</th>
+                            <th>Curr.</th>
+                            <th>Amount</th>
+                            <th>Tax</th>
+                            <th>Total Amount</th>
+                            <th>Exchange Rate</th>
+                            <th>Occurred Date</th>
+                            <th>Tax Code</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- 값이 있을 때 -->
+                          <aura:if isTrue="{!v.costInfoList.length > 0}">
+                            <aura:iteration items="{!v.costInfoList}" var="list">
+                              <tr>
+                                <td>
+                                  <div>{!list.code}</div>
+                                </td>
+
+                                <td>
+                                  <div>{!list.costs}</div>
+                                </td>
+
+                                <td>
+                                  <div class="field-wrap">
+                                    <div class="input-wrap">
+                                      <lightning:input type="text" name="currency" value="{!v.currencyInfo.code}"
+                                        variant="label-hidden" readonly="true" disabled="true" aura:id="currency" />
+                                      <lightning:buttonicon iconName="utility:search" size="medium"
+                                        alternativeText="Search" onclick="{!c.openCurrencyModal}" />
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td>
+                                  <div class="field-wrap">
+                                    <div class="amount">
+                                      <lightning:input type="number" name="amount" value="{!list.amount}"
+                                        variant="label-hidden" />
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <!-- Tax : Percent? Number? 추후 확인 필요 (tem : percent) -->
+                                <td>
+                                  <div class="field-wrap">
+                                    <div class="tax">
+                                      <lightning:input type="number" formatter="percent" name="tax" value="{!list.tax}"
+                                        variant="label-hidden" step="0.01" />
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td>
+                                  <div class="field-wrap">
+                                    <div class="input-wrap">
+                                      <lightning:formattedNumber name="totalAmount" value="{!list.totalAmount}" />
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <!-- temp : 소수점 첫째짜리로 제한 -->
+                                <td>
+                                  <div class="field-wrap">
+                                    <div class="exchangeRate">
+                                      <lightning:input type="number" name="exchangeRate" value="{!list.exchangeRate}"
+                                        variant="label-hidden" step="0.1" />
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td>
+                                  <div class="field-wrap">
+                                    <div class="input-wrap">
+                                      <lightning:input type="date" name="occurredDate" value="{!list.occurredDate}"
+                                        variant="label-hidden" />
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td>
+                                  <div>{!list.taxCode}</div>
+                                </td>
+                              </tr>
+                            </aura:iteration>
+
+                            <!-- 값이 없을 때 -->
+                            <aura:set attribute="else">
+                              <tr>
+                                <td colspan="9" style="text-align: center;">No Data</td>
+                              </tr>
+                            </aura:set>
+                          </aura:if>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </aura:set>
+              </lightning:accordionSection>
+            </lightning:accordion>
+          </div>
+
+          <!-- Card 03 -->
+          <div class="card-03 top-card accordion">
+            <lightning:accordion class="accordion-header" allowMultipleSectionsOpen="true"
+              activeSectionName="{! v.activeSections3 }">
+              <lightning:accordionSection name="detailInfo" label="Detail Information">
+                <aura:set attribute="body">
+
+                  <!-- Buttons -->
+                  <div class="button-wrap">
+                    <!-- 기능 추가 필요 CLP : Container Load Plan (추정)-->
+                    <lightning:button name="clp" label="CLP" iconName="utility:capacity_plan" iconPosition="left"
+                      onclick="" />
+                  </div>
+
+                  <div class="table-wrap">
+                    <div class="table-01">
+                      <!-- Fixed : Left -->
+                      <table>
+                        <thead>
+                          <tr>
+                            <th style="width: 2%;">
+                              <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+                            </th>
+                            <th>Model</th>
+                            <th>Serial No</th>
+                            <th>Container Type</th>
+                            <th>CLP</th>
+                            <th>CLP No.</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- 값이 있을 때 -->
+                          <aura:if isTrue="{!v.detailInfoList.length > 0}">
+                            <aura:iteration items="{!v.detailInfoList}" var="list">
+                              <tr>
+                                <td class="center">
+                                  <lightning:input type="checkbox" aura:id="checkbox"
+                                    onchange="{! c.handleCheckboxChange }" />
+                                </td>
+                                <td>
+                                  <div>{!list.model}</div>
+                                </td>
+                                <td>
+                                  <div>{!list.serialNo}</div>
+                                </td>
+                                <td>
+                                  <div>{!list.containerType}</div>
+                                </td>
+                                <td>
+                                  <div>{!list.clp}</div>
+                                </td>
+                                <td>
+                                  <div>{!list.clpNo}</div>
+                                </td>
+                              </tr>
+                            </aura:iteration>
+
+                            <!-- 값이 없을 때 -->
+                            <aura:set attribute="else">
+                              <tr>
+                                <td colspan="6" style="text-align: center;">No Data</td>
+                              </tr>
+                            </aura:set>
+                          </aura:if>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div class="table-02">
+                      <!-- Scrollable : Right -->
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>etc</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <aura:iteration items="{!v.detailInfoList}" var="list">
+                            <tr>
+                              <td>
+                                <div>{!list.etc}</div>
+                              </td>
+                            </tr>
+                          </aura:iteration>
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </aura:set>
+              </lightning:accordionSection>
+            </lightning:accordion>
+          </div>
+        </div>
+
+        <!-- 📌 Modal Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{!c.closeModal}" />
+        </footer>
+
+      </div>
+    </div>
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+</aura:component>

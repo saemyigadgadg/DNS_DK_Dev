@@ -1,0 +1,578 @@
+/* Header */
+.THIS .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin: 0 !important;
+  border-bottom: 1px solid #c9c9c9;
+  background-color: #fff;
+  border-radius: 0.25rem 0.25rem 0 0 !important; 
+}
+.THIS .header .title {
+  display: flex;
+  align-items: center;
+}
+.THIS .header .button-wrap {
+  display: flex;
+  min-width: 4rem;
+}
+.THIS .header .button-wrap .slds-button {
+  padding: 0 0.75rem;
+}
+.THIS .header .button-wrap .slds-button__icon_left {
+  margin-right: 0.25rem;
+}
+.THIS .header h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-left: 0.5rem;
+}
+
+/* Body */
+.THIS .body {
+  background-color: #fff !important;
+  border: 0 !important;
+  border-radius: 0 0 0.25rem 0.25rem !important;
+}
+.THIS .body .read-card {
+  padding: 0.75rem;
+  padding-top: 0;
+  background-color: #f3f3f3;
+  border: 1px solid #d9d9d9;
+  border-radius: 0 0 0.25rem 0.25rem;
+  border-top: 0;
+  box-shadow: 0 2px 3px 0 rgb(82 82 82 / 20%);
+}
+.THIS .body .read-card>div:not(:last-child) {
+  margin-bottom: 0.75rem;
+}
+.THIS .body .input-card {
+  margin-top: 2rem;
+  background-color: #f3f3f3;
+  border: 1px solid #d9d9d9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 3px 0 rgb(82 82 82 / 20%);
+}
+.THIS .body .input-card .card-02 {
+  margin-bottom: 0.75rem;
+}
+.THIS .body .input-card .top-card:not(:last-child) {
+  margin-bottom: 0.75rem;
+}
+.THIS .body .top-card {
+  padding: 1rem 1.25rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+  
+/* Card Header */
+.THIS .card-header {
+  margin-bottom: 1rem;
+}
+.THIS .card-header h2 {
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+}
+.THIS .table-header .button-wrap {
+  position: absolute;
+  top: -39px;
+}
+.THIS .card-header .button-wrap {
+  position: absolute;
+  top: -4px;
+  right: 0;
+}
+
+/* card-body */
+.THIS .card-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+@media screen and (max-width:760px) {
+  .THIS .card-body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.THIS .card-body:has(table) {
+  display: flex;
+  flex-direction: column;
+}
+.THIS .card-body .field-wrap p {
+  display: flex;
+    font-weight: 600;
+    gap: 1rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+.THIS .card-body .field-wrap .input-wrap {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  min-height: 1.25rem;
+}
+.THIS .card-body .field-wrap .input-wrap .slds-form-element {
+  width: 100%;
+}
+.THIS .card-body .field-wrap:last-of-type .input-wrap .slds-form-element {
+  width: unset;
+  flex: auto;
+}
+.THIS .card-body .input-wrap .slds-button+.slds-button {
+  margin-left: 0;
+}
+.THIS .card-01 .input-wrap .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0;
+}
+
+/* card-01 */
+.THIS .card-01 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.THIS .card-01 .card-body-top {
+  margin-bottom: 1rem;
+}
+
+/* card-ticket */
+.THIS .grid-long {
+  grid-column: 1/5;
+}
+.THIS .grid-medium {
+  grid-column: 3/5;
+}
+@media screen and (max-width:760px) {
+  .THIS .grid-long {
+    grid-column: 1/3;
+  }
+  .THIS .grid-medium {
+    grid-column: 1/3;
+  }
+}
+.THIS .card-body .field-wrap {
+  padding: .5rem 0 .25rem 0;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.THIS .card-body .field-wrap.report-type {
+  border-bottom: none;
+  width: 20rem;
+}
+
+/* card-02 */
+/* check box 위로 올리기 */
+.THIS .card-02 .input-wrap.checkbox {
+  display: flex;
+  align-items: flex-start !important;
+  height: 31rem;
+}
+/* 귀책부서 combobox보이게 */
+.THIS .card-02 .card-body .table-wrap {
+  overflow: visible;
+}
+
+/* card-03 */
+.THIS .card-03 .card-header {
+  display: flex;
+  gap: 1rem;
+}
+.THIS .card-03 .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.THIS .card-03 .field-wrap {
+    border-bottom: 0;
+}
+.THIS .card-03 .file-wrap {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.THIS .card-03 .file-wrap .file-name {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: #d0ebff;
+  border-radius: 10rem;
+}
+.THIS .card-03 .file-wrap .file-name lightning-icon {
+  cursor: pointer;
+}
+
+/* card-04 */
+/* 작업내용 combobox보이게 */
+.THIS .card-04 .card-body .table-wrap {
+  overflow: visible;
+}
+
+/* card-05 */
+.THIS .card-05 .check {
+  justify-content: center;
+}
+
+/* top-card table */
+.THIS .top-card .table-header {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  background-color: #fff;
+}
+
+.THIS .top-card .table-wrap table {
+  border-top: 1px solid #c9c9c9; 
+}
+.THIS .top-card .table-wrap tr th:first-child {
+  border-right: 1px solid #c9c9c9;
+}
+.THIS .top-card .table-wrap .input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+.THIS .top-card .table-wrap .clear-btn {
+  position: absolute;
+  right: 37px;
+  border: none;
+}
+.THIS .top-card .table-wrap td:has(.slds-checkbox){
+  width: 40px;
+  border-right: 1px solid #c9c9c9;
+}
+.THIS .top-card .table-wrap td:first-child .input-wrap  lightning-input {
+  border: none;
+}
+.THIS .top-card .table-wrap .input-wrap .slds-form-element__label {
+  display: none;
+}
+.THIS .top-card .table-wrap .input-wrap lightning-input.input-small {
+  width: 5vw;
+}
+.THIS .top-card .table-wrap .input-wrap lightning-input.input-medium {
+width: 10vw;
+}
+.THIS .top-card .table-wrap .input-wrap lightning-input.input-large {
+width: 40vw;
+}
+.THIS .top-card .table-wrap .input-wrap  lightning-textarea{
+  width: 100%;
+}
+
+/* 확정 후 */
+.THIS .top-card .table-wrap .input-wrap .border-small {
+  width: 5vw;
+  padding: 0.25rem;
+  border-bottom: 1px solid #d9d9d9;
+}
+.THIS .top-card .table-wrap .input-wrap .border-medium {
+  width: 10vw;
+  padding: 0.25rem;
+  border-bottom: 1px solid #d9d9d9;
+}
+.THIS .top-card .table-wrap .input-wrap .border-large {
+  width: 45vw;
+  padding: 0.25rem;
+  border-bottom: 1px solid #d9d9d9;
+}
+.THIS .top-card .table-wrap .input-wrap .border-txt {
+  border: 1px solid #d9d9d9;
+}
+.THIS .top-card .table-wrap .input-wrap lightning-textarea {
+    width: 100%;
+}
+.THIS .top-card .table-wrap td:has(.slds-checkbox){
+  width: 40px;
+  border-right: 1px solid #c9c9c9;
+}
+.THIS .top-card .table-wrap .input-wrap .slds-form-element__label {
+  display: none;
+}
+.THIS .read-card.confirmed {
+  border-bottom: 0;
+  padding-bottom: 0;
+  border: 0.25rem 0.25rem 0 0 ;
+}
+.THIS .header.confirmed {
+  display: none;
+}
+.THIS .input-card.confirmed {
+  margin-top: 0;
+  border-top: 0;
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+.THIS .field-wrap.confirmed .input-wrap {
+  min-height: 1.5rem;
+  border-bottom: 1px solid #d4d4d4;
+  border-radius: 0.25rem;
+}
+
+/* file upload */
+.THIS .top-card .field-wrap .input-wrap:has(lightning-file-upload) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem;
+}
+.THIS .top-card .field-wrap .input-wrap lightning-file-upload  .slds-form-element__label {
+  display: none;
+}
+
+/* Table Design */
+.THIS .body table {
+    border-top: 1px solid #c9c9c9;
+}
+.THIS .body table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+.THIS .body table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 0.75rem;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+.THIS .body table td {
+  background-color: #fff;
+  padding: .25rem 0.75rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+}
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+  display: none;
+}
+.THIS .slds-form-element {
+  width: 100%;
+}
+
+/* Table Class */
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+}
+.THIS .left,
+.THIS .left .slds-input {
+  text-align: left !important;
+}
+.THIS .right,
+.THIS .right .slds-input {
+  text-align: right !important;
+}
+.THIS .body table th+th,
+.THIS .body table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+
+/* SLDS Table datepicker */
+.THIS .body .slds-datepicker__month td {
+  border: none !important;
+  background-color: #fff !important; 
+  padding: .25rem !important;
+  font-size: .75rem !important;
+}
+.THIS .body .slds-datepicker__month th {
+  padding: .5rem !important;
+  font-weight: 400 !important;
+  background-color: #fff !important;
+  border: none !important;
+}
+.THIS .body .slds-datepicker__month tr {
+  border-bottom: none !important;
+}
+
+/* Modal */
+.THIS .slds-modal__container {
+    max-width: 640px;
+    width: 60vw;
+  }
+
+.THIS .slds-modal__container.print-modal {
+  width: 60vw;
+  max-width: none;
+}
+
+/* modal header */
+.THIS .slds-modal__header .header-wrap .slds-button {
+  position: absolute;
+  top: 14px;
+  right: 1rem;
+}
+
+  /* Modal Close */
+  .THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    border: none;
+  }
+  .THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+  }
+  
+  /* Modal Body */
+  .THIS .slds-p-around_medium {
+    padding: 0;
+  }
+  .THIS .modal-body {
+    background-color: #F3F3F3;
+  }
+  .THIS .modal-body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+  }
+  .THIS .slds-modal .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    flex: 1;
+  }
+  .THIS .slds-modal .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+  }
+  .THIS .slds-modal .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .THIS .slds-modal__container.print-modal .slds-modal__content .email-btn {
+    display: flex;
+    gap: .5rem;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0.5rem;
+  }
+  
+.THIS .slds-modal__container.print-modal .slds-modal__content .email-btn lightning-input {
+  width: 13rem;
+}
+
+.THIS .slds-modal__container.print-modal .slds-modal__content .email-btn .slds-button {
+  min-width: 8rem;
+}
+  
+  /* Card 01 */
+  .THIS .modal-body .card-01 {
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+  }
+  /* 모달마다 커스텀 */
+  .THIS .broken-area-modal .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    flex: 1;
+  }
+  .THIS .broken-area-modal .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+  }
+  .THIS .broken-area-modal .card-01 .field-wrap .input-wrap lightning-combobox {
+    min-width: 17rem;
+  }
+  
+  /* Table Design */
+
+  /* .THIS .top-card-04 .table-wrap .table-body {
+    position: relative;
+    max-height: 15rem;
+    overflow: hidden;
+    overflow-y: scroll;
+  } */
+  
+  .THIS .card-04 .table-wrap .table-body thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+  }
+  .THIS .modal-body .table-wrap {
+    width: 100%;
+  }
+  .THIS .modal-body table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+  }
+  .THIS .modal-body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+  }
+  .THIS .modal-body table td {
+    background-color: #fff;
+    padding: .5rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+  }
+  .THIS .modal-body table th+th,
+  .THIS .modal-body table td+td {
+    border-left: 1px solid #D9D9D9;
+  }
+
+  /* Modal 02 Background */
+.THIS .modal-2-bg{
+  z-index: 9001 !important;
+}
+
+.THIS .error-border .slds-input {
+  border: 2px solid red;
+  border-radius: 0.25rem;
+}
+
+.THIS .error-border .slds-textarea {
+  border: 2px solid red;
+  border-radius: 0.25rem;
+}
+
+.THIS .error-border .input-wrap:has(lightning-file-upload) {
+  border: 2px solid red !important;
+  border-radius: 0.25rem !important;
+}
+
+.THIS .error-border lightning-base-combobox {
+  border: 2px solid red !important;
+  border-radius: 0.25rem !important;
+}

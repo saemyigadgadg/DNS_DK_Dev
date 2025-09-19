@@ -1,0 +1,245 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 07-08-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-18   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_QueryReplacementController"
+  description="대체품 해제 이력 조회">
+
+  <!-- attribute -->
+  <aura:attribute name="uuid" type="String"/>
+  <aura:attribute name="orderByField" type="String"/>
+  <aura:attribute name="orderBy" type="String"/>
+  <aura:attribute name="currentUserInfo" type="Object"/>
+  <aura:attribute name="nextPage" type="Integer" default="1"/>
+  <aura:attribute name="recordList" type="List" />
+  <aura:attribute name="isExcelData" type="Boolean" default="false" />
+  <aura:attribute name="isExcelButton" type="Boolean" default="false" />
+  <aura:attribute name="seletedList" type="List" />
+  <aura:attribute name="whereCondition" type="Object" default="{}" /> <!-- whereCondition-->
+  <aura:attribute name="isPart" type="Boolean" default="false" />
+
+
+
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      <!-- Header -->
+      <!-- <div class="header">
+
+        <div class="title slds-grid">
+          <lightning:icon iconName="standard:custom" size="small" alternativeText="Indicates approval" />
+          <h2 class="slds-truncate">대체품 해제 이력 조회</h2>
+        </div>
+
+        <div class="button-wrap">
+          <lightning:button name="searchItems" label="검색" iconName="utility:search" iconPosition="left" onclick="{!c.searchResultList}" />
+          <lightning:button name="downloadExcel" label="엑셀" iconName="doctype:excel" iconPosition="left" onclick="" />
+        </div>
+      </div> -->
+
+      <!-- Body -->
+      <!-- <div class="body"> -->
+
+        <!-- Card 02 : 검색 결과 테이블 -->
+        <!-- <div class="card-02 top-card"> -->
+          <div class="table-wrap">
+            <!-- fix-left-table -->
+            <div class="table-01 left-table" aura:id="leftTableDiv">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table" aria-label="Example table of Opportunities with vertical borders">
+                <thead style="height:29px;">
+                  <!--  -->
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Material</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Material Description</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.recordList}" var="result" indexVar="i">
+                    <tr class="slds-hint-parent">
+                      <td scope="row">
+                        <div>{!result.material}</div>
+                      </td>
+                      <td scope="row">
+                        <div>{!result.materialDesc}</div>
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+  
+            <!-- scroll-right-table -->
+            <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table aria-label="Example table of Opportunities with vertical borders" class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead style="height:29px;">
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Last Parts</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-18</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-17</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-16</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-15</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-14</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-13</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-12</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-11</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-10</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-9</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-8</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-7</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-6</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-5</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-4</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-3</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-2</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">M-1</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">단위</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">6M</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">12M</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">18M</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">금액</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">ABC Ind.</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">ROP</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">Max Lv.</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">변경 일자</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">오더 Block</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">구매 Block</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.recordList}" var="result" indexVar="i">
+                    <tr class="slds-hint-parent">
+                        <td scope="row">
+                          <div>{!result.lastParts}</div>
+                        </td>
+                        <aura:iteration items="{!result.monthlyList}" var="mon" indexVar="n">
+                          <td scope="row" class="right">
+                            <div>{!mon.qty}</div>
+                          </td>
+                        </aura:iteration> 
+                        <td scope="row" class="right">
+                          <div>{!result.unit}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.m6.qty}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.m12.qty}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.m18.qty}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>
+                            <lightning:formattedNumber value="{!result.amount}" />
+                            &nbsp;{!result.currencyCode}
+                          </div>
+                        </td>
+                        <td scope="row" class="center">
+                          <div>{!result.abc}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.rop}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.maxLv}</div>
+                        </td>
+                        <td scope="row" class="center">
+                          <div>{!result.changeDate}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.orderBlock}</div>
+                        </td>
+                        <td scope="row" class="right">
+                          <div>{!result.salesBlock}</div>
+                        </td>
+                       
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <!-- </div> -->
+      <!-- </div> -->
+
+    </article>
+  </div>
+
+</aura:component>

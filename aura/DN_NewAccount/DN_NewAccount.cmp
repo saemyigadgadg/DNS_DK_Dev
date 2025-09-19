@@ -1,0 +1,281 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 06-17-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   07-02-2024   Hanyeong Choi   Initial Version
+  1.0   07-03-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable"
+                access="global"
+                controller="DN_AccountLayoutController"
+                description="New Account List Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="isNext"               type="Boolean"  default="false" />
+    <aura:attribute name="isDupl"               type="Boolean"  default="false" />
+    <aura:attribute name="isRequest"            type="Boolean"  default="false" />
+    <aura:attribute name="searchCheck"          type="Boolean"  default="true" />
+    <aura:attribute name="isShare"              type="Boolean"  default="false" />
+    <aura:attribute name="recordTypeId"         type="String" />
+    <aura:attribute name="objectName"           type="String"   default="Account" />
+    <aura:attribute name="errorMsg"             type="String" />
+    <aura:attribute name="recordTypeOptions"    type="List"     default="[]" />
+    <aura:attribute name="searchDataList"       type="List"     default="[]" />
+    <aura:attribute name="radioValue"           type="String" />
+    <aura:attribute name="radioLabel"           type="String" />
+    <aura:attribute name="keyword"              type="String"   default="" />
+    <aura:attribute name="userCountry"          type="String" />
+    <aura:attribute name="userCurrency"         type="String" />
+    <aura:attribute name="listId"               type="String" />
+    <aura:attribute name="userProfile"          type="String"    default="" />
+    <aura:attribute name="appName"              type="String"    default="" />
+    <aura:attribute name="selectedRows"         type="List"     default="[]" />
+
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <lightning:navigation aura:id="navigationService" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        @media (min-width: 48em) {
+            .cDN_NewAccount .slds-modal__container {
+                max-width: 62rem !important;
+                width: 100%!important;
+            }
+            .cDN_NewAccount .slds-modal__container:has(.small-modal) {
+                max-width: 42rem !important;
+            }
+        }
+        .cDN_NewAccount .slds-accordion__summary-action {
+            background-color: #dcdcdc80;
+            border: 1px solid #dcdcdc80;
+            border-radius: 7px;
+            padding: 7px!important;
+            margin-bottom: 10px!important
+        }    
+        .lightning-primitive-icon {
+            disply: none;
+        }
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <!-- 🚩Aura Header -->
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_ACC_T_NEWACCTITLE}</h1>
+            </div>
+            
+            <!-- 🚩Select Record Type -->
+            <aura:if isTrue="{! !v.isNext }">
+                <div class="slds-modal__content slds-p-around_medium small-modal" id="modal-content-id-1">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+                    <span class="record-label">{!$Label.c.DNS_ACC_T_SELECTRECORD}</span>
+                    <div class="slds-form slds-align_absolute-center">
+                        <lightning:radioGroup  
+                            name="radioGroup"
+                            options="{! v.recordTypeOptions }"
+                            type="radio"
+                            onchange="{! c.handleChangeRadio }">
+                        </lightning:radioGroup>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{! c.handleCancel }">{!$Label.c.DNS_B_Cancel}</button>
+                    <button class="slds-button slds-button_brand" onclick="{! c.handleNext }">{!$Label.c.DNS_B_Next}</button>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{! AND(v.isNext, AND(!v.isRequest, AND(!v.isDupl, v.radioValue != 'DNSACustomer'))) }">
+                <div class="page-02 slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+                    <div class="topcard card-01" onkeyup="{! c.handleEnterSearch }">
+                        <span>{!$Label.c.DNS_ACC_C_NAME} : </span>
+                        <lightning:input aura:id="inputKeyword" name="inline-search-input" type="search" variant ="label-hidden" value="{! v.keyword }" placeholder="Keyword.." />
+                        <lightning:button label="Search" title="Search" onclick="{! c.handleClickSearch }" />
+                    </div>
+
+                    <div class="topcard card-02">
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <aura:if isTrue="{! v.userProfile != '영업 직영영업'}">
+                                        <col width="4%" />
+                                        <col width="20%" />
+                                        <col width="15%" />
+                                        <col width="15%" />
+                                        <col width="36%" />
+                                        <col width="10%" />
+
+                                        <aura:set attribute="else">
+                                            <col width="4%" />
+                                            <col width="29%" />
+                                            <col width="24%" />
+                                            <col width="24%" />
+                                            <col width="19%" />
+                                        </aura:set>
+                                    </aura:if>
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="slds-truncate"></div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">{!$Label.c.DNS_ACC_C_NAME}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">{!$Label.c.DNS_ACC_C_REPRESENTATIVE}</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate">{!$Label.c.DNS_ACC_C_TYPE}</div>
+                                        </th>
+                                        <aura:if isTrue="{! v.userProfile != '영업 직영영업'}">
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_ACC_C_ADDRESS}</div>
+                                            </th>
+                                        </aura:if>
+                                        <th>
+                                            <div class="slds-truncate">{!$Label.c.DNS_ACC_C_BVC}</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.searchDataList}" var="row" indexVar="k">
+                                        <tr>
+                                            <td>
+                                                <div class="slds-truncate center">
+                                                    <aura:if isTrue="{! row.isBVC == 'Y' }">
+                                                        <lightning:input type="checkbox" aura:id="checkbox" variant ="label-hidden" disabled="true" value="{!k}" onchange="{! c.handleRowSelection }" />
+
+                                                        <aura:set attribute="else">
+                                                            <lightning:input type="checkbox" aura:id="checkbox" variant ="label-hidden" value="{!k}" onchange="{! c.handleRowSelection }" />
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="{! row.accName }">
+                                                    <lightning:formattedUrl value="{!'/' + row.accId}" tooltip="{!row.accName}" label="{!row.accName}" target="_blank" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate desc" title="{! row.representative }">{! row.representative }</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate desc" title="{! row.recordTypeName }">{! row.recordTypeName }</div>
+                                            </td>
+                                            <aura:if isTrue="{! v.userProfile != '영업 직영영업'}">
+                                                <td>
+                                                    <div class="slds-truncate desc" title="{! row.address }">{! row.address }</div>
+                                                </td>
+                                            </aura:if>
+                                            <td>
+                                                <div class="slds-truncate desc" style="display: flex; justify-content: center;" title="{! row.isBVC }">{! row.isBVC != null ? row.isBVC : 'N' }</div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{! c.handleCancel }">{!$Label.c.DNS_B_Cancel}</button>
+                    <div class="previous-wrap">
+                        <button class="slds-button slds-button_neutral" onclick="{! c.handleSearchPrevious }">{!$Label.c.DNS_B_Previous}</button>
+                        <button class="slds-button slds-button_brand" onclick="{! c.handleDuplNext }" disabled="{!v.searchCheck}">{!$Label.c.DNS_B_Next}</button>
+                    </div>
+                </div>
+            </aura:if>
+
+            <!-- *************************************************************** Name / Reason *************************************************************** -->
+            <aura:if isTrue="{! v.isRequest }">
+                <div class="page-02 slds-modal__content slds-p-around_medium small-modal" id="modal-content-id-1">
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+                    <lightning:recordEditForm  aura:id="recordEditForm" objectApiName="DNS_RequestToUseCustomer__c">
+                        <!-- <p>Account Name : {! v.selectedRows[0].accName }</p> -->
+
+                        <div class="slds-form-element slds-form-element_horizontal">
+                            <label class="slds-form-element__label" for="horizontal-input-id-01">{!$Label.c.DNS_ACC_C_NAME}</label>
+                            <div class="slds-form-element__control">
+                                <p>{! v.selectedRows[0].accName }</p>
+                            </div>
+                        </div>
+                        <lightning:inputField aura:id="requestField" fieldName="RequestReason__c" />
+                    </lightning:recordEditForm>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{! c.handleCancel }">{!$Label.c.DNS_B_Cancel}</button>
+                    <div class="previous-wrap">
+                        <button class="slds-button slds-button_neutral" onclick="{! c.handleRequestPrevious }">{!$Label.c.DNS_B_Previous}</button>
+                        <button class="slds-button slds-button_brand" onclick="{! c.handleSaveRequest }">{!$Label.c.DNS_B_Save}</button>
+                    </div>
+                </div>
+            </aura:if>
+
+            <aura:if isTrue="{! v.isDupl }">
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-form slds-align_absolute-center">
+                        <aura:if isTrue="{! v.isLoading }">
+                            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                        </aura:if>
+
+                        <!-- 🚩Layout -->
+                        <div class="form-container">
+                            <lightning:recordEditForm 
+                                aura:id="recordEditForm"
+                                objectApiName="{! v.objectName }"
+                                onsubmit="{! c.handleSubmit }">
+
+                                <!-- 🚩DNSA Customer -->
+                                <aura:if isTrue="{! v.radioValue == 'DNSACustomer' }">
+                                    <c:DN_NewAccountDNSA aura:id="dnsaLayout"></c:DN_NewAccountDNSA>
+                                </aura:if>
+
+                                <!-- 🚩Prospect Customer -->
+                                <aura:if isTrue="{! v.radioValue == 'ProspectCustomer' }">   
+                                    <c:DN_NewAccountProspect aura:id="prospectLayout"></c:DN_NewAccountProspect>
+                                </aura:if>
+
+                                <!-- 🚩Ship to Party -->
+                                <aura:if isTrue="{! v.radioValue == 'ShipToParty' }">
+                                    <c:DN_NewAccountShipTo aura:id="shipToLayout"></c:DN_NewAccountShipTo>
+                                </aura:if>
+
+                                <!-- 🚩Trade Customer -->
+                                <aura:if isTrue="{! v.radioValue == 'TradeCustomer' }">
+                                    <c:DN_NewAccountTrade aura:id="tradeLayout"></c:DN_NewAccountTrade>
+                                </aura:if>
+
+                            </lightning:recordEditForm>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 🚩Aura Footer -->
+                <div class="slds-modal__footer">
+                    <lightning:button onclick="{! c.handleCancel }" label="{!$Label.c.DNS_B_Cancel}" />
+                    <div class="previous-wrap"> 
+                        <lightning:button onclick="{! c.handlePrevious }" label="{!$Label.c.DNS_B_Previous}" />
+                        <lightning:button variant="brand" onclick="{! c.handleSaveRecord }" label="{!$Label.c.DNS_B_Save}" />
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</aura:component>

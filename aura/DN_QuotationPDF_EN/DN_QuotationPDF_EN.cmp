@@ -1,0 +1,60 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 07-18-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   07-18-2024   Hyerin Ro   Initial Version
+-->
+
+<aura:component
+  controller="DN_QuotationPDFController"
+  implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+  access="global" description="Quote PDF Export_EN">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="verSion" type="String" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+
+    <aura:attribute name="url" type="String" default="" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    <aura:html tag="style">
+      <!-- 기본 프레임 세팅 -->
+      .slds-modal__container:has(.cDN_QuotationPDF_EN) {
+      width:100%;
+      max-width: 56rem;
+      }
+      .slds-modal__content:has(.cDN_QuotationPDF_EN) {
+      height:auto !important;
+      max-height:none !important;
+      padding: 0;
+      overflow-y: clip;
+      }
+      .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_QuotationPDF_EN) {
+      padding:0;
+      }
+      .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDN_QuotationPDF_EN){
+        overflow: hidden;
+      }
+    </aura:html>
+  <div class="slds-modal__container">
+    <header class="slds-modal__header">
+      <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Quotation {!v.verSion}</h2>
+    </header>
+    <div class="slds-modal__content">
+      <aura:if isTrue="{!v.isLoading}">
+          <lightning:spinner alternativeText="Loading" variant="brand" />
+      </aura:if>
+      <div class="iframe-wrap">
+        <iframe src="{!v.url}"
+          style="width: 100%; height:65vh;"></iframe>
+      </div>
+    </div>
+    <footer class="slds-modal__footer">
+      <lightning:button variant="Neutral" type="submit" label="{!$Label.c.DNS_B_Cancel}" onclick="{!c.closeClick}" />
+      <lightning:button variant="brand" type="submit" label="{!$Label.c.DNS_B_Save}" onclick="{!c.createPDF}" />
+  </footer>
+  </div>
+
+</aura:component>

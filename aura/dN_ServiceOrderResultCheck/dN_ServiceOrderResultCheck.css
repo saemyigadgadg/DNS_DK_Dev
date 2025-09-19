@@ -1,0 +1,7 @@
+.THIS .slds-modal {
+    width: 100%; /* 모달 너비 조정 */
+    max-width: 900px;
+}
+.THIS .slds-modal__header {
+    background-color: #f4f6f9; /* 헤더 배경색 */
+}

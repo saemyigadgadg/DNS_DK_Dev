@@ -1,0 +1,686 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 12-26-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-03   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  description="대리점 자재 종합조회" controller="DN_InquiryAgencyMaterialsController">
+
+
+  <!-- attribute -->
+  <aura:attribute name="printDate" type="date" />
+  <aura:attribute name="printQty" type="Integer" default="1" />
+  <aura:attribute name="isPrint" type="Boolean" default="false" />
+  <!--spinner-->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <!-- 부품번호 -->
+  <aura:attribute name="partsNumber" type="String" default="" />
+  <aura:attribute name="partsExpend" type="String" default="" />
+  <aura:attribute name="replacePartsList" type="List" />
+  <!-- 대리점 INFO-->
+  <aura:attribute name="currentUser" type="String" /> 
+  <aura:attribute name="dealerStock" type="Object" />
+  <aura:attribute name="saveDealerStock" type="Object" />
+  <aura:attribute name="otherDealerStockList" type="List" />
+  <aura:attribute name="totalQTY" type="Object" />
+  <aura:attribute name="filter" type="Object" />
+  <aura:attribute name="isPartVal" type="Boolean" default="false" />
+  <aura:attribute name="errorMSG" type="String"  />
+  <aura:attribute name="inputPart" type="String"  />
+  <!-- 실적데이터-->
+  <aura:attribute name="performance" type="Object" />
+  <!--MPPS-->
+  <aura:attribute name="mpps" type="String" />
+  <aura:attribute name="mppsData" type="Object" />
+  <!--IF Data-->
+  <aura:attribute name="ifData" type="Object" /> <!--prodByPlant-->
+  <aura:attribute name="prodByPlant" type="Object" /> <!--prodByPlant-->
+  <!-- GPES-->
+  <aura:attribute name="isGPESModal"      type="Boolean" default="false" /> <!--GPES 모달-->
+  <aura:attribute name="apexPageURL"      type="String" default="" /> <!--GPES Apex Page Url-->
+  <aura:attribute name="receivedData"     type="List" /> <!--GEPS 에서 선택한 부품의 정보(품번, qty(수량), lotSize(단위), salesPrice(단가))-->
+  <aura:attribute name="selectPartsNo"    type="List" /> <!--GPES 에서 선택한 부품의 번호(들)-->
+  <aura:attribute name="confirmParts"     type="List" /> <!--GPES 와 Product2 일치 확인된 부품-->
+  <aura:attribute name="isEnter"          type="Boolean" default="false"  /> <!--엔터키 유무-->
+  <aura:attribute name="currentUrl"       type="String" default=""  /> <!--엔터키 유무-->
+  <aura:attribute name="isInit"       type="Boolean" default="false"  /> <!--엔터키 유무-->
+  <!-- handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <aura:handler name="destroy" value="{!this}" action="{!c.doDestroy}" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <lightning:navigation aura:id="navService"/>
+
+  <div class="total-wrap" style="user-select: text;" >
+    <article class="slds-card" aura:id="copyTarget">
+      <!-- 부품번호 Modal -->
+      <div aura:id="SearchProductNumber"></div>
+
+      <!-- 📌 Header -->
+      <div class="header copy-ignore" >
+        <div class="title">
+          <lightning:icon iconName="custom:custom33" size="small" alternativeText="대리점 자재 종합조회" />
+          <h2 class="copy-ignore">대리점 자재 종합조회</h2>
+        </div>
+
+        <div class="button-wrap copy-ignore">
+          <lightning:button  name="saveItems" iconName="utility:search" label="검색" onclick="{!c.handleSearch}" />
+          <lightning:button name="saveItems" iconName="utility:new_window" label="GPES" onclick="{!c.handleGPES}" />
+          <lightning:button name="saveItems" iconName="utility:check" label="저장" variant="brand" onclick="{!c.handleSave}" />
+          <lightning:button name="saveItems" iconName="utility:share" label="확장" onclick="{!c.handleMpps}" disabled="{!v.mpps == 'Y'? true : false}" />
+          <lightning:button name="saveItems" iconName="utility:copy" label="복사" onclick="{!c.handleCopy}" />
+        </div>
+
+      </div>
+
+      <!-- 📌 Body -->
+      <div class="body" >
+        <div id="autoCompleteTarget"></div>
+        <!-- 1. Card 01 -->
+        <div class="card-01 top-card copy-ignore">
+          <div class="field-wrap">
+            <p>대리점 명</p>
+            <input type="hidden" value="{!v.currentUser}" />
+            <div class="input-wrap copy-ignore">
+              <lightning:input label="{!v.currentUser}" type="text" value="{!v.currentUser}"  disabled="true" variant="label-hidden" name="{!v.currentUser}" title="{!v.currentUser}"/>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>부품번호</p>
+            <input type="hidden" value="{!v.inputPart}" />
+            <div class="input-wrap" onkeyup="{!c.handleKeyUp}"> <!--onkeydown="{!c.handleKeydown}"-->
+            <lightning:input type="text" aura:id="inputPartCode" name="partCode"  variant="label-hidden" value="{!v.inputPart}" onchange="{!c.handleValueChange}" />
+            <!-- <form action="javascript:void(0);" method="POST" style="display: contents;" id="hiddenForm" >
+              <lightning:input type="text" aura:id="inputPartCode" name="partCode"  variant="label-hidden" value="{!v.inputPart}" onchange="{!c.handleValueChange}" />
+            </form> -->
+              <!-- <c:dN_DealerPortalInputBox oninputchange="{!c.handleInputChange}" class="copy-ignore" aura:id="productCode" tableIndex="0" name="0" istable="true" uuid="" filter="{!v.filter}" style="width: 100%;" /> -->
+              <!-- <lightning:input type="text" value="{!v.partsNumber}" name="CustomerOrderNumber" variant="label-hidden" /> -->
+              <lightning:buttonicon  iconName="utility:close" size="medium" alternativeText="close"
+                onclick="{!c.clearPartsNumber}" accesskey="" class="clear-btn copy-ignore"/>
+              <lightning:buttonicon  iconName="utility:search" size="medium" alternativeText="Search" class="copy-ignore"
+                onclick="{!c.openSearchProductNumber}" accesskey="" />
+            </div>
+          </div>
+
+          <div class="field-wrap ">
+            <p>MPPS 품번 확장</p>
+            <input type="hidden" value="{!v.mpps}" />
+            <div class="input-wrap copy-ignore">  
+              <lightning:input  label="{!v.mpps}" class="{!v.mpps == 'Y'? '' : 'text-red'}" type="text" disabled="true" value="{!v.mpps}" name="CustomerOrderNumber" variant="label-hidden" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. DNS 서비스 자재현황 -->
+        <div class="card-02 slds-table--header-fixed_container top-card">
+          <div class="card-header">
+            <h2>DNS 서비스 자재현황</h2>
+
+            <div class="field-container">
+              <div class="field-wrap">
+                <p>수량</p>
+                <input type="hidden" value="{!v.printQty}" />
+                <div class="input-wrap copy-ignore">
+                  <lightning:input type="number"  value="{!v.printQty}" variant="label-hidden"></lightning:input>
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>출력일자</p>
+                <input type="hidden" value="{!v.printDate}" />
+                <div class="input-wrap copy-ignore">
+                  <lightning:input type="date" label="{!v.printDate}"  value="{!v.printDate}" variant="label-hidden"></lightning:input>
+                </div>
+              </div>
+              <div class="input-wrap copy-ignore" >
+                <lightning:button iconName="standard:product_consumed" name="searchItems" label="출력" onclick="{!c.handlePrint}" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body slds-scrollable">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <tr>
+                <th>품명</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.MAKTX}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.MAKTX}" value="{!v.ifData.MAKTX}" variant="label-hidden" readonly="true" />
+                </td>
+                <th>고객판매가</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.NETPR}" />
+                </td>
+                <td class="copy-ignore">
+                  <div>
+                    <lightning:input type="text" label="{!v.ifData.NETPR }" value="{!v.ifData.NETPR }" variant="label-hidden" readonly="true"></lightning:input>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th>규격</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.THREAD}" />s
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.THREAD}" value="{!v.ifData.THREAD}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>단위</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.MEINS =='' ? 'EA' : v.ifData.MEINS}" />  
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.MEINS =='' ? 'EA' : v.ifData.MEINS}"   value="{!v.ifData.MEINS =='' ? 'EA' : v.ifData.MEINS}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>HQ_WH1</th><!--창원_창고재고-->
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.AVAIL_QTY}" />  
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.AVAIL_QTY}" value="{!v.ifData.AVAIL_QTY}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>최종대체품</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.SUB_MATERIAL}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.SUB_MATERIAL}" value="{!v.ifData.SUB_MATERIAL}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>HQ_WH2</th><!--천안_창고재고-->
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.AVAIL_QTY2}" />  
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.AVAIL_QTY2}" value="{!v.ifData.AVAIL_QTY2}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th></th>
+                <td style="display:none;">
+                </td>
+                <td class="copy-ignore">
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3. 자체 대리점 재고 -->
+        <div class="card-03 slds-table--header-fixed_container top-card">
+          <div class="card-header">
+            <h2>자체 대리점 재고</h2>
+          </div>
+
+          <div class="card-body slds-scrollable">
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <tr>
+                <th>창고재고</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.CurrentStockQuantity__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.dealerStock.CurrentStockQuantity__c}" value="{!v.dealerStock.CurrentStockQuantity__c}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>가용재고</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.AvailableQuantity__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.dealerStock.AvailableQuantity__c}" value="{!v.dealerStock.AvailableQuantity__c}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>판매예약량</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.OrderRequiredQuantity__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.dealerStock.OrderRequiredQuantity__c + v.dealerStock.WarrantyRequiredQuantity__c}" value="{!v.dealerStock.OrderRequiredQuantity__c + v.dealerStock.WarrantyRequiredQuantity__c}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>DNS 구매수량</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.performance.dnsPurchaseQTY}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="Number"  label="{!v.performance.dnsPurchaseQTY}" value="{!v.performance.dnsPurchaseQTY}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>저장위치</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.DealerLocation__r.FM_Loc__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.dealerStock.DealerLocation__r.FM_Loc__c}" value="{!v.dealerStock.DealerLocation__r.FM_Loc__c}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>타대리점 구매수량</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.performance.otherDealerPurchaseQTY}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="Number" label="{!v.performance.otherDealerPurchaseQTY}" value="{!v.performance.otherDealerPurchaseQTY}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>Block 수량</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.BlockQuantity__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <div>
+                    <lightning:input type="text" aura:id="BlockQuantity__c" label="{!v.dealerStock.BlockQuantity__c}" onchange="{!c.handleValue}" value="{!v.dealerStock.BlockQuantity__c}" name="CustomerOrderNumber"
+                      variant="label-hidden" />
+                  </div>
+                </td>
+                <th>MRP Type</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.mrpType}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.mppsData.mrpType}" value="{!v.mppsData.mrpType}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>AMD</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.amd}" />
+                </td>
+                <td class="copy-ignore">
+                  <div>
+                    <lightning:input type="text" label="{!v.mppsData.amd}" value="{!v.mppsData.amd}" variant="label-hidden" readonly="true"></lightning:input>
+                  </div>
+                </td>
+                <th>ABC Indicator</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.abcIndicator}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.mppsData.abcIndicator}" value="{!v.mppsData.abcIndicator}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>ROP</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.reOrderPoint}" />
+                </td>
+                <td class="copy-ignore">
+                  <div>
+                    <lightning:input type="text" label="{!v.mppsData.reOrderPoint}" value="{!v.mppsData.reOrderPoint}" variant="label-hidden" readonly="true"></lightning:input>
+                  </div>
+                </td>
+                <th>Maximum</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.maximumStock}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.mppsData.maximumStock}" value="{!v.mppsData.maximumStock}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>Rounding value</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.roundingValue}" />
+                </td>
+                <td class="copy-ignore">
+                  <div>
+                    <lightning:input type="text" label="{!v.mppsData.roundingValue}" value="{!v.mppsData.roundingValue}" variant="label-hidden" readonly="true"></lightning:input>
+                  </div>
+                </td>
+                <th>Min.Lot Size</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.mppsData.minimumLotSize}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.mppsData.minimumLotSize}" value="{!v.mppsData.minimumLotSize}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>총 출고실적</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.performance.totalPerformance}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="Number" label="{!v.performance.totalPerformance}" value="{!v.performance.totalPerformance}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>1년간 구매 실적</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.performance.yearPurchasePerformance}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="Number" label="{!v.performance.yearPurchasePerformance}" value="{!v.performance.yearPurchasePerformance}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>최종 출고일</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.LastExportDateTime__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.dealerStock.LastExportDateTime__c}" value="{!v.dealerStock.LastExportDateTime__c}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th>1년간 출고 실적</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.performance.yearGoodsIsPerformance}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.performance.yearGoodsIsPerformance}" value="{!v.performance.yearGoodsIsPerformance}"  variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+              </tr>
+              <tr>
+                <th>최종 입고일</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.dealerStock.LastImportDateTime__c}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.dealerStock.LastImportDateTime__c}" value="{!v.dealerStock.LastImportDateTime__c}" variant="label-hidden" readonly="true"></lightning:input>
+                </td>
+                <th></th>
+                <td>
+                  <!-- {! v.ifData.ZPRAT =='N' ? 'Moving' : 'NonMoving'} -->
+                  
+                </td>
+              </tr>
+              <tr>
+                <th>Service LT</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.SVCLT}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.SVCLT}" value="{!v.ifData.SVCLT}" variant="label-hidden" readonly="true"></lightning:input>
+                  <!-- <div> <lightning:input type="text" value="{!v.parts.SOQTY}" name="CustomerOrderNumber" variant="label-hidden" readonly="true" /> </div> -->
+                </td>
+                <th>구매 LT</th>
+                <td style="display:none;">
+                  <input type="hidden" value="{!v.ifData.PLIFZ}" />
+                </td>
+                <td class="copy-ignore">
+                  <lightning:input type="text" label="{!v.ifData.PLIFZ}" value="{!v.ifData.PLIFZ}" variant="label-hidden" readonly="true"></lightning:input>
+                  <!-- <div> <lightning:input type="text" value="{!v.parts.PLIFZ}" name="CustomerOrderNumber" variant="label-hidden" readonly="true" /> </div> -->
+                </td>
+              </tr>
+              <tr>
+                <th>Parts Note</th>
+                <td style="display:none;">
+                  <textarea style="display:none;" >{!v.dealerStock.Note__c}</textarea>
+                </td>
+                <td colspan="3" class="copy-ignore" >
+                  <div style="min-height: 120px;">
+                    <lightning:textarea calss="custom-textarea" label="{!v.dealerStock.Note__c}"  name="input2" aura:id="Note__c" value="{!v.dealerStock.Note__c}" variant="label-hidden" />
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. 대체품 정보 -->
+        <div class="card-04 slds-table--header-fixed_container top-card">
+          <div class="card-header copy-ignore">
+            <h2>대체품 정보</h2>
+          </div>
+
+          <div class="card-body slds-scrollable">
+            <h2 style="display:none;">대체품 정보</h2>
+            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+              <colgroup>
+                <col width="5%" />
+                <col width="20%" />
+                <col width="30%" />
+                <col width="10%" />
+                <col width="10%" />
+                <col width="10%" />
+                <col width="15%" />
+              </colgroup>
+              <thead>
+                <tr class="slds-line-height_reset">
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">Seq</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">Material</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">Material Desc.</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">ICA</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">Service Det.</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">NSR</div>
+                  </th>
+                  <th class="" scope="col">
+                    <div class="slds-truncate" title="">Stock(Dealer)</div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <aura:if isTrue="{!v.replacePartsList.length > 0}">
+                  <aura:iteration items="{!v.replacePartsList}" var="item" indexVar="i">
+                    <tr class="slds-hint-parent">
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.SEQ}" />
+                      </td>
+                      <td data-label="Seq" class="copy-ignore">
+                        <lightning:input type="text" label="{!item.SEQ}" value="{!item.SEQ}" variant="label-hidden" readonly="true"></lightning:input>
+                        <!-- <div class="slds-truncate" title="Seq"> <lightning:input type="text" name="input2" variant="label-hidden" value="{!item.SEQ}" readonly="true" /> </div> -->
+                      </td>
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.MATNR}" />
+                      </td>
+                      <td data-label="Material" class="copy-ignore">
+                        <lightning:input type="text" label="{!item.MATNR}" value="{!item.MATNR}" variant="label-hidden" readonly="true"></lightning:input>
+                        <!-- <div class="slds-truncate" title="Material"> <lightning:input type="text" name="input3" variant="label-hidden" value="{!item.MATNR}" readonly="true" /> </div> -->
+                      </td>
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.MAKTX}" />
+                      </td>
+                      <td data-label="Material Desc." class="copy-ignore">
+                        <lightning:input type="text" label="{!item.MAKTX}" value="{!item.MAKTX}" variant="label-hidden" readonly="true"></lightning:input>
+                        <!-- <div class="slds-truncate" title="Material Desc."> <lightning:input type="text" name="input4" variant="label-hidden" value="{!item.MAKTX}" readonly="true" /> </div> -->
+                      </td>
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.ITCCD}" />
+                      </td>
+                      <td data-label="ICA" class="copy-ignore">
+                        <lightning:input type="text" label="{!item.ITCCD}" value="{!item.ITCCD}" variant="label-hidden" readonly="true"></lightning:input>
+                        <!-- <div class="slds-truncate" title="ICA"> <lightning:input type="text" name="input5" variant="label-hidden" value="{!item.ITCCD}" readonly="true" /> </div> -->
+                      </td>
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.SVRCD}" />
+                      </td>
+                      <td data-label="Service Det." class="copy-ignore">
+                        <lightning:input type="text" label="{!item.SVRCD}" value="{!item.SVRCD}" variant="label-hidden" readonly="true"></lightning:input>
+                        <!-- <div class="slds-truncate" title="Service Det."> <lightning:input type="text" name="input6" variant="label-hidden" value="{!item.SVRCD}" readonly="true" /> </div> -->
+                      </td>
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.MXNET}" />
+                      </td>
+                      <td data-label="NSR" class="copy-ignore">
+                        <lightning:input type="text" label="{!item.MXNET}" value="{!item.MXNET}" variant="label-hidden" readonly="true"></lightning:input>
+                        <!-- <div class="slds-truncate" title="NSR"> <lightning:input type="text" name="input7" variant="label-hidden" value="{!item.MXNET}" readonly="true" /> </div> -->
+                      </td>
+                      <td style="display:none;">
+                        <input type="hidden" value="{!item.LABST}" />
+                      </td>
+                      <td data-label="Stock(Dealer)" class="copy-ignore">
+                        <lightning:input type="number" label="{!item.LABST}" name="input8" step="1" variant="label-hidden" value="{!item.LABST}" readonly="true" />
+                        <!-- <div class="slds-truncate" title="Stock(Dealer)"> <lightning:input type="text" name="input8" variant="label-hidden" value="{!item.LABST}" readonly="true" /> </div> -->
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                  <aura:set attribute="else">
+                    <tr class="slds-hint-parent">
+                      <td data-label="Seq">
+                        <!-- <div class="slds-truncate" title="Seq"> <lightning:input type="text" name="input2" variant="label-hidden" value="" readonly="true" /> </div> -->
+                      </td>
+                      <td data-label="Material">
+                        <!-- <div class="slds-truncate" title="Material"> <lightning:input type="text" name="input3" variant="label-hidden" value="" readonly="true" /> </div> -->
+                      </td>
+                      <td data-label="Material Desc.">
+                        <!-- <div class="slds-truncate" title="Material Desc."> <lightning:input type="text" name="input4" variant="label-hidden" value="" readonly="true" /> </div> -->
+                      </td>
+                      <td data-label="ICA">
+                        <!-- <div class="slds-truncate" title="ICA"> <lightning:input type="text" name="input5" variant="label-hidden" value="" readonly="true" /> </div> -->
+                      </td>
+                      <td data-label="Service Det.">
+                        <!-- <div class="slds-truncate" title="Service Det."> <lightning:input type="text" name="input6" variant="label-hidden" value="" readonly="true" /> </div> -->
+                      </td>
+                      <td data-label="NSR">
+                        <!-- <div class="slds-truncate" title="NSR"> <lightning:input type="text" name="input7" variant="label-hidden" value="" readonly="true" /> </div> -->
+                      </td>
+                      <td data-label="Stock(Dealer)">
+                        <!-- <div class="slds-truncate" title="Stock(Dealer)">  </div> -->
+                      </td>
+                    </tr>
+                  </aura:set>
+                </aura:if>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. 타 부품 대리점 재고 -->
+        <div class="card-04 slds-table--header-fixed_container top-card">
+          <div class="card-header">
+            <h2>타 부품 대리점 재고</h2>
+          </div>
+
+          <div class="card-body slds-scrollable">
+            <div class="table-wrap" aura:id="partsProduct">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">대리점 명</div>
+                    </th>
+                    <th class="" scope="col">
+                      <div class="slds-truncate" title="">재고량</div>
+                    </th>
+                    <!-- <th class="" scope="col">
+                      <div class="slds-truncate" title="">Moving</div>
+                    </th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!v.otherDealerStockList.length > 0}">
+                    <aura:iteration items="{!v.otherDealerStockList}" var="stock" indexVar="i">
+                        <tr class="slds-hint-parent">
+                          <td style="display:none;">
+                            <input type="hidden" value="{!stock.Dealer__r.Name}" />
+                          </td>
+                          <td data-label="대리점 명" class="copy-ignore">
+                            <lightning:input type="text" label="{!stock.Dealer__r.Name}" value="{!stock.Dealer__r.Name}" variant="label-hidden" readonly="true"></lightning:input>
+                            <!-- <div class="slds-truncate" title="대리점 명"> <lightning:input type="text" name="input2" variant="label-hidden" value="{!stock.AgencyName}" readonly="true" /> </div> -->
+                          </td>
+                          <td style="display:none;">
+                            <input type="hidden" value="{!stock.AvailableQuantity__c}" />
+                          </td>
+                          <td data-label="재고량" class="copy-ignore">
+                            <lightning:input type="text" label="{!stock.AvailableQuantity__c}" value="{!stock.AvailableQuantity__c}" variant="label-hidden" readonly="true"></lightning:input>
+                            <!-- <div class="slds-truncate" title="재고량"> <lightning:input type="text" name="input3" variant="label-hidden" value="{!stock.StockQuantity}" readonly="true" /> </div> -->
+                          </td>
+                          <!-- <td data-label="Moving">
+                            {!stock.Moving}
+                            
+                          </td> -->
+                        </tr>
+                    </aura:iteration>
+                    <aura:set attribute="else">
+                      <tr class="slds-hint-parent">
+                        <td data-label="대리점 명">
+                          <!-- <div class="slds-truncate" title="대리점 명"> <lightning:input type="text" name="input2" variant="label-hidden" value="" readonly="true" /> </div> -->
+                        </td>
+                        <td data-label="재고량">
+                          <!-- <div class="slds-truncate" title="재고량"> <lightning:input type="text" name="input3" variant="label-hidden" value="" readonly="true" /> </div> -->
+                        </td>
+                        <!-- <td data-label="Moving">
+                          <div class="slds-truncate" title="Moving"> <lightning:input type="text" name="input4" variant="label-hidden" value="" readonly="true" /> </div>
+                        </td> -->
+                      </tr>
+                    </aura:set>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+          
+    </article>
+    <!--Open Print -->
+    <aura:if isTrue="{!v.isGPESModal}">
+        <section class="slds-modal slds-fade-in-open slds-modal_large" role="dialog">
+          <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                  <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick="{!c.closeModal}">
+                      <lightning:icon iconName="utility:close" alternativeText="close" size="small"></lightning:icon>
+                      <span class="slds-assistive-text">닫기</span>
+                  </button>
+                  <h2 class="slds-text-heading_medium">GPES</h2>
+              </header>
+              
+              <div class="slds-modal__content slds-p-around_medium" style="height: 1000px;">
+
+                  <!-- <div class="container" style="height: 100%;"> -->
+                      <iframe src="{!v.apexPageURL}" width="100%" height="100%"></iframe>
+
+                      <lightning:formattedText value="{!v.formData}" />
+                  <!-- </div> -->
+
+              </div>
+              
+              <footer class="slds-modal__footer">
+                  <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+              </footer>
+
+          </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    <!-- GPES MODAL -->
+    <aura:if isTrue="{!v.isGPESModal}">
+      <section class="slds-modal slds-fade-in-open slds-modal_large" role="dialog">
+          <div class="slds-modal__container">
+              
+              <header class="slds-modal__header">
+                  <button class="slds-button slds-button_icon slds-button_icon-inverse slds-modal__close" title="Close" onclick="{!c.closeModal}">
+                      <lightning:icon iconName="utility:close" alternativeText="close" size="small"></lightning:icon>
+                      <span class="slds-assistive-text">닫기</span>
+                  </button>
+                  <h2 class="slds-text-heading_medium">GPES</h2>
+              </header>
+              
+              <div class="slds-modal__content slds-p-around_medium" style="height: 1000px;">
+
+                  <!-- <div class="container" style="height: 100%;"> -->
+                      <iframe src="{!v.apexPageURL}" width="100%" height="100%"></iframe>
+
+                      <lightning:formattedText value="{!v.formData}" />
+                  <!-- </div> -->
+
+              </div>
+              
+              <footer class="slds-modal__footer">
+                  <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+              </footer>
+             
+          </div>
+      </section>
+      <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+  </div>
+  
+
+</aura:component>

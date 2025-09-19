@@ -1,0 +1,316 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 03-06-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-16-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+    description="출하지시서 (구)장비사양정보" controller="DN_EquipmentSpecificationController">
+    <!-- controller="DN_PortalServiceController" -->
+    <!-- Attribute -->
+    <aura:attribute name="isLoading"    type="Boolean"  default="false"  />
+    <aura:attribute name="machineName"  type="String"  />
+    <aura:attribute name="assetName"    type="String"  />
+    <aura:attribute name="equipment"    type="Object"  />
+    <aura:attribute name="remarks"      type="List" />
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <article class="slds-card">
+        <!-- 모달 -->
+        <div aura:id="ModelSearchModal" /> <!--기종/장비번호-->
+
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title slds-grid">
+                <lightning:icon iconName="standard:settings" size="small" alternativeText="Service History Result" />
+                <h2 class="slds-truncate">출하지시서</h2>
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left"
+                    onclick="{!c.doSearch}" />
+            </div>
+        </div>
+
+        <!-- body -->
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>기종<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.machineName}" variant="label-hidden" readonly="true"
+                            disabled="true" />
+                            <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine" 
+                            onclick="{!c.clearMachine}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openModelModal}" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>장비번호<abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="" value="{!v.assetName}" variant="label-hidden"/>
+                        <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"  
+                            onclick="{!c.clearAsset}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openSerialNumberModal}" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- card-02 -->
+            <div class="card-02 top-card">
+                <div class="card-body">
+                    <div class="field-wrap">
+                        <p>계약번호</p>
+                        <div class="input-wrap">
+                            {!v.equipment.O_HEADER.CONT_NO}
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>출하지시번호</p>
+                        <div class="input-wrap">
+                            {!v.equipment.O_HEADER.ISSUE_NO}
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>기종</p>
+                        <div class="input-wrap">
+                            {!v.equipment.O_HEADER.TYPBZ}
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>장비번호</p>
+                        <div class="input-wrap">
+                            {!v.equipment.O_HEADER.SERNR}
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>TYPE</p>
+                        <div class="input-wrap">
+                            {!v.equipment.O_HEADER.TYPE}
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>출하일</p>
+                        <div class="input-wrap">
+                            {!v.equipment.O_HEADER.INBDT}
+                        </div>
+                    </div>
+                    <div class="field-wrap grid-long">
+                        <p>Remark</p>
+                        <div class="input-wrap">
+                            <aura:iteration items="{!v.equipment.T_O_REMARK}" var="remark">
+                            <span>- {!remark.ZTEXT}</span>
+                        </aura:iteration>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+
+            <!-- card-03 -->
+            <div class="card-03-wrap">
+                <div class="card-03 top-card">
+                    <div class="card-header">
+                        <h2>S/O CV</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <colgroup>
+                                <col width="50%"/>
+                                <col width="50%"/>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Characteristic</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- {!v.equipment.O_HEADER.INBDT}-->
+                                <aura:iteration items="{!v.equipment.T_O_Classification}" var="cla">
+                                    <tr>
+                                        <td>{!cla.WKADDR}</td>
+                                        <td>{!cla.WKVALUE}</td>
+                                    </tr>
+                                </aura:iteration> 
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            
+                <div class="card-03 top-card">
+                    <div class="card-header">
+                        <h2>Sales Order</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Material</th>
+                                    <th>Description</th>
+                                    <th>Spec</th>
+                                    <th>Order Quantity</th>
+                                    <th>Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.equipment.T_O_MATERIAL}" var="so">
+                                    <tr>
+                                        <td>{!so.POSNR}</td>
+                                        <td>{!so.MATNR}</td>
+                                        <td>{!so.ARKTX}</td>
+                                        <td>{!so.ATWRT}</td>
+                                        <td>{!so.KWMENG}</td>
+                                        <td>{!so.VRKME}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+
+            <!-- card-04 -->
+            <div class="card-04 top-card">
+                <div class="card-header">
+                    <h2>Manual</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Manual Classification</th>
+                                <th>Manual</th>
+                                <th>Appl.Mon</th>
+                                <th>Book Number</th>
+                                <th>Lang</th>
+                                <th>Serial</th>
+                                <th>Copies</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.equipment.T_O_MANNUAL}" var="man">
+                                <tr>
+                                    <td>{!man.MANULDV}</td>
+                                    <td>{!man.MANUL}</td>
+                                    <td>{!man.PPNOF}</td>
+                                    <td>{!man.BOOKN}</td>
+                                    <td>{!man.SLANG}</td>
+                                    <td>{!man.SERIAL}</td>
+                                    <td>{!man.COPIS}</td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-05 top-card">
+                <div class="card-header">
+                    <h2>Shipping Part List</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Description</th>
+                                <th>Spec</th>
+                                <th>Req.Quantity</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.equipment.T_O_SHIPPING_PART_LIST}" var="sp">
+                                <tr>
+                                    <td>{!sp.POSNR}</td>
+                                    <td>{!sp.MAKTX}</td>
+                                    <td>{!sp.ZSPEC}</td>
+                                    <td>{!sp.MENGE}</td>
+                                    <td>{!sp.MEINS}</td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-06 top-card">
+                <div class="card-header">
+                    <h2>RSP List</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Description</th>
+                                <th>Spec</th>
+                                <th>Req.Quantity</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.equipment.T_O_RSP_LIST}" var="rsp">
+                                <tr>
+                                    <td>{!rsp.POSNR}</td>
+                                    <td>{!rsp.MAKTX}</td>
+                                    <td>{!rsp.ZSPEC}</td>
+                                    <td>{!rsp.MENGE}</td>
+                                    <td>{!rsp.MEINS}</td>
+                                </tr>
+                            </aura:iteration>
+                            <!-- <tr>
+                                <td>1</td>
+                                <td>BOLT,FOUNDATION</td>
+                                <td>BFLA20X500</td>
+                                <td>30</td>
+                                <td>EA</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>BOLT,FOUNDATION</td>
+                                <td>BFLA20X500</td>
+                                <td>30</td>
+                                <td>EA</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>BOLT,FOUNDATION</td>
+                                <td>BFLA20X500</td>
+                                <td>30</td>
+                                <td>EA</td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>BOLT,FOUNDATION</td>
+                                <td>BFLA20X500</td>
+                                <td>30</td>
+                                <td>EA</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+</aura:component>

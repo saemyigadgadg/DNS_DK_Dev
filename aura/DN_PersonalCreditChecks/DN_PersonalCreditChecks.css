@@ -1,0 +1,174 @@
+.THIS .flex-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Header */
+.THIS .header-01 .slds-media_center{
+    position: relative;
+}
+.THIS .header-01 .slds-media_center:after{
+    content: '신용정보 조회 이력은 모두 모니터링 되므로, 업무외 사용은 금하여 주시기 바랍니다.';
+    color: #EA001E;
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.25rem);
+}
+
+/* Body */
+
+.THIS .slds-card__body {
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+}
+
+.THIS .guide-text{
+    font-size: 12px;
+    display: block;
+    margin-top: 0.25rem;
+    color: #747474;
+}
+
+/* Card-01 */
+
+.THIS .card-01{
+    margin-top: 1.25rem;
+}
+
+.THIS .card-01 .card-body {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.THIS .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.THIS .card-01 .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.THIS .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+/* Card 02 */
+
+.THIS .card-02{
+    overflow: auto;
+}
+
+/* Table Design */
+
+.THIS table{
+    table-layout: fixed;
+}
+
+.THIS table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .slds-table:not(.slds-no-row-hover) tbody tr:hover>td{
+    background: #F9F9F9;
+}
+
+.THIS table th+th,
+.THIS table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+/* Table Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+/* SLDS Customs */
+
+.THIS .slds-input,
+.THIS .slds-input_faux,
+.THIS .slds-select {
+    border: 1px solid #C9C9C9;
+    min-width: 12rem;
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element__label{
+    display: none;
+}
+
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (min-width:480px) and (max-width:767px) {
+    .THIS .card-01 .card-body{
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+/* 모바일 세로 (해상도 ~ 479px)*/
+@media all and (max-width:479px) {
+    .THIS .card-01 .card-body{
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}

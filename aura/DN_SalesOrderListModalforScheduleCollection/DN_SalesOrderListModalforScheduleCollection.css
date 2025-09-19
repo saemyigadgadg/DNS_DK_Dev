@@ -1,0 +1,94 @@
+.THIS .slds-modal__container{
+  margin: 0 auto;
+  width: 70%;
+  max-width: 62rem;
+  min-width: 20rem;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+  opacity: 0.75;
+}
+
+/* Modal Body */
+
+.THIS .modal-body {
+  background-color: #F3F3F3;
+}
+
+.THIS .modal-body .top-card {
+  padding: 1rem 1.25rem;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 0.25rem;
+  margin: 0.75rem;
+  box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+
+/* Card 01 */
+
+.THIS .slds-modal__container .card-01 table{
+  border-left: 1px solid #D9D9D9;
+}
+.THIS .slds-modal__container .card-01 .table-wrap {
+  overflow: hidden;
+  overflow-y: scroll;
+  max-height: 40vh;
+}
+.THIS .slds-modal__container .card-01 table thead {
+  position: sticky;
+  top: -1px;
+  z-index: 3;
+}
+.THIS .slds-modal__container .card-01 table th{
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem 1rem; 
+  min-width: 8rem;
+  border: 1px solid #D9D9D9;
+}
+.THIS .slds-modal__container .card-01 table td{
+  padding: .25rem .5rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border: 1px solid #D9D9D9;
+}
+
+
+
+
+/* SLDS Custom */
+
+.THIS .card-01 .slds-input,
+.THIS .card-01 .slds-input_faux {
+  /* border: 1px solid #C9C9C9; */
+  border: none !important;
+  min-width: 12rem;
+}
+
+.THIS .slds-form-element__label {
+  display: none;
+}
+
+.THIS .slds-button_icon-border {
+  border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral{
+  border: 1px solid #c9c9c9 !important;
+}

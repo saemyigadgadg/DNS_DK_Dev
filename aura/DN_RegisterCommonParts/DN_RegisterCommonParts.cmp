@@ -1,0 +1,147 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 11-20-2024
+  @last modified by  : Hyerin Ro 
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-20-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="공통부품등록" access="global" controller="DN_RegisterCommonParts">
+
+    <!--Attribute-->
+    <aura:attribute name="recordId"            type="String" />
+    <aura:attribute name="isLoading"           type="Boolean" default="false" />
+    <aura:attribute name="productList"         type="List" />
+    <aura:attribute name="productName"         type="String" />
+    <aura:attribute name="productNo"           type="String" />
+    <aura:attribute name="commonPartsQuantity" type="Integer" />
+    <aura:attribute name="addNote"             type="String" />
+
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_RegisterCommonParts) {
+        width: 50rem;
+        max-width: calc(100vw - 5rem);
+        }
+        .slds-modal__content:has(.cDN_RegisterCommonParts) {
+        height:auto !important;
+        max-height:none !important;
+        padding: 0;
+        overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_RegisterCommonParts) {
+        padding:0;
+        }
+    </aura:html>
+
+    <!-- 📌 1. 공통부품 등록 -->
+    <div class="slds-modal__container slds-modal_large">
+        <div class="Register CommonParts">
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- 🍙 Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_T_RegisterCommonParts}</h2>
+                <!-- <div class="button-wrap">
+                    <lightning:buttonGroup>
+                        <lightning:button name="searchCommonParts" label="Search" onclick="{!c.clickSearch}" />
+                    </lightning:buttonGroup>
+                </div> -->
+            </header>
+
+            <!-- 🍙 Modal Body -->
+            <div class="modal-body slds-modal__content">
+                <div class="card-01 top-card">
+                    <div class="field-wrap">
+                        <p>{!$Label.c.DNS_T_ProductCodeName}</p>
+                        <div class="input-wrap">
+                            <lightning:recordEditForm objectApiName="CommonPart__c">
+                                <lightning:inputField fieldName="Product__c" name="prodName" value="{!v.productName}"
+                                    variant="label-hidden" onchange="{!c.selectData}" />
+                                    <div class="slds-form-element__help" id="error-message-id-49">{!$Label.c.DNS_M_CommonPartsMessage}</div>
+                            </lightning:recordEditForm>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-02 top-card">
+                    <div class="table-02">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                            <colgroup>
+                                <col width="5%" />
+                                <col width="25%" />
+                                <col width="25%" />
+                                <col width="15%" />
+                                <col width="30%" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title=""></div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_PartsCode}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_PartsName}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Quantity}</div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="">{!$Label.c.DNS_C_Remarks}</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.productList}" var="pdList" indexVar="j">
+                                    <tr>
+                                        <td scope="row">
+                                            <div>
+                                                <lightning:buttonicon iconName="utility:delete" accesskey="{!j}"
+                                                    onclick="{!c.commonPartsDelete}" />
+                                            </div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!pdList.ProductNo}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!pdList.ProductName}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>
+                                                <lightning:input type="number" value="{!pdList.prodQuantity}" accesskey="{!j}" onchange="{!c.updateQuantity}" 
+                                                step="1" min="1" max="99999"/>
+                                            </div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>
+                                                <lightning:textarea value="{!pdList.prodNote}" accesskey="{!j}" maxlength="255" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🍙 Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="{!$Label.c.DNS_B_Cancel}" title="Brand action" onclick="{!c.closeModal}" />
+                <lightning:button variant="brand" label="{!$Label.c.DNS_B_Register}" title="Brand action" onclick="{!c.registerCommonParts}" />
+            </footer>
+        </div>
+    </div>
+</aura:component>

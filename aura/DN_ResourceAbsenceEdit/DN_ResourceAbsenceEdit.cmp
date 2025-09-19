@@ -1,0 +1,239 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 02-24-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-29-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global" description="출동인원관리(부재)" controller="DN_PortalServiceController">
+    <!--Event-->
+    <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" /> <!-- 로딩 -->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="isDisabled" type="Boolean"  default="true"/>
+    <aura:attribute name="isBranch" type="Boolean"  />
+    <aura:attribute name="typeList" type="List" default="[]"/>
+    <aura:attribute name="typeValue" type="String" />
+    <aura:attribute name="isMorning" type="Boolean" default="false" /> 
+    <aura:attribute name="isAfter" type="Boolean" default="false" /> 
+    <aura:attribute name="isNight" type="Boolean" default="false" /> 
+    <aura:attribute name="isload" type="Boolean" default="false" /> 
+    
+    <div class="resourceAbsenceCreate">
+        <div aura:id="resourceAbsenceCreate" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container slds-modal_large">
+                <!-- 🚩Loading Spinner -->
+                <aura:if isTrue="{! v.isLoading }">
+                    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                </aura:if>
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">출동인원관리(부재)</h2>
+                    <!-- Close Button -->
+                    <button class="close_button_template slds-modal__close">
+                        <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                            title='close' name="closeModal" onclick="{!c.closeModal}"> </lightning:icon>
+                    </button>
+                </header>
+                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="ResourceAbsence" recordId="{!v.recordId}" onsubmit="{!c.handleSubmit}" onsuccess="{!c.handleOnSuccess}" ><!--onload="{!c.handleCreateLoad}"-->
+                    <!-- Modal Body -->
+                    <div class="modal-body slds-modal__content">
+                        <div class="card-01 top-card">
+                            <!-- <div class="card-header">
+                                <h3>출동인원관리(부재) Detail</h3>
+                            </div> -->
+                            <div class="card-body">
+                                <div class="field-wrap">
+                                    <p>작업자<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        <aura:if isTrue="{! v.isDisabled }">
+                                            <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="ResourceId"/>
+                                            <aura:set attribute="else">
+                                                <lightning:inputField variant="label-hidden" fieldName="ResourceId" required="true"
+                                                aura:id="resourceId" />
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                </div>
+                                <div class="field-wrap">
+                                    <p>유형<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        <aura:if isTrue="{! v.isDisabled }">
+                                            <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="Type" />
+                                            <aura:set attribute="else">
+                                                <lightning:combobox name="type" aura:id="type" value="{!v.typeValue}" variant="label-hidden"  options="{! v.typeList }" 
+                                                required="true"
+                                                />
+                                            </aura:set>
+                                        </aura:if>
+                                    </div>
+                                </div>
+                                <!-- 지사-->
+                                <aura:if isTrue="{! v.isBranch }">
+                                    <div class="field-wrap">
+                                        <p>장비번호</p>
+                                        <div class="input-wrap">
+                                            <aura:if isTrue="{! v.isDisabled }">
+                                                <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="Equipment__c"/>
+                                                <aura:set attribute="else">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Equipment__c" 
+                                                    aura:id="equipment" />
+                                                </aura:set>
+                                            </aura:if>    
+                                        </div>
+                                    </div>
+                                    <div class="field-wrap">
+                                        <p>고객명</p>
+                                        <div class="input-wrap">
+                                            <aura:if isTrue="{! v.isDisabled }">
+                                                <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="AccountName__c"/>
+                                                <aura:set attribute="else">
+                                                    <lightning:inputField variant="label-hidden" fieldName="AccountName__c" 
+                                                    aura:id="accountName" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="field-wrap">
+                                            <p>기종</p>
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{! v.isDisabled }">
+                                                    <lightning:outputField aura:id="fieldSet" type="text" fieldName="MachineName__c" variant="label-hidden"  />
+                                                    <aura:set attribute="else">
+                                                        <lightning:inputField variant="label-hidden" fieldName="MachineName__c"
+                                                        aura:id="machineName" />
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="field-wrap">
+                                            <p>장비번호</p>
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{! v.isDisabled }">
+                                                    <lightning:outputField aura:id="fieldSet" type="text" variant="label-hidden" fieldName="EquipmentText__c" />
+                                                    <aura:set attribute="else">
+                                                        <lightning:inputField variant="label-hidden" fieldName="EquipmentText__c"
+                                                            aura:id="equipmentText" />
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                            
+                                        <div class="field-wrap">
+                                            <p>고객명</p>
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{! v.isDisabled }">
+                                                    <lightning:outputField aura:id="fieldSet" type="text" variant="label-hidden" fieldName="AccountNameText__c" />
+                                                    <aura:set attribute="else">
+                                                        <lightning:inputField variant="label-hidden" fieldName="AccountNameText__c"
+                                                            aura:id="accountNameText" />
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                        <div class="field-wrap grid-long">
+                                            <p>고객사 주소</p>
+                                            <div class="input-wrap">
+                                                <aura:if isTrue="{! v.isDisabled }">
+                                                    <lightning:outputField aura:id="fieldSet" type="text" variant="label-hidden" fieldName="AccountAddress__c" />
+                                                    <aura:set attribute="else">
+                                                        <lightning:inputField type="text" fieldName="AccountAddress__c" variant="label-hidden" aura:id="accountAddress" />
+                                                    </aura:set>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                <aura:if isTrue="{! v.isDisabled }">
+                                    <aura:set attribute="else">
+                                        <div class="field-wrap">
+                                            <div class="input-wrap">
+                                                <p>오전</p>
+                                                <lightning:input variant="label-hidden" type="checkbox"
+                                                    onchange="{!c.handleTimeChange}"  checked="{!v.isMorning}" />
+                                                <p>오후</p>
+                                                <lightning:input variant="label-hidden" type="checkbox"
+                                                    onchange="{!c.handleTimeChange}" checked="{!v.isAfter}" />
+                                                <p>야간</p>
+                                                <lightning:input variant="label-hidden" type="checkbox"
+                                                    onchange="{!c.handleTimeChange}" checked="{!v.isNight}" />
+                                            </div>
+                                        </div>
+                                        <div class="field-wrap">
+                                           
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <div class="field-wrap">
+                                    <p>시작 시간<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        <aura:if isTrue="{! v.isDisabled }">
+                                            <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="Start"/>
+                                            <aura:set attribute="else">
+                                                <lightning:inputField variant="label-hidden" fieldName="Start"
+                                                aura:id="startDate" required="true" />
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                </div>
+                                <div class="field-wrap">
+                                    <p>종료 시간<abbr class="slds-required" title="required">*</abbr></p>
+                                    <div class="input-wrap">
+                                        <aura:if isTrue="{! v.isDisabled }">
+                                            <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="End"/>
+                                            <aura:set attribute="else">
+                                                <lightning:inputField variant="label-hidden" fieldName="End"
+                                                aura:id="endDate" required="true" />
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                </div>
+                                <div class="field-wrap grid-long">
+                                    <p>상세내용</p>
+                                    <div class="input-wrap">
+                                        <aura:if isTrue="{! v.isDisabled }">
+                                            <lightning:outputField aura:id="fieldSet" variant="label-hidden" fieldName="Description"/>
+                                            <aura:set attribute="else">
+                                                <lightning:inputField variant="label-hidden" fieldName="Description"
+                                                aura:id="description" />
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </lightning:recordEditForm>
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <aura:if isTrue="{! v.isDisabled }">
+                        <lightning:button variant="neutral"  label="수정" title="Brand action" onclick="{!c.handleEdit}" />
+                        <aura:set attribute="else">
+                            <lightning:button variant="neutral" aura:id="editBtn" label="저장" title="Brand action" onclick="{!c.handleSave}" />
+                        </aura:set>
+                    </aura:if>
+                    <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.closeModal}" />
+                </footer>
+            </div>
+        </div>
+        <div aura:id="resourceAbsenceCreateBackGround" class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+
+
+</aura:component>

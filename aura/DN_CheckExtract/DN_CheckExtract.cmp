@@ -1,0 +1,71 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 11-11-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-11-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="lightning:isUrlAddressable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable,force:hasRecordId,force:hasSObjectName"
+    controller="DN_CampaignExtractConditionController">
+
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="recordId" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_CheckExtract) {
+            width: 34rem;
+            max-width: calc(100vw - 20rem);
+            min-width: 32rem;
+        }
+        .slds-modal__content:has(.cDN_CheckExtract) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_CheckExtract) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div aura:id="confirmModal" class="slds-fade-in-open">
+
+        <!-- background -->
+
+        <div class="slds-modal__container slds-modal_large">
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- Modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">추출</h2>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-body slds-modal__content slds-p-around_medium">
+                <div class="icon-wrap">
+                    <lightning:icon iconName='utility:filterList' alternativeText='download' size='Large'
+                        title='download'>
+                    </lightning:icon>
+                </div>
+                <p>캠페인을 추출하시겠습니까? </p>
+            </div>
+
+            <!-- Modal Footer -->
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelExtract}" />
+                <lightning:button variant="brand" label="확인" title="Brand action" onclick="{!c.campaignExtract}" />
+            </footer>
+        </div>
+    </div>
+
+</aura:component>

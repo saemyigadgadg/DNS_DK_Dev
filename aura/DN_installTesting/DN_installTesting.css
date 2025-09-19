@@ -1,0 +1,615 @@
+.THIS  .equipspec-btn {
+  position: absolute;
+  top: -76px;
+  right: 2rem;
+}
+/* Header */
+  .THIS .header {
+    display: flex;
+    justify-content: space-between;
+  align-items: center;
+    padding: 0.75rem 1rem;
+    margin: 0 !important;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+    border-radius: 0.25rem 0.25rem 0 0 !important; 
+  }
+  
+  .THIS .header .title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .THIS .header .button-wrap {
+    min-width: 23rem;
+  }
+  
+  .THIS .header .button-wrap .slds-button {
+  padding: 0 0.75rem;
+  }
+  
+  .THIS .header .button-wrap .slds-button__icon_left {
+  margin-right: 0.25rem;
+  }
+  
+  .THIS .header h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-left: 0.5rem;
+  }
+
+  
+  /* Body */
+  
+  .THIS .body {
+    background-color: #fff !important;
+    border: 0 !important;
+    border-radius: 0 0 0.25rem 0.25rem;
+  }
+  
+  .THIS .body .read-card {
+    padding: 0.75rem;
+    padding-top: 0;
+    background-color: #f3f3f3;
+    border: 1px solid #d9d9d9;
+    border-radius: 0 0 0.25rem 0.25rem;
+    border-top: 0;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+  }
+  
+  .THIS .body .read-card>div:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+  
+  .THIS .body .input-card {
+    margin-top: 2rem;
+    background-color: #f3f3f3;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+  }
+  
+  .THIS .body .input-card .card-02 {
+    margin-bottom: 0.75rem;
+  }
+  
+  .THIS .body .input-card .accordion:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+  
+  .THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+  }
+  
+  /* Card Header */
+  
+  .THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+  }
+
+
+  /* common top-card */
+  .THIS .card-body{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+  @media screen and (max-width:760px) {
+    .THIS .card-body {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .THIS .top-card .field-wrap {
+    padding: .5rem 0 .25rem 0;
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  .THIS .top-card .field-wrap.non-read {
+    border-bottom: 0;
+  }
+  
+  .THIS .card-body .field-wrap p {
+    display: flex;
+    font-weight: 600;
+    gap: 1rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+  }
+  .THIS .top-card .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .25rem;
+    min-height: 1.25rem;
+  }
+
+  .THIS .top-card .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+  }
+  
+  .THIS .top-card .field-wrap:last-of-type .input-wrap .slds-form-element {
+    width: unset;
+    flex: auto;
+  }
+  
+  .THIS .top-card .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+  }
+  
+  .THIS .top-card .input-wrap .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+  }
+  
+  .THIS .top-card .input-wrap .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0;
+  }
+
+  /* card-ticket */
+.THIS .card-ticket .card-body .grid-long {
+  grid-column: 1/4;
+}
+
+.THIS .card-ticket .card-body .grid-medium {
+  grid-column: 3/5;
+}
+
+@media screen and (max-width:760px) {
+  .THIS .card-ticket .card-body .grid-long {
+    grid-column: 1/3;
+  }
+  .THIS .card-ticket .card-body .grid-medium {
+    grid-column: 1/3;
+  }
+}
+
+.THIS .card-ticket .card-body .field-wrap p {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* card 02 */
+.THIS .card-02 .field-wrap {
+  border-bottom: 0;
+}
+
+/* 확정 후 읽기 전용 */
+.THIS .read-card.confirmed {
+  border-bottom: 0;
+  padding-bottom: 0;
+  border: 0.25rem 0.25rem 0 0 ;
+}
+.THIS .header.confirmed {
+  display: none;
+}
+.THIS .input-card.confirmed {
+  margin-top: 0;
+  border-top: 0;
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+.THIS .field-wrap.confirmed .input-wrap {
+  min-height: 1.5rem;
+  border-bottom: 1px solid #d4d4d4;
+  border-radius: 0.25rem;
+}
+
+  /* accordion */
+  .THIS .accordion {
+  padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+  }
+
+  .THIS .accordion .card-header {
+    margin-bottom: 0.75rem;
+  }
+
+.THIS .accordion .accordion-header span {
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+}
+
+.THIS .accordion .field-wrap p {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+.THIS .accordion .accordion-body {
+  padding: 0 0.75rem;
+}
+/* 
+  .THIS .body .accordion .accordion-body:has(lightning-file-upload) {
+    display: block;
+  }
+
+  .THIS .body .accordion .accordion-body:has(.table-wrap) {
+    display: block;
+  }
+  
+  .THIS .body .accordion .accordion-body .field-wrap {
+    padding: .5rem 0 .25rem 0;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  
+  .THIS .body .accordion .accordion-body .field-wrap p {
+    font-weight: 600;
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+  }
+  
+  .THIS .body .accordion .accordion-body .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    min-height: 1.5rem;
+  }
+  
+  .THIS .body .accordion .accordion-body .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+  }
+  
+  .THIS .body .accordion .accordion-body .field-wrap:last-of-type .input-wrap .slds-form-element {
+    width: unset;
+    flex: auto;
+  } */
+
+  /* accordion table */
+  .THIS .accordion .table-header {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    background-color: #fff;
+  }
+  .THIS .accordion .table-header .button-wrap {
+    position: absolute;
+    top: -36px;
+  }
+  .THIS .accordion .table-wrap {
+    overflow-x: clip;
+  }  
+  .THIS .accordion .table-wrap table {
+    border-top: 1px solid #c9c9c9; 
+  }
+  .THIS .accordion .table-wrap tr th:first-child {
+    border-right: 1px solid #c9c9c9;
+  }
+  .THIS .accordion .table-wrap .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+  }
+  .THIS .accordion .table-wrap .input-wrap lightning-input {
+    width: 100%;
+    border-radius: 0.25rem;
+  }
+  .THIS .accordion .table-wrap .input-wrap  lightning-textarea{
+    width: 100%;
+  }
+  .THIS .accordion .table-wrap .clear-btn {
+    position: absolute;
+    right: 37px;
+    border: none;
+  }
+  .THIS .accordion .table-wrap td:has(.slds-checkbox){
+    width: 40px;
+    border-right: 1px solid #c9c9c9;
+  }
+  .THIS .accordion .table-wrap td:first-child .input-wrap  lightning-input {
+    border: none;
+  }
+  .THIS .accordion .table-wrap .input-wrap .slds-form-element__label {
+    display: none;
+  }
+  
+
+  /* file upload */
+.THIS .body .accordion .field-wrap .input-wrap:has(lightning-file-upload) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem;
+  }
+  
+  .THIS .body .accordion .field-wrap .input-wrap lightning-file-upload  .slds-form-element__label {
+    display: none;
+  }
+
+  /* accordion-01 */
+  .THIS .accordion-01 .field-wrap.non-read {
+    padding: 0 !important;
+    border-bottom: none !important;
+  }
+
+  .THIS .accordion-01 .field-wrap p {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .THIS .accordion-01 .field-wrap span:last-child {
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+
+  /* accordion-02 */
+  .THIS .accordion-02 .field-wrap {
+    border-bottom: none !important;
+  }
+
+  .THIS .accordion-02 .file-wrap {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+  
+  .THIS .accordion-02 .file-wrap .file-name {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background-color: #d0ebff;
+    border-radius: 10rem;
+  }
+  
+  .THIS .accordion-02 .file-wrap .file-name lightning-icon {
+    cursor: pointer;
+  }
+
+  /* accordion-03 */
+.THIS .accordion-03 .card-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+  /* file upload */
+.THIS .accordion .field-wrap .input-wrap:has(lightning-file-upload) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #c9c9c9;
+  border-radius: 0.25rem;
+}
+
+.THIS .accordion .field-wrap .input-wrap lightning-file-upload  .slds-form-element__label {
+  display: none;
+}
+
+  /* accordion-04 */
+  .THIS .accordion-04 .table-wrap table {
+    border: 1px solid #d9d9d9;
+  }
+
+  .THIS .accordion-04 .table-wrap table th{
+    border: 1px solid #d9d9d9;
+  }
+
+  .THIS .accordion-04 .table-wrap table td{
+    border: 1px solid #d9d9d9;
+  }
+
+  .THIS .accordion-04 .table-wrap table tfoot th, .THIS .accordion-04 .table-wrap table tfoot td {
+    background-color: #fff9db;
+  }
+
+  .THIS .accordion-04 .table-wrap .input-wrap lightning-input {
+    max-width: 240px;
+  }
+  .THIS .accordion-04 .input-wrap .slds-form-element:has(.slds-checkbox) {
+    width: 30px !important;
+  }
+
+  .THIS .accordion-04 .input-wrap p {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* accordion-05 */
+  .THIS .accordion-05 lightning-checkbox-group .slds-form-element__control {
+    display: flex;
+    gap: 1rem;
+  }
+  .THIS .accordion-05 lightning-checkbox-group .slds-form-element__control .slds-checkbox__label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .THIS .accordion-05 lightning-checkbox-group .slds-form-element__label {
+    display: inline !important;
+  }
+
+  /* 확정 후 읽기 전용 */
+  .THIS table.confirmed .input-wrap p.bottom {
+    border-bottom: 1px solid #d9d9d9;
+  }
+    
+    /* Table Design */
+    /* .THIS .table-wrap .table-body {
+      position: relative;
+      max-height : 15rem;
+      overflow: hidden;
+      overflow-y: scroll;
+    } */
+    .THIS .table-wrap table th {
+      position: sticky;
+      top: -1px;
+      z-index: 3;
+    }
+    .THIS .body table {
+      border-top: 1px solid #c9c9c9;
+    }
+    
+    .THIS .body table tr {
+      border-bottom: 1px solid #c9c9c9;
+    }
+    
+    .THIS .body table th {
+      background-color: #f3f3f3;
+      color: #444;
+      font-weight: 700;
+      line-height: normal;
+      text-align: center;
+      text-wrap: nowrap;
+      padding: .25rem 0.75rem;
+      border-bottom: 1px solid #D9D9D9;
+      text-wrap: nowrap;
+    }
+    
+    .THIS .body table td {
+      background-color: #fff;
+      padding: .25rem 0.75rem;
+      line-height: normal;
+      color: #444;
+      text-wrap: nowrap;
+      border-bottom: 1px solid #D9D9D9;
+    }
+    
+    .THIS .body table th+th,
+    .THIS .body table td+td {
+      border-left: 1px solid #D9D9D9;
+    }
+    .THIS .body .table-02 table td:last-of-type{
+      border-right: none;
+    }
+    
+    .THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+      margin-right: 0 !important;
+    }
+    
+    .THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+      display: none;
+    }
+
+    /* Table Class */
+  
+  .THIS .center,
+  .THIS .center .slds-input {
+    text-align: center !important;
+  }
+  
+  .THIS .left,
+  .THIS .left .slds-input {
+    text-align: left !important;
+  }
+  
+  .THIS .right,
+  .THIS .right .slds-input {
+    text-align: right !important;
+  }
+  
+  /* SLDS Table datepicker */
+  
+  .THIS .body .slds-datepicker__month td {
+    border: none !important;
+    background-color: #fff !important;
+    padding: .25rem !important;
+    font-size: .75rem !important;
+  }
+  
+  .THIS .body .slds-datepicker__month th {
+    padding: .5rem !important;
+    font-weight: 400 !important;
+    background-color: #fff !important;
+    border: none !important;
+  }
+  
+  .THIS .body .slds-datepicker__month tr {
+    border-bottom: none !important;
+  }
+
+  /* modal */
+  .THIS .modal-body .top-card .field-wrap {
+    border-bottom: 0;
+  }
+
+  /* Launching Excellence Modal */
+  .THIS c-d-n_-launching-excellence-btn{
+    position: absolute;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    z-index: 1001;
+  }
+
+  .THIS c-d-n_-launching-excellence-btn:has(iframe) {
+    width: 1440px;
+  }
+
+  @media screen and (max-width:1900px) {
+    .THIS c-d-n_-launching-excellence-btn:has(iframe) {
+      width: 1240px;
+      top: -12rem;
+    }
+  }
+  /* .THIS.slds-card:has(c-d-n_-launching-excellence-btn) {
+    
+  }
+
+  .THIS c-d-n_-launching-excellence-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 1001;
+  }
+
+  .THIS c-d-n_-launching-excellence-btn iframe {
+    height: 604px;
+  }
+
+  @media screen and (max-width:1600px) {
+    .THIS c-d-n_-launching-excellence-btn {
+      transform: translateY(-31%);
+    }
+
+    .THIS c-d-n_-launching-excellence-btn iframe {
+      height: 550px;
+    }
+  }
+
+  .THIS .launchingExcellenceBtn:has(lightning-radio-group){
+    width: 480px;
+  }
+
+  .THIS .launchingExcellenceBtn:has(iframe){
+    width: 1440px;
+  }
+
+  @media screen and (max-width:1600px) {
+    .THIS .launchingExcellenceBtn:has(iframe){
+      width: 1024px;
+    }
+  } */
+
+  .THIS .slds-backdrop {
+    z-index: 1000;
+  }
+
+  .THIS .error-border .slds-input {
+    border: 2px solid red;
+    border-radius: 0.25rem;
+  }

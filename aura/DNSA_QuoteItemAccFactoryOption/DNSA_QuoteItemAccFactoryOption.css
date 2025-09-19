@@ -1,0 +1,263 @@
+/* Layout */
+
+.THIS {
+    position: relative;
+    height: 100%;
+}
+
+.THIS .slds-modal__container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: unset;
+    min-width: unset;
+}
+
+.THIS .slds-modal__content {
+    max-height: calc(100vh - 11rem);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Common */
+
+.THIS .section-01,
+.THIS .section-02,
+.THIS .selected-section {
+    border: 1px solid #c9c9c9;
+    border-radius: 5px;
+}
+
+.THIS td .slds-grid_align-end {
+    justify-content: flex-start;
+}
+
+/* Section 01 */
+
+.THIS .section-01 {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: #F3F3F3;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.THIS .category_combobox {
+    display: flex;
+    gap: 1rem;
+    flex: auto;
+}
+
+.THIS .category_combobox .slds-form-element {
+    width: 50%;
+}
+
+.THIS .category_combobox .lightning-combobox {
+    padding: 0;
+    margin: 0;
+}
+
+/* Section 02 */
+
+.THIS .section-02 {
+    /* flex: 1 auto; */
+    overflow: auto;
+    /* max-height: 30vh; */
+    height: 30vh;
+    max-height: 48rem;
+}
+
+.THIS .section-02 .slds-scrollable_y {
+    height: 17rem;
+}
+
+.THIS .section-02 .slds-table_header-fixed_container {
+    border-radius: 5px;
+}
+
+/* Down Icon */
+
+.THIS .down_icon_section {
+    text-align: center;
+    padding: 0.25rem 0;
+}
+
+/* Section 03+04 :: Selected Sections */
+
+.THIS .selected-section {
+    /* flex: auto; */
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 38vh;
+    max-height: 50rem;
+}
+
+.THIS .selected-section .table-wrap {
+    overflow: auto;
+    flex: auto;
+}
+
+.THIS .selected-section .table-wrap table {
+    border-collapse: separate;
+}
+
+.THIS .selected-section .table-wrap thead {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 3;
+}
+
+.THIS .selected-section .table-wrap thead th {
+    border-bottom: 1px solid #c9c9c9;
+    border-top: none;
+}
+
+.THIS .selected-section .table-wrap thead th+th {
+    border-left: 1px solid #aeaeae;
+}
+
+.THIS .selected-section .table-wrap tbody tr:first-child td {
+    border-top: none;
+}
+
+.THIS .selected-section table .editable .slds-truncate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.THIS .selected-section table .editable:hover {
+    background-color: #fff;
+}
+
+.THIS .selected-section table .editable .button-wrap {
+    display: none;
+}
+
+.THIS .selected-section table .editable:hover .button-wrap {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.THIS .selected-section table .editable:after {
+    content: '';
+}
+
+.THIS .selected-section .slds-scrollable_x,
+.THIS .selected-section .slds-scrollable_y {
+    overflow: hidden;
+    overflow-y: hidden;
+}
+
+.THIS .selected-section .section-header {
+    background-color: #f3f3f3;
+    padding: 0.5rem;
+    display: flex;
+    align-items: feComponentTransfer;
+    gap: 0.75rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .selected-section .slds-combobox_container.slds-has-selection .slds-combobox__input-value {
+    box-shadow: none;
+}
+
+.THIS .selected-section .section-header h1 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.THIS .selected-section .table-wrap table {
+    table-layout: fixed;
+}
+
+.THIS .selected-section .slds-popover {
+    width: 6rem;
+}
+
+.THIS .section-03 {
+    margin-bottom: 1rem;
+}
+
+/* SLDS Styles */
+
+.THIS .selected-section td .slds-combobox_container {
+    width: 12rem;
+}
+
+.THIS .selected-section td .slds-has-error .slds-form-element__help {
+    text-wrap: auto;
+}
+
+.THIS .selected-section td .slds-button_icon-container {
+    height: 1.75rem !important;
+}
+
+.THIS .selected-section td .slds-input {
+    min-height: 1.75rem !important;
+    line-height: 1.75 !important;
+}
+
+/* SLDS Table datepicker */
+
+.THIS .slds-datepicker__month td {
+    border: none;
+    background-color: #fff;
+    padding: .25rem;
+    font-size: .75rem;
+}
+
+.THIS .slds-datepicker__month th {
+    padding: .5rem;
+    font-weight: 400;
+    background-color: #fff;
+    border: none;
+}
+
+.THIS .slds-datepicker__month tr {
+    border-bottom: none;
+}
+
+/* Mobile Media Query */
+
+@media all and (max-width: 479px) {
+    .THIS .card-01 {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .THIS .selected-section .section-header {
+        touch-action: none;
+    }
+}
+
+/* Section Height Fixing Media Query */
+
+@media all and (max-height: 860px) {
+    .THIS .section-02 .slds-scrollable_y {
+        height: 11rem;
+    }
+}
+
+/* Editing */
+
+.THIS .selected-section.prev {
+    opacity: 0.5;
+    margin-top: 1rem;
+}

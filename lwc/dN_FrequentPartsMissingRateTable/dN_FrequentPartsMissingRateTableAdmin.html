@@ -1,0 +1,81 @@
+<template>
+  <template if:true={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+  </template>
+
+  <div class="table-wrap" style="height: calc(100vh - 27rem); overflow: scroll;">
+    <table aria-label="Example table of Opportunities with vertical borders">
+      <thead style="position: sticky; z-index: 3; top: -1px;">
+        <tr class="slds-line-height_reset">
+          <th>Sold-to</th>
+          <th>SO Type</th>
+          <th>Doc. Date</th>
+          <th>SO No.</th>
+          <th>Item</th>
+          <th>Order Material</th>
+          <th>ABC Ind.</th>
+          <th>Status</th>
+          <th>Supply Material</th>
+          <th>ABC Ind.</th>
+          <th>Status</th>
+          <th>Supply Material Description</th>
+          <th>Order Qty</th>
+          <th>Price of Unit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template for:each={poData} for:item="sample" for:index="i">
+          <tr key={sample.i}>
+            <!-- SO Type rowspan -->
+            <td rowspan={sample.totalItems} class={sample.isHidden}>
+              <div class="slds-text-align_center">{sample.dealerName}</div>
+            </td>
+            <td rowspan={sample.totalItems} class={sample.isHidden}>
+              <div class="slds-text-align_center">{sample.soType}</div>
+            </td>
+            <!-- Doc. Date rowspan -->
+            <td rowspan={sample.totalItems} class={sample.isHidden}>
+              <div class="slds-text-align_center">{sample.docDate}</div>
+            </td>
+            <!-- SO No. rowspan -->
+            <td rowspan={sample.totalItems} class={sample.isHidden}>
+              <div class="slds-text-align_left">{sample.soNo}</div>
+            </td>
+            <td class="slds-text-align_left">{sample.item}</td>
+            <td class="slds-text-align_left">{sample.orderMaterial}</td>
+            <td class="slds-text-align_center">{sample.orderAbc}</td>
+            <td class="slds-text-align_center">{sample.orderStatus}</td>
+            <td class="slds-text-align_left">{sample.supplyMaterial}</td>
+            <td class="slds-text-align_center">{sample.supplyAbc}</td>
+            <td class="slds-text-align_center">{sample.supplyStatus}</td>
+            <td class="slds-text-align_left">{sample.supplyDesc}</td>
+            <td class="slds-text-align_right">{sample.qtyUnit}</td>
+            <td class="slds-text-align_right">
+              <lightning-formatted-number value={sample.unitPerPrice}></lightning-formatted-number>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+  <div class="table-wrap tfoot-table">
+    <table>
+      <tfoot>
+        <tr>
+          <th class="right" colspan="10">Rate by Order</th>
+          <th>Order Material</th>
+          <td>{rateOrderPerOrder}%</td>
+          <th class="right">Supply Material</th>
+          <td>{rateOrderPerSupply}%</td>
+        </tr>
+        <tr>
+          <th class="right" colspan="10">Rate by Items</th>
+          <th>Order Material</th>
+          <td>{rateItemPerOrder}%</td>
+          <th class="right">Supply Material</th>
+          <td>{rateItemPerSupply}%</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</template>

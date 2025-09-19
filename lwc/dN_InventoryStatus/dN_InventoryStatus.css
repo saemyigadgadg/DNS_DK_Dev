@@ -1,0 +1,75 @@
+/* Card 01 */
+.card-01{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+  
+  
+  /* Table Design */
+  
+.container table tr{    
+    border-bottom: 1px solid #c9c9c9;
+}
+.container table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+.container table td{
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+.container table th+th,
+.container table td+td{
+    border-left: 1px solid #D9D9D9;
+}
+.container table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux{
+    margin-right: 0 !important;
+  }
+.container table .slds-checkbox .slds-checkbox__label .slds-form-element__label{
+    display: none;
+}
+  
+  /* Readonly Input Border Remover */
+  
+.container table .slds-input[readonly]{
+    border: none;
+}
+  
+  /* Table Class */
+  
+.center, .center .slds-input{text-align: center !important;}
+.left, .left .slds-input{text-align: left !important;}
+.right, .right .slds-input{text-align: right !important;}
+  
+  /* 📌 Sticky Tables */
+  
+.container .table-wrap{
+    display: flex;
+}
+  
+  /* Sticky : Table 01 */
+  
+.container .table-01 {
+    flex: 2;
+    border-right: 1px solid #d9d9d9
+}
+  
+  /* Sticky : Table 02 */
+  
+.container .table-02{
+    flex: 3;
+    overflow-x: scroll;
+}

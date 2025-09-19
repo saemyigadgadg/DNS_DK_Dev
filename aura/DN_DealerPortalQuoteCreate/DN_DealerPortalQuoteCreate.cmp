@@ -1,0 +1,257 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-07-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-12-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable"
+  description="견적서 생성"
+  extends="c:DN_Helper"
+  controller="DN_DealerPortalQuoteCreateController"
+  >
+
+  <!-- attribute -->
+  <aura:attribute name="isSpinner" type="Boolean" default="false" />
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="userInfo" type="Object" />
+  <aura:attribute name="requiredParams" type="List" description="견적 헤더 정보 필수값"/>
+  <aura:attribute name="headerParams" type="Object" description="견적 헤더의 정보"/>
+  <aura:attribute name="partsList" type="List" />
+  <aura:attribute name="discountRate" type="Integer" default="0" description="할인율" />
+  <aura:attribute name="isRenderDiscountRate" type="Boolean" default="true" />
+  <aura:attribute name="isDiscountModal" type="Boolean" default="false" description="할인 모달" />
+  <aura:attribute name="excelUploadModal" type="Boolean" default="false" description="엑셀 업로드 모달" />
+  <aura:attribute name="excelUploadTemplate" type="Object" description="엑셀 업로드 템플릿" />
+  <aura:attribute name="quoteTotal" type="Decimal" default="0" description="견적서 총 합계" />
+  <aura:attribute name="selectedParts" type="List" default="[]" />
+  <aura:attribute name="selectedPartsIndex" type="Integer" description="partsList 체크 속성" />
+  <aura:attribute name="filter" type="Object" />	
+
+  <!-- Navigation -->
+  <lightning:navigation aura:id="navService"/>
+
+  <!-- LMS  -->
+  <lightning:messageChannel type="DealerPortalLMC__c"
+            onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+  <!-- Event -->
+  <aura:registerEvent name="cmpEvent" type="c:DN_HandlerEvent" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <!-- 부품번호/대체품 Modal -->
+  <div aura:id="SearchProductNumber"></div>
+
+  <aura:if isTrue="{!v.isSpinner}">
+        <lightning:spinner alternativeText="Loading" size="small" />
+  </aura:if>
+
+  <div class="card-header">
+    <h2>Parts List</h2>
+    <div class="button-wrap">
+      <lightning:button iconName="utility:add" name="searchItems" label="추가" onclick="{!c.addParts}" />
+      <lightning:button iconName="utility:delete" name="searchItems" label="삭제" onclick="{!c.deleteParts}" />
+      <lightning:button iconName="utility:refresh" name="searchItems" label="Simulation" onclick="{!c.simulation}" />
+      <div class="discount-wrap">
+        <lightning:button iconName="utility:discounts" name="searchItems" label="할인" onclick="{!c.discountParts}" />
+        <!-- 할인 MODAL (위치조정 이슈로 여기에 집어넣었습니다.)-->
+        <aura:if isTrue="{!v.isDiscountModal}">
+          <section class="slds-modal slds-fade-in-open discount-Modal" role="dialog">
+            <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">할인율 등록</h2>
+              </header>
+              <div class="slds-modal__content">
+                <div class="card-modal top-card">
+                  <div class="field-wrap">
+                    <p>할인율(%)</p>
+                    <div class="input-wrap">
+                      <!-- <lightning:input type="text" value="{!v.discountRate}" variant="label-hidden" onchange="{!c.handlediscountRate}"/> -->
+                      <aura:if isTrue="{!v.isRenderDiscountRate}">
+                        <lightning:input type="number" step="0.1" value="{!v.discountRate}" variant="label-hidden" onchange="{!c.handlediscountRate}"/> 
+                      </aura:if>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick="{!c.discountConfirm}">확인</button>
+                <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">Cancel</button>
+              </footer>
+            </div>
+          </section>
+        </aura:if>
+      </div>
+      <div class="excelModalButton">
+        <lightning:button iconName="utility:upload" name="searchItems" label="업로드" onclick="{!c.openUploadModal}" />
+        <!-- 엑셀 업로드 -->
+        <aura:if isTrue="{!v.excelUploadModal}">
+          <div aura:id="excelModal" class="slds-modal slds-fade-in-open excelModal">
+            <div class="slds-modal__container slds-modal_large">
+              <div>
+                <!-- Header -->
+                <header class="slds-modal__header">
+                  <h2 class="slds-text-heading_medium">엑셀 업로드</h2>
+                  <!-- Close Button -->
+                  <button class="close_button_template slds-modal__close">
+                    <lightning:icon iconName='utility:close' alternativeText='close' size='small' title='close'
+                      name="closeModal" onclick="{!c.closeUploadExcel}"></lightning:icon>
+                  </button>
+                </header>
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                  <c:DN_DealerPortalExcelUploadTemplate buttonLabel="업로드 양식 다운로드" uploadName="DealerQuoteTemplate" uploadTemplate="{!v.excelUploadTemplate}" >
+                  </c:DN_DealerPortalExcelUploadTemplate>
+                  <p>* Upload file form</p>
+                  <p>- Use header information.</p>
+                  <div class="file-input">
+                    <lightning:input type="file" label="Upload Excel File" onchange="{!c.uploadExcel}"
+                      accept=".xlsx, .xls" />
+                  </div>
+
+                </div>
+                <footer class="slds-modal__footer">
+                  <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                    onclick="{!c.closeUploadExcel}" />
+                </footer>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-wrap">
+      <table>
+        <colgroup>
+          <col width="1%"/>
+          <col width="1%" />
+          <col width="5%" />
+          <col width="15%" />
+          <col width="15%" />
+          <col width="5%" />
+          <col width="5%" />
+          <col width="5%" />
+          <col width="5%" />
+          <col width="10%" />
+          <col width="10%" />
+          <col width="10%" />
+          <col width="15%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="add" scope="col">
+              <lightning:buttonIcon iconName="utility:add" alternativeText="Add" title="Add" size="small"
+                  onclick="{!c.addPart}" />
+            </th>
+            <th>
+              <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+            </th>
+            <th>항목</th>
+            <th>주문품번</th>
+            <th>공급품번</th>
+            <th>Check</th>
+            <th>UOM</th>
+            <th>품명</th>
+            <th>수량</th>
+            <th>고객판매가</th>
+            <th>할인판매가</th>
+            <th>할인판매금액</th>
+            <th>할인율(%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+            <tr>
+              <td data-label="Delete" class="add center">
+                <lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" title="Dash" size="small" accesskey="{!j}" onclick="{!c.deletePartsProduct}" />
+              </td>
+              <td>
+                <lightning:input type="checkbox" aura:id="checkbox" 
+                  checked="{!parts.isSelected}" variant="label-hidden" />
+                  <!-- onchange="{! c.handleCheckboxChange }" -->
+              </td>
+              <td data-label="항목" class="center" name="itemNo" aura:id="itemNoId">
+                {!parts.itemSeq}</td>
+              <td data-label="주문품번">
+                <div class="input-wrap partName" title="주문품번">
+                  <c:dN_DealerPortalInputBox oninputchange="{!c.handleInputChange}" aura:id="productCode" tableIndex="{!j}" name="{!j}" istable="true" uuid="{!v.uuid}" filter="{!v.filter}" style="width: 100%;" />
+                  <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Product Number"
+                    onclick="{!c.clearOrderNumber}" accesskey="{!j}" name="orderPartNo" class="clear-btn"  />
+                  <span
+                    class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight">
+                    <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                      onclick="{!c.openSearchProductNumber}" accesskey="{!j}" />
+                  </span>
+                </div>
+              </td>
+              <td data-label="공급품번">{!parts.replacingPartName}</td>
+              <aura:if isTrue="{!parts.replaceSize > 1}">
+                <td rowspan="{!parts.replaceSize}">
+                  <lightning:input type="checkbox" value="{!parts.check}" variant="label-hidden" class="center" accesskey="{!j}" onchange="{!c.swapTargetPart}" />
+                </td>
+              </aura:if>
+              <aura:if isTrue="{!parts.replaceSize == 1}">
+                <td>
+                  <lightning:input type="checkbox" value="{!parts.check}" variant="label-hidden" class="center" disabled="true" />
+                </td>
+              </aura:if>
+              <td>
+                {!parts.unit}
+              </td>
+              <td>
+                {!parts.partDetails}
+              </td>
+              <td class="quantity">
+                <div onkeypress="{!c.handleKeyPress}">
+                  <lightning:input type="text" value="{!parts.quantity}" accesskey="{!j}" onchange="{!c.ChangeQuantity}"
+                    variant="label-hidden" disabled="{!parts.disabled}" />
+                </div>
+              </td>
+              <td class="right" value="{!parts.customerPrice}">
+                <lightning:formattedNumber name="customerPrice" value="{!parts.customerPrice}" />                
+              </td>
+              <td class="right" value="{!parts.discountPrice}">
+                <lightning:formattedNumber name="discountPrice" value="{!parts.discountPrice}" />
+              </td>
+              <td class="right" value="{!parts.discountAmount}">
+                <lightning:formattedNumber name="discountAmount" value="{!parts.discountAmount}" />
+              </td>
+              <td>
+                <aura:if isTrue="{!parts.isRendered}">
+                  <lightning:input type="number" min="0" step="0.1" value="{!parts.discountRate}" accesskey="{!j}" onchange="{!c.ChangeDiscount}"
+                    variant="label-hidden" disabled="{!parts.disabled}"/>
+                </aura:if>
+              </td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap foot-table">
+      <table>
+        <colgroup>
+          <col width="80%" />
+          <col width="20%" />
+        </colgroup>
+        <tfoot>
+          <td class="right">
+            견적서 총 합계
+          </td>
+          <td>
+            <lightning:formattedNumber name="quoteTotal" value="{!v.quoteTotal}" />
+          </td>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+
+
+
+</aura:component>

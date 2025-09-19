@@ -1,0 +1,274 @@
+/* Header */
+
+.THIS .slds-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+}
+
+.THIS .slds-card__header .slds-media_center {
+    gap: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 16rem);
+    padding: 0.75rem;
+    gap: 1.5rem;
+}
+
+/* Card 01 */
+
+.THIS .body .card-01 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* gap: 1rem; */
+    column-gap: 1rem;
+    row-gap: 0.5rem;
+    background-color: #fff;
+    border-radius: 0.25rem;
+}
+
+.THIS .body .card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.THIS .body .card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    flex: auto;
+    min-width: 9rem;
+}
+
+.THIS .body .card-01 .field-wrap .input-wrap .slds-form-element {
+    width: 100%;
+}
+
+.THIS .body .card-01 .field-wrap .slds-form-element__help {
+    display: none !important;
+}
+
+.THIS .body .card-01 .input-wrap .slds-button+.slds-button {
+    margin-left: 0;
+}
+
+.THIS .body .card-01 .button-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Card 02 */
+
+.THIS .table-wrap {
+    max-height: calc(100vh - 30rem);
+    overflow: auto;
+    border: 1px solid #e5e5e5;
+    position: relative;
+    /* display: flex; */
+    flex: auto;
+    color: #444;
+}
+
+.THIS .table-wrap table {
+    border-collapse: separate;
+    border-top: none;
+}
+
+.THIS .table-wrap table thead {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.THIS .table-wrap table th {
+    text-align: center;
+    width: 6%;
+    font-weight: 700;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.THIS .table-wrap table .first-th {
+    border-left: 1px solid #e5e5e5;
+}
+
+.THIS .table-wrap table thead tr:first-child th:first-child {
+    width: 10%;
+}
+
+.THIS .table-wrap table td {
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
+    
+}
+
+.THIS .table-wrap table td:first-child {
+    text-align: center;
+}
+
+.THIS .table-wrap table tfoot th,
+.THIS .table-wrap table tfoot td {
+    border-top: 1px solid #e5e5e5;
+    background-color: #EEF4FF;
+}
+
+.THIS .table-wrap table .row-index {
+    background-color: #EEF4FF;
+    padding: 0.25rem;
+    font-size: 11px;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+
+/* Sticky Tables : Table 01 */
+
+/* .THIS .body .card-02 .table-01 {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .body .card-02 .table-wrap .table-01 td:last-of-type,
+.THIS .body .card-02 .table-wrap .table-01 th:last-of-type {
+    border-right: none;
+}
+
+.THIS .body .card-02 .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+} */
+
+/* Sticky Tables : Table 02 */
+
+.THIS .body .card-02 .table-02 {
+    /* flex: 4; */
+    overflow: scroll;
+    table-layout: fixed;
+}
+
+.THIS .modal-body .card-02 table {
+    height: fit-content;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    /* min-width: 12rem; */
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+/* 기종, 호기 조회 Modal */
+
+.THIS.searchModelList .slds-modal__container {
+    max-width: calc(100vw - 5rem);
+    width: 48rem;
+    max-height: 100%;
+    height: 52rem;
+    padding: 3rem 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.THIS.slds-modal__container {
+    max-width: 100%;
+    width: 100%;
+    max-height: none;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .modal-body {
+    position: relative;
+    overflow: hidden;
+}
+
+.THIS .modal-body .card-01 {
+    padding: 1rem;
+    background-color: #f3f3f3;
+    border-bottom: 1px solid #c9c9c9;
+    display: flex;
+    align-items: flex-end;
+}
+
+.THIS .modal-body .card-01 .field-wrap {
+    flex: auto;
+}
+
+.THIS .modal-body .card-01 .field-wrap p {
+    margin-bottom: 0.25rem;
+    color: #5c5c5c;
+}
+
+.THIS .modal-body .card-01 .field-wrap .slds-form-element {
+    height: 2rem;
+}
+
+.THIS .modal-body .card-01 .field-wrap .slds-input {
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.THIS .modal-body .card-01 .button-wrap .slds-button {
+    height: 2rem;
+    line-height: 2rem;
+    border-radius: 0 0.25rem 0.25rem 0;
+    border-left: none;
+}
+
+/* Card 02 */
+
+.THIS .modal-body .card-02 .table-wrap {
+    height: 22rem;
+    max-height: calc(100vh - 19rem);
+    overflow: auto;
+}
+
+/* 2025-04-30 Hyerin Ro */
+
+.THIS td.receptionDetail .slds-truncate {
+    width: 26rem;
+}
+
+.THIS td.inspectionDetail .slds-truncate {
+    width: 26rem;
+}
+
+.THIS td.standardWork .slds-truncate {
+    width: 13rem;
+}
+
+.THIS td.overReason .slds-truncate {
+    width: 13rem;
+}   
+
+.THIS td.receptionDetail .slds-truncate,
+.THIS td.inspectionDetail .slds-truncate,
+.THIS td.overReason .slds-truncate,
+.THIS td.standardWork .slds-truncate {
+    white-space: normal !important;
+}

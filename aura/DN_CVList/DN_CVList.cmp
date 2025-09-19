@@ -1,0 +1,96 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 03-24-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-07-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable,forceCommunity:availableForAllPageTypes"
+                controller="DN_SQController" 
+                description="CV List">
+
+    <aura:attribute name="activeSections" type="List" default="['A','C']" />
+    <aura:attribute name="isLoading"    type="Boolean" default="false" />
+    <aura:attribute name="isWorker"    type="Boolean" default="false" />
+    <aura:attribute name="recordId"     type="String" />
+    <aura:attribute name="CVList"       type="List" />
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <aura:if isTrue="{! !v.isWorker }">
+
+        <div class="total-wrap">
+            <aura:iteration items="{!v.CVList}" var="section">
+                <!-- <lightning:accordion
+                    allowMultipleSectionsOpen="true"
+                    activeSectionName="{! section.productName + 'A' }"> -->
+                <lightning:accordion
+                    allowMultipleSectionsOpen="true"
+                    activeSectionName="">
+                    <lightning:accordionSection name="{! section.productName + 'A' }" label="{! section.productName }">
+        
+                        <aura:set attribute="body">
+                            <div class="column-label">
+                                <div class="slds-form__row">
+                                    <div class="slds-form__item">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                            <div class="slds-form-element__label label-container">
+                                                <span class="num">#</span>
+                                                <div class="name">C</div>
+                                            </div>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__label">V</div>
+                                            </div>
+                                        </div>
+                                    </div>
+        
+                                    <div class="slds-form__item">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                            <div class="slds-form-element__label label-container">
+                                                <span class="num">#</span>
+                                                <div class="name">C</div>
+                                            </div>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__label">V</div>
+                                            </div>
+                                        </div>
+                                    </div>
+        
+                                </div>
+                            </div>
+        
+                            <div class="slds-form" role="list">
+                                <!-- Row -->
+                                <div class="slds-form__row">
+                                    <!-- Item -->
+                                    <aura:iteration items="{! section.cvList }" var="field" indexVar="j">
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                                <!-- [C] -->
+                                                <div class="slds-form-element__label label-container">
+                                                    <span class="num">{! j + 1 }</span>
+                                                    <div class="name">{!field.characteristic}</div>
+                                                </div>
+                                                <div class="slds-form-element__control">
+                                                    <!-- [V] -->
+                                                    <div class="slds-form-element__static">{!field.value}</div>
+                                                </div>
+                
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+            
+                                </div>
+                            </div>
+                        </aura:set>
+                    </lightning:accordionSection>
+                </lightning:accordion>
+            </aura:iteration>
+        </div>
+    </aura:if>
+
+</aura:component>

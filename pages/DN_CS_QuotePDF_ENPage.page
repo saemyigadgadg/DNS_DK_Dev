@@ -1,0 +1,360 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 04-18-2025
+  @last modified by  : suheon.ha@UserSettingsUnder.SFDoc
+-->
+<apex:page standardController="Quote" extensions="DN_QuotationPDFController" showHeader="false"
+  standardStylesheets="false" sidebar="false" renderAs="pdf" applyHtmlTag="false" contentType="text/html;charset=UTF-8">
+
+  <!-- Static Resource -->
+  <apex:stylesheet value="{!URLFOR($Resource.DN_CI, 'DN_CI.zip')}" />
+
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+
+    <style type="text / css">
+      @page{     
+        size: A4;
+        margin: 40px;
+        padding-bottom: 8px;
+        padding-top: 256px;
+        box-sizing: border-box;   
+
+        @top-center  {
+          content: element(header);
+        }     
+        @bottom-center {
+          content: counter(page);
+        } 
+      }
+
+      @page:first {
+        padding-top: 0;
+        @top-center {}  
+      }
+
+      .page-01{
+        width: 100%;
+        height: 267mm;
+        vertical-align: top;
+      }
+
+      .page-02{
+        width: 100%;
+      }
+
+      .page-break {
+        page-break-after:always;
+      }
+
+      div.header {
+        margin-top: 16px;
+        position: running(header);
+      }
+      
+      body {
+          font-family: Arial Unicode MS, sans-serif;
+          font-weight: 400;
+          font-size: 12px;
+          line-height: normal;
+      }
+      h1,h2,h3,h4,h5,h6,a,p,span,b,strong{
+        margin: 0;
+        padding: 0;
+      }
+      table{
+        width: 100%;
+        border-collapse : collapse;
+      }
+    table h3 {
+      font-family: sans-serif;
+      font-weight: bold;
+    }
+    table.border {
+      border-bottom : 1px solid black;
+      border-top: 2px solid black;
+    }
+    table.border td {
+      border-bottom: 1px solid black; 
+      border-top: 1px solid black; 
+      padding: 8px 4px;
+      font-size: 12px;
+      vertical-align: top;
+    }
+    table.border td+td { 
+      border-left: 1px solid black; 
+    }     
+    .page-01 .table-01  td{
+      vertical-align: top;
+    }    
+    .page-01 .table-02 td p {
+      display: block;
+      padding-left: 4px;
+      line-height: 160%;
+    }
+    .page-01 .table-03 td {
+      padding: 4px;
+      font-size: 12px;
+      vertical-align: top;
+    }
+    .page-01 .table-03 tbody tr:first-child td {
+      border-top: 2px solid black; 
+    }
+    .page-01 .table-03 tfoot tr:first-child td {
+      border-top: 2px solid black;
+    }
+    .page-02 .table-02 td p {
+      padding-left: 4px;
+      line-height: 160%;
+    }
+    .page-02 .table-03 {
+      border-bottom: 1px solid black;
+    }
+    .page-02 .table-03 th {
+      font-family: sans-serif;
+      font-weight: bold;
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }  
+
+    </style>
+
+  </head>
+
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="wrap-01" style="height: 10%;">
+        <table class="table-01">
+          <tr>
+            <td style="font-size: 18px;">DN Solutions Co., Ltd.</td>
+            <td style="text-align: right;" rowspan="2">
+              <img src="{!URLFOR($Resource.DN_CI, 'DN_CI_2.png')}" width="140" height="80" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="vertical-align: middle;">
+              Tel. {!result['Mobile']}    Fax. {!result['Fax']}
+              <!-- 전화번호. {!result['Mobile']}    Fax. {!result['Fax']} -->
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="wrap-02">
+        <h1 style="font-size: 36px; text-align: left;">Quotation Sheet</h1>
+        <table class="table-02 border" style="margin-top: 12px;">
+          <!-- <caption style="text-align: right;">Document Pages: 2/3</caption> -->
+          <tr>
+            <td rowspan="2" style="width: 50%;">
+              <h3>Messrs</h3>
+              <p>{!result['AccountName']}</p>
+              <p>Your Customer code is {!result['CustomerCode']}</p>
+            </td>
+            <td colspan="2">
+              <h3>Document No.</h3>
+              <p>{!result['QuoteNumber']}</p>
+            </td>
+            <td colspan="2">
+              <h3>Document Date</h3>
+              <p>{!result['CreatedDate']}</p>
+            </td>
+            <td colspan="2">
+              <h3>Currency</h3>
+              <p>KRW</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <h3 style="display: inline-block; margin-right: 16px;">Valid from</h3>
+              <span>{!result['CreatedDate']}</span>
+            </td>
+            <td colspan="3">
+              <h3 style="display: inline-block; margin-right: 16px;">Valid to</h3>
+              <span>{!result['ExpirationDate']}</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Page 01 -->
+    <div class="page page-01">
+      <div class="wrap-01" style="height: 10%;">
+        <table class="table-01">
+          <tr>
+            <td style="font-size: 18px;">
+              DN Solutions Co., Ltd.
+            </td>
+            <td style="text-align: right;" rowspan="2">
+              <img src="{!URLFOR($Resource.DN_CI, 'DN_CI_2.png')}" width="140" height="80" />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="vertical-align: middle;">
+              Tel. {!result['Mobile']}    Fax. {!result['Fax']}
+              <!-- 전화번호. {!result['Mobile']}    Fax. {!result['Fax']} -->
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="wrap-02" style="height: 60%;">
+        <h1 style="font-size: 36px; text-align: left;">Quotation Sheet </h1>
+        <table class="table-02 border" style="margin-top: 12px;">
+          <!-- <caption style="text-align: right;">Document Pages: 1/3</caption> -->
+          <tr>
+            <td colspan="2">
+              <h3>Document No.</h3>
+              <p>{!result['QuoteNumber']}</p>
+            </td>
+            <td colspan="2">
+              <h3>Document Date</h3>
+              <p>{!result['CreatedDate']}</p>
+            </td>
+            <td colspan="2">
+              <h3>Currency</h3>
+              <p>KRW</p>
+            </td>
+            <td rowspan="4">
+              <h3>Remark</h3>
+              <p><apex:outputText value="{!result['Description']}" escape="false" /></p>
+            </td>  
+          </tr>
+          <tr>
+            <td colspan="3">
+              <h3 style="display: inline-block; margin-right: 16px;">Valid from</h3>
+              <span>{!result['CreatedDate']}</span>
+            </td>
+            <td colspan="3">
+              <h3 style="display: inline-block; margin-right: 16px;">Valid to</h3>
+              <span>{!result['ExpirationDate']}</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6">
+              <h3>Messrs</h3>
+              <p>{!result['AccountName']}</p>
+              <p>Your Customer code is {!result['CustomerCode']}</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <h3>Buyer Reference No</h3>
+              <p>{!result['BuyerReferenceNo']}</p>
+            </td>
+            <td colspan="4">
+              <h3>Payment Terms</h3>
+              <p>{!result['TermsOfPayment']}</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="wrap-03" style="height: 20%;">
+        <table>
+          <tr>
+            <td style="width:40%; vertical-align: top; text-align: right; padding-right: 32px;">Total</td>
+            <td style="width:60%; text-align: right;">
+              <table class="table-03">
+                <tbody>
+                  <tr>
+                    <td style="text-align: left;">List Price</td>
+                    <td>KRW</td>
+                    <td>{!result['ListTotal']}</td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: left;">Unit Price</td>
+                    <td>KRW</td>
+                    <td>{!result['Subtotal']}</td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: left;">Discount Price</td>
+                    <td>KRW</td>
+                    <td>{!result['DiscountAmount']}</td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: left;">Output TAX{!result['Tax']}</td>
+                    <td>KRW</td>
+                    <td>{!result['TaxPrice']}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td style="text-align: left;">Total Amount</td>
+                    <td>KRW</td>
+                    <td>{!result['GrandTotal']}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="wrap-04" style="height: 10%; text-align: right;">
+        <table>
+          <tr>
+            <td style="width: 60%;"></td>
+            <td style="text-align: left;">
+              <h2 style="padding-bottom: 56px;">DN Solutions Co., Ltd.</h2>
+              <p style="border-bottom: 2px solid black;"></p>
+              <p>AUTHORIZED SIGNATURE</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Page 02 -->
+    <div class="page-02">
+      <table class="table-03" style="-Fs-table-paginate: paginate">
+        <thead>
+          <tr>
+            <th>SEQ</th>
+            <th>Supply Part No.</th>
+            <th>Description</th>
+            <th>Qty.</th>
+            <th>UM</th>
+            <th style="text-align: right;">List Price</th>
+            <th style="text-align: right;">Discount Price</th>
+            <th style="text-align: right;">Unit price<br/>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <apex:repeat value="{!result['LineItems']}" var="item">
+            <tr>
+              <td>{!item['index']}</td>
+              <td>{!item['ProductCode']}</td>
+              <td>{!item['ProductName']}</td>
+              <td>{!item['Quantity']}</td>
+              <td>EA</td>
+              <td style="text-align: right;">{!item['ListPrice']}</td>
+              <td style="text-align: right;">{!item['DiscountedPrice']}</td>
+              <td>
+                <p style="text-align: right;">{!item['UnitPrice']}</p>
+                <p style="text-align: right;">{!item['TotalPrice']}</p>
+              </td>
+            </tr>
+          </apex:repeat>
+        </tbody>
+      </table>
+
+      <table class="table-03">
+        <tfoot>
+          <tr>
+            <td colspan="2"></td>
+            <td style="text-align: right;">Item Total (Qty/Amount)</td>
+            <td colspan="3" style="text-align: right;">{!result['TotalQuantity']}</td>
+            <td style="text-align: right;">{!result['TotalAmount']}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </body>
+
+</apex:page>

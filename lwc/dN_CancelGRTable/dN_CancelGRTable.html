@@ -1,0 +1,132 @@
+<template>
+    <template lwc:if={isSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+    <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+        <colgroup>
+            <col width="2%" />
+            <col width="7%" />
+            <col width="7%" />
+            <col width="3%" />
+            <col width="6%" />
+            <col width="15%" />
+            <col width="10%" />
+            <col width="5%" />
+            <col width="4%" />
+            <col width="8%" />
+            <col width="8%" />
+            <col width="12%" />
+            <col width="8%" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th>
+                    <lightning-input type="checkbox" data-name="checkbox"
+                        onchange={handleAll} > </lightning-input>
+                </th>
+                <th>
+                    <div>{_orderNumber}</div> 
+                </th>
+                <th>
+                    <div>DNS반품번호</div>
+                </th>
+                <th>
+                    <div>항목</div>
+                </th>
+                <th>
+                    <div>품번</div>
+                </th>
+                <th>
+                    <div>품명</div>
+                </th>
+                <th>
+                    <div>규격</div>
+                </th>
+                <th>
+                    <div>저장위치</div>
+                </th>
+                <th>
+                    <div>현재고</div>
+                </th>
+                <th>
+                    <div>최초입고수량</div>
+                </th>
+                <th>
+                    <div>취소가능수량</div>
+                </th>
+                <th>
+                    <div>취소요청수량</div>
+                </th>
+                <th>
+                    <div>입고일</div>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- <aura:if isTrue="{!not(v.isSearched)}">
+                <tr>
+                    <td colspan="13" style="text-align: center;">No Data</td>
+                </tr>
+            </aura:if> -->
+
+            <!-- <aura:if isTrue="{!v.isSearched}"> -->
+                <!-- <aura:iteration items="{!v.grList}" var="gr"> -->
+                <template for:each={grList} for:item="gr" for:index="index">
+                    <tr key={gr.id}>
+                        <td>
+                            <div class="center">
+                                <lightning-input type="checkbox" data-name="checkbox" 
+                                    onchange={handleCheckboxChange} data-index={index} data-checked={index}> </lightning-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{gr.gRDocument}</div>
+                        </td>
+                        <td>
+                            <div>{gr.dNSDocument}</div>
+                        </td>
+                        <td>
+                            <div class="center">{gr.itemNumber}</div>
+                        </td>
+                        <td>
+                            <div>{gr.pratNumber}</div>
+                        </td>
+                        <td>
+                            <div>{gr.partName}</div>
+                        </td>
+                        <td>
+                            <div>{gr.productSpec}</div>
+                        </td>
+                        <td>
+                            <div class="center">{gr.location}</div>
+                        </td>
+                        <td>
+                            <div class="right">{gr.stockQty}</div>
+                        </td>
+                        <td>
+                            <div class="right">{gr.firstGRQty}</div>
+                        </td>
+                        <td>
+                            <div class="right">{gr.cancelAvailableGRQty}</div>
+                        </td>
+                        <td>
+                            <!-- Input 필드 -->
+                            <div>
+                                <lightning-input type="text" 
+                                    variant="label-hidden" data-qty={index} onchange={handleChangeValue} value={gr.cancelGRQty} ></lightning-input>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="center">{gr.lastImportDateTime}</div>
+                        </td>
+                    </tr>
+                </template>        
+                <!-- </aura:iteration> -->
+
+            <!-- </aura:if> -->
+
+
+        </tbody>
+    </table>
+</template>

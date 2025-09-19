@@ -1,0 +1,70 @@
+<!--
+  @description       : 
+  @author            : suheon.ha@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 2024-11-21
+  @last modified by  : suheon.ha@sobetec.com
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    
+    <!-- 미결처리 확인 화면 -->
+    <template if:true={isPendingConfirmVisible} >
+        <div class="total-wrap modal-01">
+            <div class="body">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:edit' alternative-text='edit' size='small' title='edit'></lightning-icon>
+                </div>
+    
+                <h3 class="title">{cLabel.DNS_FSL_PendingProcessing}</h3>
+                
+                <!-- <div class="input-wrap">
+                    <lightning-textarea label="조치내역" placeholder="조치내역을 입력해주세요."></lightning-textarea>
+                </div> -->
+
+                <div class="input-wrap">
+                    <lightning-combobox
+                        label={cLabel.DNS_FSL_PendingProcessing}
+                        name="rejectionReason"
+                        value={rejectionReason}
+                        placeholder={cLabel.DNS_FSL_PendingReasonChoice}
+                        options={rejectionReasons}
+                        onchange={handleChange}
+                        required>
+                    </lightning-combobox>
+                </div>
+
+                <!-- <h2 class="message">선택목록에 사유가 없을 경우<br/>미결사유를 작성해주세요.</h2> -->
+                
+                <div class="input-wrap">
+                    <!-- placeholder={cLabel.DNS_FSL_PendingMSG} -->
+                    <lightning-textarea label={cLabel.DNS_FSL_PendingDetail} value={pendingDetails} onchange={handleInputChange} placeholder={cLabel.DNS_FSL_EnterPendingDetail}></lightning-textarea>
+                </div>
+    
+                <div class="button-wrap">
+                    <lightning-button variant="neutral" label={cLabel.DNS_FSL_Cancel} onclick={handleCancel}></lightning-button>
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleConfirm} disabled={isConfirmDisabled} ></lightning-button>
+                </div>
+            </div>            
+        </div>
+    </template>
+
+    <!-- 미결처리 완료 화면 -->
+    <template if:true={isPendingCompleteVisible}>
+        <div class="total-wrap modal-02">
+            <div class="body">
+                <div class="icon-wrap">
+                    <lightning-icon icon-name='utility:check' alternative-text='check' size='small' title='edit'></lightning-icon>
+                </div>
+
+                <h3 class="title">{cLabel.DNS_FSL_Alarm}</h3>
+                <p class="message">{cLabel.DNS_FSL_PendingProcessingCompleted}</p>
+                <div class="button-wrap">
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_Check} onclick={handleCompleteClose}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

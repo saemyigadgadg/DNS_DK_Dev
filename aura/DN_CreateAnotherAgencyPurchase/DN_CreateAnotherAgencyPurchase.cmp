@@ -1,0 +1,337 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 04-02-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-05-31   yeongdeok.seo@sbtglobal.com   Initial Version
+  1.1   12-14-2024   Hyunwook JIN   			   검색 결과 조회 테이블외에 화면들 제거
+-->
+<aura:component
+	implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+	description="타 대리점 구매 생성"
+	controller="DN_CreateAnotherAgencyPurchase"
+	extends="c:DN_Helper">
+
+	<!-- attribute -->
+	<aura:attribute name="uuid" type="String" />
+  	<aura:attribute name="userInfo" type="Object" />
+  	<aura:attribute name="requiredParams" type="List" description="타 대리점주문 헤더 정보 필수값"/>
+  	<aura:attribute name="headerParams" type="Object" description="타 대리점주문 헤더 정보"/>
+	<aura:attribute name="dealerNameForOrder" type="String" description="타 대리점주문헤더에서 선택한 대리점명"/>
+	<aura:attribute name="dealerCodeForOrder" type="String" description="타 대리점주문헤더에서 선택한 대리점Code"/>
+	<aura:attribute name="dealerForOrder" type="String" description="타 대리점주문헤더에서 선택한 대리점Id"/>
+	<aura:attribute name="filter" type="Object" />	
+
+	<aura:attribute name="isSpinner" type="Boolean" default="false" />
+	
+	<!-- 배송처 정보 -->
+	<aura:attribute name="postalCode" type="String" description="우편번호"/>
+	<aura:attribute name="city" type="String" description="주소"/>
+	<aura:attribute name="street" type="String" description="상세주소"/>
+	<aura:attribute name="customerName" type="String" />
+	<aura:attribute name="shipToName" type="String" description="배송처명" />
+	<aura:attribute name="representative" type="String"/>
+	<aura:attribute name="phone" type="String" />
+
+	<!-- 페이징 정보 -->
+  	<aura:attribute name="itemsPerPage" type="Integer" />
+  	<aura:attribute name="currentPage" type="Integer" />
+  	<aura:attribute name="pagesPerGroup" type="Integer" />
+  	<aura:attribute name="nextPage" type="Integer" />
+	<aura:attribute name="utility_icons" type="String" default="utility:up" />
+  	<aura:attribute name="selectedMachineNameIndex" type="Integer" description="기종Idex"/>
+	<aura:attribute name="selectedEquipmentIndex" type="Integer" description="장비Idex"/>
+	<aura:attribute name="selectedPartsIndex" type="Integer" description=""/>
+	<aura:attribute name="selectedProducts" type="List" default="[]" />
+	<aura:attribute name="utility_open" type="Boolean" default="true" />
+	<aura:attribute name="partsList" type="List" default="[]" />
+	<aura:attribute name="totalDiscountAmount" type="String" default="0" description="총 할인판매 금액"/>
+  	<aura:attribute name="totalDiscount" type="String" default="0" description="총 할인판매가"/>
+	<!-- pageReference-->
+	<aura:attribute name="pageReference" type="Object"/>
+
+	<!-- LMS  -->
+	<lightning:messageChannel type="DealerPortalLMC__c"
+			   onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+
+	<lightning:overlayLibrary aura:id="overlayLib"/>
+
+	<!-- Navigation -->
+	<lightning:navigation aura:id="navService"/>
+	
+	<!-- handler -->
+	<aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+	<!-- 부품번호/대체품 Modal -->
+	<div aura:id="SearchProductNumber"></div>
+	<!-- 배송처 Modal -->
+	<div aura:id="SearchShipToModal"></div>
+	<!-- 부품대리점리스트 Modal -->
+	<div aura:id="SearchPartsAgencyListModal"></div>
+	<!-- 타대리점 재고 Modal -->
+	<div aura:id="OtherDealerStockModal"></div>
+	<!--기종/장비번호 모달-->
+	<div aura:id="ModelSearchModal" />
+
+	<!-- Card 02 : Parts List -->
+	<div>
+		<div class="part-container">
+
+			<!-- Card Header -->
+			<div class="card-header">
+				<div class="header-wrap">
+					<h2 class="slds-truncate">Parts List</h2>
+					<p>
+						(할인판매가 총합:
+						<span>{!v.totalDiscount}</span>
+						KRW | 할인판매금액 총합:
+						<span>{!v.totalDiscountAmount}</span>
+						KRW)
+					</p>
+				</div>
+
+				<!-- 버튼모음 -->
+				<div class="button-wrap">
+					<lightning:button iconName="utility:company" name="searchItems" label="타대리점"
+						onclick="{!c.openOtherDealerStockModal}" />
+					<lightning:button iconName="utility:add" name="searchItems" label="추가" onclick="{!c.bulkAddPartsProduct}" />
+					<lightning:button iconName="utility:delete" name="searchItems" label="삭제"
+						onclick="{!c.selectedDeletePartsProduct}" />
+					<lightning:button iconName="utility:all" name="searchItems" label="Simulation"
+						onclick="{!c.getSimulationInfo}" />
+				</div>
+
+			</div>
+
+			<div class="card-body table-wrap">
+				<div class="table-01 table-left" aura:id="leftTableDiv">
+					<table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table"
+						aria-label="Example table of Opportunities with vertical borders">
+						<colgroup>
+							<col width="1%" />
+							<col width="1%" />
+							<col width="5%" />
+							<col width="25%" />
+							<col width="25%" />
+							<col width="5%" />
+						</colgroup>
+						<thead>
+							<tr class="slds-line-height_reset">
+								<th class="add" scope="col">
+									<div class="slds-truncate" title="">
+										<lightning:buttonIcon iconName="utility:add" alternativeText="Add" title="Add" size="medium"
+											onclick="{!c.addPartsProduct}" />
+									</div>
+								</th>
+								<th scope="col">
+									<lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">항목</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">주문품번</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">공급품번</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">Check</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+								<tr class="slds-hint-parent">
+									<td data-label="Delete" class="add center">
+										<div class="slds-truncate" title="Delete">
+											<span>
+												<lightning:buttonIcon iconName="utility:dash" alternativeText="Dash" title="Dash" size="medium"
+													accesskey="{!j}" onclick="{!c.deletePartsProduct}" />
+											</span>
+										</div>
+									</td>
+									<td type="checkbox2" class="center">
+										<lightning:input type="checkbox" aura:id="checkbox" checked="{!parts.isSelected}"/>
+									</td>
+									<td data-label="항목" class="center">
+										{!parts.itemSeq}
+										<!-- <div class="slds-truncate" title="항목"> <lightning:input type="text" name="input1 " variant="label-hidden" value="{!parts.EBELP}" readonly="true" /> </div> -->
+									</td>
+									<td data-label="주문품번">
+										<div class="input-wrap" title="주문품번">
+											<!-- <lightning:input type="text" name="input2" variant="label-hidden" value="{!parts.partName}"
+												disabled="true" class="search-input" accesskey="{!j}"/> -->
+											<c:dN_DealerPortalInputBox oninputchange="{!c.handleInputChange}" aura:id="productCode" tableIndex="{!j}" name="{!j}" istable="true" uuid="{!v.uuid}" filter="{!v.filter}" style="width: 100%;"  />
+											<lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Search"
+												onclick="{!c.clearProductNumber}" accesskey="{!j}" class="clear-btn" />
+											<lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+												onclick="{!c.openSearchProductNumber}" accesskey="{!j}" />
+										</div>
+									</td>
+									<td data-label="공급품번" title="{!parts.replacingPartName}" class="replacingPartName" style="">
+										<div>{!parts.replacingPartName}</div>
+										<!-- <div class="slds-truncate" title="공급품번"> <lightning:input type="text" aura:id="" name="input5" variant="label-hidden" value="{!parts.REPNR}" readonly="true" /> </div> -->
+									</td>
+									<!-- <td data-label="Check" class="center">
+										<div class="slds-truncate" title="Check">
+											<lightning:input type="checkbox" name="input6" variant="label-hidden" value="{!parts.CHECK}"
+												disabled="{!parts.DISABLE}" />
+										</div>
+									</td> -->
+									<aura:if isTrue="{!parts.replaceSize > 1}">
+                    				  <td data-label="Check" class="center" rowspan="{!parts.replaceSize}">
+                    				    <lightning:input type="checkbox" value="{!parts.check}" variant="label-hidden" class="center" accesskey="{!j}" onchange="{!c.swapTargetPart}" />
+                    				  </td>
+                    				</aura:if>
+                    				<aura:if isTrue="{!parts.replaceSize == 1}">
+                    				  <td data-label="Check" class="center">
+                    				    <lightning:input type="checkbox" value="{!parts.check}" variant="label-hidden" class="center" disabled="true" />
+                    				  </td>
+                    				</aura:if>
+								</tr>
+							</aura:iteration>
+						</tbody>
+					</table>
+				</div>
+				<div class="table-02 table-right" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+					<table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table"
+						aria-label="Example table of Opportunities with vertical borders">
+						<colgroup>
+							<col width="10%" />
+							<col width="5%" />
+							<col width="10%" />
+							<col width="5%" />
+							<col width="5%" />
+							<col width="5%" />
+							<col width="10%" />
+							<col width="10%" />
+							<col width="10%" />
+							<col width="5%" />
+							<col width="10%" />
+							<col width="10%" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">품명</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">수량</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">대리점 명</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">대리점 재고</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">판매단위</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">단위</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">고객판매가</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">할인판매가</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">할인판매금액</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">할인율(%)</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">기종</div>
+								</th>
+								<th class="" scope="col">
+									<div class="slds-truncate" title="">장비번호</div>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+								<tr class="slds-hint-parent">
+									<td data-label="품명">
+										{!parts.partDetails}
+										<!-- <div class="slds-truncate" title="품명"> <lightning:input type="text" aura:id="" name="input8" variant="label-hidden" readonly="true" value="{!parts.MAKTX}" /> </div> -->
+									</td>
+									<td data-label="수량">
+										<div class="slds-truncate quantity" title="수량" onkeydown="{!c.handleKeyPress}">
+											<lightning:input type="text" aura:id="" name="input9" variant="label-hidden" accesskey="{!j}"
+												value="{!parts.quantity}" disabled="{!parts.disabled}" onchange="{!c.changeDiscountPriceAmount}" />
+										</div>
+									</td>
+									<td data-label="대리점 명">
+										{!parts.dealerName}
+										<!-- <div class="slds-truncate" title="대리점 명"> <lightning:input type="text" aura:id="" name="input10" variant="label-hidden" readonly="true" value="{!parts.NAME1}" /> </div> -->
+									</td>
+									<td data-label="요청 대리점 재고">
+										{!parts.avaiableQuantity}
+										<!-- <div class="slds-truncate" title="대리점 재고" style="display: flex; align-items: center;"> <lightning:input type="text" name="input11" variant="label-hidden" readonly="true" value="{!parts.AVQTY}" /> </div> -->
+									</td>
+									<td data-label="판매단위">
+										{!parts.salesUnit}
+										<!-- <div class="slds-truncate" title="판매단위"> <lightning:input type="text" aura:id="" name="input12" variant="label-hidden" readonly="true" value="{!parts.KPEIN}" /> </div> -->
+									</td>
+									<td data-label="단위">
+										{!parts.unit}
+										<!-- <div class="slds-truncate" title="단위"> <lightning:input type="text" aura:id="" name="input13" variant="label-hidden" readonly="true" value="{!parts.KMEIN}" /> </div> -->
+									</td>
+									<td data-label="고객판매가" style="min-width: 8rem;">
+										<div class="slds-truncate" title="고객판매가">
+											 <lightning:input type="number" aura:id="" name="input14" variant="label-hidden" readonly="true" value="{!parts.customerPrice}" />
+										</div>
+									</td>
+									<td data-label="할인판매가" style="min-width: 8rem;">
+										<div class="slds-truncate" title="할인판매가"> 
+											<lightning:input type="number" aura:id="" name="input15" variant="label-hidden" readonly="true" value="{!parts.discountPrice}" /> 
+										</div>
+									</td>
+									<td data-label="할인판매금액" style="min-width: 8rem;">
+										<div class="slds-truncate" title="할인판매금액"> 
+											<lightning:input type="number" aura:id="" name="input16" variant="label-hidden" readonly="true" value="{!parts.discountAmount}" />
+										</div>
+									</td>
+									<td data-label="할인율(%)">
+										<div class="slds-truncate" title="할인율(%)"> 
+											<lightning:input type="number" aura:id="" name="input17" variant="label-hidden" value="{!parts.discountRate}" step="0.1" readonly="true" />
+										</div>
+									</td>
+									<td data-label="기종">
+										<div class="input-wrap" title="기종">
+											<lightning:input type="text" aura:id="" name="input18" variant="label-hidden"
+												value="{!parts.machineName}" class="search-input" accesskey="{!j}" onchange="{!c.changeUpperCase}"/>
+											<lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Search"
+												onclick="{!c.clearMachine}" accesskey="{!j}" class="clear-btn" />
+											<lightning:buttonicon iconName="utility:search" size="medium" aura:id="기종" accesskey="{!j}"
+												alternativeText="Search" onclick="{!c.openMachineModal}" />
+										</div>
+									</td>
+									<td data-label="장비번호">
+										<div class="input-wrap" title="장비번호">
+											<lightning:input type="text" aura:id="" name="input19" variant="label-hidden"
+												value="{!parts.equipment}"  class="search-input" accesskey="{!j}" onchange="{!c.changeUpperCase}"/>
+											<lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Search"
+												onclick="{!c.clearAsset}" accesskey="{!j}" class="clear-btn" />
+											<lightning:buttonicon iconName="utility:search" size="medium" aura:id="장비번호"
+												alternativeText="Search" accesskey="{!j}" onclick="{!c.openEquipmentModal}" />
+
+										</div>
+									</td>
+								</tr>
+							</aura:iteration>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</aura:component>

@@ -1,0 +1,325 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-04-15
+  @last modified by  : chungwoo.lee@sobetec.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   02-28-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<apex:page controller="DN_PortalServiceReportController" action="{!getAction}" renderAs="pdf" showHeader="false" sidebar="false"
+  standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false" lightningStylesheets="false" contentType="text/html;charset=UTF-8"
+  language="En">
+
+
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+    <style type="text / css">
+      /* reset css 🔄️ */ @page { padding: 0; margin:2% 0 5%; @bottom-center { content: counter(page); } box-sizing: border-box;
+      } .page-break { page-break-after:always; } body { font-family: sans-serif; font-weight: 600; font-size: 10px; } h1,h2,h3,h4,h5,h6,a,p,span,
+      div{ font-family: sans-serif; font-size: 10px; } table { width: 100%; border: 0.5px solid #2a2a2a; border-collapse:
+      separate; border-spacing: 0; } table tr, table td, table th {border: 0.5px solid #2a2a2a;} html, body{ padding: 0 12px;
+      margin: 0; font-size: 10px; } /* normalize css */ .right { text-align: right; } .left { text-align: left; } table th
+      { padding: 5px; font-weight: bold; } table td { padding: 2px 5px; } /* Begin Custom Grid System */ .clearfix { clear:
+      both; } .row { width: 100%; display: block; } .col { float: left; } .size-1-of-2 { width: 48%; } .size-1-of-3 { width:
+      33.33%; } .size-1-of-4 { width: 25%; } .size-1-of-5 { width: 20%; } /* End Custom Grid System */ /* style css */ /*
+      header */ .header img { width: 120px; margin-right: 50px; } .header h1 { line-height: 0.5; font-size: 24px; font-weight:
+      bold; } .header h2 { font-size: 20px; font-weight: bold; } /* first-table */ .first-table .table-header { float: right;
+      } .first-table .table-header table { border: none; } .first-table .table-header table tr td { text-align: right; border:
+      none; } .first-table .table-body { padding-top: 60px; } .first-table .table-body .big-height { height: 70px; } /* second-table
+      */ .second-table .table-header p { font-size: 20px; font-weight: bold; margin-bottom: 10px; } .second-table th, .second-table
+      td { text-align: center; }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="row">
+        <img src="{!$Resource.LOGO_returnDetail}" alt="Image" class='col size-1-of-2' />
+        <div class="title col size-1-of-2">
+          <h1>DN Solutions AMERICA</h1>
+          <h2>Service Report</h2>
+        </div>
+        <div class='clearfix'></div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="first-table table-wrap">
+        <div class="table-header">
+          <table>
+            <tr>
+              <td>19A Chapin Rd. Pine Brook NJ07058</td>
+              <td>(973) 618-2500</td>
+            </tr>
+            <tr>
+              <td>1120 Tower Lane Bensenville, IL 60106</td>
+              <td>(630) 860-7013</td>
+            </tr>
+            <tr>
+              <td>1440 N Harbor Blvd suite #101 Fullerton, CA 92835</td>
+              <td>(714) 974-1330</td>
+            </tr>
+          </table>
+        </div>
+        <div class="table-body">
+          <table>
+            <colgroup>
+              <col width="20%" />
+              <col width="15%" />
+              <col width="15%" />
+              <col width="20%" />
+              <col width="15%" />
+              <col width="15%" />
+            </colgroup>
+            <tr>
+              <th>Customer</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.accountName}" />
+              </td>
+
+              <th>Notification/Order No</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.notiNumber}" /> /&nbsp;
+                <apex:outputText value="{!serviceWrapper.serviceOrderNumber}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Address</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.accountAddress}" />
+              </td>
+              <th>Warranty</th>
+              <td colspan="2">
+                <apex:outputText value="{!IF(serviceWrapper.serviceReportInfo.warranty == 'Y','In','Out')}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Phone No</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.accountTel}" />
+              </td>
+              <th>Distributor</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.warranty}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Machine Model</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.machineName}" />
+              </td>
+              <th>Machine Serial #</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.assetName}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Controller Model</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.controllerModel}" />
+              </td>
+              <th>Controller Serial #</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.controllerSerial}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Problem Description &amp; Assigned(Note)</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.ReceptionDetails}" />
+              </td>
+              <th>Machine Down</th>
+              <td colspan="2">
+                <apex:outputText value="{!IF(serviceWrapper.serviceReportInfo.isMachineDown == true,'Y','N')}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Failure Date</th>
+              <td>
+                <!--<apex:outputText value="{0, date, yyyy-MM-dd}">
+                  <apex:param value="{!serviceWrapper.serviceReportInfo.failureDate}" />
+                </apex:outputText>-->
+                <apex:outputText value="{!failureDate}" />
+              </td>
+              <th>Registered Date</th>
+              <td>
+                <apex:outputText value="{!registeredDate}" />
+              </td>
+              <th>Required End Date</th>
+              <td>
+                <apex:outputText value="{!requiredEndDate}" />
+              </td>
+            </tr>
+            <tr>
+              <th colspan="3">Symptom Description</th>
+              <th>Symptom Code</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.repairHistoryInfo.selectedPhenomenon.phenomenonCode}" escape="false" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="6" class="big-height">
+                <apex:outputText value="{!serviceWrapper.repairHistoryInfo.selectedPhenomenon.phenomenonDetail}" escape="false" />
+              </td>
+            </tr>
+            <tr>
+              <th colspan="3">Cause Description</th>
+              <th>Cause Code</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.repairHistoryInfo.selectedCauseArea.causeAreaCode}" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="6" class="big-height">
+                <apex:outputText value="{!serviceWrapper.repairHistoryInfo.selectedCauseArea.causeAreaDetail}" />
+              </td>
+            </tr>
+            <tr>
+              <th colspan="3">Activity Description</th>
+              <th>Activity Code</th>
+              <td colspan="2">
+                <apex:outputText value="{!serviceWrapper.repairHistoryInfo.selectedRepairAction.repairActionCode}" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="6" class="big-height">
+                <apex:outputText value="{!serviceWrapper.repairHistoryInfo.selectedRepairAction.repairActionDetail}" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="second-table table-wrap">
+        <div class="table-header">
+          <p>Service Dates and Times</p>
+        </div>
+        <div class="table-body">
+          <table>
+            <tr>
+              <th>Service Date</th>
+              <th>Time In/Out</th>
+              <th>Hours Worked</th>
+              <th>Hours Travel</th>
+              <th>Air Trip</th>
+            </tr>
+            <!-- 데이터가 있는 경우 -->
+            <apex:outputPanel rendered="{!AND(NOT(ISNULL(serviceWrapper.workList)), serviceWrapper.workList.size > 0)}" layout="none">
+              <apex:repeat value="{!serviceWrapper.workList}" var="item">
+                <tr>
+                  <td>
+                    <apex:outputText value="{0, date, MMMM d',' yyyy}">
+                      <apex:param value="{!item.workDate}" />
+                    </apex:outputText>
+                  </td>
+
+                  <td>{!item.workStartTime} / {!item.workEndTime}</td>
+                  <td>{!item.workTime}</td>
+                  <td>{!item.travelHour}</td>
+                  <td>{!IF(item.airTripType == 'Yes','Y','N')}</td>
+                </tr>
+              </apex:repeat>
+              <tr>
+                <th colspan="2">Total</th>
+                <td>{!totalWorkTime}</td>
+                <td>{!totalTravelHour}</td>
+                <td></td>
+              </tr>
+            </apex:outputPanel>
+
+            <!-- 데이터가 없을 경우 -->
+            <apex:outputPanel rendered="{!OR(ISNULL(serviceWrapper.workList), serviceWrapper.workList.size == 0)}" layout="none">
+              <tr>
+                <td colspan="5">No data</td>
+              </tr>
+            </apex:outputPanel>
+          </table>
+        </div>
+
+        <div class="table-header">
+          <p>Parts used (Reference ONLY)</p>
+        </div>
+        <div class="table-body">
+          <table>
+            <tr>
+              <th>Parts No.</th>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Cause Part</th>
+              <th>Text</th>
+            </tr>
+            <!-- 데이터가 있는 경우 -->
+            <apex:outputPanel rendered="{!AND(NOT(ISNULL(serviceWrapper.productRequestList)), serviceWrapper.productRequestList.size > 0)}"
+              layout="none">
+              <apex:repeat value="{!serviceWrapper.productRequestList}" var="item">
+                <tr>
+                  <td>{!Item.productCode}</td>
+                  <td>{!item.productName}</td>
+                  <td>{!item.quantity}</td>
+                  <td>{!IF(item.isCause == true,'Y','N')}</td>
+                  <td>{!item.returnNote}</td>
+                </tr>
+              </apex:repeat>
+            </apex:outputPanel>
+
+            <!-- 데이터가 없을 경우 -->
+            <apex:outputPanel rendered="{!OR(ISNULL(serviceWrapper.productRequestList), serviceWrapper.productRequestList.size == 0)}"
+              layout="none">
+              <tr>
+                <td colspan="5">No data</td>
+              </tr>
+            </apex:outputPanel>
+          </table>
+        </div>
+        <div class="table-header">
+          <p>Signature</p>
+        </div>
+        <div class="table-body">
+          <table>
+            <colgroup>
+              <col width="15%" />
+              <col width="20%" />
+              <col width="10%" />
+              <col width="10%" />
+              <col width="15%" />
+              <col width="30%" />
+            </colgroup>
+            <tr>
+              <th>Service Engineer Name</th>
+              <td>
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.serviceEngineerName}" />
+              </td>
+              <th>Date</th>
+              <td>
+                <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                  <apex:param value="{!serviceWrapper.serviceReportInfo.signatureDate}" />
+                </apex:outputText>
+              </td>
+              <th>Engineer Signature</th>
+              <td>
+                <apex:image width="200px" height="50px" url="{!engineerSignature}" />
+              </td>
+            </tr>
+            <tr>
+              <th>Customer Name</th>
+              <td>
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.customerName}" />
+              </td>
+              <th>Position</th>
+              <td>
+                <apex:outputText value="{!serviceWrapper.serviceReportInfo.customerPosition}" />
+              </td>
+              <th>Customer Signature</th>
+              <td>
+                <apex:image width="200px" height="50px" url="{!customerSignature}" />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</apex:page>

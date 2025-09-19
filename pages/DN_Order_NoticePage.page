@@ -1,0 +1,418 @@
+<!--
+  @description       : 
+  @group             : 
+  @last modified on  : 2025-05-14
+  @last modified by  : yeongju.yun
+-->
+<apex:page standardController="Order" extensions="DN_OrderNoticeController"
+            showHeader="false" sidebar="false" standardStylesheets="false" renderAs="pdf"
+            applyHtmlTag="false" applyBodyTag="false" lightningStylesheets="false" showQuickActionVfHeader="false"
+            contentType="text/html;charset=UTF-8">
+
+    <head>
+        <meta charset="UTF-8" />
+        <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet"/>
+        <style type = "text / css">
+
+            @page {
+                @bottom-center {
+                    content: counter(page) "/" counter(pages);
+                    font-size: x-small;
+                }
+
+                
+            }
+
+            thead {
+                display: table-header-group; /* 페이지 넘어갈 때 헤더 반복 */
+            }
+
+            body {
+                font-family: Arial Unicode MS;
+            } 
+            .header_table {
+                width: 100%;
+                border-collapse: collapse;
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
+                font-size: 12px;
+                line-height: 20px;
+            }
+            /* .header_table tr,
+            .header_table td {
+                border: 1px dotted red;
+            } */
+            h2{
+                text-decoration: underline;
+                text-align: center;
+            }
+            h3{
+                text-align: right;
+            }
+            .text_right {
+                text-align: right;
+            }
+            .underline_tr td,
+            .underline_tr th {
+                border-bottom: 1px solid black;
+            }
+            .font_smaller{
+                font-size: x-small;
+            }
+
+            
+
+        </style>
+    </head>
+    <body>
+        <!-- title -->
+        <div style="display: table; width: 100%; border-collapse: collapse;">
+            <div style="display: table-row;">
+                <div style="display: table-cell; width: 35%;"></div>
+                <div style="display: table-cell; width: 25%; text-align: center;">
+                    <h2 style="text-decoration: underline; font-weight: bold;">{!title.TEXT_01}</h2>
+                </div>
+                <div style="display: table-cell; width: 40%; text-align: right;">
+                    <h3 style="font-weight: bold;">{!header.ZZSTATUS_TXT} &nbsp;&nbsp;&nbsp; {!header.APP_DATE}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- section1 -->
+        <table class="header_table">
+            <colgroup>
+                <col style="width:15%"/>
+                <col style="width:35%"/>
+                <col style="width:15%"/>
+                <col style="width:35%"/>
+            </colgroup>
+            <thead>
+                <tr>
+                    <td>{!title.TEXT_02}</td>
+                    <td>&nbsp; {!header.ERNAM_TXT}</td>
+                    <td>{!title.TEXT_57}</td>
+                    <td>&nbsp; {!header.PS_POSID}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{!title.TEXT_04}</td>
+                    <td>&nbsp; {!header.SERNR}</td>
+                    <td>{!title.TEXT_03}</td>
+                    <td>&nbsp; {!header.VBELN} &nbsp;&nbsp;&nbsp; {!header.BSTNK}</td>
+                </tr>
+                <tr class="underline_tr">
+                    <td>{!title.TEXT_05}</td>
+                    <td>&nbsp; {!header.PRT_DATE}</td>
+                    <td>{!title.TEXT_58}</td>
+                    <td>&nbsp; {!header.PSO_NO}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- section2 -->
+        <table class="header_table">
+            <colgroup>
+                <col style="width:11%"/>
+                <col style="width:14%"/>
+                <col style="width:11%"/>
+                <col style="width:14%"/>
+                <col style="width:11%"/>
+                <col style="width:14%"/>
+                <col style="width:11%"/>
+                <col style="width:14%"/>
+            </colgroup>
+            <thead>
+                <tr>
+                    <td>{!title.TEXT_07}</td>
+                    <td>&nbsp;{!header.SATNR}</td>
+                    <td>{!title.TEXT_08}</td>
+                    <td>&nbsp;{!header.ERDAT}</td>
+                    <td>{!title.TEXT_09}</td>
+                    <td>&nbsp;{!header.AEDAT}</td>
+                    <td>{!title.TEXT_10}</td>
+                    <td>&nbsp;{!header.VDATU}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="8">{!title.TEXT_06} &nbsp; {!header.SOLD_TO}</td>
+                </tr>
+                <tr>
+                    <td>{!title.TEXT_28}</td>
+                    <td>&nbsp; {!header.SOLD_CAP}</td>
+                    <td>{!title.TEXT_29}</td>
+                    <td colspan="5">&nbsp; {!header.SOLD_ORT01}</td>
+                </tr>
+                <tr>
+                    <td colspan="8">{!title.TEXT_30} &nbsp; {!header.SHIP_TO}</td>
+                </tr>
+                <tr class="underline_tr">
+                    <td>{!title.TEXT_28}</td>
+                    <td>&nbsp; {!header.SHIP_CAP}</td>
+                    <td>{!title.TEXT_29}</td>
+                    <td colspan="5">&nbsp; {!header.SHIP_ORT01}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- section3 -->
+        <table class="header_table">
+            <thead>
+                <tr>
+                    <td colspan="4">{!title.TEXT_11} &nbsp; {!header.WAERK} &nbsp; {!header.NETWR}</td>
+                    <td colspan="4">{!title.TEXT_12} &nbsp; {!header.PAYMENT}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="4">{!title.TEXT_13} &nbsp; {!header.INCOTERMS}</td>
+                    <td colspan="4">{!title.TEXT_33} &nbsp; {!header.VKBUR_T}</td>
+                </tr>
+                <tr>
+                    <td colspan="4">{!title.TEXT_15} &nbsp; {!header.SHIP_TO}</td>
+                    <td colspan="4">{!title.TEXT_35} &nbsp; {!header.ZZPR_WAR_TEXT}</td>
+                </tr>
+                <tr>
+                    <td colspan="4">{!title.TEXT_36} &nbsp;&nbsp; {!header.ZZDRAFTNO}</td>
+                    <td colspan="4">{!title.TEXT_37} &nbsp;&nbsp; {!header.ZZCAPITAL_NO}</td>
+                </tr>
+                <tr>
+                    <td colspan="4">{!title.TEXT_38} &nbsp;&nbsp; {!header.AUGRU_T}</td>
+                    <td colspan="4">{!title.TEXT_39} &nbsp;&nbsp; {!header.KVGR1_T}</td>
+                </tr>
+                <tr class="underline_tr">
+                    <td colspan="4">{!title.TEXT_32}  &nbsp;&nbsp; {!header.MORT_T} </td>
+                    <td colspan="4">{!title.TEXT_41} &nbsp;&nbsp; {!header.KVGR23_T}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- section4 -->
+        <table class="header_table">
+            <tbody>
+                <tr class="underline_tr">
+                    <td colspan="3">{!title.TEXT_42} &nbsp;&nbsp; {!header.CONFEE}</td>
+                    <td colspan="3">{!title.TEXT_43} &nbsp;&nbsp; {!header.OTHFEE}</td>
+                    <td colspan="2">{!title.TEXT_44} &nbsp;&nbsp; {!header.SUMFEE}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- section5 -->
+        <table class="header_table">
+            <tbody>
+                <tr>
+                    <td colspan="3">{!title.TEXT_45} &nbsp;&nbsp;&nbsp;&nbsp; {!header.BODYDC}</td>
+                    <td colspan="3">{!header.BODYRTE} &nbsp; {!title.TEXT_50} &nbsp; {!title.TEXT_47} &nbsp;&nbsp;&nbsp; {!header.INTDC}</td>
+                    <td colspan="2">{!header.INTRTE} &nbsp; {!title.TEXT_50}</td>
+                </tr>
+                <tr class="underline_tr">
+                    <td colspan="3">{!title.TEXT_46} &nbsp;&nbsp;&nbsp;&nbsp; {!header.OTHDC} </td>
+                    <td colspan="3">{!header.OTHRTE} &nbsp; {!title.TEXT_50} &nbsp; {!title.TEXT_48} &nbsp;&nbsp;&nbsp;{!header.SUMDC}</td>
+                    <td colspan="2">{!header.SUMRTE} &nbsp; {!title.TEXT_50} &nbsp; {!title.TEXT_53} &nbsp;&nbsp;&nbsp;{!header.STANDARD}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- section6 -->
+        <apex:variable var="rowCount" value="{!20}" />
+        <table class="header_table section">
+            <colgroup>
+                <col style="width:10%"/>
+                <col style="width:90%"/>
+            </colgroup>
+            <tbody>
+                <apex:variable var="test01Index" value="{!0}"/>
+                <apex:repeat value="{!text01}" var="desc">
+                    <apex:variable var="rowCount" value="{!rowCount + 1}" />
+                    <apex:outputPanel rendered="{! test01Index == 0}" layout="none">
+                        <tr>
+                            <td>{!title.TEXT_51}</td>
+                            <td colspan="7">{!desc.TDLINE}</td>
+                        </tr>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{! test01Index > 0}" layout="none">
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td colspan="7">{!desc.TDLINE}</td>
+                        </tr>
+                    </apex:outputPanel>
+                    <apex:variable var="test01Index" value="{!test01Index + 1}"/>
+                </apex:repeat>
+                <apex:outputPanel rendered="{! text01.size == 0}" layout="none">
+                    <apex:variable var="rowCount" value="{!rowCount + 1}" />
+                    <tr>
+                        <td>{!title.TEXT_51}</td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </apex:outputPanel>
+    
+                <apex:variable var="test02Index" value="{!0}"/>
+                <apex:repeat value="{!text02}" var="desc">
+                    <apex:variable var="rowCount" value="{!rowCount + 1}" />
+                    <apex:outputPanel rendered="{! test02Index == 0}" layout="none">
+                        <tr class="{!IF(test02Index == text02.size - 1, 'underline_tr', '')}">
+                            <td>AE상담내용</td>
+                            <td colspan="7">{!desc.TDLINE}</td>
+                        </tr>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{! test02Index > 0}" layout="none">
+                        <tr class="{!IF(test02Index == text02.size - 1, 'underline_tr', '')}">
+                            <td>&nbsp;</td>
+                            <td colspan="7">{!desc.TDLINE}</td>
+                        </tr>
+                    </apex:outputPanel>
+                    <apex:variable var="test02Index" value="{!test02Index + 1}"/>
+                </apex:repeat>
+                <apex:outputPanel rendered="{! text02.size == 0}" layout="none">
+                    <apex:variable var="rowCount" value="{!rowCount + 1}" />
+                    <tr class="underline_tr">
+                        <td>AE상담내용</td>
+                        <td colspan="7">&nbsp;</td>
+                    </tr>
+                </apex:outputPanel>
+            </tbody>
+        </table>
+
+        <!-- section7 -->
+        <apex:variable var="rowCount" value="{!rowCount + 1}" />
+        <table class="header_table">
+            <colgroup>
+                <col style="width:5%"/>
+                <col style="width:35%"/>
+                <col style="width:5%"/>
+                <col style="width:15%"/>
+                <col style="width:15%"/>
+                <col style="width:10%"/>
+                <col style="width:15%"/>
+            </colgroup>
+            <thead>
+                <tr>
+                    <td colspan="7">{!title.TEXT_52}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:variable var="incomIndex" value="{!0}"/>
+                <apex:repeat value="{!incom}" var="iRow">
+                    <apex:variable var="rowCount" value="{!rowCount + 1}" />
+                    <tr class="{!IF(incomIndex == incom.size - 1, 'underline_tr', '')}">
+                        <td>{!iRow.col1}</td>
+                        <td>{!iRow.col2}</td>
+                        <td>{!iRow.col3}</td>
+                        <td>{!iRow.col4}</td>
+                        <td class="text_right">
+                            <apex:outputPanel rendered="{! iRow.col7 == 'KRW'}" layout="none">
+                                <apex:outputText value="{0,number,#,##0}">
+                                    <apex:param value="{!iRow.col5}" />
+                                </apex:outputText>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{! iRow.col7 != 'KRW'}" layout="none">
+                                <apex:outputText value="{0,number,#,##0.00}">
+                                    <apex:param value="{!iRow.col5}" />
+                                </apex:outputText>
+                            </apex:outputPanel>
+                        </td>
+                        <td class="text_right">{!iRow.col6}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <apex:variable var="incomIndex" value="{!incomIndex + 1}"/>
+                </apex:repeat>
+            </tbody>
+        </table>
+
+        <!-- section8 -->
+        <apex:variable var="rowCount" value="{!rowCount + 1}" />
+        <table class="header_table">
+            <colgroup>
+                <col style="width:5%"/>
+                <col style="width:20%"/>
+                <col style="width:34%"/>
+                <col style="width:5%"/>
+                <col style="width:12%"/>
+                <col style="width:12%"/>
+                <col style="width:12%"/>
+            </colgroup>
+
+            <thead>
+                <tr class="underline_tr font_smaller">
+                    <th>{!title.TEXT_19}</th>
+                    <th>{!title.TEXT_20}</th>
+                    <th>{!title.TEXT_27}</th>
+                    <th>{!title.TEXT_21}</th>
+                    <th class="text_right">{!title.TEXT_22}</th>
+                    <th class="text_right">{!title.TEXT_23}</th>
+                    <th>&nbsp;{!title.TEXT_24}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!prodData}" var="prod">
+                    <apex:variable var="rowCount" value="{!rowCount + 1}" />
+                    <tr class="underline_tr font_smaller">
+                        <td>&nbsp;{!prod.SEQ}</td>
+                        <td>&nbsp;{!prod.MAKTX}</td>
+                        <td>&nbsp;{!prod.ATWTB}</td>
+                        <td>&nbsp;{!prod.QTY}</td>
+                        <td class="text_right">&nbsp;{!prod.PRICE}</td>
+                        <td class="text_right">&nbsp;{!prod.AMOUNT}</td>
+                        <td>&nbsp;{!prod.TEXT}</td>
+                    </tr>
+                    <apex:outputPanel rendered="{! rowCount == 40}" layout="none">
+                        <tr class="underline_tr font_smaller">
+                            <th>{!title.TEXT_19}</th>
+                            <th>{!title.TEXT_20}</th>
+                            <th>{!title.TEXT_27}</th>
+                            <th>{!title.TEXT_21}</th>
+                            <th class="text_right">{!title.TEXT_22}</th>
+                            <th class="text_right">{!title.TEXT_23}</th>
+                            <th>&nbsp;{!title.TEXT_24}</th>
+                        </tr>
+                    </apex:outputPanel>
+                </apex:repeat>
+            </tbody>
+        </table>
+
+        <!-- total section -->
+        <table class="header_table">
+            <colgroup>
+                <col style="width:40%"/>
+                <col style="width:20%"/>
+                <col style="width:15%"/>
+                <col style="width:15%"/>
+                <col style="width:10%"/>
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;{!title.TEXT_26}</td>
+                    <td class="text_right">&nbsp;{!header.TOTALAMT_UNIT}</td>
+                    <td class="text_right">&nbsp;{!header.TOTALAMT_NET}</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;{!title.TEXT_54}</td>
+                    <td class="text_right">&nbsp;{!header.BODYAMT_UNIT}</td>
+                    <td class="text_right">&nbsp;{!header.BODYAMT_NET}</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;{!title.TEXT_55}</td>
+                    <td class="text_right">&nbsp;{!header.OPTAMT_UNIT}</td>
+                    <td class="text_right">&nbsp;{!header.OPTAMT_NET}</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;{!title.TEXT_56}</td>
+                    <td class="text_right">&nbsp;{!header.ITMAMT_UNIT}</td>
+                    <td class="text_right">&nbsp;{!header.ITMAMT_NET}</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</apex:page>

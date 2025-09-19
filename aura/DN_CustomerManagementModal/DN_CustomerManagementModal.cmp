@@ -1,0 +1,341 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-26-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  access="global" controller="DN_CustomerManagementModalController">
+  <!-- handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <aura:handler name="modalEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCmpEvent}" />
+
+  <aura:attribute name="ObjectName" type="String" />
+  <aura:attribute name="recordId" type="String" />
+  <aura:attribute name="partsId" type="String" default="" />
+  <aura:attribute name="isAddress" type="Boolean" default="false" />
+  <aura:attribute name="address" type="Object" />
+  <!--디폴트 shipToList-->
+  <aura:attribute name="shipToList" type="List" />
+  <aura:attribute name="customer" type="Object" />
+
+  <aura:attribute name="searchCustomer" type="String" />
+  <aura:attribute name="uuid" type="String" />
+  <aura:attribute name="addressType" type="String" default="customType"/>
+  <aura:attribute name="isCustom" type="Boolean" default="false" />
+  <aura:attribute name="currentUser" type="Object" />
+  <aura:attribute name="isDealer" type="Boolean" default="false" />
+  <!--page Reference -->
+  <lightning:navigation aura:id="navService"/>
+  <!-- <aura:attribute name="partsRecord" type="Object"/>
+  <force:recordData aura:id="forceRecord"
+                            recordId="{!v.partsId}"
+                            fields="MobilePhone,Phone,Email,Fax"
+                            targetFields="{!v.partsRecord}"/> -->
+
+  <!-- Header-->
+  <article class="slds-card">
+    <!-- 모달 호출 -->
+    <div aura:id="modalContainer"></div>
+
+    <div class="header">
+      <div class="title">
+        <lightning:icon iconName="standard:employee_contact" size="small" alternativeText="" />
+        <h2>딜러 고객 {!v.recordId ==null ? '(고객 생성)' : '(고객 수정)'}</h2>
+      </div>
+      <!-- button 컴포넌트-->
+      <div class="button-wrap">
+        <!-- <aura:if isTrue="{!v.isCustom}">
+          <lightning:button iconName="utility:save" class="right" onclick="{!c.handleSave}" label="저장" />
+        </aura:if> -->
+        <lightning:button iconName="utility:save" class="right" onclick="{!c.handleSave}" label="저장" />
+          <!-- <div style="display: none;">
+            <lightning:button aura:id="saveBTN" label="Save" type="submit"  />
+          </div> -->
+          
+        
+        <lightning:button name="back" label="뒤로가기" iconName="utility:back" iconPosition="left" onclick="{!c.goBack}" />
+      </div>
+    </div>
+    <div class="body">
+      <lightning:recordEditForm aura:id="recordEditForm" objectApiName="DealerCustomer__c" recordId="{!v.recordId}"
+        onsubmit="{c.onSubmit}">
+        <div class="card-01 top-card">
+          <div class="card-header">
+            <h2>기본정보 Detail</h2>
+            <aura:if isTrue="{!v.isCustom }">
+              <aura:set attribute="else">
+                <div class="button-wrap">
+                  <!-- <lightning:button iconName="utility:search" class="right" onclick="{!c.handleCustomerSearch}"
+                    label="검색" />
+                  <lightning:button iconName="utility:save" class="right" onclick="{!c.handleSave}" label="저장" /> -->
+                </div>
+              </aura:set>
+            </aura:if>
+          </div>
+          <div class="card-body">
+            <aura:if isTrue="{!v.isCustom}">
+              <div class="field-wrap">
+                <p>담당대리점</p>
+                <div class="input-wrap">
+                  <lightning:inputField variant="label-hidden" fieldName="Dealer__c" disabled="true"
+                    aura:id="Dealer__c" required="true" />    
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>판매조직</p>
+                <div class="input-wrap">
+                  <lightning:inputField variant="label-hidden" disabled="true" fieldName="SalesOrganization__c"
+                    aura:id="Organization" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>유통채널</p>
+                <div class="input-wrap">
+                  <lightning:inputField variant="label-hidden" disabled="true" fieldName="DistributionChannel__c"
+                    aura:id="DistributionChannel" />
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>제품군</p>
+                <div class="input-wrap">
+                  <lightning:inputField variant="label-hidden" disabled="true" fieldName="Division__c"
+                    aura:id="Division" />
+                </div>
+              </div>
+              <aura:set attribute="else">
+                <div class="field-wrap">
+                  <p>판매조직</p>
+                  <div class="input-wrap">
+                    <lightning:inputField variant="label-hidden"  fieldName="SalesOrganization__c"
+                      aura:id="SalesOrganization__c" onchange="{!c.handleChange}" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>유통채널</p>
+                  <div class="input-wrap">
+                    <lightning:inputField variant="label-hidden"  fieldName="DistributionChannel__c"
+                      aura:id="DistributionChannel__c" onchange="{!c.handleChange}" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>제품군</p>
+                  <div class="input-wrap">
+                    <lightning:inputField variant="label-hidden"  fieldName="Division__c"
+                      aura:id="Division__c" onchange="{!c.handleChange}" />
+                  </div>
+                </div> 
+              </aura:set>
+            </aura:if>
+            <div class="field-wrap">
+              <p>고객코드</p>
+              <div class="input-wrap">
+                  <lightning:inputField variant="label-hidden" id="CustomerCode__c" fieldName="CustomerCode__c"
+                    disabled="true" aura:id="CustomerCode__c" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>고객사명(한글)<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:inputField required="true" class="inputfield" variant="label-hidden"  onchange="{!c.handleChange}" fieldName="Name" 
+                  aura:id="Name" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>고객사명(영어)</p>
+              <div class="input-wrap">
+                <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}"
+                  fieldName="AccountNameEnglish__c" aura:id="AccountNameEnglish__c" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>사업자번호</p>
+              <div class="input-wrap">
+                <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="BusinessNumber__c"
+                  aura:id="BusinessNumber__c" />
+              </div>
+            </div>
+            <!-- <div class="field-wrap">
+                    <p>설정일</p>
+                    <div class="input-wrap">
+                      <lightning:inputField variant="label-hidden"  fieldName="FM_CreatedDate__c" aura:id="recordForms" />
+                    </div>
+                  </div> -->
+
+            <div class="field-wrap">
+              <p>대표자명</p>
+              <div class="input-wrap">
+                <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="Representative__c"
+                  aura:id="Representative__c" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>업태구분</p>
+              <div class="input-wrap">
+                <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="TypeOfIndustry__c"
+                  aura:id="TypeOfIndustry__c" />
+              </div>
+            </div>
+            <div class="field-wrap grid-long">
+              <p>대표주소<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:input required="true"  variant="label-hidden" disabled="true"  aura:id="Address__c" data-name="Address" class="inputfield" />
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close"
+                  onclick="{!c.clearJuso}" class="clear-btn" />
+                <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                  onclick="{!c.handleJuso}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>대표전화</p>
+              <div class="input-wrap">
+                <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="Phone__c"
+                  aura:id="Phone__c" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>부품대리점 구분</p>
+              <div class="input-wrap">
+                <aura:if isTrue="{!v.isCustom}">
+                  <lightning:inputField variant="label-hidden"  disabled="true" fieldName="IsDealer__c"
+                  aura:id="IsDealer__c" />
+                  <aura:set attribute="else">
+                    <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="IsDealer__c"
+                    aura:id="IsDealer__c" />
+                  </aura:set>
+                </aura:if>
+                
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>활성화 여부</p>
+              <div class="input-wrap">
+                <aura:if isTrue="{!v.recordId ==null? true : false}">
+                  <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="IsActive__c"
+                  aura:id="IsActive__c" value="true"/>
+                  <aura:set attribute="else">
+                    <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="IsActive__c"
+                    aura:id="IsActive__c" />
+                  </aura:set>
+                </aura:if>
+                
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--부품 담당자-->
+        <lightning:recordEditForm aura:id="partEditForm" objectApiName="Contact" recordId="{!v.partsId}"
+          onsubmit="{c.onSubmit}">
+          <div class="card-02 top-card">
+            <div class="card-header">
+              <h2>부품 담당자 정보</h2>
+            </div>
+            <div class="card-body">
+              <div class="field-wrap">
+                <p>부품 담당자<abbr class="slds-required" title="required">*</abbr></p>
+                <div class="input-wrap">
+                  <lightning:input variant="label-hidden" required="true"  aura:id="PartManagerName__c" onchange="{!c.handlePartDataChange}" class="inputfield"/>
+                  <!-- <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close"
+                    onclick="{!c.clearParts}" class="clear-btn" />
+                  <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.handleParts}" /> -->
+
+                </div>
+              </div>
+              <!-- 검색 및 직접 입력 가능하도록 수정중-->
+              <div class="field-wrap">
+                <p>핸드폰</p>
+                <div class="input-wrap">
+                  <lightning:input variant="label-hidden" aura:id="PartsManagerPhone__c" onchange="{!c.handlePartDataChange}">
+                  </lightning:input>
+                  <!-- <lightning:inputField variant="label-hidden" disabled="true" fieldName="MobilePhone" aura:id="MobilePhone" /> -->
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>연락처</p>
+                <div class="input-wrap">
+                  <lightning:input variant="label-hidden" aura:id="PartsManagerContact__c" onchange="{!c.handlePartDataChange}">
+                  </lightning:input>
+                  <!-- <lightning:inputField variant="label-hidden" disabled="true" fieldName="Phone" aura:id="Phone" /> -->
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>이메일</p>
+                <div class="input-wrap">
+                  <lightning:input variant="label-hidden" aura:id="PartsManagerEmail__c" onchange="{!c.handlePartDataChange}">
+                  </lightning:input>
+                  <!-- <lightning:inputField variant="label-hidden" disabled="true" fieldName="Email" aura:id="Email" /> -->
+                </div>
+              </div>
+              <div class="field-wrap">
+                <p>팩스</p>
+                <div class="input-wrap">
+                  <lightning:input variant="label-hidden" aura:id="PartsManagerFax__c" onchange="{!c.handlePartDataChange}">
+                  </lightning:input>
+                  <!-- <lightning:inputField variant="label-hidden" disabled="true" fieldName="Fax" aura:id="Fax" /> -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </lightning:recordEditForm>
+        <!--판매정보-->
+        <aura:if isTrue="{! v.isDealer }">
+          <aura:set attribute="else">
+            <div class="card-03 top-card">
+              <div class="card-header">
+                <h2>판매정보</h2>
+              </div>
+              <div class="card-body">
+                <div class="field-wrap">
+                  <p>할인율</p>
+                  <div class="input-wrap">
+                    <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}"
+                      fieldName="DiscountRate__c" aura:id="DiscountRate__c" />
+                  </div>
+                </div>
+                <div class="field-wrap">
+                  <p>기타</p>
+                  <div class="input-wrap">
+                    <lightning:inputField variant="label-hidden" onchange="{!c.handleChange}" fieldName="Etc__c"
+                      aura:id="Etc__c" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aura:set>
+        </aura:if>
+        <!--배송정보-->
+        <div class="card-04">
+          <!--ShippingType__c-->
+          <c:DN_DealerPortalShipToList 
+            isBtn="flase" recordId="{!v.recordId}" 
+            shipToList="{!v.shipToList}" 
+            aura:id="DN_DealerPortalShipToList" 
+            addressType="{!v.addressType}">
+          </c:DN_DealerPortalShipToList>
+        </div>
+      </lightning:recordEditForm>
+    </div>
+
+
+    <!-- 주소검색 오픈-->
+    <aura:if isTrue="{!v.isAddress}">
+      <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+        class="slds-modal slds-fade-in-open community-modal">
+        <c:DN_AccountAddressPopUp isCommunity="{! v.isAddress }" uuid="{!v.uuid}" aura:id="shippingAddress" />
+      </section>
+      <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    <aura:if isTrue="{! v.isLoading }">
+      <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+  </article>
+</aura:component>

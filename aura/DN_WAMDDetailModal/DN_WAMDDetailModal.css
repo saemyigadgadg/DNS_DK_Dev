@@ -1,0 +1,217 @@
+.THIS .slds-card {
+    position: relative;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+}
+
+.THIS .slds-modal__container {
+    max-width: 70%;
+    /* 너비를 80%로 설정 */
+    width: 70%;
+    /* 너비를 80%로 설정 */
+    max-height: 100%;
+    /* 높이를 100%로 설정 */
+    height: 100%;
+    /* 높이를 100%로 설정 */
+}
+
+.THIS .slds-modal__container iframe {
+    height: 60vh;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+    border: none;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* Modal Header */
+
+.THIS .slds-modal__header {
+    position: relative;
+}
+
+.THIS .slds-modal__header p{
+    position: absolute;
+    top: 12px;
+    right: 390px;
+    color: #0176D3;
+    margin-top: 0.25rem;
+}
+
+/* Modal Body */
+
+.THIS .modal-body {
+    background-color: #f3f3f3;
+}
+
+/* Card 01 */
+.THIS .slds-modal__container .card-01 {
+    padding: 1rem 1.25rem;
+    border: 1px solid #D9D9D9;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+}
+
+.THIS .slds-modal__container .card-01 .filter-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .slds-modal__container .card-01 .field-wrap p {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+/* 📌 Modal 01 : WAMD */
+
+.THIS .modal-01 table td{
+    padding: 0.25rem !important;
+}
+/* 📌 Modal 02 : Due Out */
+
+.THIS .modal-02{
+    position: relative;
+}
+.THIS .modal-02 .button-wrap{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1rem;
+}
+
+/* 📌 Modal 03 : Due In */
+
+.THIS .modal-03 .card-01 table td .slds-input {
+    border: none !important;
+}
+.THIS .modal-03 .card-01 table td{
+    padding: 0 !important;
+}
+
+/* 📌 Modal 04 : 가용재고 */
+
+
+/* Table Align Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+/* SLDS Custom */
+
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    /* min-width: 12rem; */
+    font-size: 13px;
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    border-radius: 2px !important;
+    padding: .25rem 0.5rem !important;
+}
+
+/* Table Design */
+
+.THIS .modal-body .card-01 table{
+    table-layout: fixed;
+}
+
+.THIS .modal-body .card-01 table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body .card-01 table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .modal-body .card-01 table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+}
+
+.THIS .modal-body .card-01 table th+th,
+.THIS .modal-body .card-01 table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body .card-01 table th:first-of-type {
+    text-align: left;
+}
+
+.THIS .modal-body .card-01 table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .modal-body .card-01 table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Table Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+.THIS td .slds-input[readonly]{
+    border: none;
+}

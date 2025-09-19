@@ -1,0 +1,74 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-09-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-09-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    <div>
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+        
+        <table>
+            <colgroup>
+                <!-- <col width="5%" /> -->
+                <col width="5%" />
+                <col width="20%" />
+                <col width="30%" />
+                <col width="9%" />
+                <col width="9%" />
+                <col width="9%" />
+                <col width="9%" />
+                <col width="9%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <!-- <th class="center">
+                        <lightning-input type="checkbox"></lightning-input>
+                    </th> -->
+                    <th scope="col">고객코드</th>
+                    <th scope="col">고객사명</th>
+                    <th scope="col">주소</th>
+                    <th scope="col">대표자</th>
+                    <th scope="col">대표번호</th>
+                    <th scope="col">부품담당자</th>
+                    <th scope="col">담당자 핸드폰</th>
+                    <th scope="col">생성일자</th>
+                    <th scope="col">활성화</th>
+                    <!-- <template lwc:if={isCommunity}>
+                    </template>
+                    <template lwc:else>
+                        <th scope="col">활성화</th>
+                    </template> -->
+                    <!-- <th>기타</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={dataList} for:item="customerManagement" for:index="i">
+                    <tr key={customerManagement.Id}>
+                        <td ><a data-id={customerManagement.Id} onclick={handleDetail}>{customerManagement.CustomerCode__c}</a></td>
+                        <td>{customerManagement.Name}</td>
+                        <td>{customerManagement.FM_Address__c}</td>
+                        <td>{customerManagement.Representative__c}</td>
+                        <td>{customerManagement.Phone__c}</td>
+                        <td>{customerManagement.FM_PartsManagerName__c}</td>
+                        <td>{customerManagement.FM_PartsManagerPhone__c}</td>
+                        <td>{customerManagement.FM_CreatedDate__c}</td>
+                        <td>{customerManagement.FM_Active__c}</td>
+                        <!-- <template lwc:if={isCommunity}>
+                        </template>
+                        <template lwc:else>
+                            <td>{customerManagement.FM_Active__c}</td>
+                        </template> -->
+
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>

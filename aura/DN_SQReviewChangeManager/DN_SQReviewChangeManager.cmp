@@ -1,0 +1,154 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-29-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-13-2024   Hyerin Ro   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="Change SQ Manager">
+
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="reviewId"         type="String" />
+    <aura:attribute name="reviewType"       type="String" />
+    <aura:attribute name="searchDataList"   type="List" />
+    <aura:attribute name="selectedRows"     type="List"     default="[]" />
+    <aura:attribute name="keyword"          type="String"   default="" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.searchInit}" />
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <div class="SQSearchModal">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_REVIEW_T_CHANGEMANAGERTITLE}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+
+                    <div class="modal-body">
+                        <div class="topcard card-01" onkeyup="{! c.handleEnterSearch }">
+                            <!-- <lightning:input name="input5" class="model-input" value="{!v.searchCategory}" variant ="label-hidden" placeholder="Category.." /> -->
+                            <lightning:input aura:id="inputKeyword" name="inline-search-input" type="search" variant ="label-hidden" value="{! v.keyword }" placeholder="Keyword.." />
+                            <lightning:button label="Search" title="Search" onclick="{! c.handleClickSearch }" />
+                        </div>
+
+                        <div class="topcard card-02">
+                            <div class="table-wrap">
+                                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                    <colgroup>
+                                        <col width="5%" />
+                                        <col width="50%" />
+                                        <col width="15%" />
+                                        <col width="30%" />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <div class="slds-truncate"></div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_TEAM}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_PART}</div>
+                                            </th>
+                                            <th>
+                                                <div class="slds-truncate">{!$Label.c.DNS_REVIEW_C_REPRNAME}</div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.searchDataList}" var="row" indexVar="k">
+                                            <aura:if isTrue="{! v.reviewType == '기계' }">
+                                                <!-- <aura:if isTrue="{! row.part == '기계 담당' }"> -->
+                                                    <tr>
+                                                        <td>
+                                                            <div class="slds-truncate">
+                                                                <lightning:input type="checkbox" aura:id="checkbox" variant ="label-hidden" name="input1" value="{!k}" onchange="{! c.handleRowSelection }" />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate desc">{! row.team }</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate desc">기계 담당</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate">{! row.name }</div>
+                                                        </td>
+                                                    </tr>
+                                                <!-- </aura:if> -->
+                                            </aura:if>
+
+                                            <aura:if isTrue="{! v.reviewType == '제어' }">
+                                                <!-- <aura:if isTrue="{! row.part == '제어 담당' }"> -->
+                                                    <tr>
+                                                        <td>
+                                                            <div class="slds-truncate">
+                                                                <lightning:input type="checkbox" aura:id="checkbox" variant ="label-hidden" name="input1" value="{!k}" onchange="{! c.handleRowSelection }" />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate desc">{! row.team }</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate desc">제어 담당</div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-truncate">{! row.name }</div>
+                                                        </td>
+                                                    </tr>
+                                                <!-- </aura:if> -->
+                                            </aura:if>
+
+                                            <aura:if isTrue="{! v.reviewType == '전체' }">
+                                                <tr>
+                                                    <td>
+                                                        <div class="slds-truncate">
+                                                            <lightning:input type="checkbox" aura:id="checkbox" variant ="label-hidden" name="input1" value="{!k}" onchange="{! c.handleRowSelection }" />
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate desc">{! row.team }</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate desc">{! row.part }</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate">{! row.name }</div>
+                                                    </td>
+                                                </tr>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button title="Cancel" onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_B_Close}" />
+                    <lightning:button title="Apply" onclick="{! c.handleClickApply }" label="{!$Label.c.DNS_B_APPLY}"  variant="Brand" />
+                </div>
+            </div>
+
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+
+</aura:component>

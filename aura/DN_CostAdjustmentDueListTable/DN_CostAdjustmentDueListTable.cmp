@@ -1,0 +1,233 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-17-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-17-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable"
+  description="비용정산 대상항목 조회 테이블"
+  extends="c:DN_Helper"
+  controller="DN_WarrantyPartsManagement">
+
+  <!-- attribute -->
+	<aura:attribute name="uuid" type="String" />
+  <aura:attribute name="userInfo" type="Object" />
+  <aura:attribute name="requiredParams" type="List" description="비용정산 부품 헤더 정보 필수값"/>
+  <aura:attribute name="headerParams" type="Object" description="비용정산 부품 헤더 정보"/>
+  <aura:attribute name="partsList" type="List" />
+  <aura:attribute name="totalCompensationAmount" type="Decimal" default="0" />
+  <aura:attribute name="isAdmin" type="Boolean" default="false"/>
+  <aura:attribute name="gradeRateMap" type="Object" default="{}" />
+  <aura:attribute name="statusCode" type="String" /> <!--상태값 코드-->
+  <aura:attribute name="selectRow" type="List" /> <!--상태값 코드-->
+
+  <!--handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- LMS  -->
+	<lightning:messageChannel type="DealerPortalLMC__c"
+  onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+  
+  
+  <div class="table-wrap">
+    <!--Table Left-->
+    <div class="table-01 left-table" aura:id="leftTableDiv">
+      <table>
+        <colgroup>
+          <col width="1%"/>
+          <col width="50%"/>
+          <col width="50%"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>
+              <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" variant="label-hidden"/>
+            </th>
+            <th>오더번호</th>
+            <th>품번</th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+            <tr>
+              <td>
+                <lightning:input type="checkbox" aura:id="checkbox" accesskey="{!j}" checked="{!parts.isSelected}" />
+                <!-- onchange="{! c.handleCheckBox }" -->
+              </td>
+              <td>
+                <a name="{!parts.serviceOrderSeq}" onclick="{!c.handleDetail}">{!parts.serviceOrderSeq}</a>
+              </td>
+              <td>
+                {!parts.partName}
+              </td>
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+
+    <!--Table Right-->
+    <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+      <table>
+        <colgroup>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+          <col width="%"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>품명</th>
+            <th>청구수량</th>
+            <th>공급수량</th>
+            <th>부품금액</th>
+            <th>20% 보상금액</th>
+            <th>최종보상금액</th>
+            <th>진행상태</th>
+            <th>배송 방법</th>
+            <th>배송처</th>
+            <th>발송완료일자</th>
+            <th>배송정보</th>
+            <th>고객명</th>
+            <th>정비업체</th>
+            <th>서비스기사</th>
+            <th>접수일</th>
+            <th>확정일</th>
+            <th>기종</th>
+            <th>장비번호</th>
+            <th>공급 대리점</th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.partsList}" var="parts" indexVar="j">
+            <tr>
+              <td>
+                {!parts.partDetails}
+                <!-- 품명 -->
+              </td>
+              <td class="right">
+                <lightning:formattedNumber value="{!parts.requestQuantity}"/>
+                <!-- <lightning:input type="number" 
+                    variant="label-hidden" readonly="true" value="{!parts.requestQuantity}" /> -->
+                <!-- 청구수량 -->
+              </td>
+              <td class="right">
+                <lightning:formattedNumber value="{!parts.giQuantity}"/>
+                <!-- <lightning:input type="number" 
+                    variant="label-hidden" readonly="true" value="{!parts.giQuantity}" /> -->
+                <!-- 공급수량 -->
+              </td>
+              <td class="right">
+                <lightning:formattedNumber value="{!parts.customerPrice}"/>
+                <!-- <lightning:input type="number" 
+                    variant="label-hidden" readonly="true" value="{!parts.customerPrice}" /> -->
+                <!-- 부품금액 -->
+              </td>
+              <td class="right">
+                <lightning:formattedNumber value="{!parts.compensationAmount}"/>
+                <!-- <lightning:input type="number" 
+                    variant="label-hidden" readonly="true" value="{!parts.compensationAmount}" /> -->
+                <!-- 20% 보상금액 -->
+              </td>
+              <td class="right">
+                <lightning:formattedNumber value="{!parts.finalCompensationAmount}"/>
+                <!-- <lightning:input type="number" 
+                    variant="label-hidden" readonly="true" value="{!parts.finalCompensationAmount}" /> -->
+                <!-- 최종 보상금액 -->
+              </td>
+              <td>
+                {!parts.statusLabel}
+                <!-- 진행상태 -->
+              </td>
+              <td>
+                {!parts.shippingTypeLabel}
+                <!-- 배송방법 -->
+              </td>
+              <td>
+                {!parts.shipTo}
+                <!-- 배송처 -->
+              </td>
+              <td>
+                {!parts.deliveryDate}
+                <!-- 발송완료일자 -->
+              </td>
+              <td>
+                <!-- 배송정보 - 배송예정일 -->
+                
+                <lightning:formattedDateTime value="{!parts.plannedDeliveryDateTime}" year="numeric" month="2-digit" day="2-digit" weekday="narrow" hour="2-digit" minute="2-digit" />
+                
+              </td>
+              <td>
+                {!parts.customerName}
+                <!-- 고객명 -->
+              </td>
+              <td>
+                {!parts.centerName}
+                <!-- 정비업체 -->
+              </td>
+              <td>
+                {!parts.serviceEngineer}
+                <!-- 서비스기사 -->
+              </td>
+              <td>
+                {!parts.approvalDate}
+                <!-- 접수일 -->
+              </td>
+              <td>
+                {!parts.confirmDateStr}
+                <!-- 확정일 -->
+              </td>
+              <td>
+                {!parts.machineName}
+                <!-- 기종 -->
+              </td>
+              <td>
+                {!parts.equipment}
+                <!-- 장비번호 -->
+              </td>
+              <td>
+                {!parts.dealerName}
+                <!-- 공급대리점 -->
+              </td>
+              
+            </tr>
+          </aura:iteration>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="table-wrap foot-table">
+    <table>
+      <colgroup>
+        <col width="80%"/>
+        <col width="20%"/>
+      </colgroup>
+      <tfoot>
+        <tr>
+          <td class="right">보상금액 총합</td>
+          <td class="right"> <lightning:formattedNumber value="{!v.totalCompensationAmount}"/> </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</aura:component>

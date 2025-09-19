@@ -1,0 +1,137 @@
+.highlight-field {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+}
+
+.highlight-field lightning-input {
+    --slds-c-input-color-border: #ffc107;
+    --slds-c-input-shadow-focus: 0 0 3px #ffc107;
+}
+
+.slds-image__crop {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding-top: 56.25%;
+}
+
+.slds-image__crop img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slds-file {
+    background: #f3f3f3;
+    border: 1px solid #dddbda;
+    border-radius: .25rem;
+    padding: .5rem;
+}
+
+.slds-file__crop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+}
+
+.slds-file__title {
+    text-align: center;
+    margin-top: .5rem;
+    font-size: .75rem;
+}
+
+.slds-box.slds-theme_shade {
+    background-color: #f3f3f3;
+    border: 1px solid #dddbda;
+}
+
+.slds-text-body_regular {
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: #3e3e3c;
+}
+
+.slds-form-element__label {
+    font-size: .75rem;
+    color: #706e6b;
+    margin-bottom: .25rem;
+}
+
+.progress-bar-value {
+    background: rgb(94, 180, 255);
+    height: 100%;
+    transition: width .4s ease;
+}
+
+.progress-bar-25 {
+    width: 25%;
+}
+
+.progress-bar-50 {
+    width: 50%;
+}
+
+.progress-bar-75 {
+    width: 75%;
+}
+
+.progress-bar-100 {
+    width: 100%;
+}
+
+.slds-file__crop img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.slds-file_center-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #f3f3f3;
+}
+
+.slds-file__title {
+    background: #ffffff;
+    border-top: 1px solid #dddbda;
+}
+
+.slds-file__text {
+    font-size: 0.75rem;
+    line-height: 1.25;
+    color: #3e3e3c;
+}
+
+.slds-file_card {
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.1);
+    max-width: 150px;
+    margin: 0 auto;
+}
+
+.slds-file__crop_16-by-9 {
+    padding-top: 100%;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    max-width: 150px;
+    margin: 0 auto;
+}
+
+.slds-file__crop_16-by-9 img,
+.slds-file__crop_16-by-9 .slds-file_center-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

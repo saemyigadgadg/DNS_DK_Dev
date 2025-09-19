@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Cash Installation</fullName>
+        <default>false</default>
+        <label>Cash Installation</label>
+    </customValue>
+    <customValue>
+        <fullName>Government Policy Loan</fullName>
+        <default>false</default>
+        <label>Government Policy Loan</label>
+    </customValue>
+    <customValue>
+        <fullName>Other Financing (Rental)</fullName>
+        <default>false</default>
+        <label>Other Financing (Rental)</label>
+    </customValue>
+    <customValue>
+        <fullName>Wholesale Selling (5 Days)</fullName>
+        <default>false</default>
+        <label>Wholesale Selling (5 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>Wholesale Selling (30 Days)</fullName>
+        <default>false</default>
+        <label>Wholesale Selling (30 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>Wholesale Selling (45 Days)</fullName>
+        <default>false</default>
+        <label>Wholesale Selling (45 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>Capital Loan - Interest Free</fullName>
+        <default>false</default>
+        <label>Capital Loan - Interest Free</label>
+    </customValue>
+    <customValue>
+        <fullName>Capital Loan - 12M</fullName>
+        <default>false</default>
+        <label>Capital Loan - 12M</label>
+    </customValue>
+    <customValue>
+        <fullName>Capital Loan - 24M</fullName>
+        <default>false</default>
+        <label>Capital Loan - 24M</label>
+    </customValue>
+    <customValue>
+        <fullName>Capital Loan - 36M</fullName>
+        <default>false</default>
+        <label>Capital Loan - 36M</label>
+    </customValue>
+    <customValue>
+        <fullName>Capital Loan - 48M</fullName>
+        <default>false</default>
+        <label>Capital Loan - 48M</label>
+    </customValue>
+    <customValue>
+        <fullName>Capital Loan - 60M</fullName>
+        <default>false</default>
+        <label>Capital Loan - 60M</label>
+    </customValue>
+    <customValue>
+        <fullName>Net-Off by Sales Policy</fullName>
+        <default>false</default>
+        <label>Net-Off by Sales Policy</label>
+    </customValue>
+    <customValue>
+        <fullName>Cash 100% for Domestic</fullName>
+        <default>false</default>
+        <label>Cash 100% for Domestic</label>
+    </customValue>
+    <customValue>
+        <fullName>Wholesale Selling (60 Days)</fullName>
+        <default>false</default>
+        <label>Wholesale Selling (60 Days)</label>
+    </customValue>
+    <customValue>
+        <fullName>Cash Payment</fullName>
+        <default>true</default>
+        <label>Cash Payment</label>
+    </customValue>
+    <customValue>
+        <fullName>C013</fullName>
+        <default>false</default>
+        <label>7일 이내 수금</label>
+    </customValue>
+    <masterLabel>Terms of Payment(삭제예정)</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

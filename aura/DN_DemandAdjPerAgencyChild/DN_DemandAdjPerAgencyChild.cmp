@@ -1,0 +1,252 @@
+<!--
+  @author            : Jun-Hyo Hwang 
+  @Description       : 대리점별 수요조정 (Yeong-Deok Seo님 대리점 자재 종합조회 참고)
+  @last modified on  : 02-27-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-06-18   junhyo.hwang@concentrix.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  controller="DN_DemandAdjPerAgencyController">
+  <aura:attribute name="lineItemList" type="List" />
+  <aura:attribute name="materialCodeDate" type="String" default="" />
+  <aura:attribute name="isEdit" type="Boolean" default="false"/>
+  <aura:attribute name="ordQtySum" type="Integer" default="0" />
+  <aura:attribute name="curQtySum" type="Integer" default="0" />
+  <aura:attribute name="adjQtySum" type="Integer" default="0" />
+  <aura:attribute name="selectedPart" type="Object" />
+  <!-- <aura:attribute name="lineItemList" type="List" default="[{'docno':'22323','itemamount':'20','doctype':'Sales Order'},{'docno':'22323','itemamount':'20','doctype':'Sales Order'}]"/> -->
+
+  <!-- registerEvent -->
+
+  <!-- handler -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+  
+  <!-- 검색 결과 테이블 -->
+  <!-- 📌 Header -->
+  <!-- <div class="header">
+    <aura:if isTrue="{!v.materialCode != ''}">
+      <div class="title">
+        <aura:expression value="{!' ' + v.materialCode + ' (' + v.referenceDate + ')'}" />
+      </div>
+      <div class="button-wrap">
+        <aura:if isTrue="{!!v.isRegion}">
+          <lightning:button iconName="standard:save" name="searchItems" label="저장" onclick="" />
+        </aura:if>
+      </div>
+    </aura:if>
+  </div> -->
+  <!-- <div class="header">
+    <div class="button-wrap">
+      <lightning:button iconName="standard:save" name="searchItems" label="저장" onclick="{!c.handleSave}" />
+    </div>
+  </div> -->
+ 
+  
+  <!-- 📌 Body -->
+  <div class="card-02 child-table">
+    <div class="table-wrap">
+      <table style="height: 20px;" clas="table-layout">
+        <colgroup>
+          <col style="width: 10% " />
+          <col style="width: 4%" />
+          <col style="width: 6%" />
+          <col style="width: 6%" />
+          <col style="width: 6%" />
+          <col style="width: 6%" />
+          <col style="width: 10%" />
+          <col style="width: 5%" />
+          <col style="width: 5%" />
+          <col style="width: 5%" />
+          <col style="width: 4%" />
+          <col style="width: 5%" />
+          <col style="width: 10%" />
+          <col style="width: 6%" />
+          <col style="width: 10%" />
+        </colgroup>
+        <thead>
+          <tr class="slds-line-height_reset">
+            <th scope="col">Doc.No.</th>
+            <th scope="col">Item</th>
+            <th scope="col">Doc.Type</th>
+            <th scope="col">Doc.Date</th>
+            <th scope="col">Material</th>
+            <th scope="col">Last Parts</th>
+            <th scope="col">Material Description</th>
+            <th scope="col">∑Ord. Qty</th>
+            <th scope="col">∑Cur. Qty</th>
+            <th scope="col">∑Adj. Qty</th>
+            <th scope="col">Unit</th>
+            <th scope="col">Sold-to</th>
+            <th scope="col">Sold-to Name</th>
+            <th scope="col">Sold-to Address</th>
+            <th scope="col">Customer Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <aura:iteration items="{!v.lineItemList}" var="item" indexVar="i">
+            <tr class="slds-hint-parent" style="scrollbar-width: none;">
+              <td data-label="docno">
+                <div class="slds-truncate" title="docno">
+                  <!-- <lightning:input type="text" id="repl" name="input1" variant="label-hidden" value="
+                    readonly="false" /> -->
+                    {!item.orderNumber}
+                </div>
+              </td>
+              <td data-label="orderItemNumber">
+                <div class="slds-truncate" title="orderItemNumber">
+                  {!item.orderItemNumber}
+                </div>
+              </td>
+              <td data-label="orderType">
+                <div class="slds-truncate" title="orderType">
+                  {!item.orderType}
+                </div>
+              </td>
+              <td data-label="orderDate">
+                <div class="slds-truncate" title="orderDate">
+                  {!item.orderDate}
+                </div>
+              </td>
+              <td data-label="partCode">
+                <div class="slds-truncate" title="partCode">
+                  {!item.partCode}
+                </div>
+              </td>
+              <td data-label="lastParts">
+                <div class="slds-truncate" title="lastParts">
+                  {!item.lastParts}
+                </div>
+              </td>
+              <td data-label="partDetails">
+                <div class="slds-truncate" title="partDetails">
+                  {!item.partDetails}
+                </div>
+              </td>
+              <td data-label="orderQuantity" class="right">
+                <div class="slds-truncate" title="orderQuantity">
+                  {!item.orderQuantity}
+                </div>
+              </td>
+              <td data-label="currentQuantity" class="right">
+                <aura:if isTrue="{!v.isEdit}">
+                  <div class="slds-truncate" title="currentQuantity">
+                    {!item.currentQuantity}
+                  </div>
+                  <aura:set attribute="else">
+                    <div class="slds-truncate" title="currentQuantity">
+                      <lightning:input type="text" id="desc" name="input9" variant="label-hidden" value="{!item.currentQuantity}" onchange="{!c.handleChage}"
+                      />
+                    </div>
+                  </aura:set>
+                  
+                </aura:if>
+                
+              </td>
+              <td data-label="adJustQuantity " class="right">
+                <div class="slds-truncate" title="adJustQuantity">
+                  <lightning:formattedNumber  value="{!item.adJustQuantity}" />
+                </div>
+              </td>
+              <td data-label="unit">
+                <div class="slds-truncate" title="unit">
+                  {!item.unit}
+                  <!-- <lightning:input type="text" id="desc" name="input11" variant="label-hidden" value="{!item.unit}"
+                    readonly="false" /> -->
+                </div>
+              </td>
+              <td data-label="soldToCode">
+                <div class="slds-truncate" title="soldToCode">
+                  {!item.soldToCode}
+                  <!-- <lightning:input type="text" id="desc" name="input12" variant="label-hidden" value="{!item.soldToCode}"
+                    readonly="false" /> -->
+                </div>
+              </td>
+              <td data-label="soldToName">
+                <div class="slds-truncate" title="soldToName">
+                  {!item.soldToName}
+                  <!-- <lightning:input type="text" id="desc" name="input13" variant="label-hidden"
+                    value="{!item.soldToName}" readonly="false" /> -->
+                </div>
+              </td>
+              <td data-label="soldToAddress">
+                <div class="slds-truncate" title="soldToAddress">
+                  {!item.soldToAddress}
+                  <!-- <lightning:input type="text" id="desc" name="input14" variant="label-hidden"
+                    value="{!item.soldToAddress}" readonly="false" /> -->
+                </div>
+              </td>
+              <td data-label="customerPrice">
+                <div class="slds-truncate right" title="customerPrice" >
+                  <lightning:formattedNumber  value="{!item.customerPrice}" />
+                  <!-- <lightning:input type="text" id="desc" name="input15" variant="label-hidden" value="{!item.customerPrice}"
+                    readonly="false" /> -->
+                </div>
+              </td>
+            </tr>
+          </aura:iteration>
+          <tr>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td  class="right" style="background-color: #fffbe2; ">합계</td>
+            <td  class="right" style="background-color: #fffbe2; ">{!v.ordQtySum}</td>
+            <td  class="right" style="background-color: #fffbe2; ">{!v.curQtySum}</td>
+            <td  class="right" style="background-color: #fffbe2; ">{!v.adjQtySum}</td> 
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+            <td ></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- <div class="table-wrap tfoot-table">
+      <table>
+        <colgroup>
+          <col style="width: 6% " />
+          <col style="width: 4%" />
+          <col style="width: 6%" />
+          <col style="width: 6%" />
+          <col style="width: 6%" />
+          <col style="width: 6%" />
+          <col style="width: 10%" />
+          <col style="width: 5%" />
+          <col style="width: 5%" />
+          <col style="width: 5%" />
+          <col style="width: 4%" />
+          <col style="width: 5%" />
+          <col style="width: 10%" />
+          <col style="width: 6%" />
+          <col style="width: 10%" />
+        </colgroup>
+        <tfoot>
+          <tr class="slds-line-height_reset">
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col" class="right" style="background-color: #fffbe2; ">합계</td>
+            <td scope="col" class="right" style="background-color: #fffbe2; ">{!v.ordQtySum}</td>
+            <td scope="col" class="right" style="background-color: #fffbe2; ">{!v.curQtySum}</td>
+            <td scope="col" class="right" style="background-color: #fffbe2; ">{!v.adjQtySum}</td> <
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+            <td scope="col"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div> -->
+  </div>
+</aura:component>

@@ -1,0 +1,107 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-03-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component  
+  controller="DN_DealerPortalDisplayController" implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper"
+  description="딜러포탈 대리점재고관리 공통 컴포넌트">
+    <!--implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"-->
+    
+    <!-- 화면에 쓰일 공통 속성 / Aura Design에 사용하는 프로퍼티 -->
+    <aura:attribute name="DisplayKey" type="String" />
+    <aura:attribute name="ObjectName" type="String" />
+    <aura:attribute name="DataTableComponent" type="String" />
+
+    <!-- 정렬기준 필드 Design으로 관리할 예정-->
+    <!-- 페이징 처리  -->
+    <aura:attribute name="designItemsPerPage" type="String" />
+    <aura:attribute name="designPagesPerGroup" type="String" />
+    <aura:attribute name="itemsPerPage" type="Integer" default="15" />
+    <aura:attribute name="pagesPerGroup" type="Integer" default="5" />
+    <aura:attribute name="currentPage" type="Integer" default="1"/> 
+    <aura:attribute name="isPageing" type="Boolean" default="true" /> <!--isPageing-->
+    <aura:attribute name="orderByField" type="String" default="order by LastModifiedDate"/>
+    <aura:attribute name="orderBy" type="String" default ="desc" />
+    
+    <!--화면에 고유한 키-->
+    <aura:attribute name="uuid" type="String" /> 
+    <!-- 현재 대리점의 정보 및 유저 정보-->
+    <aura:attribute name="userInfo" type="Object" /> 
+
+    <!-- 데이터 목록-->
+    <aura:attribute name="dateList" type="List" default="[]" />
+
+    <!--MDT 설정-->
+    <aura:attribute name="displayMdt" type="Object" />
+    <aura:attribute name="displayFilterMdt" type="List" />
+    <aura:attribute name="displayButtonMdt" type="List" />
+    <aura:attribute name="isInit" type="Boolean" default="false" />
+    <!-- Data List -->
+    <aura:attribute name="dataList" type="List" />
+    <!--LMS -->
+    <lightning:messageChannel type="DealerPortalLMC__c"
+            onMessage="{!c.setSubscriptionLMC}" aura:id="dealerPortalLMC" />
+    <!--handler-->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />  
+  	<!--page Reference -->
+    <lightning:navigation aura:id="navService"/>
+    <!-- overlay -->
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    
+
+  <article class="slds-card no-print">
+    <!--모달은 해당 부분 호출-->
+    <div aura:id="modalContainer"></div>
+    
+
+    <!-- Header-->
+    <div class="header">
+        <div class="title">
+            <lightning:icon iconName="{!v.displayMdt.iconName}" size="small" alternativeText="{!v.displayMdt.displayName}" />
+            <h2>{!v.displayMdt.displayName}</h2>
+        </div>
+        <!-- button 컴포넌트-->
+        <aura:if isTrue="{!v.isInit}">
+            <c:dN_DealerPortalButton objectName="{!v.ObjectName}" uuid="{!v.uuid}" displayButtonMdtList="{!v.displayButtonMdt}" class="button-wrap"/>
+            <!-- dataList-->
+            <!-- <aura:set attribute="else">
+            </aura:set> -->
+        </aura:if>
+    </div>
+
+    <!-- Body 필터 컴포넌트--> <!--filterSection-->
+    <div class="body">
+      <!-- <aura:if isTrue="{!v.isInit}">  -->
+        <div aura:id="Filter" />
+        <!-- <c:dN_DealerPortalFilter uuid="{!v.uuid}" displayFilterMdtList="{!v.displayFilterMdt}" /> -->
+      <!-- </aura:if> -->
+
+      <!-- 테이블-->
+      <div class="card-02 top-card" >
+        <div class="table-wrap " aura:id="dataTable" />
+
+        <!-- 페이지 -->
+        <div class="pagination-wrap">
+          <aura:if isTrue="{!v.isInit}">
+            <aura:if isTrue="{!v.isPageing}">
+              <c:dN_DealerPortalQueryPage
+                uuid="{!v.uuid}"
+              ></c:dN_DealerPortalQueryPage>
+            </aura:if>
+          </aura:if>
+        </div>
+      </div>
+    </div>
+    <!-- 세션 관리-->
+    <!-- <c:dN_DealerPortalSession></c:dN_DealerPortalSession> -->
+  </article>
+
+</aura:component>

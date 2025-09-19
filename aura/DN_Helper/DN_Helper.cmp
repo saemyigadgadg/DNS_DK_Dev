@@ -1,0 +1,31 @@
+<aura:component extensible="true">
+    <ltng:require scripts="{!join(',', $Resource.ExcelJS + '/unpkg/exceljs.min.js', $Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js')}" afterScriptsLoaded="{! c.handleScriptsLoaded }" />
+    <!-- <ltng:require scripts="{!$Resource.ExcelJS + '/unpkg/exceljs.min.js'}" afterScriptsLoaded="{! c.handleScriptsLoaded }" asdfasfasf /> -->
+    <aura:attribute name="isExcelJsLoading" type="Boolean" default="false" />
+    <aura:attribute name="isLoading" type="Boolean" default="false" />
+    <aura:attribute name="openUrl" type="String" />
+    <aura:attribute name="headerData" type="List" /> <!--엑셀 헤더 데이터-->
+    <aura:attribute name="excelName" type="String" /> <!--엑셀 파일명-->
+    <aura:attribute name="excelData" type="List" /> <!--엑셀 다운로드-->
+    <aura:attribute name="excelGRData" type="List" /> <!--입출고증-->
+    <aura:attribute name="uploadData" type="List" /> <!--엑셀 업로드-->
+    <aura:attribute name="excelField" type="List" /> <!--엑셀 필드 순서 설정-->
+    <aura:attribute name="blob" type="Object" /> <!--액셀 다운로드 시 파일 객체-->
+    <aura:attribute name="historyBackData" type="Object" /> <!-- 페이지 이동 시 기존의 검색정보보-->
+    <aura:if isTrue="{! v.isLoading }">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+    </aura:if>
+    <aura:import library="lightning:confirm" property="LightningConfirm" />
+    <!-- 
+    1. 공통 Apex Call  
+    2. Toast Message
+    3. Navigation 
+        -상속받은 자식 Component 에 <lightning:navigation aura:id="navService"/> 필수적으로 선언 필요
+    4. PadStart
+    5. spinner 공통으로 사용하기 위해 추가함
+    6. URL이동또는 URL을 사용하는 경우 openUrl에 재정의해서 사용
+    7. lightning:confirm aura 라이브러리 사용(추후 컨핌창 호출이 필요한 경우 사용용) 
+    -->
+    
+    {!v.body}
+</aura:component>

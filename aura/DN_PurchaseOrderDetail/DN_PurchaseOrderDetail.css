@@ -1,0 +1,343 @@
+.THIS .slds-modal__container {
+    width: 60vw !important;
+    max-width: none !important;
+    min-width: 1024px !important;
+}
+
+.THIS .container-03.slds-modal__container {
+    width: 70%;
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background-color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+}
+
+/* Header */
+
+.THIS .slds-modal__header {
+    position: relative;
+}
+
+.THIS .slds-modal__header .button-wrap {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+}
+
+.THIS .slds-modal__header .slds-button {
+    border: 1px solid #C9C9C9;
+}
+
+/* Card Header */
+.THIS .card-header {
+    margin-bottom: 1rem !important;
+}
+
+.THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 14px;
+    color: #444;
+}
+
+/* body */
+
+.THIS .slds-modal__content {
+    background-color: #F3F3F3;
+    overflow-y: auto;
+}
+
+.THIS .slds-modal__content .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Cards */
+.THIS .table-wrap {
+    height: fit-content !important;
+    max-height: calc(100vh - 20rem);
+}
+
+.THIS .slds-modal__content .card-01 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 0;
+    column-gap: 1.5rem;
+}
+
+.THIS .card-01 .field-wrap {
+    padding: .5rem 0;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.THIS .card-01 p {
+    font-weight: 600;
+    text-wrap: nowrap;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element__control {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.THIS .card-01 .input-wrap .slds-form-element,
+.THIS .card-01 .input-wrap .slds-input {
+    flex: auto;
+}
+
+.THIS .card-02 .slds-card__header {
+    padding: 0;
+    margin: 0;
+}
+
+.THIS .card-02 .slds-card__header h2 {
+    font-size: 1rem;
+    margin-left: 0.25rem;
+}
+
+/* Table Design */
+
+.THIS .modal-body .card-02 table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+    height: 30px;
+}
+
+.THIS .modal-body .card-02 table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .modal-body .card-02 table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+}
+
+.THIS .modal-body .card-02 table th+th,
+.THIS .modal-body .card-02 table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .modal-body .card-02 table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .modal-body .card-02 table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Table Class */
+
+.THIS .center {
+    text-align: center !important;
+}
+
+.THIS .left {
+    text-align: left !important;
+}
+
+.THIS .right {
+    text-align: right !important;
+}
+
+/* Container-01 */
+
+.THIS .container-01 .card-01 .input-wrap {
+    width: 100% !important;
+}
+
+.THIS .container-01 .card-01 {
+    column-gap: 2rem;
+}
+
+.THIS .container-01 .card-01 .field-wrap .slds-input {
+    padding: 0 !important;
+}
+
+/* Container 02 */
+
+.THIS .container-02 .card-01{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 0;
+    column-gap: 1.5rem;
+}
+
+.THIS .container-02 .card-01 .field-wrap:last-of-type{
+    grid-column: span 3;
+}
+
+.THIS .container-02 .card-02 .table-wrap{
+    overflow: auto;
+}
+
+.THIS .container-02 .card-02 .slds-card__header {
+    margin-bottom: 1rem;
+}
+
+.THIS .container-02 .card-02 table td .slds-input {
+    min-width: 4rem;
+}
+
+.THIS .container-02 .card-02 .table-wrap th .slds-truncate{
+    height: 1.25rem;
+}
+
+/* Container 03 */
+
+.THIS .container-03 table {
+    border: 1px solid #C9C9C9;
+}
+
+/* Dropdown */
+
+.THIS .container-03 .dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    position: absolute;
+    z-index: 2;
+    left: -0.75rem;
+    top: 1.5rem;
+    box-shadow: 1px 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.THIS .container-03 .dropdown a {
+    text-wrap: nowrap;
+}
+
+.THIS .container-03 .dropdown span {
+    color: #EA001E;
+}
+
+.THIS .container-03 .card-01 {
+    gap: 1.5rem;
+}
+
+.THIS .container-03 .card-01 .field-wrap {
+    width: unset;
+}
+
+.THIS .container-03 .card-01 .input-wrap {
+    display: flex;
+    gap: 0;
+}
+
+.THIS .container-03 .card-01 .input-wrap.indent {
+    position: relative;
+}
+
+.THIS .container-03 .card-01 .input-wrap.indent .slds-input {
+    text-indent: 1.5rem;
+}
+
+.THIS .container-03 .card-01 .slds-button_neutral {
+    text-wrap: nowrap;
+}
+
+.THIS .container-03 .card-01 .slds-button {
+    padding: 0 0.75rem !important;
+}
+
+.THIS .container-03 .card-01 p {
+    width: unset;
+}
+
+.THIS .container-03 .card-02 .slds-input {
+    border: none !important;
+}
+
+.THIS .container-03 .card-02 .name {
+    background-color: #F3F3F3;
+    font-weight: 700;
+}
+
+.THIS .container-03 .card-02 .input-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 📌 Sticky Tables */
+
+.THIS .modal-body .card-02 .table-wrap,
+.THIS .card-02 .table-wrap {
+    display: flex;
+    height: 16rem;
+    border: 1px solid #d9d9d9;
+}
+
+/* Sticky : Table 01 */
+
+.THIS .modal-body .card-02 .table-01 {
+    flex: 1;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    border-right: 1px solid #d9d9d9
+}
+
+
+.THIS .modal-body .card-02 .table-01::-webkit-scrollbar {
+    /* 두 테이블 스크롤바 유무 차이로 인한 단차 없애기 */
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+
+/* Sticky : Table 02 */
+
+.THIS .modal-body .card-02 .table-02 {
+    flex: 1;
+    overflow-x: scroll;
+}
+
+
+/* Modal Background */
+
+.THIS .modalInModal {
+    z-index: 0 !important;
+}
+
+.THIS .basicInfoModal .card-01 .field-wrap {
+    border-bottom: 0;
+}
+
+/* SLDS Custom */
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: 0 !important;
+    font-size: 13px;
+}

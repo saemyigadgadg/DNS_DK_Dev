@@ -1,0 +1,505 @@
+.THIS .slds-modal__container {
+  max-width: calc(100vw - 7rem);
+  width: 80rem;
+  min-width: 70%;
+  max-height: 100%;
+  height: 100%;
+  padding-bottom: 2rem;
+  font-size: 12px;
+}
+
+.THIS .slds-modal__content {
+  height: 44rem !important;
+  max-height: calc(100vh - 11rem) !important;
+}
+
+.THIS.slds-modal__container.serviceOrder {
+  max-width: unset;
+  width: 100%;
+  min-width: 70%;
+  padding: 0;
+}
+
+/* .THIS.slds-modal__container {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
+.THIS .slds-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+} */
+
+
+/* selectButton */
+.THIS .slds-modal__header .selectButton {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Modal Close */
+
+.THIS .slds-modal__close {
+  position: absolute;
+  top: -2.25rem;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: none;
+}
+
+.THIS .slds-modal__close .slds-icon_container:hover {
+  opacity: 0.75;
+}
+
+.THIS .slds-modal__close .slds-icon-utility-close {
+  --slds-c-icon-color-foreground: unset;
+}
+
+
+/* Modal Body */
+
+.THIS .slds-p-around_large,
+.THIS .slds-p-around_medium {
+  padding: 0;
+}
+
+.THIS .modal-body {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  border-radius: 0 0 0.25rem 0.25rem;
+  max-height: calc(100vh - 12rem) !important;
+  height: 80% !important;
+  background: #f9f9f9;
+  padding: 1rem;
+  padding-bottom: 1.5rem;
+  overflow: auto;
+}
+
+/* Loading Spinner */
+
+.THIS .slds-spinner_container:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  top: 100%;
+  height: 14.5rem;
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+.THIS .modal-body:has(.slds-spinner) {
+  overflow: hidden;
+}
+
+
+
+/* Container Grid */
+
+.THIS .container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  align-content: stretch;
+  gap: 0.75rem;
+  flex: auto;
+}
+
+.THIS .container .box-01 {
+  grid-area: 1 / 1 / 3 / 4;
+}
+
+.THIS .container .box-02 {
+  grid-area: 1 / 4 / 2 / 5;
+}
+
+.THIS .container .box-03 {
+  grid-area: 2 / 4 / 3 / 5;
+}
+
+.THIS .container .box-04 {
+  grid-area: 3 / 4 / 4 / 5;
+}
+
+.THIS .container .box-05 {
+  grid-area: 3 / 1 / 6 / 2;
+}
+
+.THIS .container .box-06 {
+  grid-area: 3 / 2 / 6 / 4;
+  max-height: 33.6rem;
+  min-height: 33.6rem;
+}
+
+.THIS .container .box-07 {
+  grid-area: 4 / 4 / 6 / 5;
+  max-height: 21.875rem;
+  min-height: 21.875rem;
+}
+
+/* Common Detail Styles */
+
+.THIS .container>div {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.THIS .modal-body .container h3 {
+  font-size: 1em;
+  font-weight: 600;
+  color: #014486;
+  margin: 0.25rem;
+}
+
+.THIS .modal-body .container h3:before {
+  content: '';
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: #0176D3;
+  margin-right: 0.25rem;
+}
+
+.THIS .container .table-wrap {
+  flex: auto;
+  overflow: auto;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  background-color: #fff;
+}
+
+.THIS .container .field-wrap .input-wrap span {
+  text-wrap: nowrap;
+}
+
+.THIS .container .field-wrap .slds-form-element {
+  flex: auto;
+}
+
+/* Box 01 위지조회 맵 */
+
+.THIS .container .box-01 {
+  border: 1px solid #d9d9d9;
+}
+
+/* Box 02, 03, 04 */
+
+.THIS .container .box-02 .table-wrap,
+.THIS .container .box-03 .table-wrap,
+.THIS .container .box-04 .table-wrap {
+  max-height: 8rem;
+  min-height: 8rem;
+}
+
+/* Box 05 - 주소 조회 */
+
+.THIS .container .box-05 {
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  gap: 0.5rem;
+}
+
+.THIS .container .box-05 .field-wrap:has(.input-wrap-2) {
+  /* overflow: auto;  */
+  /* max-height: 45%;  */
+  border-top: 1px solid #d9d9d9;
+}
+
+.THIS .container .box-05 .input-wrap-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+}
+
+.THIS .container .box-05 .input-wrap-2 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.THIS .container .box-05 .table-wrap {
+  overflow-y: auto;
+  max-height: 15.75rem;
+  min-height: 15.75rem;
+}
+
+.THIS .container .box-05 .table-wrap thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.THIS .container .box-05 .table-wrap tbody td {
+  cursor: pointer;
+}
+
+.THIS .container .box-05 .table-wrap tbody td:hover {
+  background-color: #f8f8f8;
+}
+
+.THIS .container .box-05 .input-wrap-2 .input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.THIS .container .box-05 .slds-form-element {
+  width: 100%;
+}
+
+.THIS .container .box-05 .label {
+  width: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.THIS .container .box-05 .label span {
+  display: inline-block;
+}
+
+/* Box 06 - 서비스요원 정보 */
+
+.THIS .container .box-06 .box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* .THIS .container .box-06 .table-wrap {
+  max-height: 33.6rem;
+  min-height: 33.6rem;
+} */
+
+.THIS .container .box-06 .box-header .filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.THIS .container .box-06 .box-header .filter .slds-form-element__control .slds-form-element__help {
+  display: none;
+}
+
+.THIS .container .box-06 .box-header .filter .slds-form-element__control {
+  margin-bottom: -0.5rem;
+}
+
+.THIS .container .box-06 .box-header .slds-button+.slds-button {
+  margin-left: 0;
+}
+
+.THIS .container .box-06 table th {
+  padding: 0.25rem 0.75rem;
+}
+
+.THIS .container .box-06 table td {
+  padding: 0.25rem 0.5rem;
+  width: 13% !important;
+}
+
+.THIS .container .box-06 table td:nth-of-type(1) {
+  background-color: #F9F9F9;
+  width: 4% !important;
+}
+
+.THIS .container .box-06 table td:nth-of-type(2) {
+  width: 4% !important;
+}
+
+.THIS .container .box-06 table td.nm {
+  color: #0176D3;
+}
+
+.THIS .container .box-06 table td.lc {
+  text-align: left !important;
+}
+
+.THIS .container .box-06 table .statusTd {
+  background-color: #fffbe2;
+}
+
+/* Box 06 Table Mouse Hover */
+
+.THIS .container .box-06 table tbody tr {
+  cursor: pointer;
+}
+
+.THIS .container .box-06 table tr:hover td:not(.clickedTd) {
+  background-color: #f9f9f9;
+}
+
+.THIS .container .box-06 table tr:hover td:nth-of-type(1):not(.clickedTd) {
+  background-color: #eeeeee;
+}
+
+.THIS .container .box-06 table tr:hover .statusTd:not(.clickedTd) {
+  background-color: #f5f0d2;
+}
+
+.THIS .container .box-06 table tbody .clickedTd {
+  background: red !important;
+}
+
+/* Box 06 Table Tr Click */
+.THIS .container .box-06 table tbody tr.clicked td {
+  background: #EEF4FF !important;
+}
+
+/* Box 07 - 출동이력보유자 */
+
+.THIS .container .box-07 h3 {
+  padding: 0.3rem 0;
+}
+
+/* Table Design */
+
+.THIS .modal-body table {
+  font-size: 11px;
+  border-collapse: separate;
+}
+
+.THIS .modal-body table tr {
+  border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .modal-body table thead {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.THIS .modal-body table th {
+  background-color: #f3f3f3;
+  color: #444;
+  font-weight: 700;
+  line-height: normal;
+  text-align: center;
+  text-wrap: nowrap;
+  padding: .25rem;
+  border-bottom: 1px solid #D9D9D9;
+  text-wrap: nowrap;
+}
+
+.THIS .modal-body table td {
+  padding: .25rem 0.5rem;
+  line-height: normal;
+  color: #444;
+  text-wrap: nowrap;
+  border-bottom: 1px solid #D9D9D9;
+  text-align: center;
+}
+
+.THIS .modal-body table th+th,
+.THIS .modal-body table td+td {
+  border-left: 1px solid #D9D9D9;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+  text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+  text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+  text-align: right !important;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .modal-body table .slds-input[readonly] {
+  border: none;
+}
+
+/* SLDS Custom */
+
+.THIS .box-03 .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux,
+.THIS .box-07 .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+  margin-right: 0 !important;
+}
+
+.THIS .box-03 .slds-checkbox .slds-checkbox_faux,
+.THIS .box-07 .slds-checkbox .slds-checkbox_faux {
+  width: 0.9rem !important;
+  height: 0.9rem !important;
+}
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+  border: 1px solid #C9C9C9;
+  border-radius: 2px;
+  min-height: 1.45rem;
+  line-height: 1.45rem
+}
+
+.THIS .slds-button_icon-border {
+  border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .container .slds-button_brand,
+.THIS .container .slds-button_neutral {
+  font-size: 11px;
+  padding: 0.4rem 0.5rem;
+  line-height: 100%;
+  border-radius: 2px;
+  text-wrap: nowrap;
+}
+
+.THIS .container .box-06 .slds-button_brand,
+.THIS .container .box-06 .slds-button_neutral {
+  border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+  padding: .25rem 0.5rem !important;
+  line-height: 11px;
+  min-height: 1.5rem;
+  border-radius: 2px;
+}
+
+.THIS .container .slds-dropdown-trigger_click.slds-is-open .slds-dropdown {
+  max-height: 11rem;
+  overflow-y: auto;
+}
+
+/* Row Information */
+.THIS .row-info {
+  color: #a0a0a0;
+  text-align: end;
+  padding: 0.25rem;
+  font-size: 11px;
+}
+
+/* Footer */
+
+.THIS footer {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}

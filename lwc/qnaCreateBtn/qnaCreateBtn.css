@@ -1,0 +1,22 @@
+.slds-modal__body {
+  padding: 0.5rem;
+}
+.slds-modal__body .form-legend-desktop {
+  padding: 0.5rem;
+  text-align: end;
+}
+.slds-modal__body .title {
+  padding-left: 0.75rem;
+  font-size: 14px;
+  line-height: 1.875rem;
+  background-color: #f3f3f3;
+  border-radius: 0.25rem;
+}
+.slds-modal__body .contents {
+  padding: 0.5rem 1.875rem;
+}
+.slds-modal__footer {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+}

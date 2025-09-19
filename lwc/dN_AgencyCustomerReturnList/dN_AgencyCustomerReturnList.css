@@ -1,0 +1,82 @@
+.top-card{
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* Card 02 */
+.card-01{
+    margin-top: 1rem;
+}
+
+.card-01 .table-wrap {
+    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+.card-01 table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 1rem; 
+}
+
+.card-01 table td{
+    padding: .25rem .5rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+}
+
+.card-01 table tr:hover{
+    background-color: #f3f3f3;
+}
+
+.center{text-align: center !important;}
+.left{text-align: left !important;}
+.right{text-align: right !important;}
+
+.card-01 table td .slds-input[readonly]{
+    background: none;
+}
+
+.card-01 .title {
+    padding: 5px 5px 15px 5px;
+    font-weight: 700
+}
+
+/* Table Design */
+
+.card-01 table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: left;
+    text-wrap: nowrap;
+    padding: .5rem 1rem;
+    border-top: 1px solid #D9D9D9;
+    border-left: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.card-01 table th+th:last-child{
+    border-right: 1px solid #D9D9D9;
+}
+
+.card-01 table td{
+    background-color: #fff;
+    padding: .5rem 1rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-left: none;
+}

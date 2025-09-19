@@ -1,0 +1,202 @@
+<!--
+  @description       : 포탈 부품 - 오더 조회
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-09-12
+  @last modified by  : KyongyunJung@dkbmc.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-05-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_PortalPartOrderInquiryController"
+    description="오더조회">
+    
+
+    <!-- navigation -->
+    <lightning:navigation aura:id="navOrderCreate"/> <!--오더생성 페이지로 이동-->
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading"         type="Boolean" default="false" />
+    <aura:attribute name="isSearched"        type="Boolean" default="false" />
+    
+    <aura:attribute name="dealerInfo"        type="Object"/> <!--접속자 정보-->
+
+    <aura:attribute name="orderType"         type="String"  default="All" /> <!--주문 유형-->
+    <aura:attribute name="partOrderRecords"  type="List"    default="[]" /> <!--오더조회 테이블-->
+    <aura:attribute name="orderTypeList"     type="List"    default = "[
+                                                                            {'label' : 'All', 'value' : 'All'},
+                                                                            {'label' : 'ORDINARY ORDER', 'value' : 'YDOR'},
+                                                                            {'label' : 'EMERGENCY ORDER', 'value' : 'YDEO'},
+                                                                            {'label' : 'STOCK ORDER', 'value' : 'YDSO'},
+                                                                        ]" /> <!--주문 유형 Picklist-->
+    <aura:attribute name="partOrderNo"       type="String"/> <!--주문번호-->
+    <aura:attribute name="CustomerOrderNo"   type="String"/> <!--고객주문번호-->
+    <aura:attribute name="startDate"         type="Date"  /> <!--기간(시작)-->
+    <aura:attribute name="endDate"           type="Date"  /> <!--기간(종료)-->
+    <aura:attribute name="totalItemQuantity" type="Decimal" default="0"/> <!--품목수량 총합-->
+    <aura:attribute name="totalItemsAmount"  type="Decimal" default="0"/> <!--주문금액 총합-->
+    <aura:attribute name="totalCurr"         type="String"/> <!--tfoot 단위-->
+    
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'CRM', 'value': 'option1'},
+                                                        {'label': 'I/F', 'value': 'option2'}
+                                                        ]"/>
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <!--DNS2차CRM프로젝트 추가사항-->
+    <aura:attribute name="isDNSA"            type="Boolean" default="false" />
+
+    <!-- Body -->
+    <article class="slds-card">
+
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header test">
+            <div class="title">
+                <lightning:icon iconName="standard:work_order_item" size="small" />
+                <h2>{!$Label.c.ORI_Inquiry}</h2>
+            </div>
+
+            <!-- Order Detail Info : 대리점 구매 상세 Modal -->
+            <div aura:id="PurchaseOrderDetail"></div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="new" label="{!$Label.c.DNS_FSL_Create}" iconName="utility:add"  onclick="{!c.doOrderCreate}" /> <!--생성-->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" /> <!--검색-->
+            </div>
+        </div>
+
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_UserId}<abbr class="slds-required" title="required">*</abbr></p><!--유저아이디-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="dealerName" value="{!v.dealerInfo.dealerName}" variant="label-hidden" readonly="true"
+                            disabled="true" aura:id="userName" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.DNS_C_OrderNum}</p> <!--주문번호-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="partOrderNo" value="{!v.partOrderNo}" variant="label-hidden" aura:id="" onchange="{!c.handleChange}"/>
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p> {!$Label.c.DNS_C_OrderType}</p><!--주문유형-->
+                    <div class="input-wrap">
+                        <lightning:combobox name="orderType" value="{!v.orderType}" variant="label-hidden" options="{!v.orderTypeList}" required="true" onchange="{!c.handleChange}" disabled="{!v.isDNSA}"/>
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.RC_CustomerOrderNumber}</p> <!--고객주문번호-->
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="CustomerOrderNo" value="{!v.CustomerOrderNo}" variant="label-hidden" aura:id="" onchange="{!c.handleChange}"/>
+                    </div>
+                </div>
+                <div class="field-wrap date">
+                    <p> {!$Label.c.ORI_Period} <abbr class="slds-required" title="required">*</abbr></p> <!--기간-->
+                    <div class="input-wrap">
+                        <lightning:input name="startDate" type="Date" variant="label-hidden" value="{!v.startDate}" onchange="{!c.handleChange}" />
+                        <span class="to">~</span>
+                        <lightning:input name="endDate" type="Date" variant="label-hidden" value="{!v.endDate}" onchange="{!c.handleChange}" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 02 -->
+            <div class="card-02 top-card">
+                <div class="table-wrap">
+                    <table>
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="40%" />
+                            <col width="10%" />
+                            <col width="10%" />
+                            <col width="20%" />
+                            <col width="10%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>{!$Label.c.DNS_C_OrderNum}</th> <!-- 주문번호 -->
+                                <th>{!$Label.c.RC_CustomerOrderNumber}</th>  <!-- 고객주문번호 -->
+                                <th>{!$Label.c.ORI_OrderDate}</th> <!--/주문일-->
+                                <th>{!$Label.c.ORI_Quantity}</th>  <!--품목수량-->
+                                <th>{!$Label.c.ORI_OrderAmount}</th>  <!--주문금액-->
+                                <th>{!$Label.c.DNS_C_Currency}</th> <!--통화 -->
+                            </tr>
+                        </thead>
+                        <aura:if isTrue="{!v.isSearched}">
+                            <aura:iteration items="{!v.partOrderRecords}" var="record" indexVar="index">
+                                <tbody>
+                                    <tr>
+                                        <td class="po-number center" onclick="{!c.detailModal}" data-partOrderNo="{!record.partOrderNo}">
+                                            {!record.partOrderNo}
+                                        </td>
+                                        <td class="customerOrderNo" title="{!record.customerOrderNo}">
+                                            <div>{!record.customerOrderNo}</div>
+                                        </td>
+                                        <td class="center">{!record.orderDate}</td>
+                                        <td class="right">
+                                            <div>
+                                                <lightning:formattedNumber value="{!record.itemsQuantity}" />
+                                            </div>
+                                        </td>
+                                        <td class="right">
+                                            <div>
+                                                <lightning:formattedNumber value="{!record.itemsAmount}" />
+                                            </div>
+                                        </td>
+                                        <td class="center">{!record.poCurrency}</td>
+                                    </tr>
+                                </tbody>
+                            </aura:iteration>
+                            <aura:set attribute="else">
+                                <tbody>
+                                    <tr>
+                                        <td scope="row" colspan="6" class="center">
+                                            NO DATA
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </aura:set>
+                        </aura:if>
+                    </table>
+                </div>
+                <div class="table-wrap tfoot-table">
+                    <table>
+                        <aura:if isTrue="{!v.isSearched}">
+                            <tfoot>
+                                <tr>
+                                    <td class="right" colspan="4" style="width: 70%;">
+                                        <div>
+                                            <lightning:formattedNumber value="{!v.totalItemQuantity}" />
+                                        </div>
+                                    </td>
+                                    <td class="right" style="width: 20%;">
+                                        <div>
+                                            <lightning:formattedNumber value="{!v.totalItemsAmount}" />
+                                        </div>
+                                    </td>
+                                    <td class="center" style="width: 10%;">
+                                        {!v.partOrderRecords[0].poCurrency}
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </aura:if>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </article>
+</aura:component>

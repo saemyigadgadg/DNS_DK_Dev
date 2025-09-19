@@ -1,0 +1,241 @@
+.THIS.slds-card {
+    height: auto;
+    overflow: hidden;
+    background-color: #F3F3F3;
+    box-shadow: 0 2px 4px 0 rgb(82 82 82 / 20%);
+}
+
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button {
+    padding: 0 0.75rem;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* .THIS .slds-dropdown-trigger_click.slds-is-open .slds-dropdown {
+    z-index: 1000;
+    position: static;
+} */
+.THIS .slds-dropdown {
+    bottom: auto !important;
+    top: 100% !important;
+    transform: none !important;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+/* table-wrap */
+.THIS .table-wrap {
+    overflow: hidden;
+    overflow-y: scroll;
+    height: calc(100vh - 23rem);
+}
+
+.THIS .table-wrap thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+}
+
+.THIS .table-wrap .slds-listbox {
+    height: 12rem;
+    overflow: scroll;
+}
+
+.THIS .table-wrap .last-row .slds-listbox {
+    top: -12.5rem;
+}
+
+.THIS .table-wrap lightning-file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.THIS .table-wrap .file-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.25rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.THIS .table-wrap .file-wrap .file-name {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+    width: fit-content;
+    padding: 0.25rem 0.5rem;
+    background-color: #d0ebff;
+    border-radius: 10rem;
+    font-size: 10px;
+}
+
+
+
+/* Table Design */
+
+.THIS .body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .body table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .body table th+th,
+.THIS .body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.THIS .body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+}
+
+/* Readonly Input Border Remover */
+
+.THIS .body table .slds-input[readonly] {
+    border: none;
+}
+
+/* SLDS Table datepicker */
+
+.THIS .body .slds-datepicker__month td {
+    border: none;
+    background-color: #fff;
+    padding: .25rem;
+    font-size: .75rem;
+}
+
+.THIS .body .slds-datepicker__month th {
+    padding: .5rem;
+    font-weight: 400;
+    background-color: #fff;
+    border: none;
+}
+
+.THIS .body .slds-datepicker__month tr {
+    border-bottom: none;
+}
+
+/* Table Class */
+
+.THIS .center,
+.THIS .center .slds-input {
+    text-align: center !important;
+}
+
+.THIS .left,
+.THIS .left .slds-input {
+    text-align: left !important;
+}
+
+.THIS .right,
+.THIS .right .slds-input {
+    text-align: right !important;
+}
+
+/* Main Button */
+
+ 
+
+/* SLDS Custom */
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+    /* min-width: 12rem; */
+}
+
+.THIS .slds-button_icon-border {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    padding: .25rem 0.5rem !important;
+}
+
+/* 📱 Responsive Media Query */
+
+/* 모바일 가로 & 테블릿 세로 (해상도 480px ~ 767px)*/
+@media all and (min-width:480px) and (max-width:767px) {
+    .THIS .card-01 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 모바일 세로 (해상도 ~ 479px)*/
+@media all and (max-width:479px) {
+    .THIS .card-01 {
+        grid-template-columns: 1fr;
+    }
+
+    .THIS .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+}

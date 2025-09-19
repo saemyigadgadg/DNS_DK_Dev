@@ -1,0 +1,66 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome"
+                controller="DN_BoardController" 
+                description="원본 DN_BoardHomePortal 통합 게시판 / CRM 전용은 공지사항">
+    
+    <!-- Attribute -->
+    <aura:attribute name="isLoaded"         type="Boolean"  default="false" />
+    <aura:attribute name="boardList"        type="List" />
+    <aura:attribute name="searchBoardMonth" type="String"   default=""/>
+    <aura:attribute name="searchCategory"   type="String"   default="All" />
+
+    <!--design setting-->
+    <aura:attribute name="header"   type="String"/>
+    <aura:attribute name="recordType"   type="String"/>
+    <aura:attribute name="pageURL"   type="String"/>
+
+    <!-- Handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- Body -->
+    <article class="slds-card">
+        <!-- Loading Spinner  -->
+        <aura:if isTrue="{! v.isLoaded}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title">
+                <h2>{!v.header}</h2>
+            </div>
+        </div>
+
+        <div class="body">
+            <div class="main-content">
+                <aura:iteration items="{!v.boardList}" var="board">
+                    <div class="info_wrap">
+                        <div class="title_info">
+                    
+                            <aura:if isTrue="{!board.isNew}">
+                                <p class="highlight"> [New] <a class="custom-link" href="{!'/' + board.Id}" >{!board.Name} </a></p>
+                                
+                                <aura:set attribute="else">
+                                    <lightning:formattedUrl value="{!'/' + board.Id}" tooltip="{!board.Name}" label="{!board.Name}" target="_self" />
+                                </aura:set>
+                            </aura:if>
+                            
+                        </div>
+                        <div class="record_info">
+
+                            <span>{!board.FM_Writer__c}</span>
+                            <span>{!board.PostingDate__c}</span> 
+                        </div>
+                        <div class="category_info">{!board.Category__c}</div>
+                    </div>
+                </aura:iteration>
+            </div>
+        </div>
+
+        <div class="footer">
+            <!-- <lightning:formattedUrl value="/board/Board__c/Default" tooltip="View All" label="View All"/> -->
+            <lightning:navigation aura:id="navService"/>
+            <lightning:button label="View All" onclick="{!c.handleClick}"/>
+        </div>
+    </article>
+</aura:component>

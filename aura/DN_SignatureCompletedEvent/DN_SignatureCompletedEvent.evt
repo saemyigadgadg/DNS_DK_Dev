@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="signatureType" type="String"/>
+    <aura:attribute name="recordId" type="Id"/>
+</aura:event>

@@ -1,0 +1,123 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 2024-12-30
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   07-09-2024   Hanyeong Choi   Initial Version
+  1.0   07-10-2024   Hyerin Ro       Publish
+-->
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId"
+                controller="DN_DealerSalesGoalController" 
+                description="Dealer Sales Goal Sharing Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean" default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="accountName"      type="String" />
+    <aura:attribute name="contactName"      type="String" />
+    <aura:attribute name="contactEmail"     type="String" />
+    <aura:attribute name="contactMobile"     type="String" />
+    <aura:attribute name="shareRecordId"    type="String" />
+    <aura:attribute name="userId"           type="String" />
+    <aura:attribute name="isRepresentative" type="String" />
+    <aura:attribute name="contactPosition"  type="String" />
+    <aura:attribute name="contactRole"      type="String" />
+
+    <!-- 🚩Aura Handler -->
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        @media(min-width: 48em) {
+            .slds-modal__container {
+                width: 100% !important;
+                max-width: 74rem;
+                padding: 0;
+            }
+        }
+        .slds-modal__container:has(.cDN_DealerSalesGoalSharingModal) {
+            width:100%;
+            max-width: 36rem;
+        }
+        .slds-modal__content:has(.cDN_DealerSalesGoalSharingModal) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_DealerSalesGoalSharingModal) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+
+        <!-- 🚩Modal Header -->
+        <header class="slds-modal__header">
+            <!-- <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Sharing to Dealer</h2> -->
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.DNS_T_SharingToDealer}</h2>
+            <!-- Close Button -->
+            <button class="close_button_template slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                    title='close' name="closeModal" onclick="{!c.handleCloseModal}"></lightning:icon>
+            </button>
+        </header>
+
+        <!-- 🚩Modal Body -->
+        <div class="slds-modal__content">
+            <!-- 🚩Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+            <div class="modal-body">
+                <p class="info_message">{!$Label.c.DNS_M_SharingToRepresentative}</p>
+                <!-- <p class="info_message">대리점 대표에게 공유합니다.</p> -->
+                <!-- <p class="info_message">해당 사용자(대리점 대표)로 Owner를 변경합니다.</p> -->
+                <div class="card-01 top-card">
+                    <div class="field-wrap">
+                        <p>Account </p>
+                        <div class="input-wrap">{! v.accountName }</div>
+                    </div>
+                    <h3>Dealer Information</h3>
+                    <div class="field-wrap">
+                        <p>Name</p>
+                        <div class="input-wrap">{! v.contactName }</div>
+                    </div>
+                    <!-- <div class="field-wrap">
+                        <p>Is Representative</p>
+                        <div class="input-wrap">{! v.isRepresentative }</div>
+                    </div> -->
+                    <div class="field-wrap">
+                        <p>Email</p>
+                        <div class="input-wrap">{! v.contactEmail }</div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>Mobile</p>
+                        <div class="input-wrap">{! v.contactMobile }</div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>Position</p>
+                        <div class="input-wrap">{! v.contactPosition }</div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>Role</p>
+                        <div class="input-wrap">{! v.contactRole }</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🚩Modal Footer -->
+        <footer class="slds-modal__footer">
+            <lightning:button variant="neutral" label="취소" onclick="{! c.handleCloseModal }" />
+            <lightning:button variant="brand" label="확인" onclick="{! c.handleConfirm }" />
+        </footer>
+    </div>
+
+</aura:component>

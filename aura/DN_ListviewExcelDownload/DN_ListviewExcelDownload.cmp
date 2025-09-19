@@ -1,0 +1,38 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 2025-04-04
+  @last modified by  : yeongdeok.seo@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-11-04   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="리스트뷰 엑셀다운로드" controller="DN_ExcelDownloadComponentController"
+>
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="boolean" default="true"/>
+    <aura:attribute name="listviewId" type="String"/>
+    <!-- <aura:attribute name="objIds" type="String"/> -->
+    <aura:attribute name="objType" type="String"/>
+    <aura:attribute name="objName" type="String"/>
+    <!-- <aura:attribute name="jsonString" type="String"/> -->
+    <aura:attribute name="returnUrl" type="String"/>
+
+    <!-- handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    
+    <!-- Excel -->
+    <ltng:require scripts="{!$Resource.ExcelJS + '/unpkg/exceljs.min.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+    <ltng:require scripts="{!$Resource.FileSaver + '/FileSaver.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded2}" />
+
+    <div>
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{!v.isLoading }">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+        </aura:if>
+    </div>
+
+</aura:component>

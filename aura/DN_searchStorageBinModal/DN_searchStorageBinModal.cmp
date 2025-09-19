@@ -1,0 +1,130 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-08-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-08-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_SearchStorageBinModalController"
+  description="저장위치 검색">
+
+  <!--Attribute-->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="storageBinModalList" type="List" />
+  <aura:attribute name="selectedRow" type="List" />
+  <aura:attribute name="selectedBin" type="String" />
+  <aura:attribute name="loc1" type="String" />
+  <aura:attribute name="loc2" type="String" />
+  <aura:attribute name="loc3" type="String" />
+  <aura:attribute name="loc4" type="String" />
+  <aura:attribute name="loc5" type="String" />
+  <aura:attribute name="loc6" type="String" />
+  <aura:attribute name="parentCmp" type="String" />
+  <aura:registerEvent name="cmpEvent" type="c.DN_HandlerEvent" />
+  <div class="searchStorageModal">
+    <div aura:id="searchStorageModal" class="slds-modal slds-fade-in-open">
+      <div class="modal slds-modal__container slds-modal_large">
+        <aura:if isTrue="{! v.isLoading}">
+          <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+        <!-- Modal Header -->
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium">저장위치 검색</h2>
+          <!-- Close Button -->
+          <button class="close_button_template slds-modal__close">
+            <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+              title='close' name="closeModal" onclick="{!c.storageBinModalCancel}"></lightning:icon>
+          </button>
+        </header>
+
+        <!-- Modal Content -->
+        <div class="body modal-body slds-modal__content">
+          <div class="card-01 top-card">
+            <div class="field-wrap">
+              <p>위치1</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" value="{!v.loc1}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>위치2</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" value="{!v.loc2}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>위치3</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" value="{!v.loc3}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>위치4</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" value="{!v.loc4}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>위치5</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" value="{!v.loc5}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>위치6</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" value="{!v.loc6}" />
+              </div>
+            </div>
+            <div class="field-wrap description">
+              <p>설명</p>
+              <div class="input-wrap">
+                <lightning:input variant="label-hidden" />
+              </div>
+            </div>
+            <div class="button-wrap">
+              <lightning:button iconName="utility:search" label="검색" onclick="{!c.handleSearch}"/>
+            </div>
+          </div>
+
+          <div class="card-02 top-card scroller-card">
+            <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+              <thead>
+                <tr>
+                  <th style="width: 2%;">선택</th>
+                  <th>저장위치</th>
+                </tr>
+              </thead>
+              <tbody >
+                <aura:iteration items="{!v.storageBinModalList}" var="bin" indexVar="j">
+                  <tr>
+                    <td class="center">
+                      <lightning:input name="{!j}" type="checkbox" aura:id="checkbox"
+                        onchange="{! c.handleCheckboxChange }" variant="label-hidden" />
+                    </td>
+                    <td scope="row">
+                      <div>{!bin.FM_Loc__c}</div>
+                    </td>
+                  </tr>
+                </aura:iteration>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Cancel" title="Brand action"
+            onclick="{!c.storageBinModalCancel}" />
+        </footer>
+      </div>
+    </div>
+    <!-- 배경 -->
+    <div aura:id="modalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </div>
+</aura:component>

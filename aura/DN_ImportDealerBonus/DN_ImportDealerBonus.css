@@ -1,0 +1,98 @@
+.THIS.total-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 2rem);
+}
+
+.THIS .slds-modal__container {
+  max-width: calc(100vw - 8rem);
+  width: 36rem;
+  min-width: 20rem;
+  max-height: 100%;
+  height: 100%;
+  z-index: 2;
+  margin: 0 auto;
+}
+
+.THIS .modal-body {
+  /* padding: 1.25rem 1.75rem; */
+  overflow: visible;
+  position: relative;
+}
+
+.THIS .content {
+  padding: 1.25rem;
+}
+
+/* 1. Date Input */
+
+.THIS .modal-body .card-wrap {
+  display: flex;
+  justify-content: stretch;
+  gap: 1.25rem;
+}
+
+.THIS .modal-body .card-wrap .top-card {
+  flex: 1;
+}
+
+.THIS .modal-body .card-wrap .top-card .slds-form-element {
+  width: 100%;
+}
+
+
+/* 2. File Upload */
+
+.THIS .card-03 {
+  margin-top: 1rem;
+}
+
+.THIS .card-03 .uploaded {
+  position: relative;
+  display: flex;
+  width: 100%;
+  border: 1px dashed #747474;
+  border-radius: 0.25rem;
+  padding: 0.275rem 0.25rem;
+  margin-top: 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  background: #E8F0FE;
+}
+
+.THIS .card-03 .uploaded:after {
+  content: 'Uploaded File';
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 2px);
+  color: #444;
+  font-size: 12px;
+}
+
+.THIS .card-03 .uploaded .icon-wrap:nth-child(1) {
+  margin-right: 0.25rem;
+}
+
+.THIS .card-03 .uploaded .icon-wrap:nth-of-type(2) {
+  margin-top: 1px;
+  cursor: pointer;
+}
+
+.THIS .card-03 .slds-file-selector {
+  width: 100% !important;
+}
+
+.THIS .card-03 .slds-file-selector__dropzone {
+  flex: auto !important;
+}
+
+/* Modal Background */
+
+.THIS #modal-bg {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}

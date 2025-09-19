@@ -1,0 +1,22 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-17-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-17-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference" description="딜러포탈 내 스탠다드에서 배송정보를 불러오기 위한 컴포넌트"
+access="global"
+>
+  <aura:attribute name="recordId" type="String" />
+  <!-- <aura:handler name="init" value="{! this }" action="{! c.doInit }" />   -->
+  <!-- <aura:attribute name="shipList" type="List" /> -->
+  <!-- <c:DN_DealerPortalShipToList isHeaderChange="true" recordId="a10TJ000004grwrYAA" /> -->
+  <aura:if isTrue="{!v.recordId}">
+    <c:DN_DealerPortalShipToList isHeaderChange="true" recordId="{!v.recordId}" />
+  </aura:if>
+  
+</aura:component>

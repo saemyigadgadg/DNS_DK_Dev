@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>40</fullName>
+        <default>true</default>
+        <label>Machine Tools</label>
+    </customValue>
+    <customValue>
+        <fullName>10</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Constr. Equipment(10)</label>
+    </customValue>
+    <customValue>
+        <fullName>11</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Compact(11)</label>
+    </customValue>
+    <customValue>
+        <fullName>12</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Portable Power(12)</label>
+    </customValue>
+    <customValue>
+        <fullName>20</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Forklift(20)</label>
+    </customValue>
+    <customValue>
+        <fullName>30</fullName>
+        <default>false</default>
+        <isActive>false</isActive>
+        <label>Engine(30)</label>
+    </customValue>
+    <description>Division</description>
+    <masterLabel>Division</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

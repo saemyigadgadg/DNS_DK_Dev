@@ -1,0 +1,81 @@
+<template>
+  <lightning-card title="Excel Upload (.xlsx)">
+    <div class="slds-p-around_medium slds-is-relative">
+      <template if:true={isUploading}>
+        <lightning-spinner alternative-text="Uploading..." size="medium"></lightning-spinner>
+      </template>
+
+      <lightning-input
+        type="file"
+        accept=".xlsx,.xls"
+        label=""
+        onchange={handleFile}
+        data-id="fileInput"
+        disabled={isUploading}>
+      </lightning-input>
+
+      <!-- <div class="slds-m-top_small">
+        <lightning-input type="checkbox"
+                         label="업로드한 엑셀 원본을 Salesforce 파일로 저장"
+                         checked={saveOriginal}
+                         onchange={toggleSaveOriginal}>
+        </lightning-input>
+      </div> -->
+
+      <template if:true={saveOriginal}>
+        <div class="slds-m-top_x-small">
+          <lightning-input type="text"
+                           label="Parent Record Id (선택)"
+                           placeholder="예: 001... (해당 레코드에 파일 링크)"
+                           value={parentRecordId}
+                           onchange={handleParentId}>
+          </lightning-input>
+        </div>
+      </template>
+
+      <div class="slds-m-top_small slds-text-title_caps">Preview (Max 100rows)</div>
+      <template if:true={preview.length}>
+        <div class="table-scroll">
+          <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+              <tr>
+                <template for:each={headerOrder} for:item="h">
+                  <th key={h}>{h}</th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- __key: 행 키 / cells: 미리 계산된 셀 배열 -->
+            <template for:each={preview} for:item="row">
+                <tr key={row.__key}>
+                <template for:each={row.cells} for:item="c">
+                    <td key={c.key}>{c.value}</td>
+                </template>
+                </tr>
+            </template>
+            </tbody>
+          </table>
+        </div>
+      </template>
+
+      <template if:true={errors.length}>
+        <div class="slds-m-top_small slds-text-color_error" style="font-weight: bolder;">
+            <template for:each={errors} for:item="e">
+                <div key={e}>• {e}</div>
+            </template>
+        </div>
+      </template>
+
+      <div class="slds-m-top_medium">
+        <lightning-button variant="neutral" label="Reset" onclick={resetFile}></lightning-button>
+        <!-- Apex 안 쓰는 상태라 noop으로 안전 처리 -->
+        <lightning-button class="slds-m-left_small"
+                          variant="brand"
+                          label="Upload"
+                          onclick={importData}
+                          disabled={disableImport}>
+        </lightning-button>
+      </div>
+    </div>
+  </lightning-card>
+</template>

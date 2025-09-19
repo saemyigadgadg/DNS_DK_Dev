@@ -1,0 +1,115 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 03-07-2025
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   07-12-2024   Hanyeong Choi   Initial Version
+  1.0   07-18-2024   Hyerin Ro       Publish
+  1.0   10-17-2024   Youjin Shim     Publish
+-->
+<aura:component implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+                access="global" 
+                controller="DN_PortalNewProspectController" 
+                description="New Account:Prospect List Button">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"            type="Boolean"  default="false" />
+    <aura:attribute name="objectName"           type="String"   default="Account" />
+    <aura:attribute name="newCustomerName"      type="String"   default="" />
+    <aura:attribute name="newRepresentative"    type="String"   default="" />
+    <aura:attribute name="newPhone"             type="String"   default="" />
+    <aura:attribute name="newEmail"             type="String"   default="" />
+    <aura:attribute name="newTelephone"         type="String"   default="" />
+    <aura:attribute name="riggerValue"          type="Boolean"  default="false" />
+    <aura:attribute name="loginUserCountry"     type="String"   default="" />
+    <aura:attribute name="loginUserRegion"      type="String"   default="" />
+    <aura:attribute name="countryCurrency"      type="String"   default="" />
+    <aura:attribute name="recordTypeId"         type="String"   default="" />
+
+    <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+    <lightning:navigation aura:id="navService" />
+
+    <!-- 🚩Aura Style -->
+    <aura:html tag="style">
+        
+    </aura:html>
+
+    <div class="total-wrap">
+        <div class="slds-card">
+
+            <!-- 🚩Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- 🚩Aura Header -->
+            <div class="header">
+                <div class="title">
+                    <lightning:icon iconName="standard:record_create" size="small" />
+                    <h2 class="slds-truncate">New Account</h2>
+                </div>
+            </div>
+
+            <!-- 🚩Aura Body -->
+            <div class="body">
+
+                <!-- 검색 결과가 없을 때 출력 -->
+                <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }">
+                    <lightning:messages />
+                    <div class="card-wrap">
+                        <div class="card-01 top-card">
+                            <div class="card-header">
+                                <h3>Account Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <!-- Left Side -->
+                                <div class="field-wrap">
+                                    <!-- 필수 -->
+                                    <lightning:inputField aura:id="recordField" fieldName="Name" required="true" value="{!v.newCustomerName}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="Representative__c" required="true" value="{!v.newRepresentative}" />
+                                    <lightning:inputField aura:id="recordField" class="noneHelp" fieldName="Phone" required="true" value="{!v.newPhone}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="Email__c" required="true" value="{!v.newEmail}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="CountryLookup__c" required="true" value="{!v.loginUserCountry}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="RegionLookup__c" required="true" value="{!v.loginUserRegion}" />
+
+                                    <!-- 필수 X -->
+                                    <lightning:inputField aura:id="recordField" class="noneHelp" fieldName="Mobile__c" value="{!v.newTelephone}" />
+                                    <lightning:inputField aura:id="recordField" fieldName="CareOfRigger__c" value="{!v.riggerValue}" />
+
+                                    <!-- hidden -->
+                                    <lightning:inputField aura:id="recordField" fieldName="RecordTypeId" value="{! v.recordTypeId }" style="display: none;" />
+                                    <lightning:inputField aura:id="recordField" fieldName="AccountGroup__c" value="{! IF(v.riggerValue, '1130', '1030') }" style="display: none;" />
+                                    <lightning:inputField aura:id="recordField" fieldName="CurrencyIsoCode" value="USD" style="display: none;" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-02 top-card">
+                            <div class="card-header">
+                                <h3>Additional Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="field-wrap">
+                                    <lightning:inputAddress aura:id="shippingAddress" addressLabel="Shipping Address"
+                                        streetLabel="Shipping Street" cityLabel="Shipping City"
+                                        countryLabel="Shipping Country" provinceLabel="Shipping State/Province"
+                                        postalCodeLabel="Shipping Zip/Postal Code" showAddressLookup="true"
+                                        addressLookupPlaceholder="Search Address" required="true">
+                                    </lightning:inputAddress>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-wrap">
+                        <lightning:button iconName="utility:check" variant="brand" onclick="{! c.handleClickSave }" label="Save" />
+                        <!-- <lightning:button variant="brand" onclick="{! c.handleSave }" label="Save" /> -->
+                    </div>
+                </lightning:recordEditForm>
+            </div>
+        </div>
+    </div>
+</aura:component>

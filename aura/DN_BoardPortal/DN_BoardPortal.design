@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="header" label="헤더명" />
+    <design:attribute name="recordType" label="게시판 유형"  dataSource="apex://DN_BoardRecordTypeController"/>
+</design:component>

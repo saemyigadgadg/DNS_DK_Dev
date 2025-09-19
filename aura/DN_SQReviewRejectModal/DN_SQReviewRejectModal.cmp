@@ -1,0 +1,55 @@
+<!--
+  @description       : 
+  @author            : Hanyeong Choi
+  @group             : 
+  @last modified on  : 12-23-2024
+  @last modified by  : Hanyeong Choi
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   11-11-2024   Hanyeong Choi   Initial Version
+-->
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes,force:appHostable"
+                controller="DN_SQController" 
+                description="SQ Review Reject Modal">
+
+    <!-- 🚩Aura Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="recordId"         type="String" />
+    <aura:attribute name="reviewId"         type="String" />
+    <aura:attribute name="reviewId2"         type="String" />
+    <aura:attribute name="reason"           type="String"   default="" />
+
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.searchInit}" /> -->
+    <aura:registerEvent name="modalEvent" type="c.DN_HandlerEvent" />
+
+    <div class="SQSearchModal">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">{!$Label.c.DNS_REVIEW_T_REJECTTITLE}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+                    </aura:if>
+
+                    <div class="modal-body">
+                        <!-- <p class="text">Reject</p> -->
+                        <lightning:textarea aura:id="inputReason" label="{!$Label.c.DNS_B_REJECT}" value="{!v.reason}" required="true"/>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button title="Cancel" onclick="{! c.handleClickClose }" label="{!$Label.c.DNS_B_Cancel}" />
+                    <lightning:button title="Submit" onclick="{! c.handleClickSubmit }" label="{!$Label.c.DNS_B_Save}"  variant="Brand" />
+                </div>
+            </div>
+
+        </section>
+
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </div>
+
+</aura:component>

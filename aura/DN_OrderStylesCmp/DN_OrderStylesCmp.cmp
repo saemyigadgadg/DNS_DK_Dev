@@ -1,0 +1,34 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 12-19-2024
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   11-13-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes"
+    description="Order Detail 상태완료 표시 버튼 제거">
+
+    <aura:html tag="style">
+        <!-- Dealer Portal > Order > Order Detail > 완료 버튼 숨김 -->
+        .slds-col--padded:has(.cDN_OrderStylesCmp .empty) .ui-widget:first-of-type
+        .runtime_sales_pathassistantPathAssistant .slds-path__track .slds-button {
+            display: none;
+        }
+
+        <!-- Dealer Portal > Delivery Order > Progress Bar > 'Mark Status as Complete' 버튼 숨김 -->
+        .siteforceSldsTwoCol84Layout:has(.cDN_OrderStylesCmp .empty) .comm-content-header .forceCommunityPathAssistant
+        .slds-card__body_inner .slds-path__track .runtime_sales_pathassistantPathAssistantHeader {
+            display: none
+        }
+    </aura:html>
+
+    <!-- Order - Empty Properties -->
+    <div>
+        <div styles="display: none;" class="empty"></div>
+    </div>
+
+</aura:component>

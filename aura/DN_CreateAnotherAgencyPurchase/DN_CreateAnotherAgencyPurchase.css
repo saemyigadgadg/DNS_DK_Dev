@@ -1,0 +1,294 @@
+/* Header */
+
+.THIS .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #c9c9c9;
+    background-color: #fff;
+}
+
+.THIS .header .title {
+    display: flex;
+    align-items: center;
+}
+
+.THIS .header .button-wrap .slds-button:hover {
+    background-color: #014486;
+}
+
+.THIS .header .button-wrap .slds-button__icon_left {
+    margin-right: 0.25rem;
+}
+
+.THIS .header {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.THIS .header h2 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
+
+/* Body */
+
+.THIS .body {
+    background-color: #F3F3F3;
+}
+
+.THIS .body .top-card {
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+
+/* Clear Btn*/
+.THIS .clear-btn {
+    position: absolute;
+    border: none;
+    right: 36px;
+}
+
+
+/* Card 02 */
+
+.THIS .card-header .header-wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.THIS .card-header h2 {
+    font-weight: 600;
+    font-size: 15px;
+    color: #444;
+}
+
+.THIS .table-wrap .input-wrap {
+    position: relative;
+    display: flex;
+    gap: 0.25rem;
+    width: 100%;
+}
+
+.THIS .table-wrap .input-wrap .slds-form-element{
+    width: 100%;
+}
+
+.THIS .table-wrap .input-wrap .search-input {
+    min-width: 9rem;
+}
+
+/* Readonly Input Border Remover */
+.THIS table .slds-input[readonly] {
+    border: none;
+}
+
+/* Part Table Container  */
+.THIS .part-container .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+
+/* Table Design */
+.THIS .part-container table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    /* border-top: 1px solid #D9D9D9; */
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS .part-container table th+th {
+    border-left: 1px solid #C9C9C9;
+}
+
+.THIS .part-container table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .part-container td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+.THIS .part-container table th:first-of-type .slds-button_icon-border,
+.THIS .part-container table td:first-of-type .slds-button_icon-border {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.THIS .body .part-container table .slds-checkbox .slds-checkbox__label .slds-form-element__label{
+    display: none;
+}
+
+/* Table 01 */
+
+.THIS .body .part-container .table-01 td .slds-form-element{
+    width: 100%;
+}
+
+.THIS .part-container .table-01 td.replacingPartName {
+    max-width: 300px;
+}
+
+.THIS .part-container .table-01 td.replacingPartName div {
+    max-width: 90%; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+.THIS .body .part-container .table-01 tr:last-of-type td{
+    border-bottom: 0 !important;
+}
+
+.THIS c-d-n_-dealer-portal-input-box {
+    width: 100%;
+}
+
+/* 헤더 상단 고정 */
+.THIS .part-container .card-body.table-wrap {
+    max-height: calc(100vh - 30rem);
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.THIS .part-container .card-body.table-wrap table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.THIS .part-container .card-body.table-wrap table thead {
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+}
+
+.THIS .part-container .card-body.table-wrap .table-01 {
+    flex: 2;
+    overflow-x: scroll;
+    /* 사용하지 않는 가로 스크롤이지만 단차 없애기 위해 만들고, */
+    overflow-y: hidden;
+    border-right: 1px solid #c9c9c9;
+}
+
+@media screen and (max-width: 2020px) {
+    .THIS .part-container .card-body.table-wrap .table-01 {
+        flex: 3;
+    }
+    .THIS .part-container .table-01 td.replacingPartName {
+        max-width: 250px;
+    }
+}
+
+@media screen and (max-width: 1480px) {
+    .THIS .part-container .table-01 td.replacingPartName {
+        max-width: 200px;
+    }
+}
+
+@media screen and (max-width: 1360px) {
+    .THIS .part-container .card-body.table-wrap .table-01 {
+        flex: 4;
+    }
+    .THIS .part-container .table-01 td.replacingPartName {
+        max-width: 150px;
+    }
+}
+
+@media screen and (max-width: 1240px) {
+    .THIS .part-container .card-body.table-wrap .table-01 {
+        flex: 6;
+    }
+}
+
+@media screen and (max-width: 1140px) {
+    .THIS .part-container .card-body.table-wrap .table-01 {
+        flex: 8;
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .THIS .part-container .card-body.table-wrap .table-01 {
+        flex: 9;
+    }
+}
+
+.THIS .part-container .table-01::-webkit-scrollbar {
+    background-color: #fff;
+    border-top: 1px solid #c9c9c9;
+}
+
+.THIS .part-container .card-body.table-wrap .table-01 table tr>th:last-child{
+    border-right: 1px solid #D9D9D9;
+}
+
+.THIS .part-container .card-body.table-wrap .table-01 table tr>td:last-child {
+    border-right: 1px solid #D9D9D9;
+    font-size: 13px;
+}
+
+/* Table 02 */
+.THIS .part-container .card-body.table-wrap .table-02 {
+    flex: 3;
+    overflow: scroll;
+    table-layout: fixed;
+}
+.THIS .part-container .card-body.table-wrap .table-02 table th>div{
+    height: 1.5rem;
+    line-height: 1.5rem;
+}
+.THIS .part-container .card-body.table-wrap .table-02 .quantity lightning-input {
+    min-width: 4rem;
+}
+
+/* Table Class */
+
+.THIS .center{text-align: center !important;}
+.THIS .left{text-align: left !important;}
+.THIS .right{text-align: right !important;}
+
+/* SLDS Custom */
+
+
+.THIS .slds-input,
+.THIS .slds-input_faux {
+    border: 1px solid #C9C9C9;
+}
+
+.THIS .slds-button_neutral {
+    border: 1px solid #c9c9c9 !important;
+}
+
+.THIS .slds-input {
+    line-height: 100% !important;
+    /* border-radius: 2px !important; */
+    padding: .25rem 0.5rem !important;
+}

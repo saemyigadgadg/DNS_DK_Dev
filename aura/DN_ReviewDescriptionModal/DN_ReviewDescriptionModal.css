@@ -1,0 +1,35 @@
+.THIS .slds-backdrop {
+  z-index: 9001;
+}
+
+.THIS .slds-modal {
+  z-index: 9002;
+}
+
+.THIS .slds-modal__container {
+  width: 48rem;
+  min-width: 24rem;
+  max-width: calc(100vw - 12rem);
+}
+
+.THIS .slds-modal__content {
+  position: relative;
+  padding: 1.5rem 2.5rem 2.25rem;
+}
+
+.THIS .modal-body .text {
+  font-size: 15px;
+}
+
+.THIS .modal-body .slds-textarea {
+  height: 10rem;
+}
+
+.THIS .modal-body .slds-form-element__label {
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+}
+
+.THIS .hide {
+  display: none;
+}

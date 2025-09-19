@@ -1,0 +1,57 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 12-09-2024
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   12-09-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<template>
+    <template lwc:if={isSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+    <div style="overflow-x:auto">
+        <table>
+            <colgroup>
+                <!-- <col width="5%" /> -->
+                <col width="25%" />
+                <col width="15%" />
+                <col width="9%" />
+                <col width="9%" />
+                <col width="9%" />
+                <col width="9%" />
+                <col width="35%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <!-- <th class="center">
+                        <lightning-input type="checkbox"></lightning-input>
+                    </th> -->
+                    <th>고객명</th>
+                    <th>발행일자</th>
+                    <th>발행번호</th>
+                    <th>기종</th>
+                    <th>장비번호</th>
+                    <th>견적내용</th>
+                    <th>발행처</th>
+                    <!-- <th>기타</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={dataList} for:item="customerManagement" for:index="i">
+                    <tr key={customerManagement.Id}>
+                        <td>{customerManagement.FM_CustomerName__c}</td>
+                        <td>{customerManagement.FM_PublishDate__c}</td>
+                        <td class="center"><a data-id={customerManagement.Id} onclick={handleDetail}>{customerManagement.FM_QuoteNumbermber__c}</a></td>
+                        <td>{customerManagement.MachineName__c}</td>
+                        <td>{customerManagement.Equipment__c}</td>
+                        <td>{customerManagement.Description__c}</td>
+                        <td>{customerManagement.FM_DealerName__c}</td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>

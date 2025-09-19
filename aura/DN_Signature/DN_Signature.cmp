@@ -1,0 +1,41 @@
+<!--
+  @description       : 
+  @author            : geonsang.park@sobetec.com
+  @group             : 
+  @last modified on  : 03-26-2025
+  @last modified by  : geonsang.park@sobetec.com
+-->
+<aura:component >
+    <ltng:require scripts="{!$Resource.Signature + '/signature_pad.min.js'}"
+        afterScriptsLoaded="{!c.onScriptReady}"/>
+    <aura:attribute name="id" type="String" default=""/>
+    <aura:attribute name="minWidth" type="double" default="0.5"/>
+    <aura:attribute name="maxWidth" type="double" default="2"/>
+    <aura:attribute name="penColor" type="string" default="rgb(0,0,0)"/>
+    <aura:attribute name="signatureData" type="string" default=""/>
+    <aura:attribute name="readOnly" type="Boolean" default="false"/>
+    <aura:attribute name="style" type="string" access="private"/>
+    <aura:attribute name="signaturePad" type="object" access="private"/>
+    <aura:method name="capture" action="{!c.onCapture}" 
+        description="call this method to capture signature"/>
+    <aura:method name="clear" action="{!c.onClear}" description="clear the signature"/>
+    <aura:method name="init" action="{!c.onScriptReady}" description="Init the signature"/>
+    
+    <div class="mb-signature-container" 
+        ontouchmove="{!c.handleTouchMove}"
+        ontouchstart="{!c.onTouch}">
+        <aura:if isTrue="{!v.readOnly}">
+            <div class="mb-signature-pad-readonly">
+                <img alt="User Signature" src="{!v.signatureData}"/>
+            </div>
+            <aura:set attribute="else">
+                <input type="text" readonly="true" class="esignature-hide"/>
+                <div class="mb-signature-pad" id="{!'signatureWrapper' + v.id}">
+                    <div class="mb-signature-pad-body">
+                        <canvas id="myCanvas" width="500" height="200" style="border:1px solid #006dcc; margin-bottom: 0.5rem;"></canvas>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

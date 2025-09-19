@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="redirectType" label="RedirectType" />
+    <design:attribute name="sourceRecordId" label="Source RecordId" />
+</design:component>

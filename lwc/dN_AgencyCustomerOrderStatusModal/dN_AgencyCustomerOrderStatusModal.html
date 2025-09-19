@@ -1,0 +1,13 @@
+<template>
+    <lightning-modal-header label="주문서 상태"></lightning-modal-header>
+    <lightning-modal-body class="modalbody"> 
+        <div class="">
+            <c-d-n_-agency-customer-order-status 
+                    order-id={orderId}>
+            </c-d-n_-agency-customer-order-status>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label="닫기" onclick={handleClose}></lightning-button>
+    </lightning-modal-footer>
+</template>

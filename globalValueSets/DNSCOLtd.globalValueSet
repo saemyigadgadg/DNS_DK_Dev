@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>DNS_DOMESTIC</fullName>
+        <default>false</default>
+        <label>DNS (DOMESTIC)</label>
+    </customValue>
+    <customValue>
+        <fullName>DNS_GLOBAL</fullName>
+        <default>false</default>
+        <label>DNS (GLOBAL)</label>
+    </customValue>
+    <customValue>
+        <fullName>DNSA</fullName>
+        <default>false</default>
+        <label>DNSA</label>
+    </customValue>
+    <customValue>
+        <fullName>DNSC</fullName>
+        <default>false</default>
+        <label>DNSC</label>
+    </customValue>
+    <customValue>
+        <fullName>DNSEU</fullName>
+        <default>false</default>
+        <label>DNSEU</label>
+    </customValue>
+    <customValue>
+        <fullName>DNSI</fullName>
+        <default>false</default>
+        <label>DNSI</label>
+    </customValue>
+    <customValue>
+        <fullName>DNSV</fullName>
+        <default>false</default>
+        <label>DNSV</label>
+    </customValue>
+    <description>DNS CO.,Ltd.</description>
+    <masterLabel>DNS 법인</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

@@ -1,0 +1,350 @@
+<!--
+  @related           : DN_DeliveryRequestRegistrationController
+  @description       : Order 내 DO 생성 버튼 및 화면
+  @author            : Youjin Shim
+  @last modified on  : 04-25-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author          Modification
+  1.0   10-17-2024   Youjin Shim     Initial Version
+  1.1   11-22-2024   Youjin Shim     화면 새로 바뀜
+  1.2   2025-03-13   yeongju.yun     CRM에서도 납품 후 교육 사용할 수 있도록 변경
+  1.3   2025-04-21   daewook.kim     ticket 의 accountId 와 주소를 accountId 에서 shipTo__c 로 변경
+-->
+<aura:component
+    implements="lightning:actionOverride,force:lightningQuickAction,force:hasRecordId,lightning:hasPageReference,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
+    controller="DN_DeliveryRequestRegistrationController">
+
+    <aura:attribute name="isRequired" type="Boolean" default="false" description="교육 여부 필요 선택시 보이는 화면" />
+    <aura:attribute name="EduValue" type="String" default="notRequired" />
+
+    <aura:attribute name="deliveryOrder" type="Map" default="{}" description="delivery order" />
+    
+    <aura:attribute name="accRepInfo" type="List"/>
+    <aura:attribute name="selectRep"  type="Object" default=""/>
+    
+    <!-- portal attribute -->
+    <aura:attribute name="options" type="List" description="교육 여부 옵션" />
+    <aura:attribute name="contactOptions" type="List" description="고객사 담당자 옵션" />
+    <aura:attribute name="trainingTypeOptions" type="List" description="교육 종류 옵션" />
+    <aura:attribute name="trainingSortOptions" type="List" description="교육 구분 옵션" />
+    <aura:attribute name="traineeLevelOptions" type="List" description="피교육자 수준 옵션" />
+    <aura:attribute name="trainingCountOptions" type="List" description="교육 횟수 옵션" />
+    <aura:attribute name="trainingOwnerOptions" type="List" description="교육 담당자 옵션" />
+
+    <!-- order Id 를 통한 관련 obj 정보 조회 -->
+    <aura:attribute name="account" type="Account" />
+    <aura:attribute name="contacts" type="List" />
+    <aura:attribute name="currentUser" type="User" />
+    <aura:attribute name="ownerId" type="String" />
+
+    <!-- Delivery Order -->
+    <aura:attribute name="DestinationZone__c" type="String" />
+    <aura:attribute name="Shipping__c" type="String" />
+    <aura:attribute name="PlannedGI__c" type="Datetime" />
+    <aura:attribute name="DeliveryDate__c" type="Datetime" />
+    <aura:attribute name="CapitalNo__c" type="String" />
+    <aura:attribute name="ActualGIDate__c" type="Datetime" />
+    <aura:attribute name="Note__c" type="String" />
+
+    <!-- ticket(a.k.a case) -->
+    <aura:attribute name="Ticket" type="Case" />
+
+    <aura:attribute name="ContactId" type="String" />
+    <aura:attribute name="TrainingSort__c" type="String" />
+    <aura:attribute name="TrainingType__c" type="String" />
+    <aura:attribute name="TrainingCount__c" type="String" />
+    <aura:attribute name="TraineeLevel__c" type="String" />
+    <aura:attribute name="Owner" type="String" />
+    <!-- DD 250421 -->
+    <aura:attribute name="shipToId" type="String" />
+    <aura:attribute name="shipToAddress" type="String" />
+
+    <aura:attribute name="TrainingDateTime1__c" type="Datetime" />
+    <aura:attribute name="TrainingDateTime2__c" type="Datetime" />
+    <aura:attribute name="TrainingDateTime3__c" type="Datetime" />
+    <aura:attribute name="ReceptionDetails__c" type="String" />
+    <aura:attribute name="fileList" type="List" default="[]" />
+
+    <aura:attribute name="cnt2" type="Boolean" default="false" />
+    <aura:attribute name="cnt3" type="Boolean" default="false" />
+    <aura:attribute name="today" type="Datetime" />
+
+    <aura:attribute name="isEmptyDo" type="Boolean" default="false" />
+    
+
+
+
+
+    <!-- do fields -->
+    <aura:attribute name="isLoading" type="Boolean" default="false" description="Loading" />
+    
+    <aura:attribute name="doFieldWrapList" type="List" description="delivery order fields" />
+    <aura:attribute name="requiedFields" type="List" description="delivery order required fields" />
+    <aura:attribute name="fileFields" type="List"/>
+    
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="doId" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="render" value="{!this}" action="{!c.handleNavigation}" />
+
+    <lightning:navigation aura:id="navigation"/>
+
+    <aura:html tag="style">
+        .modal-body:has(.cDN_DeliveryNewBtn) {
+        overflow: visible;
+        }
+        .slds-modal__container:has(.cDN_DeliveryNewBtn) {
+        width: 1024px;
+        max-width: none;
+        overflow: visible;
+        }
+        .slds-modal__container .slds-modal__content:has(.cDN_DeliveryNewBtn) {
+        height: fit-content !important;
+        max-height:none !important;
+        padding: 0;
+        overflow: visible;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_DeliveryNewBtn) {
+        padding:0;
+        }
+        .quick-actions-panel:has(.cDN_DeliveryNewBtn) {
+            overflow: visible;
+        }
+        .file_wrap .slds-file-selector,
+        .file_wrap .slds-file-selector__dropzone {
+            width: 100% !important;
+        }
+    </aura:html>
+
+
+
+
+
+
+
+
+
+
+
+    <div class="do_registration_wrapper slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner alternativeText="Loading" size="medium" />
+            </aura:if>
+            <!-- modal Header -->
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium">{!$Label.c.DNS_S_CreateDO}</h2>
+            </header>
+
+            <!-- modal Content -->
+            <div class="slds-modal__content">
+                <!-- delivery order -->
+                <div class="card-01 top-card">
+                    <aura:iteration items="{!v.doFieldWrapList}" var="item">
+                        <div class="field-wrap">
+                            <aura:if isTrue="{!item.type == 'STRING'}">
+                                <lightning:input name="{!item.apiName}" label="{!item.label}" onchange="{!c.handleDoChange}" required="{!item.isRequired}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!item.type == 'TEXTAREA'}">
+                                <lightning:textarea name="{!item.apiName}" label="{!item.label}" onchange="{!c.handleDoChange}" required="{!item.isRequired}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!item.type == 'DATETIME'}">
+                                <lightning:input name="{!item.apiName}" type="datetime" label="{!item.label}" onchange="{!c.handleDoChange}" required="{!item.isRequired}"/>
+                            </aura:if>
+                            <aura:if isTrue="{!item.type == 'PICKLIST'}">
+                                <lightning:combobox name="{!item.apiName}" label="{!item.label}" options="{!item.options}" onchange="{!c.handleDoChange}" required="{!item.isRequired}"/>
+                            </aura:if>
+                        </div>
+                    </aura:iteration>
+                </div>
+                <!-- file upload -->
+                <div class="card-02 top-card">
+                    <div class="table-wrap file_wrap">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
+                            <colgroup>
+                                <col style="width: 20%;"/>
+                                <col style="width: 79%;"/>
+                                <col style="width: 1%;"/>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">{!$Label.c.DNS_C_Item}</th>
+                                    <th scope="col">{!$Label.c.DNS_C_FileUpload}</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.fileFields}" var="field">
+                                    <tr>
+                                        <td>{!field.label}</td>
+                                        <td style="text-align: center;">
+                                            <aura:if isTrue="{!field.fileId}">
+                                                <span>{!field.fileName}</span>
+                                                <aura:set attribute="else">
+                                                    <lightning:input 
+                                                        type="file" 
+                                                        aura:id="{!field.name}" 
+                                                        onchange="{!c.handleFileChange}" 
+                                                        name="{!field.name}" 
+                                                        variant="label-hidden" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td>
+                                            <aura:if isTrue="{!field.fileId}">
+                                                <lightning:buttonIcon 
+                                                    iconName="utility:close" 
+                                                    onclick="{!c.handleDelete}" 
+                                                    variant="bare" 
+                                                    class="slds-m-left_small file-upload-button" 
+                                                    value="{!field.fileId}" />
+                                            </aura:if>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                <div class="card-03 top-card">
+                    <div class="field-wrap">
+                        <lightning:radioGroup label="교육 여부" options="{! v.options }" value="{! v.EduValue }"
+                            onchange="{! c.handleEducationRequired }" />
+                    </div>
+                    <aura:if isTrue="{!v.isRequired}">
+                        <div class="input-wrap">
+                            <lightning:combobox name="ContactId" label="고객사 담당자" options="{! v.contactOptions }"
+                                value="{!v.ContactId}" onchange="{!c.odValue}" placeholder="선택" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input name="repName" label="고객사 담당자명" value="{!v.selectRep.repName}" required="true" onchange="{!c.inputContact}" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input name="repMp" label="고객사 연락처" value="{!v.selectRep.repMp}" required="true" onchange="{!c.inputContact}" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input name="repTitle" label="직책" value="{!v.selectRep.repTitle}" required="true" onchange="{!c.inputContact}" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input name="dealerMP" label="접수자 전화번호" value="{!v.currentUser.conMP}" required="true" onchange="" />
+                        </div>
+                        <div class="input-wrap address">
+                            <span>* 고객사 주소가 변경된 경우 접수내용에 기입해주시길 바랍니다.</span>
+                            <lightning:input name="" label="고객사 주소" value="{!v.shipToAddress}" required="true" onchange=""  disabled="true"/>
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:combobox name="TrainingType__c" label="교육 종류" options="{! v.trainingTypeOptions }"
+                                value="{!v.TrainingType__c}" onchange="{!c.odValue}" placeholder="선택" required="true" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:combobox name="TrainingCount__c" label="교육 횟수" options="{! v.trainingCountOptions }"
+                                value="{!v.TrainingCount__c}" onchange="{!c.odValue}" placeholder="선택" required="true" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:combobox name="TraineeLevel__c" label="피교육자 수준" options="{! v.traineeLevelOptions }"
+                                value="{!v.TraineeLevel__c}" onchange="{!c.odValue}" placeholder="선택" required="true" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:combobox name="Owner" label="교육담당자" options="{!v.trainingOwnerOptions}" value="{!v.Owner}"
+                                onchange="{!c.odValue}" placeholder="선택" required="true" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input label="교육 요청일시(1)" name="TrainingDateTime1__c" type="datetime" value="{!v.TrainingDateTime1__c}"
+                                onchange="{!c.odValue}" required="true" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input label="교육 요청일시(2)" name="TrainingDateTime2__c" type="datetime" value="{!v.TrainingDateTime2__c}"
+                                onchange="{!c.odValue}" required="{!v.cnt2}" disabled="{!NOT(v.cnt2)}" />
+                        </div>
+                        <div class="input-wrap">
+                            <lightning:input label="교육 요청일시(3)" name="TrainingDateTime3__c" type="datetime" value="{!v.TrainingDateTime3__c}"
+                                onchange="{!c.odValue}" required="{!v.cnt3}" disabled="{!NOT(v.cnt3)}" />
+                        </div>
+                        <div class="input-wrap grid-description">
+                            <lightning:textarea name="ReceptionDetails__c" label="접수내용" onchange="{!c.odValue}" />
+                        </div>
+                        <div class="input-wrap grid-long">
+                            <lightning:fileUpload label="첨부파일" 
+                                aura:id="educationFiles"
+                                name="FileUpload" 
+                                multiple="true" 
+                                recordId="{!v.recordId}" 
+                                onuploadfinished="{!c.handleUploadFinished}" />
+
+                            <aura:if isTrue="{!v.fileList}">
+                                <div class="file-wrap">
+                                    <aura:iteration items="{!v.fileList}" var="fl" indexVar="k">
+                                        <div class="file-name">
+                                            <p>{!fl.fileName}</p>
+                                            <div onclick="{!c.removeFile}" data-file="{!fl.fileName}" data-index="{!k}" class="remove">
+                                                <lightning:icon iconName='utility:close' alternativeText='close' size='xx-small' title='close' />
+                                            </div>
+                                        </div>
+                                    </aura:iteration>
+                                </div>
+                            </aura:if>
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- modal Footer -->
+            <footer class="slds-modal__footer">
+                <div class="button-wrap">
+                    <lightning:button label="{!$Label.c.DNS_B_Cancel}" variant="neutral" onclick="{!c.handleClose}" />
+                    <lightning:button label="{!$Label.c.DNS_B_Save}" variant="brand" onclick="{!c.handleSave}" />
+                </div>
+            </footer>
+        </div>
+    </div>
+</aura:component>

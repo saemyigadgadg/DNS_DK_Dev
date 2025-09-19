@@ -1,0 +1,292 @@
+<!--
+  @description       : (포탈) 부품 정보 > 부품 기본 정보 조회
+  @author            : youjin.shim@sbtglobal.com
+  @last modified on  : 2025-09-15
+  @last modified by  : jiyoung.p@dncompany.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-07-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens" access="global"
+    controller="DN_PortalPartsInfoController"
+    description="부품기본정보조회">
+
+    
+    <!-- attribute -->
+    <aura:attribute name="isLoading"    type="Boolean" />
+    <aura:attribute name="isTest"       type="Boolean" default="false" />
+    <aura:attribute name="isProfile"    type="Boolean" default="false" />
+    <aura:attribute name="isCSUser"     type="Boolean" default="false" />
+    <aura:attribute name="isDNS"        type="Boolean" default="false" />
+    <aura:attribute name="isReplace"    type="Boolean" default="false" />
+    <aura:attribute name="replaceName"  type="String" />
+
+    <aura:attribute name="userInfo"         type="Object" />
+    <aura:attribute name="partInfo"         type="Object" description="검색한 부품의 기본 정보" />
+    <aura:attribute name="rePartInfo"       type="List" description="검색한 부품의 대체품 정보" />
+    <aura:attribute name="replacementList"  type="List" description="대체품 리스트 정보" />
+
+    <aura:attribute name="productNumber" type="String" description="검색한 부품번호" />
+    <aura:attribute name="partsStock"    type="List" />
+    <aura:attribute name="matchedList"   type="List" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+
+    <aura:html tag="style">
+        .slds-card.cDN_partsInformationSearch:has(.slds-modal.slds-fade-in-open) {
+            height : calc(100vh - 10rem);
+        }
+        .slds-card.cDN_partsInformationSearch:has(.slds-modal.slds-hide) {
+            height : auto;
+        }
+    </aura:html>
+
+    <article class="slds-card">
+
+        <!-- 모달 -->
+        <div aura:id="SearchProductNumber"></div> <!--대체품/부품정보 모달--> 
+
+        <!-- Loading Spinner -->
+        <aura:if isTrue="{! v.isLoading}">
+            <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+        </aura:if>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="title slds-grid">
+                <lightning:icon iconName="custom:custom3" size="small" />
+                <h2 class="slds-truncate">{!$Label.c.BPI_BasicPartsInfo} <!-- 부품기본정보 --></h2>
+            </div>
+
+            <div class="button-wrap">
+                <!-- 검색 필터 및 기능 추가 필요 -->
+                <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}"/>
+            </div>
+        </div>
+
+        <!-- body -->
+        <div class="body">
+            <!-- Card 01 -->
+            <div class="card-01 top-card">
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_UserId} <!--유저아이디--><abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap">
+                        <lightning:input type="text" name="userInfo" value="{!v.userInfo.dealerName}" variant="label-hidden" readonly="true"
+                            disabled="true" aura:id="" />
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_part_no} <!-- 부품번호 --><abbr class="slds-required" title="required">*</abbr></p>
+                    <div class="input-wrap" onkeyup="{!c.handleKeyPress}" >
+                        <lightning:input value="{!v.productNumber}" type="text" variant="label-hidden" onchange="{!c.handleUpperCase}" onblur="{!c.inputEnd}" />
+                        <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Product Number"  onclick="{!c.clearProductNumber}" class="clear-btn"/>
+                        <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                            onclick="{!c.openSearchProductNumber}" accesskey="" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- card-02 -->
+            <div class="card-02 top-card">
+                <div class="field-wrap">
+                    <p>{!$Label.c.service_lbl_part_name}</p> <!-- 품명 -->
+                    <div class="input-wrap">
+                        {!v.partInfo.partName}
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.isProfile}"> <!-- 여기 라벨로 처리할지 이런식으로 따로 보여줄지 고민 -->
+                    <div class="field-wrap">
+                        <p>HQ_WH1</p><!--창원_가용재고-->
+                        <div class="input-wrap">
+                            {!v.partInfo.stockQuantity}
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>HQ_WH2</p><!--천안_가용재고-->
+                        <div class="input-wrap">
+                            {!v.partInfo.stockQuantity2}
+                        </div>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="field-wrap">
+                        <p>DMTA_WH1</p><!--미국_시카고_가용재고-->
+                        <div class="input-wrap">
+                            {!v.partInfo.stockQuantity}
+                    </div>
+                </div>
+                    </aura:set>
+                </aura:if>
+                <aura:if isTrue="{!v.isCSUser}">
+                    <div class="field-wrap">
+                        <p>{!$Label.c.ORC_NetPrice} <!-- 단가 --></p>
+                        <div class="input-wrap">
+                            {!v.partInfo.unitPrice}
+                        </div>
+                    </div>
+                </aura:if>
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_RetailPrice} <!-- 소비자 가격 --></p>
+                    <div class="input-wrap">
+                        {!v.partInfo.consumerPrice}
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_Priceapplicationdate} <!-- 가격 적용일 --></p>
+                    <div class="input-wrap">
+                        {!v.partInfo.priceEffectiveDate}
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_PurchaseLT} <!-- 구매 Lead Time (Days) --></p>
+                    <div class="input-wrap">
+                        {!v.partInfo.purchaseLeadTime}
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>
+                        <span>{!$Label.c.DNS_FSL_Replacement} <!-- 대체품 --></span>
+                        <aura:if isTrue="{!v.isReplace}">
+                            <lightning:buttonicon iconName="utility:rows" size="x-small"
+                            alternativeText="" onclick="{!c.openreplacementList}" />    
+                        </aura:if>
+                    </p>
+                    <div class="input-wrap">
+                        {!v.replaceName}
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.isCSUser}">
+                    <div class="field-wrap">
+                        <p>{!$Label.c.DNS_FSL_Standard} <!-- 규격 --></p>
+                        <div class="input-wrap">
+                            {!v.partInfo.specification}
+                        </div>
+                    </div>
+                </aura:if>                    
+                <div class="field-wrap">
+                    <p>{!$Label.c.DNS_FSL_Unit} <!-- 단위 --></p>
+                    <div class="input-wrap">
+                        {!v.partInfo.unit}
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>Service Lead Time(day)</p>
+                    <div class="input-wrap">
+                        {!v.partInfo.serviceLeadTime}
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_ServiceSupplied} <!-- 서비스 공급 여부 --></p>
+                    <div class="input-wrap">
+                        {!v.partInfo.serviceSupply}
+                    </div>
+                </div>
+                <div class="field-wrap">
+                    <p>{!$Label.c.BPI_ReasonNonSupply} <!-- 서비스 미 공급 사유 --></p>
+                    <div class="input-wrap">
+                        {!v.partInfo.serviceNotSupply}
+                    </div>
+                </div>
+                <aura:if isTrue="{!v.isCSUser}">
+                    <div class="field-wrap grid-long">
+                        <p>{!$Label.c.BPI_PartsNotes} <!-- 부품 메모 --></p>
+                        <div class="input-wrap">
+                            {!v.partInfo.note}
+                        </div>
+                    </div>
+                </aura:if>                    
+            </div>
+
+            <!-- card-03 -->
+            <div class="card-03 top-card">
+                <!-- 정보 없을 때 no data 넣기 -->
+                <div class="card-header">
+                    <h2>{!$Label.c.BPI_ReplacementInfo} <!-- 대체품 정보 --></h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <colgroup>
+                            <col width="10%" />
+                            <col width="20%" />
+                            <col width="25%" />
+                            <col width="15%" />
+                            <col width="15%" />
+                            <col width="15%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Seq</th>
+                                <th>Material</th>
+                                <th>Material Desc.</th>
+                                <th>ICA</th>
+                                <th>NSR</th>
+                                <aura:if isTrue="{!v.isProfile}"> <!-- 여기 라벨로 처리할지 이런식으로 따로 보여줄지 고민 -->
+                                    <th>HQ_WH1</th><!--창원_가용재고-->
+                                    <th>HQ_WH2</th><!--천안_가용재고-->
+                                    <aura:set attribute="else">
+                                        <th>DMTA_WH1</th><!--미국_시카고_가용재고-->
+                                    </aura:set>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <aura:iteration items="{!v.rePartInfo}" var="rp" indexVar="j">
+                            <tbody>
+                                <tr>
+                                    <td>{!rp.seq}</td>
+                                    <td>{!rp.material}</td>
+                                    <td>{!rp.mamterialDesc}</td>
+                                    <td>{!rp.ica}</td>
+                                    <td>{!rp.nsr}</td>
+                                    <aura:if isTrue="{!v.isProfile}"> <!-- 여기 라벨로 처리할지 이런식으로 따로 보여줄지 고민 -->
+                                        <td>{!rp.avilQty}</td>
+                                        <td>{!rp.avilQty2}</td>
+                                        <aura:set attribute="else">
+                                            <td>{!rp.avilQty}</td>
+                                        </aura:set>
+                                    </aura:if>
+                                </tr>
+                            </tbody>
+                        </aura:iteration>
+                    </table>
+                </div>
+            </div>
+
+            <!-- card-04 -->
+            <aura:if isTrue="{!v.isDNS}"> <!-- 250910 국내만 사용 -->
+                <div class="card-04 top-card">
+                    <!-- 정보 없을 때 no data 넣기 -->
+                    <div class="card-header">
+                        <h2>타 부품 대리점 재고</h2>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <colgroup>
+                                <col width="50%"/>
+                                <col width="50%"/>
+                                <!-- <col width="30%"/> -->
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>대리점 명</th>
+                                    <th>재고량</th>
+                                    <!-- <th>Moving</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.partsStock}" var="parts" indexVar="index">
+                                    <tr>
+                                        <td>{!parts.name}</td>
+                                        <td>{!parts.partQty}</td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </article>
+</aura:component>

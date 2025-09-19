@@ -1,0 +1,46 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-28-2025
+  @last modified by  : Hyerin Ro 
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   02-28-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasRecordId"
+    controller="DN_OrderNoticeController"
+    access="global">
+
+    <aura:attribute name="iframeSrc" type="String" default=""/>
+    <aura:attribute type="Boolean" name="isLoading" default="true"/>
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDN_OrderNoticeBtn) {
+            width:100%;
+            max-width: 60rem;
+        }
+
+        .slds-modal__content:has(.cDN_OrderNoticeBtn) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow: visible;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDN_OrderNoticeBtn) {
+            padding:0;
+        }
+    </aura:html>
+
+    <div class="order_notice_wrapper">
+        <aura:if isTrue="{! v.isLoading }">
+          <lightning:spinner size="medium" alternativeText="Loading" />
+        </aura:if>
+        <iframe aura:id="vfFrame" src="{!v.iframeSrc}" style="width: 100%; height:65vh;"></iframe>
+    </div>
+
+</aura:component>

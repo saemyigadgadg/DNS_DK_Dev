@@ -1,0 +1,487 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 04-13-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   12-06-2024   Hyerin Ro   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="대상 장비 컴포넌트" controller="DN_CampaignTargetCmpController">
+
+    <!--Attribute-->
+    <aura:attribute name = "recordId" type="String" />
+    <aura:attribute name = "isLoading" type="Boolean" default="false" />
+    <aura:attribute name = "ctList" type="List" default="[]" />
+    <aura:attribute name = "originalCTList" type="List" default="[]" />
+    <aura:attribute name = "selectedCampaignTarget" type="List" default="[]" />
+    <aura:attribute name = "isEditing" type="Boolean" default="false" />
+    <aura:attribute name = "isScoreEditing" type="Boolean" default="false" />
+    <aura:attribute name = "isEditMode" type="Boolean" default="false" />
+    <aura:attribute name = "happyCallType" type="String" />
+    <aura:attribute name = "sendAlarmTalkModal" type="Boolean" default="false" />
+    <aura:attribute name = "options" type="List" />
+    <aura:attribute name = "selectedValue" type="String" default="" />
+    <aura:attribute name = "headerList" type="List" />
+    <aura:attribute name = "surveyName" type = "String" />
+    <aura:attribute name=  "startDate"      type="Date" />
+    <aura:attribute name=  "endDate"        type="Date" />
+
+    <aura:attribute name="alamTalkSend" type="String" />
+    <aura:attribute name="satisfactionResult" type="String" />
+    <aura:attribute name="surveyAnswer" type="List" />
+
+
+    <!--Handler-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <!-- <lightning:card variant="Narrow" title="{!' ' + $Label.c.DNS_T_TargetList + ' (' + v.ctList[0].campaignTargetWrapper.length + ')'}" iconName="standard:products"> -->
+    <lightning:card variant="Narrow" title="{!' ' + $Label.c.DNS_T_TargetList}" iconName="standard:products">
+        <aura:if isTrue="{!v.isLoading}">
+            <lightning:spinner variant="brand" size="large" aura:id="spinner" />
+        </aura:if>
+        <div class="field-02-btn-wrap">
+            <div class="field-wrap field-02">
+                <p>등록기간</p>
+                <div class="input-wrap">
+                    <lightning:input type="Date" name="searchStartDate" value="{! v.startDate }" variant="label-hidden" />
+                    <span>~</span>
+                    <lightning:input type="Date" name="searchEndDate" value="{! v.endDate }" variant="label-hidden" />
+                </div>
+            </div>
+            <lightning:buttonGroup>
+                <lightning:button label="검색" title="Search" onclick="{! c.clickSearch }" variant="brand" />
+                <!-- <lightning:buttonIcon iconName="utility:refresh" variant="brand" alternativeText="Refresh" title="Refresh" onclick="{!c.clickRefresh}" /> -->
+                <aura:if isTrue="{!v.isEditing}">
+                    <lightning:button label="저장" title="Save" onclick="{! c.resultSave }" variant="brand" />
+                    <lightning:button label="Cancel" title="Cancel" onclick="{! c.resultCancel}" variant="neutral" />
+                    <aura:set attribute="else">
+                        <!-- <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                            <lightning:button label="{!v.alamTalkSend}" onclick="{! c.openAlarmTalk }"></lightning:button>
+                        </aura:if> -->
+                        <aura:if isTrue="{!v.happyCallType == 'General'}">
+                            <lightning:button label="{!v.satisfactionResult}" onclick="{! c.toggleEditing }" />
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </lightning:buttonGroup>
+        </div>
+        
+
+        <div class="card-02 top-card">
+            <div class="table-02">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                        <col width="5%" />
+                        <col width="9%" />
+                        <col width="9%" />
+                        <col width="14%" />
+                        <col width="12%" />
+                        <col width="12%" />
+                        <col width="6%" />
+                        <col width="6%" />
+                        <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                            <col width="13%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                        </aura:if>
+                        <aura:if isTrue="{!v.happyCallType == 'General'}">
+                            <col width="14%" />
+                        </aura:if>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <!-- <th scope="col" rowspan="2">
+                                <lightning:input type="checkbox" aura:id="headerCheckbox" onchange="{! c.selectAll }" />
+                            </th> -->
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">NO.</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">해피콜 등록일시</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">업체명</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">고객명</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">연락처</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">주소</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">티켓번호</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">서비스오더No.</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">제조번호</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">설치완료일자</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">장비보증</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">기종</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">소속</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">서비스요원</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">Ticket 종결일자</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">상담원</div>
+                            </th>
+                            <!-- <th scope="col">
+                                <div class="slds-truncate" title="">출하일자</div>
+                            </th> -->
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">조치내역</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">설문</div>
+                            </th>
+                            <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">점수</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">점수(보정)</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">1차전송</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">1차전송일시</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">설문상태</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">설문완료일시</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">재전송횟수</div>
+                                </th>
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">재전송</div>
+                                </th>
+                            </aura:if>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="" style="min-width: 16rem;">메모</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">메모저장</div>
+                            </th>
+                            <th scope="col" rowspan="2" style="text-align: center;">
+                                <div class="slds-truncate" title="">메모삭제</div>
+                            </th>
+                            <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                                <th scope="col" colspan="{!v.ctList[0].headerWrapper.length}" style="text-align: center;">
+                                    <div class="slds-truncate" title="">{!v.surveyName}</div>
+                                </th>
+                            </aura:if>
+                            <!-- <aura:if isTrue="{!v.happyCallType == 'General'}">
+                                <th scope="col" rowspan="2">
+                                    <div class="slds-truncate" title="">해피콜저장</div>
+                                </th>
+                                <th scope="col" rowspan="2">
+                                    <div class="slds-truncate" title="">통화기록</div>
+                                </th>
+                            </aura:if> -->
+                            <aura:if isTrue="{!v.happyCallType == 'General'}">
+                                <th scope="col" rowspan="2" style="text-align: center;">
+                                    <div class="slds-truncate" title="">상담 만족</div>
+                                </th>
+                            </aura:if>
+                        </tr>
+                        <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                            <tr>
+                                <aura:iteration items="{!v.ctList}" var="mergeWrapper" indexVar="j">
+                                    <aura:iteration items="{!mergeWrapper.headerWrapper}" var="header">
+                                        <th scope="col" style="text-align: center;">
+                                            <div class="slds-truncate" title="">{!header.label}</div>
+                                        </th>
+                                    </aura:iteration>
+                                </aura:iteration>
+                            </tr>
+                        </aura:if>
+                    </thead>
+                    <tbody>
+                        <aura:if isTrue="{!v.ctList[0].noExist}">
+                            <tr>
+                                <td scope="row" colspan="28" style="text-align: center;">
+                                    <p>추출된 해피콜 대상이 없습니다.</p>
+                                </td>
+                            </tr>
+                        </aura:if>
+                        <!-- <aura:iteration items="{!v.ctList}" var="ctList" indexVar="r"> -->
+                        <aura:iteration items="{!v.surveyAnswer}" var="wrapper" indexVar="j">
+                            <!-- <aura:iteration items="{!ctList.campaignTargetWrapper}" var="body" indexVar="j"> -->
+                                <tr>
+                                    <td scope="row" class="center" style="text-align: center;">
+                                        {!j + 1}
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.CreateDate}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <a href="javascript:void(0);" onclick="{!c.openAccount}"
+                                            data-recordid="{!wrapper.AccountId}">
+                                            {!wrapper.AccountName}
+                                        </a>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.CustomerName}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>
+                                            <lightning:clickToDial value="{!wrapper.PhoneNumber}"></lightning:clickToDial>
+                                        </div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.Address}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <a href="javascript:void(0);" onclick="{!c.openTicket}"
+                                            data-recordid="{!wrapper.TicketId}">
+                                            {!wrapper.Ticket}
+                                        </a>
+                                    </td>
+                                    <td scope="row">
+                                        <a href="javascript:void(0);" onclick="{!c.openServiceOrder}"
+                                            data-recordid="{!wrapper.ServiceOrderId}">
+                                            {!wrapper.ServiceOrderNo}
+                                        </a>
+                                    </td>
+                                    <td scope="row">
+                                        <lightning:formattedRichText value="{!wrapper.SerialNumber}" />
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.InstallDate}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.Guarantee}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.Model}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.WorkCenter}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.ServiceMan}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.CompletedDate}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <a href="javascript:void(0);" onclick="{!c.openUser}"
+                                            data-recordid="{!wrapper.ManagerId}">
+                                            {!wrapper.Manager}
+                                        </a>
+                                    </td>
+                                    <td scope="row">
+                                        <div>{!wrapper.InspectionDetails}</div>
+                                    </td>
+                                    <td scope="row">
+                                        <aura:if isTrue="{!not(empty(wrapper.SurveyURL))}">
+                                            <a href="javascript:void(0);" onclick="{!c.openURL}"
+                                                data-url="{!wrapper.SurveyURL}">
+                                                설문보기
+                                            </a>
+                                            <aura:set attribute="else">
+                                                <div>설문 없음</div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </td>
+                                    <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                                        <td scope="row">
+                                            <div>{!wrapper.Score}</div>
+                                        </td>
+                                        <aura:if isTrue="{!wrapper.isScoreEditing}">
+                                            <aura:set attribute="else">
+                                                <td data-index="{! j }" scope="row" onclick="{!c.enableScoreEdit}">
+                                                    <div>{!wrapper.AdjustScore}</div>
+                                                </td>
+                                            </aura:set>
+                                            <td data-index="{! j }" scope="row">
+                                                <lightning:input value="{!wrapper.AdjustScore}" onchange="{!c.handleScoreChange}"
+                                                    aura:id="editInput" class="inline-edit-input" onblur="{!c.handleScoreBlur}"
+                                                    accesskey="{!j}" />
+                                            </td>
+                                        </aura:if>
+                                        <aura:if isTrue="{!wrapper.FirstSend == true}">
+                                            <td scope="row">
+                                                <div>O</div>
+                                            </td>
+                                            <aura:set attribute="else">
+                                                <td scope="row">
+                                                    <div></div>
+                                                </td>
+                                            </aura:set>
+                                        </aura:if>
+                                        <td scope="row">
+                                            <div>{!wrapper.FirstSendTime}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!wrapper.SurveyStatus}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!wrapper.SurveyCompletedDate}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div>{!wrapper.AlamTalkSendCount}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <lightning:buttonIcon iconName="utility:refresh" size="small" variant="bare"
+                                                alternativeText="refresh" title="refresh" accesskey="{!j}"
+                                                onclick="{!c.clickReSend}" />
+                                        </td>
+                                    </aura:if>
+                                    <aura:if isTrue="{!wrapper.isEditing}">
+                                        <aura:set attribute="else">
+                                            <td data-index="{! j }" scope="row" onclick="{!c.enableEdit}" style="background-color : yellow;">
+                                                <div>{!wrapper.Memo}</div>
+                                            </td>
+                                        </aura:set>
+                                        <td data-index="{! j }" scope="row">
+                                            <lightning:input value="{!wrapper.Memo}" onchange="{!c.handleMemoChange}"
+                                                aura:id="editInput" class="inline-edit-input" onblur="{!c.handleBlur}"
+                                                accesskey="{!j}" />
+                                        </td>
+                                    </aura:if>
+                                    <td scope="row">
+                                        <lightning:buttonIcon iconName="utility:save" size="small" variant="bare"
+                                            alternativeText="Save" title="Save" onclick="{!c.saveMemo}"
+                                            accesskey="{!j}" />
+                                    </td>
+                                    <td scope="row">
+                                        <lightning:buttonIcon onclick="{!c.deleteMemo}" iconName="utility:delete"
+                                            size="small" variant="bare" alternativeText="Delete" title="Delete"
+                                            accesskey="{!j}" />
+                                    </td>
+                                    <aura:if isTrue="{!v.happyCallType == 'Survey'}">
+                                        <aura:if isTrue="{!wrapper.IsMigration}">
+                                                <aura:iteration items="{!wrapper.responseList}" var="response">
+                                                    <td scope="row" data-row="{!r}" data-index="{!j}">
+                                                        <div>
+                                                            {!response}
+                                                        </div>
+                                                    </td>
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <aura:iteration items="{!wrapper.ResultValue}" var="value">
+                                                        <td scope="row" data-row="{!r}" data-index="{!j}">
+                                                            <div>
+                                                                {!value}
+                                                            </div>
+                                                        </td>
+                                                    </aura:iteration>        
+                                                </aura:set>
+                                        </aura:if>
+                                        <aura:set attribute="else">
+                                            <td scope="row">
+                                                <aura:if isTrue="{!v.isEditing}">
+                                                    <lightning:select name="selectItem" onchange="{!c.inputSurveyResult}" variant="label-hidden" accesskey="{!j}" value="{!wrapper.SurveyResult}">
+                                                        <option value="" selected="true"></option>
+                                                        <aura:iteration items="{!v.options}" var="option">
+                                                            <option value="{!option}">{!option}</option>
+                                                        </aura:iteration>
+                                                    </lightning:select>
+                                                    <aura:set attribute="else">
+                                                        <div>{!wrapper.SurveyResult}</div>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>        
+                                        </aura:set>
+                                    </aura:if>
+
+                                    <!-- <td scope="row">
+                                        <div>
+                                            <lightning:select name="selectItem" onchange="{!c.doSomething}">
+                                                <aura:iteration items="{!v.options}" var="item">
+                                                    <option text="{!item.label}" value="{!item.value}"
+                                                        selected="{!item.selected}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </td> -->
+                                    <!-- <aura:if isTrue="{!v.happyCallType == 'General'}">
+                                        <td scope="row">
+                                            <lightning:buttonIcon iconName="utility:save" size="small" variant="bare"
+                                                alternativeText="Save" title="Save" />
+                                        </td>
+                                        <td scope="row">
+                                            <div></div>
+                                        </td>
+                                    </aura:if> -->
+                                    <aura:if isTrue="{!v.happyCallType == 'General'}">
+                                        <td scope="row">
+                                            <aura:if isTrue="{!v.isEditing}">
+                                                <lightning:select name="selectItem" onchange="{!c.inputSurveyResult}" variant="label-hidden" accesskey="{!j}" value="{!wrapper.SurveyResult}">
+                                                    <option value="" selected="true"></option>
+                                                    <aura:iteration items="{!v.options}" var="option">
+                                                        <option value="{!option}">{!option}</option>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                                <aura:set attribute="else">
+                                                    <div>{!wrapper.SurveyResult}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                    </aura:if>
+                                </tr>
+                            <!-- </aura:iteration> -->
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </lightning:card>
+
+    <aura:if isTrue="{!v.sendAlarmTalkModal}">
+        <div aura:id="confirmModal" class="slds-modal slds-fade-in-open">
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+            <div class="modal-bg"></div>
+            <div class="slds-modal__container slds-modal_large">
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">발송</h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="modal-body slds-modal__content slds-p-around_medium">
+                    <div class="icon-wrap">
+                        <lightning:icon iconName='utility:anywhere_chat' alternativeText='download' size='Large'
+                            title='download'>
+                        </lightning:icon>
+                    </div>
+                    <p>해피콜 알림톡을 발송하시겠습니까?</p>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="취소" title="Brand action" onclick="{!c.cancelSend}" />
+                    <lightning:button variant="brand" label="발송" title="Brand action" onclick="{!c.clickSend}" />
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+
+</aura:component>

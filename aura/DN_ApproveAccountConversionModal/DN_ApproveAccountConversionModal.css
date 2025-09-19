@@ -1,0 +1,205 @@
+/* 🚩 Common Styles */
+
+.THIS .top-card .field-wrap {
+    display: flex;
+    gap: 0.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS .top-card .field-wrap p {
+    font-weight: 500;
+    width: 33%;
+}
+
+.THIS .top-card .field-wrap .input-wrap {
+    text-wrap: nowrap;
+    font-size: 14px;
+}
+
+/* 🚩 1. Modal */
+
+.THIS .slds-modal__container {
+    width: 100%;
+    max-width: none !important;
+    min-width: none !important;
+}
+
+.THIS .slds-modal__footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.THIS .modal-body {
+    padding: 0.75rem 1rem;
+}
+
+.THIS .modal-body .top-card:not(.card-03) {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.THIS .modal-body .comment-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.THIS .modal-body .card-01,
+.THIS .modal-body .card-02 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 0.5rem;
+}
+
+.THIS .modal-body .comment-wrap .comment {
+    font-size: 14px;
+}
+
+
+.THIS .modal-body .top-card .field-wrap {
+    gap: 0.75rem;
+}
+
+.THIS .modal-body .top-card .field-wrap p {
+    padding: 1px 0.25rem;
+    text-wrap: nowrap;
+    width: 36%;    
+}
+
+/* Comment Icon */
+
+.THIS .modal-body .comment-wrap .icon-wrap {
+    padding: 0.75rem;
+    border-radius: 50%;
+    border: 3px solid #4194f9;
+}
+
+.THIS .modal-body .comment-wrap .icon-wrap .slds-icon {
+    fill: #4194f9 !important;
+}
+
+/* Card 03 */
+
+.THIS .modal-body .card-03 h2{
+    font-size: 14px;
+    margin-bottom: 0.25rem;
+    background: #f3f3f3;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.THIS .modal-body .card-03 .table-wrap{
+    padding: 0.5rem;
+}
+
+
+/* SLDS Details */
+
+.THIS .modal-body .top-card .input-wrap .slds-form-element__label {
+    padding-top: 0;
+    color: #355d96;
+}
+
+.THIS .modal-body .top-card .field-wrap .slds-form-element_stacked:not(.slds-form-element_readonly) {
+    margin-bottom: 0;
+}
+
+
+/* 🚩 2. DNS_RequestToUseCustomer__c Component */
+
+.THIS .body {
+    background-color: #fff;
+    padding: 0.75rem 1rem;
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+    padding-bottom: 2rem;
+}
+
+.THIS .body .title {
+    width: 100%;
+    border-bottom: 1px solid #747474;
+}
+
+.THIS .body .title h2 {
+    font-size: 1rem;
+    text-transform: capitalize;
+    letter-spacing: normal;
+    color: #444;
+    padding: 0.5rem;
+    font-weight: 700;
+    border-bottom: 3px solid #4194f9;
+    width: fit-content;
+    margin-bottom: -1px;
+}
+
+.THIS .body .top-card {
+    margin-top: 1rem;
+}
+
+.THIS .body .slds-accordion__summary-action {
+    background-color: #f3f3f3;
+    padding: 0.65rem 0.75rem;
+}
+
+
+.THIS .body .accordion-body {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 0.5rem;
+    padding-top: 1.125rem;
+}
+
+/* Card 03 */
+
+.THIS .body .card-03 h2 {
+    font-size: 14px;
+    background-color: #f3f3f3;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.THIS .body .table-wrap table td {
+    text-align: center;
+}
+
+.THIS .body .slds-accordion__section {
+    padding: 0; 
+}
+
+/* Common Table Design */
+
+.THIS table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.THIS table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.THIS table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS table th+th,
+.THIS table td+td {
+    border-left: 1px solid #D9D9D9;
+}

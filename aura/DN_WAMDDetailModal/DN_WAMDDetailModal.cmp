@@ -1,0 +1,740 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 02-28-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+-->
+
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  extends="c:DN_Helper" controller="DN_POListReviewController" description="W.AMD">
+
+  <!-- attribute -->
+  <aura:attribute name="isModalLoading" type="Boolean" default="false" />
+  <aura:attribute name="wamdDetail" type="List" />
+  <aura:attribute name="docNum" type="String" /> <!-- 부품정보 -->
+  <aura:attribute name="dueOut" type="String" />
+  <aura:attribute name="dueIn" type="String" />
+  <aura:attribute name="dueKtx" type="String" />
+  <aura:attribute name="stock" type="String" />
+  <aura:attribute name="wamdList" type="List" />
+  <aura:attribute name="dueOutList" type="List" />
+  <aura:attribute name="dueInList" type="List" />
+  <aura:attribute name="stockList" type="List" />
+  <aura:attribute name="modalType" type="String" />
+  <aura:attribute name="dataList" type="List" default="[]" />
+  <aura:attribute name="recordList" type="List" default="[]" />
+  <aura:attribute name="isDataCheck" type="Boolean" default="false" />
+  <aura:attribute name="pdfModalOpen"      type="Boolean" default="false" /> <!--프린트 모달-->
+
+  <!--init -->
+  <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+  <aura:if isTrue="{! v.isModalLoading }">
+    <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+  </aura:if>
+
+  <div class="modal-wrap wamdDetailModal">
+    <div aura:id="wamdDetailModal" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container slds-modal_large">
+
+        <!-- 📌 1. WAMD -->
+        <aura:if isTrue="{!v.modalType == 'WAMD'}">
+
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h3 class="slds-text-heading_medium">W.AMD</h3>
+            <h2>({!v.docNum})</h2>
+
+            <!-- Close Button -->
+            <button class="slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.wamdDetailModalCancel}"></lightning:icon>
+            </button>
+
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-01 modal-body slds-modal__content ">
+
+            <!-- 검색 결과 -->
+            <div class="card-01 top-card">
+              <div class="slds-scrollable">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th class="" scope="col" style="width: 10%;">
+                        <div title=""></div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">18</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">17</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">16</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">15</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">14</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">13</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">12</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">11</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">10</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">9</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">8</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">7</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">6</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">5</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">4</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">3</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">2</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">1</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <aura:iteration items="{!v.dataList}" var="wamd" indexVar="i">
+                      <tr>
+                        <td data-label="대우기계">
+                          <div title="대우기계">
+                            <lightning:input type="text" name="" variant="label-hidden" value="{!wamd.name}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <aura:iteration items="{!wamd.monthlyList}" var="mon" indexVar="j">
+                          <td data-label="18">
+                            <div title="18">
+                              <aura:if isTrue="{!wamd.wamdType == 'dealer'}">
+                                <lightning:input type="text" name="18" variant="label-hidden" value="{!mon.dealaerQty}"
+                                  readonly="true" />
+                              </aura:if>
+                              <aura:if isTrue="{!wamd.wamdType == 'area'}">
+                                <lightning:input type="text" name="18" variant="label-hidden" value="{!mon.areaQty}"
+                                  readonly="true" />
+                              </aura:if>
+                              <aura:if isTrue="{!wamd.wamdType == 'all'}">
+                                <lightning:input type="text" name="18" variant="label-hidden" value="{!mon.otherQty}"
+                                  readonly="true" />
+                              </aura:if>
+                            </div>
+                          </td>
+                        </aura:iteration>
+
+                        <!-- <td data-label="18">
+                          <div title="18">
+                            <lightning:input type="text" name="18" variant="label-hidden" value="{!wamd.M18}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="17">
+                          <div title="17">
+                            <lightning:input type="text" name="17" variant="label-hidden" value="{!wamd.M17}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="16">
+                          <div title="16">
+                            <lightning:input type="text" name="16" variant="label-hidden" value="{!wamd.M16}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="15">
+                          <div title="15">
+                            <lightning:input type="text" name="15" variant="label-hidden" value="{!wamd.M15}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="14">
+                          <div title="14">
+                            <lightning:input type="text" name="14" variant="label-hidden" value="{!wamd.M14}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="13">
+                          <div title="13">
+                            <lightning:input type="text" name="13" variant="label-hidden" value="{!wamd.M13}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="12">
+                          <div title="12">
+                            <lightning:input type="text" name="12" variant="label-hidden" value="{!wamd.M12}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="11">
+                          <div title="11">
+                            <lightning:input type="text" name="11" variant="label-hidden" value="{!wamd.M11}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="10">
+                          <div title="10">
+                            <lightning:input type="text" name="10" variant="label-hidden" value="{!wamd.M10}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="9">
+                          <div title="9">
+                            <lightning:input type="text" name="9" variant="label-hidden" value="{!wamd.M09}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="8">
+                          <div title="8">
+                            <lightning:input type="text" name="8" variant="label-hidden" value="{!wamd.M08}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="7">
+                          <div title="7">
+                            <lightning:input type="text" name="7" variant="label-hidden" value="{!wamd.M07}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="6">
+                          <div title="6">
+                            <lightning:input type="text" name="6" variant="label-hidden" value="{!wamd.M06}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="5">
+                          <div title="5">
+                            <lightning:input type="text" name="5" variant="label-hidden" value="{!wamd.M05}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="4">
+                          <div title="4">
+                            <lightning:input type="text" name="4" variant="label-hidden" value="{!wamd.M04}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="3">
+                          <div title="3">
+                            <lightning:input type="text" name="3" variant="label-hidden" value="{!wamd.M03}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="2">
+                          <div title="2">
+                            <lightning:input type="text" name="2" variant="label-hidden" value="{!wamd.M02}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="1">
+                          <div title="1">
+                            <lightning:input type="text" name="1" variant="label-hidden" value="{!wamd.M01}"
+                              readonly="true" />
+                          </div>
+                        </td> -->
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+
+        <!-- 📌 2. DUE OUT -->
+        <aura:if isTrue="{!v.modalType == 'DUEOUT'}">
+          <div class="dueOutModal">
+            <!-- Modal Header -->
+            <header class="modal-02 slds-modal__header">
+              <h3 class="slds-text-heading_medium">Due Out</h3>
+              <h2 class="slds-text-heading_medium">({!v.docNum})</h2>
+              <!-- <p>{!v.docNum}</p> -->
+
+              <div class="button-wrap">
+                <lightning:button name="print" label="Print" onclick="{!c.handlePrint}" variant="brand" />
+              </div>
+
+              <!-- Close -->
+              <button class="slds-modal__close">
+                <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                  title='close' name="closeModal" onclick="{!c.wamdDetailModalCancel}"></lightning:icon>
+              </button>
+            </header>
+
+            <!-- Modal Body -->
+            <div class="modal-02 modal-body slds-modal__content">
+
+              <!-- 검색 결과 -->
+              <div class="card-01 top-card">
+                <div class="slds-scrollable">
+                  <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                    <colgroup>
+                      <col width="10%" />
+                      <col width="6%" />
+                      <col width="6%" />
+                      <col width="10%" />
+                      <col width="22%" />
+                      <col width="14%" />
+                      <col width="10%" />
+                      <col width="6%" />
+                      <col width="6%" />
+                      <col width="10%" />
+                    </colgroup>
+                    <thead>
+                      <tr class="slds-line-height_reset">
+                        <th class="" scope="col">
+                          <div title="">Doc No.</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">Item</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">ICA</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">Material</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">Material Desciption</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">Customer Name</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">Order Qty</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">출고</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">미출고</div>
+                        </th>
+                        <th class="" scope="col">
+                          <div title="">Doc. Date</div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <aura:if isTrue="{!v.isDataCheck}">
+                        <aura:iteration items="{!v.dataList}" var="dueOut" indexVar="d">
+                          <tr>
+                            <td data-label="Doc No.">
+                              <div title="Doc No.">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.docNo}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="item.">
+                              <div title="item.">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.item}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="ICA">
+                              <div title="ICA">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.ica}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="material">
+                              <div title="material">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.material}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="materialDesc">
+                              <div title="materialDesc">
+                                <lightning:input type="text" name="" variant="label-hidden"
+                                  value="{!dueOut.materialDesc}" readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="customerName">
+                              <div title="customerName">
+                                <lightning:input type="text" name="" variant="label-hidden"
+                                  value="{!dueOut.customerName}" readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="orderQty">
+                              <div title="orderQty">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.orderQty}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="release">
+                              <div title="release">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.release}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="unRelease">
+                              <div title="unRelease">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.unRelease}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                            <td data-label="docDate">
+                              <div title="docDate">
+                                <lightning:input type="text" name="" variant="label-hidden" value="{!dueOut.docDate}"
+                                  readonly="true" />
+                              </div>
+                            </td>
+                          </tr>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                          <tr>
+                            <td colspan="10" class="center">조회된 정보가 없습니다.</td>
+                          </tr>
+                        </aura:set>
+                      </aura:if>
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </aura:if>
+
+        <!-- 📌 3. DUE IN -->
+        <aura:if isTrue="{!v.modalType == 'DUEIN'}">
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h3 class="slds-text-heading_medium">Due In</h3>
+            <h2>({!v.docNum})</h2>
+            <!-- Close -->
+            <button class="slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.wamdDetailModalCancel}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-03 modal-body slds-modal__content ">
+
+            <!-- 검색 결과 -->
+            <div class="card-01 top-card">
+              <div class="slds-scrollable">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <colgroup>
+                    <col width="8%" />
+                    <col width="5%" />
+                    <col width="8%" />
+                    <col width="18%" />
+                    <col width="12%" />
+                    <col width="7%" />
+                    <col width="5%" />
+                    <col width="5%" />
+                    <col width="5%" />
+                    <col width="5%" />
+                    <col width="%" />
+                    <col width="%" />
+                    <col width="%" />
+                  </colgroup>
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                        <div title="">Doc No.</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Item</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Material</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Material Desciption</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">구매처</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Order Qty</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">확정</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">대기</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">출고</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">입고</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">미입고</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Doc. Date</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">ETD</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:if isTrue="{!v.dataList.length > 0}">
+                      <aura:iteration items="{!v.dataList}" var="duein" indexVar="d">
+                        <tr>
+                          <td data-label="Doc No.">
+                            <div title="Doc No.">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.docNo}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="Item">
+                            <div title="Item">
+                              <lightning:input type="text" name="18" variant="label-hidden" value="{!duein.item}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="Material">
+                            <div title="Material">
+                              <lightning:input type="text" name="16" variant="label-hidden" value="{!duein.material}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="Material Desciption">
+                            <div title="Material Desciption">
+                              <lightning:input type="text" name="15" variant="label-hidden" value="{!duein.materialDesc}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="Customer Name">
+                            <div title="Customer Name">
+                              <lightning:input type="text" name="14" variant="label-hidden" value="{!duein.customerName}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="Order Qty">
+                            <div title="Order Qty">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.orderQty}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="확정">
+                            <div title="확정">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.confirmQty}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="대기">
+                            <div title="대기">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.waitingQty}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="출고">
+                            <div title="출고">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.release}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="입고">
+                            <div title="입고">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.grQty}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="미입고" class="center">
+                            <div title="미입고">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.unRelease}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="Doc. Date" class="center">
+                            <div title="Doc. Date">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.docDate}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                          <td data-label="ETD" class="center">
+                            <div title="ETD">
+                              <lightning:input type="text" name="" variant="label-hidden" value="{!duein.etd}"
+                                readonly="true" />
+                            </div>
+                          </td>
+                        </tr>
+                      </aura:iteration>
+                      <aura:set attribute="else">
+                        <tr>
+                          <td colspan="13" class="center">조회된 정보가 없습니다.</td>
+                        </tr>
+                      </aura:set>
+                    </aura:if>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+
+        <!-- 📌 4. 가용재고 -->
+        <aura:if isTrue="{!v.modalType == 'LABST'}">
+          <!-- Modal Header -->
+          <header class="slds-modal__header">
+            <h3 class="slds-text-heading_medium">가용재고</h3>
+            <h2>({!v.docNum})</h2>
+
+            <!-- Close -->
+            <button class="slds-modal__close">
+              <lightning:icon iconName='utility:close' alternativeText='close' variant='inverse' size='small'
+                title='close' name="closeModal" onclick="{!c.wamdDetailModalCancel}"></lightning:icon>
+            </button>
+          </header>
+
+          <!-- Modal Body -->
+          <div class="modal-04 modal-body slds-modal__content ">
+
+            <!-- 검색 결과 -->
+            <div class="card-01 top-card">
+              <div class="slds-scrollable">
+                <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                  <colgroup>
+                    <col width="6%" />
+                    <col width="19%" />
+                    <col width="35%" />
+                    <col width="19%" />
+                    <col width="15%" />
+                    <col width="6%" />
+                  </colgroup>
+                  <thead>
+                    <tr class="slds-line-height_reset">
+                      <th class="" scope="col">
+                        <div title="">Seq No.</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Material</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Material Desciption</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Replacing Parts</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">ICA</div>
+                      </th>
+                      <th class="" scope="col">
+                        <div title="">Stock</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <aura:iteration items="{!v.dataList}" var="stock" indexVar="s">
+                      <tr>
+                        <td data-label="Seq No.">
+                          <div title="Seq No.">
+                            <lightning:input type="text" name="" variant="label-hidden" value="{!stock.seq}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="Material">
+                          <div title="Material">
+                            <lightning:input type="text" name="16" variant="label-hidden" value="{!stock.material}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="Material Desciption">
+                          <div title="Material Desciption">
+                            <lightning:input type="text" name="15" variant="label-hidden" value="{!stock.materialDesc}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="Replacing Parts">
+                          <div title="Replacing Parts">
+                            <lightning:input type="text" name="18" variant="label-hidden" value="{!stock.replacingPart}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="ICA">
+                          <div title="ICA">
+                            <lightning:input type="text" name="14" variant="label-hidden" value="{!stock.ica}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                        <td data-label="Stock">
+                          <div title="Stock">
+                            <lightning:input type="text" name="" variant="label-hidden" value="{!stock.stockQty}"
+                              readonly="true" />
+                          </div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </aura:if>
+
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="Close" title="Brand action" onclick="{!c.wamdDetailModalCancel}" />
+        </footer>
+      </div>
+    </div>
+
+    <div aura:id="wamdDetailModalBackGround" class="slds-backdrop slds-backdrop_open" />
+
+  </div>
+
+  <!-- 프린트 PDF -->
+  
+  <aura:if isTrue="{!v.pdfModalOpen}">
+    <section aura:id="PDFModal" role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container print-modal">
+        <!-- 모달 헤더 -->
+        <header class="slds-modal__header">
+          <lightning:buttonIcon iconName="utility:close" onclick="{!c.PDFModalCancel}" alternativeText="Close"
+            class="slds-modal__close" />
+          <h2 class="slds-text-heading_medium">프린트</h2>
+        </header>
+  
+        <!-- 모달 바디 -->
+        <div class="slds-modal__content slds-p-around_medium">
+          <!-- <iframe src="/partners/apex/DN_returnDetailPrintPDF" width="100%;" height="500px;"></iframe> -->
+          <iframe src="{!$Label.c.DN_DueOutPrintURL}" width="100%;"></iframe>
+        </div>
+  
+        <!-- 모달 푸터 -->
+        <footer class="slds-modal__footer">
+          <lightning:button variant="neutral" label="닫기" onclick="{!c.PDFModalCancel}" />
+        </footer>
+      </div>
+    </section>
+    <!-- 배경 -->
+    <div aura:id="PDFmodalBackGround" class="slds-backdrop slds-backdrop_open"></div>
+  </aura:if>
+
+
+
+</aura:component>

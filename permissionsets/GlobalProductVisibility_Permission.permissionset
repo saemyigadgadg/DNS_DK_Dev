@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>글로벌 영업 제품 관리 권한</label>
+    <tabSettings>
+        <tab>dN_GlobalProductVisibility</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+</PermissionSet>

@@ -1,0 +1,26 @@
+/*.radio-group-horizontal .slds-form-element__control {
+    display: flex; 
+    flex-direction: row; 
+    gap: 10px; 
+    align-items: center;
+}
+.slds-form-element__control {
+    display: flex; 
+}*/
+.input-clear-btn {
+    position: absolute;
+    top:0;
+    right: 0;
+}
+
+.input-clear-btn .slds-button {
+    border: none;
+}
+/* .slds-input  {
+    --slds-c-input-spacing-inlinestart: unset !important;
+    --slds-c-input-spacing-inlineend: unset !important;
+} */
+
+.rich-text {
+    grid-column: span 2;
+}

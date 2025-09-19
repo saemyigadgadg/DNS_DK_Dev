@@ -1,0 +1,64 @@
+.THIS.total-wrap {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 2rem);
+}
+
+.THIS .slds-modal__container {
+    max-width: calc(100vw - 8rem);
+    width: 46rem;
+    min-width: 20rem;
+    max-height: 100%;
+    height: 100%;
+    z-index: 2;
+    margin: 0 auto;
+}
+
+.THIS .modal-body {
+    /* padding: 1.25rem 1.75rem; */
+    overflow: visible;
+    position: relative;
+}
+
+.THIS .content {
+    padding: 1.25rem;
+}
+
+.THIS .modal-body .slds-form {
+    display: flex;
+    gap: 2.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.THIS .modal-body .slds-form .slds-form__item {
+    flex: 1;
+    padding: 0.25rem 0.75rem;
+}
+
+/* .THIS .modal-body .slds-form-element__control:has(.slds-radio) {
+    display: flex;
+    gap: 0.5rem;
+} */
+
+/* File Upload */
+
+.THIS .modal-body .slds-file-selector,
+.THIS .modal-body .slds-file-selector__dropzone {
+    width: 100% !important;
+}
+
+.THIS .modal-body .slds-scope .slds-file-selector__button {
+    cursor: pointer;
+}
+
+
+/* Modal Background */
+
+.THIS #modal-bg {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}

@@ -1,0 +1,393 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : (포탈) 영업 > 채권 관리 > 주문별 수금 일정
+  @last modified on  : 05-15-2025
+  @last modified by  : daewook.kim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-05-31   yuhyun.park@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  controller="DN_ScheduleCollectionofOrderController"
+  description="주문별 수금일정">
+  
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading"    type="Boolean" default="false" />
+  <aura:attribute name="isChecked"    type="Boolean" default="true" />
+  <aura:attribute name="isAccount"    type="Boolean" default="true" />
+  <aura:attribute name="isSearched"   type="Boolean" default="false" />
+  <aura:attribute name="isOrder"      type="Boolean" default="true" />
+
+  <aura:attribute name="dealerInfo"     type="Object" default="" />
+  <aura:attribute name="salesInfo"      type="Object" />
+  <aura:attribute name="customerInfo"   type="Object" default="" />
+  <aura:attribute name="salesOrderInfo" type="Object" default="" />
+  <aura:attribute name="isCollection"   type="String" />
+
+  <aura:attribute name="contractDetail"     type="List" default="[]" />
+  <aura:attribute name="orderDetailList" type="List" default="[]" />
+
+  <aura:attribute name="orderNoo"        type="String" default="" />
+  <aura:attribute name="activeSections1" type="String" default="salesInfo" />
+  <aura:attribute name="activeSections2" type="String" default="arAmount" />
+  <aura:attribute name="excelName"       type="String" default="주문별 수금일정" />
+  <aura:attribute name="baseDate"        type="String" />
+
+  <aura:attribute name="totalAmount"     type="String" />
+
+  <aura:attribute name="aar"  type="List" description="재조정매출채권 모달 데이터" />
+  <aura:attribute name="excelData" type="List" default="[]" />
+
+  <!-- Handler -->
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+  <!-- Excel -->
+  <ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />  
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      
+      <!-- 고객사 조회 모달 -->
+      <div aura:id="CustomerListModal"></div>
+      <!-- 계약번호 조회 모달 -->
+      <div aura:id="SalesOrderListModal"></div>
+      <!-- 재조정 매출채권 모달 -->
+      <div aura:id="AdvReceivableListModal"></div>
+
+
+      <!-- Loading Spinner -->
+      <aura:if isTrue="{! v.isLoading}">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName="standard:partner_fund_claim" size="small"
+            alternativeText="Schedule and Collection of Order" />
+          <h2 class="slds-truncate">주문별 수금일정</h2>
+        </div>
+
+        <div class="button-wrap">
+          <!-- 검색 필터 및 기능 추가 필요 -->
+          <lightning:button name="searchSchedule" label="검색"  iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+          <lightning:button name="Excel"          label="Excel" iconName="doctype:excel"  iconPosition="left" onclick="{!c.downloadExcel}" />
+            <!-- <c:DN_ExcelUtilButton excelData="{! v.excelData }" headerData="{!v.headData}" excelName="{! v.excelName }" /> -->
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+        <!-- Card 01 -->
+        <div class="card-01">
+
+          <div class="field-wrap">
+            <p>회사코드<abbr class="slds-required" title="required">*</abbr></p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="companyCode" value="{!v.dealerInfo.salesOrganization}" variant="label-hidden"
+                readonly="true" disabled="true" required="true" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>고객<abbr class="slds-required" title="required">*</abbr></p>
+
+            <div class="input-wrap">
+              <div class="fakeInput">
+                <span>{!v.customerInfo.customerCode}</span>
+                <span>{!v.customerInfo.customerName}</span>
+              </div>
+              <div class="delete">
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close" onclick="{!c.deleteCustomer}" />
+              </div>
+              <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search" onclick="{!c.openCustomerList}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>ERP 확정 주문 번호<abbr class="slds-required" title="required">*</abbr></p>
+            <div class="input-wrap">
+              <!-- <lightning:input type="text" name="orderNumber" value="{!v.salesOrderInfo.orderNumber}" -->
+              <lightning:input type="text" name="orderNumber" value="{!v.orderNoo}"
+                variant="label-hidden" readonly="true" disabled="true" required="true" />
+                <div class="delete">
+                  <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close" onclick="{!c.deleteOrder}" />
+                </div>
+              <lightning:buttonicon iconName="utility:search" disabled="{!v.isAccount}" size="medium" alternativeText="Search"
+                onclick="{!c.openSalesOrderList}" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>증빙일<abbr class="slds-required" title="required">*</abbr></p>
+            <div class="input-wrap">
+              <lightning:input type="date" name="baseDate" value="{!v.baseDate}" onchange="{!c.handleDateChange}"
+                variant="label-hidden" />
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <p>역 매출채권 포함</p>
+            <div class="input-wrap">
+              <lightning:input type="checkbox" name="includeReversedAR" checked="{!v.isChecked}"
+                onchange="{!c.handleCheckboxChange}" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion Card 01 -->
+        <div class="accordion">
+          <lightning:accordion class="accordion-header" allowMultipleSectionsOpen="true"
+            activeSectionName="{! v.activeSections1 }">
+            <lightning:accordionSection name="salesInfo" label="판매정보">
+              <aura:set attribute="body">
+                <div class="accordion-body">
+                  <div class="field-wrap">
+                    <p class="label">주문번호</p>
+                    <div class="input-wrap">{!v.salesInfo.contractNo}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">고객 코드</p>
+                    <div class="input-wrap">{!v.salesInfo.customerCode}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">영업 지사</p>
+                    <div class="input-wrap">{!v.salesInfo.saleOrganization}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">대표자</p>
+                    <div class="input-wrap">{!v.salesInfo.saleCEO}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label label-flex">
+                      <span>재조정 매출채권</span>
+                      <lightning:buttonicon iconName="utility:rows" size="x-small"
+                        alternativeText="Adv Receivable Amount" onclick="{!c.openAdvList}" />
+                    </p>
+                    <div class="input-wrap">{!v.salesInfo.rescheduleBond}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">판매금액</p>
+                    <div class="input-wrap">{!v.salesInfo.salePrice}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">빌링일자</p>
+                    <div class="input-wrap">{!v.salesInfo.billingDate}</div>
+                  </div>
+                </div>
+              </aura:set>
+            </lightning:accordionSection>
+          </lightning:accordion>
+        </div>
+
+        <!-- Accordion Card 02 -->
+        <div class="accordion accordion-02">
+          <lightning:accordion class="accordion-header" allowMultipleSectionsOpen="true"
+            activeSectionName="{! v.activeSections2 }">
+            <lightning:accordionSection name="arAmount" label="매출채권금액">
+              <aura:set attribute="body">
+
+                <div class="accordion-body">
+                  <div class="field-wrap">
+                    <p class="label">수금예정금액</p>
+                    <div class="input-wrap">{!v.salesInfo.colExpAmt}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">수금금액</p>
+                    <div class="input-wrap">{!v.salesInfo.colAmt}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">미결잔액</p>
+                    <div class="input-wrap">{!v.salesInfo.balAmt}</div>
+                  </div>
+                  <div class="field-wrap">
+                    <p class="label">수금완료</p>
+                    <div class="input-wrap">{!v.isCollection}</div>
+                    <!-- <div class="input-wrap">
+                      <aura:if isTrue="{!v.isCollection}">
+                        완료
+                        <aura:set attribute="else">
+                          미완료
+                        </aura:set>
+                      </aura:if>
+                    </div> -->
+                  </div>
+                </div>
+
+              </aura:set>
+            </lightning:accordionSection>
+          </lightning:accordion>
+        </div>
+
+        <!-- Card 02 -->
+        <div class="card-02 top-card">
+
+          <div class="table-wrap">
+            <!-- Fixed : Left -->
+            <div class="table-01">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>문서번호</th>
+                    <th>번호</th>
+                    <th>수금예정일</th>
+                    <th>지급조건</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!not(v.isSearched)}">
+                    <tr>
+                      <td colspan="4" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:if>
+  
+                  <aura:if isTrue="{!v.isSearched}">
+                    <aura:iteration items="{!v.contractDetail}" var="cd">
+                      <tr>
+                        <td>
+                          <div>{!cd.docNo}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.itemNo}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.colExpDt}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.payTerm}</div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+                <!-- <tfoot>
+                  <aura:if isTrue="{!v.isSearched}">
+                    <tr>
+                      <td colspan="4"></td>
+                    </tr>
+                  </aura:if>
+                  <aura:if isTrue="{!not(v.isSearched)}">
+                    
+                  </aura:if>
+                </tfoot> -->
+              </table>
+            </div>
+  
+            <!-- Scrollable : Right -->
+            <div class="table-02">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>
+                      <div>금액</div>
+                    </th>
+                    <th>
+                      <div>확정금액</div>
+                    </th>
+                    <th>
+                      <div>문서일자</div>
+                    </th>
+                    <th>
+                      <div>년도</div>
+                    </th>
+                    <th>
+                      <div>반제전표</div>
+                    </th>
+                    <th>
+                      <div>일자</div>
+                    </th>
+                    <th>
+                      <div>입금일자</div>
+                    </th>
+                    <th>
+                      <div>계산 기준일자</div>
+                    </th>
+                    <th>
+                      <div>문서유형</div>
+                    </th>
+                    <th>
+                      <div>연체이자 발생액</div>
+                    </th>
+                    <th>
+                      <div>어음이자</div>
+                    </th>
+                  </tr>
+                </thead>
+  
+                <tbody>
+                  <aura:if isTrue="{!not(v.isSearched)}">
+                    <tr>
+                      <td colspan="11" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:if>
+                  <aura:if isTrue="{!v.isSearched}">
+                    <aura:iteration items="{!v.contractDetail}" var="cd">
+                      <tr>
+                        <td>
+                          <div>{!cd.amount}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.fixedAmt}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.docDate}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.soYear}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.clearSlip}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.soDate}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.payDate}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.calcRefDate}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.docType}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.odIntAmt}</div>
+                        </td>
+                        <td>
+                          <div>{!cd.noteInt}</div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+                
+              </table>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <colgroup>
+                <col width="40%"/>
+                <col width="60%"/>
+              </colgroup>
+              <tfoot>
+                <aura:if isTrue="{!v.isSearched}">
+                  <tr>
+                    <td style="text-align: right;">합계</td>
+                    <td>{!v.totalAmount}</td>
+                  </tr>
+                </aura:if>
+                <aura:if isTrue="{!not(v.isSearched)}">
+                  
+                </aura:if>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</aura:component>

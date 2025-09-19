@@ -1,0 +1,477 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : 
+  @last modified on  : 04-02-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-11-11   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    description="부품진행상태" controller="DN_PartProgressController">
+
+    <!-- attribute -->
+    <aura:attribute name="isLoading" type="boolean" default="false" />
+    <aura:attribute name="searchObject" type="DN_PartProgressController.SearchObject" />
+    <aura:attribute name="searchStartDate" type="Date" />
+    <aura:attribute name="searchEndDate" type="Date" />
+    <aura:attribute name="searchOrderNumber" type="String" default="" />
+    <aura:attribute name="statusOption" type="List" default="[
+        {'label': '전체', 'value': '0'},
+        {'label': '확보중', 'value': '1'},
+        {'label': '재고보유', 'value': '2'},
+        {'label': '포장완료', 'value': '3'},
+        {'label': '배송완료', 'value': '4'}
+    ]" />
+    <aura:attribute name="searchStatus" type="String" default="0" />
+    <aura:attribute name="searchPartName" type="String" default="" />
+    <aura:attribute name="searchPartNumber" type="String" default="" />
+    <aura:attribute name="searchCustomerName" type="String" default="" />
+    <aura:attribute name="searchGijong" type="String" default="" />
+    <aura:attribute name="searchHogi" type="String" default="" />
+    <aura:attribute name="searchSerialNumber" type="String" default="" />
+    <aura:attribute name="CNFCheck" type="boolean" default="false" />
+
+    <!-- Modal attribute -->
+    <aura:attribute name="isGijongModal" type="boolean" default="false" />
+    <aura:attribute name="selectedIndex" type="Decimal" default="" />
+    <aura:attribute name="searchGijongModal" type="String" default="" />
+    <aura:attribute name="partList" type="List" default="[]" />
+    <aura:attribute name="giJongList" type="List" default="[]" />
+    <!-- Sheet JS -->
+    <ltng:require scripts="{!$Resource.ExcelJS + '/unpkg/exceljs.min.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />
+
+    <!-- handler -->
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <aura:html tag="style">
+        .navexDesktopLayoutContainer.desktop .viewport .stage.hasFixedFooter .slds-brand-band:not(.brand-band_magnetic):not(.brand-band_disabled)>.slds-template__container .oneContent:after {
+            display: none !important
+        }
+    </aura:html>
+
+    <!-- 🚗 부품진행상태 -->
+    <div class="total-wrap">
+
+        <article class="slds-card">
+
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+            </aura:if>
+
+            <!-- Header -->
+            <div class="header">
+                <div class="title slds-grid">
+                    <lightning:icon iconName="standard:case_change_status" size="small"
+                        alternativeText="Indicates approval" />
+                    <h2 class="slds-truncate">부품진행상태</h2>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="body">
+                <div class="card-01">
+
+                    <div class="field-wrap field-01">
+                        <p>접수일자</p>
+                        <div class="input-wrap">
+                            <lightning:input type="Date" name="searchStartDate" value="{! v.searchObject.searchStartDate}"
+                                variant="label-hidden" />
+                            <span>~</span>
+                            <lightning:input type="Date" name="searchEndDate" value="{! v.searchObject.searchEndDate}"
+                                variant="label-hidden" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap field-02">
+                        <p>오더번호</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchOrderNumber" variant="label-hidden"
+                                value="{!v.searchObject.searchOrderNumber}" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap field-03">
+                        <p>상태</p>
+                        <div class="input-wrap">
+                            <lightning:combobox name="searchStatus" value="{!v.searchObject.searchStatus}"
+                                options="{! v.statusOption }" variant="label-hidden" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap field-04">
+                        <p>품명</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchPartName" variant="label-hidden"
+                                value="{!v.searchObject.searchPartName}" />
+                        </div>
+                    </div>
+
+                    <div class="field-wrap field-05">
+                        <p>품번</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchPartNumber" variant="label-hidden"
+                                value="{!v.searchObject.searchPartNumber}" />
+                            <div class="button-wrap">
+                                <lightning:button type="variant" name="searchButton" label="조회"
+                                    onclick="{!c.handleSearch}" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-wrap field-06">
+                        <p>업체명</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchCustomerName" variant="label-hidden"
+                                value="{!v.searchObject.searchCustomerName}" />
+                        </div>
+                    </div>
+                    <div class="field-wrap field-07">
+                        <p>기종</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchGijong" variant="label-hidden"
+                                value="{!v.searchObject.searchGijong}" />
+                            <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                onclick="{!c.handleGijongModal}" /> 
+                        </div>
+                    </div>
+
+                    <div class="field-wrap field-08">
+                        <p>장비번호</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchHogi" variant="label-hidden"
+                                value="{!v.searchObject.searchHogi}" />
+                        </div>
+                    </div>
+
+                    <!-- <div class="field-wrap field-09">
+                        <p>제조번호</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="searchSerialNumber" variant="label-hidden"
+                                value="{!v.searchObject.searchSerialNumber}" />
+                        </div>
+                    </div> -->
+
+                    <div class="field-wrap field-10">
+                        <p>CNF 제외</p>
+                        <div class="input-wrap">
+                            <lightning:input type="checkbox" name="CNFCheck" variant="label-hidden"
+                                checked="{!v.searchObject.CNFCheck}" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 02 : 검색 결과 테이블 -->
+                <div class="card-02">
+                    <div class="title slds-grid">
+                        <div class="logo-title">
+                            <lightning:icon iconName="standard:lead_list" size="x-small"
+                                alternativeText="Indicates approval" />
+                            <h2 class="slds-truncate">부품진행상태 리스트</h2>
+                        </div>
+                        <lightning:button class="slds-m-left_auto" iconName="doctype:excel" label="Excel" onclick="{!c.handleDownloadExcel}" />
+                    </div>
+                        <div class="table-wrap">
+                        <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table"
+                            aria-label="Example table of Opportunities with vertical borders">
+                            <thead>
+                                <tr class="slds-line-height_reset ">
+                                    <th>
+                                        <div class="slds-truncate" title="">Seq</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">품번</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">품명</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">오더수</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">재고할당</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">포장완료</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">배송완료</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">상태</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">탁송구분</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">납기일</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">납품업체</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">불출일</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">반납대상</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">오더번호</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">Shipping Origin</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">SALES</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">송장번호</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">창고불출번호</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">배송처</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">업체명</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">대리점코드</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">대리점명</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">기종</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">장비번호</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">접수일</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">부품청구일</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">설치일자</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">Shipment</div>
+                                    </th>
+                                    <th>
+                                        <div class="slds-truncate" title="">D/O 생성일</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.partList}" var="part" indexVar="i">
+                                    <tr class="slds-hint-parent">
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.QMSEQ}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.MATNR}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.MAKTX}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">
+                                                <lightning:formattedNumber value="{!part.KWMENG}" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">
+                                                <lightning:formattedNumber value="{!part.BMENG}" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">
+                                                <lightning:formattedNumber value="{!part.VSMNG}" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">
+                                                <lightning:formattedNumber value="{!part.GSMNG}" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.MATNR_TXT}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.DIVISION}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.PRETD3}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.VNDNM}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.QDATU}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.RETURN_YN}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.AUFNR}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.VTEXT}</div> <!--송부처-->
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.VBELN}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.INVOICE}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.VBELN_VL1}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.NAME4}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.NAME2}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.DEALER_CD}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.NAME1}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.TYPBZ}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.SERNR}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.RECV_DT}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.REQDATE}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.GWLDT}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.TKNUM}</div>
+                                        </td>
+                                        <td>
+                                            <div class="slds-truncate" title="">{!part.DODAT}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>ROW : {!v.partList.length}</div>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- 🚗 기종 선택 모달 -->
+    <aura:if isTrue="{!v.isGijongModal}">
+
+        <div aura:id="basicInfoModal" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">기종선택</h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="modal-body slds-modal__content">
+
+                    <!-- Loading Spinner -->
+                    <aura:if isTrue="{! v.isLoading }">
+                        <lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+                    </aura:if>
+                    
+                    <div class="card-01">
+                        <div class="field-wrap">
+                            <p>기종</p>
+                            <div class="input-wrap">
+                                <lightning:input type="text" name="searchGijongModal" variant="label-hidden" value="{!v.searchGijongModal}" />
+                                <div class="button-wrap">
+                                    <lightning:button type="variant" name="searchButtonModal" label="조회"
+                                        onclick="{!c.handleSearchGijong}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 02 : 검색 결과 테이블 -->
+                    <div class="card-02">
+                        <div class="title">
+                            <lightning:icon iconName="standard:lead_list" size="x-small"
+                                alternativeText="Indicates approval" />
+                            <h2 class="slds-truncate">기종 리스트</h2>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table"
+                                aria-label="Example table of Opportunities with vertical borders">
+                                <colgroup>
+                                    <col width="8%" />
+                                    <col width="46%" />
+                                    <col width="46%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="slds-truncate" title="">선택</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="">Material Number</div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-truncate" title="">기종</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.giJongList}" var="giJong" indexVar="i">
+                                        <tr>
+                                            <td>
+                                                <div class="slds-truncate checkbox" title="">
+                                                    <lightning:input type="checkbox" variant="label-hidden" name="{!i}"
+                                                        aura:id="checkbox" onchange="{! c.handleCheckboxChange }" />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!giJong.modelCode}</div>
+                                            </td>
+                                            <td>
+                                                <div class="slds-truncate" title="">{!giJong.name}</div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>ROW : {!v.giJongList.length}</div>
+                    </div>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning:button type="variant" name="selectButtonModal" label="선택"
+                        onclick="{!c.handleSelectGijong}" />
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action"
+                        onclick="{!c.handleModalClose}" />
+                </footer>
+            </div>
+        </div>
+
+        <!-- Modal Background -->
+        <div class="slds-backdrop slds-backdrop_open"></div>
+
+    </aura:if>
+
+</aura:component>

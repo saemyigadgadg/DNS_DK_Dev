@@ -1,0 +1,143 @@
+<!--
+  @author            : Yeong-Deok Seo
+  @Description       : (포탈) 채무 > 스케줄
+  @last modified on  : 03-05-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                        Modification
+  1.0   2024-07-04   yeongdeok.seo@sbtglobal.com   Initial Version
+-->
+<aura:component
+	implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+	controller="DN_APScheduleController"
+	description="스케줄">
+	
+	<!-- attribute -->
+	<aura:attribute name="isLoading" type="Boolean" default="false" />
+	<aura:attribute name="userInfo"  type="Object" description="사용자 정보" />
+
+	<aura:attribute name="resultList" type="List" />
+
+	<aura:attribute name="wrbtrSum" 		type="Decimal" />
+	<aura:attribute name="wrbtrOverdueSum" 	type="Decimal" />
+	<aura:attribute name="wrshbSum" 		type="Decimal" />
+
+	<!-- handler -->
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+	<!-- Excel -->
+	<ltng:require scripts="{!$Resource.SheetJS + '/xlsx-js-style-master/dist/xlsx.bundle.js'}" afterScriptsLoaded="{!c.handleScriptsLoaded}" />  
+
+
+	<div class="total-wrap">
+		<article class="slds-card">
+
+			<!-- Loading Spinner -->
+			<aura:if isTrue="{! v.isLoading }">
+				<lightning:spinner size="large" variant="brand" alternativeText="Loading..." />
+			</aura:if>
+
+			<!-- Header -->
+			<div class="header">
+
+				<div class="title slds-grid">
+					<lightning:icon iconName="standard:event" size="small" alternativeText="Indicates approval" />
+					<h2 class="slds-truncate">스케줄</h2>
+				</div>
+
+				<!-- APList 상세 모달 -->
+				<div aura:id="apListPopupModal"></div>
+
+				<div class="button-wrap">
+					<lightning:button name="searchItems" label="검색" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+					<lightning:button name="downloadExcel" label="엑셀" iconName="doctype:excel" iconPosition="left" onclick="{!c.downloadExcel}" />
+				</div>
+			</div>
+
+			<!-- Body -->
+			<div class="body">
+
+				<!-- Card 01 : 검색 필터 -->
+				<div class="card-01">
+					<div class="field-wrap">
+						<p>유저아이디<abbr class="slds-required" title="required">*</abbr></p>
+						<div class="input-wrap">
+							<lightning:input type="text" name="startDocNum" variant="label-hidden" value="{!v.userInfo.dealerName}" disabled="true" />
+						</div>
+					</div>
+				</div>
+
+				<div class="card-02 top-card">
+					<div class="table-wrap">
+						<table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+							<colgroup>
+								<col width="10%" />
+								<col width="30%" />
+								<col width="30%" />
+								<col width="30%" />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>만기일</th>
+									<th>매입금액</th>
+									<th>연체이자</th>
+									<th>부분합계</th>
+								</tr>
+							</thead>
+							<tbody>
+								<aura:if isTrue="{!v.resultList.length > 0}">
+									<aura:iteration items="{!v.resultList}" var="result" indexVar="i">
+										<tr class="slds-hint-parent">
+											<td class="center">{!result.FAEDT}</td>
+											<td class="right">
+												<lightning:formattedNumber value="{!result.WRBTR}" />
+											</td>
+											<td class="right">
+												<lightning:formattedNumber value="{!result.WRBTR_OVERDUE}" />
+											</td>
+											<td class="right">
+												<lightning:formattedNumber value="{!result.WRSHB}" />
+											</td>
+										</tr>
+									</aura:iteration>
+									<aura:set attribute="else">
+										<tr class="slds-hint-parent">
+											<td colspan="9" style="text-align: center;"> No Data.</td>
+										</tr>
+									</aura:set>
+								</aura:if>
+							</tbody>
+						</table>
+					</div>
+					<div class="table-wrap tfoot-table">
+						<table>
+							<colgroup>
+								<col width="10%" />
+								<col width="30%" />
+								<col width="30%" />
+								<col width="30%" />
+							</colgroup>
+							<tfoot>
+								<tr>
+									<td></td>
+									<td class="right">
+										<lightning:formattedNumber value="{!v.wrbtrSum}" />
+									</td>
+									<td class="right">
+										<lightning:formattedNumber value="{!v.wrbtrOverdueSum}" />
+									</td>
+									<td class="right">
+										<lightning:formattedNumber value="{!v.wrshbSum}" />
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+
+			</div>
+
+		</article>
+	</div>
+
+</aura:component>

@@ -1,0 +1,166 @@
+/* Modal Layout */
+
+.THIS .slds-modal__container {
+    /* overflow: hidden !important; */
+    overflow: visible;
+}
+
+.THIS .modalContent{
+    /* max-height: 65vh !important; */
+    height: calc(100vh - 13rem);
+    padding: 1rem 1.25rem;
+    max-height: 70rem;
+}
+
+/* Header */
+
+.THIS .slds-modal__header {
+    position: relative;
+}
+
+.THIS .slds-modal__header .button-wrap {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+/* Modal Body */
+
+.THIS .infoTitle{
+    padding: 0.25rem;
+    padding-left: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.875rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    background-color: #f3f3f3;
+}
+
+.THIS .field-wrap {
+    display: flex;
+    justify-content: stretch;
+    padding-top: 0.5rem;
+}
+
+.THIS .field-wrap .input-wrap {
+    padding: 0.5rem 0.75rem;
+    flex: 1;
+}
+
+/* SLDS */
+
+.THIS .field-wrap .slds-dropdown-trigger_click.slds-is-open .slds-dropdown {
+    max-height: 16rem;
+    overflow-y: auto;
+}
+
+/* Inner Modal */
+
+.THIS .slds-modal.inner .slds-modal__container {
+    max-width: 34rem;
+}
+
+.THIS .slds-modal.inner .slds-modal__content {
+    padding: 1rem;
+}
+
+.THIS .slds-modal.inner .card-01 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.THIS .slds-modal.inner .card-01 > div {
+    flex: auto;
+}
+
+.THIS .slds-modal.inner .card-01 > .slds-button {
+    margin-bottom: 0.5rem;
+}
+
+/* Table */
+
+.THIS .slds-modal.inner .table-wrap {
+    overflow: auto;
+    height: 18rem;
+}
+
+.THIS .slds-modal.inner table {
+    border-collapse: separate;
+}
+
+.THIS .slds-modal.inner table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.THIS .slds-modal.inner table tr{    
+    border-bottom: 1px solid #c9c9c9;
+}
+.THIS .slds-modal.inner table th{
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+.THIS .slds-modal.inner table td{
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.THIS .slds-modal.inner table td .slds-checkbox_faux {
+    margin: 0 !important;
+}
+
+.THIS .slds-modal.inner table th+th,
+.THIS .slds-modal.inner table td+td{
+    border-left: 1px solid #D9D9D9;
+}
+
+/* 2025-03-14 Hyerin Ro */
+
+.THIS .receptionDetails .slds-textarea,
+.THIS .progressDetail .slds-input {
+    height: 12rem;
+}
+
+.THIS .inner .table-header {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 500;
+    padding: 0.25rem;
+    padding-bottom: 0.5rem;
+}
+
+.THIS .inner .add-table {
+    margin-bottom: 0.75rem;
+}
+
+.THIS .inner .add-table table td {
+    background: #edf4ff;
+}
+
+.THIS .slds-backdrop.inner {
+    top: -63px;
+    height: 100vh;
+    width: 200vw;
+    left: -100% !important;
+}

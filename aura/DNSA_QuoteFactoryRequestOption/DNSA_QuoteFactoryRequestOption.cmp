@@ -1,0 +1,223 @@
+<!--
+  @description       : 
+  @author            : Hyerin Ro
+  @group             : 
+  @last modified on  : 02-03-2025
+  @last modified by  : Hyerin Ro
+  Modifications Log
+  Ver   Date         Author      Modification
+  1.0   01-24-2025   Hyerin Ro   Initial Version
+-->
+<aura:component
+    controller="DNSA_QuoteFactoryRequestOptionController"
+    implements="flexipage:availableForAllPageTypes,force:appHostable,force:hasRecordId,force:lightningQuickActionWithoutHeader,forceCommunity:availableForAllPageTypes"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="rowDataList"      type="List"     default="[]" />
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:attribute name="ModelId" type="String" />
+    <aura:attribute name="ModelName1" type="String" />
+    <aura:attribute name="ModelBaseCode" type="String" />
+    <aura:attribute name="ModelName2" type="String" />
+    <aura:attribute name="PrimeModel" type="String" />
+
+    <aura:html tag="style">
+        <!-- 기본 프레임 세팅 -->
+        .slds-modal__container:has(.cDNSA_QuoteFactoryRequestOption) {
+        width:100%;
+        max-width: 68rem;
+        }
+        .slds-modal__content:has(.cDNSA_QuoteFactoryRequestOption) {
+            height:auto !important;
+            max-height:none !important;
+            padding: 0;
+            overflow-y: clip;
+        }
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content:has(.cDNSA_QuoteFactoryRequestOption) {
+        padding:0;
+        }
+        .runtime_platform_actionsQuickActionWrapper .quick-actions-panel:has(.cDNSA_QuoteFactoryRequestOption){
+        overflow: hidden;
+        }
+        *:has(.cDNSA_QuoteFactoryRequestOption .table-wrap .slds-datepicker__month), 
+        *:has(.cDNSA_QuoteFactoryRequestOption .table-wrap .slds-dropdown) {
+            overflow: visible;
+        }
+    </aura:html>
+
+    <div class="slds-modal__container">
+        <!-- Header -->
+        <div class="slds-modal__header">
+            <h1 class="slds-modal__title slds-hyphenate" tabindex="-1">Request Option</h1>
+        </div>
+    
+        <!-- Body -->
+        <div class="slds-modal__content slds-p-around_medium">
+    
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading }">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+    
+            <div class="slds-form slds-align_absolute-center">
+    
+                <!-- Section 01 -->
+                <div class="section-header">
+                    <h2 class="section-title">Model Information</h2>
+                </div>
+                <div class="section-container">
+                    <div class="slds-form-element slds-form-element_horizontal col">
+                        <label class="slds-form-element__label" for="horizontal-input-id-01">DNSA Model Name</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input name="input1" value="{!v.ModelName1}" variant="label-hidden" disabled="true"/>
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-form-element_horizontal col">
+                        <label class="slds-form-element__label" for="horizontal-input-id-01">Base Code</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input name="input1" value="{!v.ModelBaseCode}" variant="label-hidden" disabled="true" />
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-form-element_horizontal col">
+                        <label class="slds-form-element__label" for="horizontal-input-id-01">Model Name</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input name="input1" value="{!v.ModelName2}" variant="label-hidden" disabled="true" />
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-form-element_horizontal col">
+                        <label class="slds-form-element__label" for="horizontal-input-id-01">Prime Model</label>
+                        <div class="slds-form-element__control">
+                            <lightning:input name="input1" value="{!v.PrimeModel}" variant="label-hidden" disabled="true" />
+                        </div>
+                    </div>
+    
+    
+                    <!-- <div class="col">
+                        <div class="label"></div>
+                        <lightning:input name="input1" variant="label-hidden" />
+                    </div>
+                    <div class="col">
+                        <div class="label"></div>
+                        <lightning:input name="input1" variant="label-hidden" />
+                    </div>
+                    <div class="col">
+                        <div class="label"></div>
+                        <lightning:input name="input1" variant="label-hidden" />
+                    </div>
+                    <div class="col">
+                        <div class="label"></div>
+                        <lightning:input name="input1" variant="label-hidden" />
+                    </div> -->
+                </div>
+    
+                <!-- Section 02 -->
+                <div class="section-header">
+                    <h2 class="section-title">Option Information</h2>
+                </div>
+                <div class="section-container">
+                    <div class="table-wrap">
+                        <lightning:recordEditForm objectApiName="Request_Option__c">
+                            <table
+                                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered first-table"
+                                aria-label="Example table of Opportunities with vertical borders">
+                                <colgroup>
+                                    <col width="4%" />
+                                    <col width="12%" />
+                                    <col width="12%" />
+                                    <col width="12%" />
+                                    <col width="22%" />
+                                    <col width="38%" />
+                                </colgroup>
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="add" scope="col" style="width: 4%">
+                                            <div class="slds-truncate addBtn" title="">
+                                                <lightning:buttonIcon iconName="utility:add" size="x-small"
+                                                    alternativeText="Add" title="Add" onclick="{!c.handleClickAddButton}" />
+                                            </div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title listPrice" title="Option">
+                                                Option</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title" title="Quantity">
+                                                Quantity</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title" title="Ship To">
+                                                Ship To</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title" title="Requested Ship Date">
+                                                Requested Ship Date</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate title" title="Description">
+                                                Description</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.rowDataList}" var="row" indexVar="j">
+                                        <tr class="slds-hint-parent" aura:id="recordFieldRow">
+                                            <td data-label="Delete" class="add">
+                                                <div class="slds-truncate" title="Delete">
+                                                    <lightning:buttonIcon iconName="utility:dash" alternativeText="Delete"
+                                                        title="Delete" size="x-small" onclick="{!c.handleClickdeleteButton}" value="{!j}"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="Option">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Option_Name__c" value="{!row.Option_Name__c}" required="true"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="Quantity">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Quantity__c" value="{!row.Quantity__c}" required="true"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="Ship To">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Ship_To__c" value="{!row.Ship_To__c}" aura:id="lookupField" required="true"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="Requested Ship Date">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Requested_Delivery_Date__c" value="{!row.Requested_Delivery_Date__c}" required="true"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="Description">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Description__c" value="{!row.Description__c}"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="ModelId">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="Quote__c" value="{!row.Quote__c}" style="display: none;"/>
+                                                </div>
+                                            </td>
+                                            <td data-label="QuoteId">
+                                                <div class="slds-truncate">
+                                                    <lightning:inputField variant="label-hidden" fieldName="DNSA_Model__c" value="{!row.DNSA_Model__c}" style="display: none;"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </lightning:recordEditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Footer -->
+        <div class="slds-modal__footer">
+            <lightning:button onclick="{! c.handleClose }" label="Cancel" />
+            <lightning:button variant="brand" onclick="{! c.handleSaveRecord }" label="Save" />
+        </div>
+    </div>
+
+
+</aura:component>

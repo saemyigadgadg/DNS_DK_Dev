@@ -1,0 +1,387 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 2025-06-13
+  @last modified by  : chungwoo.lee@sobetec.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-22-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  access="global" 
+  controller="DN_PortalSalesRequestEduController"
+  description="납품후교육요청">
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading"  type="Boolean" default="false" />
+  <aura:attribute name="isSelected" type="Boolean" default="false" description="isSelected ? 수주번호 : 장비번호" /> 
+  
+  <!-- 어디쓰는 거지? -->
+  <aura:attribute name="message"    type="Object" />
+  
+  <!-- 검색 조건 -->
+  <aura:attribute name="erpPSONo"   type="String" default="" description="수주번호" />
+  <aura:attribute name="assetNo"    type="String" default="" description="장비번호" />
+  
+  <!-- 장비 정보 -->
+  <aura:attribute name="assetInfo" type="Object" description="장비 정보" />
+
+  <!-- 배송처 정보 -->
+  <aura:attribute name="shipToInfo" type="Object" description="고객사 정보" />
+
+  <!-- 요청 벙보 -->
+
+  <!-- 검색 정보 -->
+  <aura:attribute name="searchInfo"   type="Object" description="검색 결과" />
+
+  <!-- 수주정보 -->
+  <aura:attribute name="orderInfo"             type="Object" />
+
+  <!-- 판매점 정보 -->
+  <aura:attribute name="dealerInfo"            type="Object" />
+  <aura:attribute name="conMP"                 type="String" />
+  <!-- 고객사 정보 -->
+  <aura:attribute name="accInfo"               type="Object" />
+  <aura:attribute name="accAddress"            type="String" />
+  <aura:attribute name="accPhone"              type="String" />
+  
+  <aura:attribute name="repId"                 type="String" />
+  <aura:attribute name="repName"               type="String" />
+  <aura:attribute name="repMP"                 type="String" />
+  <aura:attribute name="repTitle"              type="String" />
+  <!-- 교육 정보 -->
+  <aura:attribute name="eduInfo"               type="Object" />
+
+  <aura:attribute name="assetList"             type="List" default="[]" />
+  
+  <aura:attribute name="conList"               type="List" default="[]" />
+  <aura:attribute name="selectRep"             type="Object" />
+
+
+  <aura:attribute name="eduLevel"              type="String" />
+  <aura:attribute name="eduCnt"                type="String" />
+  <aura:attribute name="stuLevel"              type="String" />
+  <aura:attribute name="eduRep"                type="String" />
+  <aura:attribute name="eduDateOne"            type="DateTime" />
+  <aura:attribute name="eduDateTwo"            type="DateTime" />
+  <aura:attribute name="eduDateThr"            type="DateTime" />
+  <aura:attribute name="note"                  type="String" />
+
+  <aura:attribute name="isED2" type="Boolean" default="false" />
+  <aura:attribute name="isED3" type="Boolean" default="false" />
+
+  <aura:attribute name="tommorow"              type="DateTime" />
+
+  <!-- options -->
+  <aura:attribute name="conOptions"            type="List" default="[]" />
+  <aura:attribute name="eduLevelOptions" type="List" 
+    default="[
+              {'label': '신규 교육', 'value': '신규 교육'},
+              {'label': '추가 교육', 'value': '추가 교육'},
+              {'label': '재교육', 'value': '재교육'}]" />
+  <aura:attribute name="eduCntOptions" type="List" 
+  default="[
+              {'label': '1회', 'value': '1회'},
+              {'label': '2회', 'value': '2회'},
+              {'label': '3회', 'value': '3회'}]" />
+  <aura:attribute name="stuLevelOptions" type="List" 
+  default="[
+              {'label': '상', 'value': '상'},
+              {'label': '중', 'value': '중'},
+              {'label': '하', 'value': '하'}]" />
+  <aura:attribute name="eduRepOptions" type="List" default="[]" description="교육 담당자 옵션" />
+  
+  <aura:attribute name="orderNumber"           type="String" />
+  <!-- <aura:attribute name="assetNo"             type="String" default="" /> -->
+  <aura:attribute name="customerName"          type="String" />
+  <aura:attribute name="numberCategoryValue"   type="String" default="수주번호" />
+  <aura:attribute name="numberCategoryOptions" type="List" 
+    default="[
+        {'label': '수주번호', 'value': '수주번호'},
+        {'label': '장비번호', 'value': '장비번호'}]" />
+  <aura:attribute name="fileList" type="List" default="[]" /> <!-- 파일 목록 -->
+  
+
+  <!-- Handler -->
+  <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+  <aura:handler name="init" value="{!this}" action="{! c.doInit }" />
+
+  <!-- navigation -->
+  <lightning:navigation aura:id="navTrainingList" /> <!--납품 후 교육 목록 페이지로 이동-->
+
+  <!-- modal -->
+  <div aura:id="ModelSearchModal" /> <!--장비번호 모달-->
+  <div aura:id="OrderListModal" /> <!--주문번호 모달-->
+  <div aura:id="AgencyCustomerListModal" /> <!--고객사명 모달-->
+
+  <lightning:recordEditForm aura:id="recordEditForm" objectApiName="{! v.objectName }" onsubmit="{! c.handleSubmit }"
+    onsuccess="{! c.handleSuccess }" onerror="{! c.handleError }">
+
+    <!-- Body -->
+    <article class="slds-card">
+
+      <!-- Loading Spinner  -->
+      <aura:if isTrue="{! v.isLoading}">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title">
+          <lightning:icon iconName="standard:record_update" size="small" />
+          <h2>납품 후 교육 요청</h2>
+          <span>* 구 시스템과 달리 호기 미확정 건은 교육 생성 불가합니다. </span>
+        </div>
+
+        <div class="button-wrap">
+          <lightning:button name="back" label="뒤로가기" iconName="utility:back" iconPosition="left"
+            onclick="{!c.goBack}" />
+          <!-- 검색 필터 및 기능 추가 필요 -->
+          <lightning:button name="search" label="검색" iconName="utility:search" iconPosition="left"
+            onclick="{!c.doSearch}" />
+          <lightning:button name="save" label="저장" onclick="{!c.doSave}" variant="brand" />
+        </div>
+      </div>
+
+
+      <div class="body">
+        <!-- Card 01 -->
+        <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p>수주번호/장비번호 선택</p>
+            <div class="input-wrap">
+                <lightning:combobox 
+                    name="numberCategory" 
+                    value="{!v.numberCategoryValue}" 
+                    variant="label-hidden" 
+                    options="{!v.numberCategoryOptions}" 
+                    onchange="{!c.selectNumber}" 
+                    placeholder="수주번호"/>
+            </div>
+        </div>
+          <aura:if isTrue="{!v.isSelected}">
+            <div class="field-wrap">
+              <p>수주번호</p>
+              <div class="input-wrap">
+                <lightning:input type="text" name="orderNo" value="{!v.erpPSONo}" variant="label-hidden"
+                  readonly="true" disabled="true" />
+                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"
+                  onclick="{!c.clearOrderNumber}" class="clear-btn" />
+                <lightning:buttonicon iconName="utility:search" size="medium" onclick="{!c.openOrderListModal}" />
+              </div>
+            </div>
+            <aura:set attribute="else">
+              <div class="field-wrap">
+                <p>장비번호</p>
+                <div class="input-wrap">
+                  <lightning:input type="text" name="" value="{!v.assetNo}" variant="label-hidden" readonly="true"
+                    disabled="true" />
+                  <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"
+                    onclick="{!c.clearAsset}" class="clear-btn" />
+                  <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                    onclick="{!c.openSerialNumberModal}" />
+                </div>
+              </div>
+            </aura:set>
+          </aura:if>
+        </div>
+        <!-- card 03 -->
+        <div class="card-03 top-card">
+          <div class="card-header">
+            <h2>장비정보</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-wrap">
+              <p>수주번호</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.assetInfo.erpPsoNo}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>기종</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.assetInfo.assetName}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>장비번호</p>
+              <div class="input-wrap">
+                <lightning:input type="text" name="" value="{!v.assetInfo.machineNo}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>설치완료일</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.assetInfo.completeDate}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>공임/부품 보증여부(Y/N)</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.assetInfo.warranty}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>NC종류</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.assetInfo.ncType}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+          </div>
+        </div> 
+        <!-- card 02 -->
+        <div class="card-02 top-card">
+          <div class="card-header">
+            <h2>고객정보</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-wrap">
+              <p>고객사명</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="customerNameId" value="{!v.shipToInfo.shipToName}" variant="label-hidden" readonly="true"
+                  disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>판매대리점</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.dealerInfo.accountName}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>접수자</p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" value="{!v.dealerInfo.dealerName}" variant="label-hidden" readonly="true" disabled="true" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>접수자 전화번호<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" name="userMobilePhone" value="{!v.dealerInfo.userMobilePhone}" variant="label-hidden" required="true" onchange="{!c.handleChange}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>고객사 담당자</p>
+              <div class="input-wrap">
+                <lightning:combobox aura:id="" name="selectRep" value="{!v.selectRep}" options="{!v.conOptions}" variant="label-hidden" placeholder="선택" onchange="{!c.handleChange}"/>
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>고객사 담당자명<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" name="repName" value="{!v.repName}" variant="label-hidden" onchange="{!c.handleChange}"/>
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>고객사 연락처<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" name="repMP" value="{!v.repMP}" variant="label-hidden" required="true" onchange="{!c.handleChange}"/>
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>직책<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:input aura:id="" name="repTitle" value="{!v.repTitle}" variant="label-hidden" required="true" onchange="{!c.handleChange}"/>
+              </div>
+            </div>
+            <div class="field-wrap grid-long">
+              <div class="address">
+                <p>고객사 주소<abbr class="slds-required" title="required">*</abbr></p>
+                <span>*고객사 주소가 변경된 경우 접수내용에 기입해주시길 바랍니다.</span>
+              </div>
+              <div class="input-wrap">
+                <lightning:input aura:id="" name="accAddress" value="{!v.shipToInfo.shipToAddress}" variant="label-hidden" required="true" onchange="{!c.handleChange}" readonly="true" disabled="true"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- card 04 -->
+        <div class="card-04 top-card">
+          <div class="card-header">
+            <h2>요청정보</h2>
+          </div>
+          <div class="card-body">
+            <div class="field-wrap">
+              <p>교육종류<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:combobox fieldName="TrainingType__c" aura:id="" name="eduLevel" value="{!v.eduLevel}" options="{!v.eduLevelOptions}" variant="label-hidden"
+                  placeholder="선택" onchange="{!c.handleChange}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>교육횟수<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:combobox fieldName="TrainingCount__c" aura:id="" name="eduCnt" value="{!v.eduCnt}" options="{!v.eduCntOptions}" variant="label-hidden"
+                  placeholder="선택" required="true" onchange="{!c.handleChange}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>피교육자수준<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:combobox fieldName="TraineeLevel__c" aura:id="" name="stuLevel" value="{!v.stuLevel}" options="{!v.stuLevelOptions}" variant="label-hidden"
+                  placeholder="선택" onchange="{!c.handleChange}" />
+              </div>
+            </div>
+            <div class="field-wrap">
+              <p>교육담당자<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:combobox aura:id="" variant="label-hidden" placeholder="선택" name="eduRep" value="{!v.eduRep}" options="{!v.eduRepOptions}" required="true" onchange="{!c.handleChange}" />
+              </div>
+            </div>
+            <div class="field-wrap date">
+              <p>교육요청일시(1)<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:input type="datetime" aura:id="" name="eduDateOne" value="{!v.eduDateOne}" variant="label-hidden" required="true" onchange="{!c.requestDate}" />
+              </div>
+            </div>
+            <div class="field-wrap date">
+              <p>교육요청일시(2)<aura:if isTrue="{!v.isED2}"><abbr class="slds-required" title="required">*</abbr></aura:if></p>
+              <div class="input-wrap">
+                <lightning:input type="datetime" aura:id=""  name="eduDateTwo" value="{!v.eduDateTwo}"  variant="label-hidden" onchange="{!c.requestDate}" disabled="{! NOT(v.isED2)}" />
+              </div>
+            </div>
+            <div class="field-wrap date">
+              <p>교육요청일시(3)<aura:if isTrue="{!v.isED3}"><abbr class="slds-required" title="required">*</abbr></aura:if></p>
+              <div class="input-wrap">
+                <lightning:input type="datetime" aura:id=""  name="eduDateThr" value="{!v.eduDateThr}"  variant="label-hidden" onchange="{!c.requestDate}" disabled="{! NOT(v.isED3)}" />
+              </div>
+            </div>
+            <div class="field-wrap grid-long">
+              <p>접수내용<abbr class="slds-required" title="required">*</abbr></p>
+              <div class="input-wrap">
+                <lightning:textarea aura:id="" name="note" value="{!v.note}" variant="label-hidden" required="true" onchange="{!c.handleChange}" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- card-05 -->
+        <div class="card-05 top-card">
+          <div class="card-header">
+            <h2>첨부파일</h2>
+          </div>
+          <div class="card-body">
+            <div class="input-wrap">
+              <lightning:fileUpload multiple="true" recordId="{!v.recordId}"
+                  onuploadfinished="{!c.handleUploadFinished}"
+                  variant="label-hidden" />
+          </div>
+          <!-- 파일 목록-->
+          <div class="file-wrap">
+              <aura:iteration items="{!v.fileList}" var="key" indexVar="index">
+                  <div class="file-name">
+                      <a href="">{!key.title}</a>
+                      <div href="" onclick="{!c.removeFile}" data-id="{!key.contentDocumentId}">
+                          <lightning:icon iconName="utility:close" alternativeText="Remove" title="Remove" size="xx-small" />
+                      </div>
+                  </div>
+              </aura:iteration>
+          </div>
+          </div>
+        </div>
+
+      </div>
+    </article>
+  </lightning:recordEditForm>
+</aura:component>

@@ -1,0 +1,139 @@
+.THIS .slds-modal__container {
+  width: 50vw;
+  min-width: 340px;
+  max-width: 690px;
+  margin: 0 auto;
+  }
+  
+/* modal header */
+.THIS .slds-modal__header .header-wrap .slds-button {
+  position: absolute;
+  top: 14px;
+  right: 1rem;
+}
+
+  /* Modal Close */
+  
+  .THIS .slds-modal__close {
+    position: absolute;
+    top: -2.25rem;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    border: none;
+  }
+  
+  .THIS .slds-modal__close .slds-icon_container:hover {
+    opacity: 0.75;
+  }
+  
+  /* Modal Body */
+  
+  .THIS .slds-p-around_medium {
+    padding: 0;
+  }
+  
+  .THIS .modal-body {
+    background-color: #F3F3F3;
+  }
+  
+  .THIS .modal-body .top-card {
+    
+    padding: 1rem 1.25rem;
+    margin: 0.75rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+  }
+
+  .THIS .modal-body .top-card .field-wrap .input-wrap {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  /* Card 01 */
+  
+  .THIS .card-01 {
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+  }
+  
+  /* Table Design */
+  .THIS .modal-body .table-wrap {
+    width: 100%;
+    overflow: scroll;
+    height: calc(100vh - 25rem);
+  }
+
+  .THIS .modal-body .table-wrap thead {
+    position: sticky;
+    top: -1px;
+    z-index: 3;
+  }
+  
+  .THIS .modal-body table tr {
+    /* w/o .slds-table_bordered */
+    border-bottom: 1px solid #c9c9c9;
+  }
+  
+  .THIS .modal-body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+  }
+  
+  .THIS .modal-body table td {
+    background-color: #fff;
+    padding: .5rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    /*border-bottom: 1px solid #D9D9D9;*/
+  }
+  
+  .THIS .modal-body table th+th,
+  .THIS .modal-body table td+td {
+    border-left: 1px solid #D9D9D9;
+  }
+  
+  .THIS .modal-body table th:first-of-type {
+    text-align: left;
+  }
+  
+  /* Table Class */
+  
+  .THIS .center {
+    text-align: center !important;
+  }
+  
+  .THIS .left {
+    text-align: left !important;
+  }
+  
+  .THIS .right {
+    text-align: right !important;
+  }
+  
+  /* SLDS Customs */
+  .THIS .slds-button_neutral {
+    text-wrap: nowrap;
+  }
+
+  /* Modal 02 Background */
+
+.THIS .modal-2-bg{
+  z-index: 9001 !important;
+}

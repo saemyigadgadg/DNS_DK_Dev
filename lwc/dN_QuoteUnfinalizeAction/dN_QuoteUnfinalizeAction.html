@@ -1,0 +1,19 @@
+<template>
+    <template if:true={isShow}>
+        <lightning-quick-action-panel header={labels.title}>
+            <div class="slds-p-around_medium">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+            </div>
+
+            <div slot="footer">
+            <lightning-button variant="neutral" label={labels.cancel} onclick={handleCancel}></lightning-button>
+            <lightning-button class="slds-m-left_small" variant="brand"
+                                label={labels.confirm} onclick={handleConfirm}>
+            </lightning-button>
+            </div>
+        </lightning-quick-action-panel>
+    </template>
+  
+</template>

@@ -1,0 +1,214 @@
+<!--
+  @author            : Yu-Hyun Park
+  @description       : 
+  @last modified on  : 2025-01-02
+  @last modified by  : yuhyun.park@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-05-31   yuhyun.park@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="담보관리" controller="DN_DealerIFController">
+
+  <!-- Attribute -->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="dealerInfo" type="Object" default="" />
+  <aura:attribute name="processOptions" type="List" default="[]" />
+  <aura:attribute name="processOption" type="String" default="Process" />
+  <aura:attribute name="mortgageDetailList" type="List" default="[]" />
+  <aura:attribute name="koreanMortgageDetailList" type="List" default="[]" />
+  <aura:attribute name="excelName" type="String" default="담보관리" />
+  <aura:attribute name="recordId" type="String" />
+
+  <!-- Handler -->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+
+  <div class="total-wrap">
+    <article class="slds-card">
+      <aura:if isTrue="{! v.isLoading}">
+        <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+      </aura:if>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="title slds-grid">
+          <lightning:icon iconName="custom:custom40" size="small" alternativeText="Mortgage Management" />
+          <h2 class="slds-truncate">담보관리</h2>
+        </div>
+
+        <div class="button-wrap">
+          <lightning:button name="searchMortgageDetailList" label="검색" iconName="utility:search" iconPosition="left"
+            onclick="{! c.searchMortgageDetailList }" />
+          <c:DN_ExcelUtilButton excelData="{! v.koreanMortgageDetailList }" excelName="{! v.excelName }" />
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="body">
+
+        <!-- Card 01 -->
+        <div class="card-01 top-card">
+          <!-- <div class="field-wrap">
+            <p>회사코드</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="companyCode" value="{!v.dealerInfo.companyCode}" variant="label-hidden"
+                readonly="true" disabled="true" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>판매조직</p>
+            <div class="input-wrap">
+              <lightning:input type="text" name="salesArea1" value="{!v.dealerInfo.salesArea1}" variant="label-hidden"
+                readonly="true" disabled="true" />
+              <lightning:input type="text" name="salesArea2" value="{!v.dealerInfo.salesArea2}" variant="label-hidden"
+                readonly="true" disabled="true" />
+            </div>
+          </div> -->
+          <div class="field-wrap">
+            <p>프로세스 옵션</p>
+            <div class="input-wrap">
+              <lightning:combobox name="processOption" value="{!v.processOption}" options="{!v.processOptions}"
+                variant="label-hidden" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 02 -->
+        <div class="card-02 top-card">
+
+          <div class="table-wrap">
+            <!-- Fixed : Left -->
+            <div class="table-01">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>딜러명</th>
+                    <th>대표자</th>
+                    <th>제공자</th>
+                    <th>소유자</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:if isTrue="{!not(v.mortgageDetailList.length > 0)}">
+                    <tr>
+                      <td colspan="6" style="text-align: center;">No Data</td>
+                    </tr>
+                  </aura:if>
+
+                  <aura:if isTrue="{!v.mortgageDetailList.length > 0}">
+                    <aura:iteration items="{!v.mortgageDetailList}" var="mortgage">
+                      <tr>
+                        <td>
+                          <div>{!mortgage.NAME1}</div>
+                        </td>
+                        <td>
+                          <div>{!mortgage.J_1KFREPRE}</div>
+                        </td>
+                        <td>
+                          <div>{!mortgage.PROVIDER}</div>
+                        </td>
+                        <td>
+                          <div>{!mortgage.OWNER}</div>
+                        </td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Scrollable : Right -->
+            <div class="table-02">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <thead>
+                  <tr>
+                    <th>담보구분</th>
+                    <th>담보크기</th>
+                    <th>담보상세</th>
+                    <th>담보평가문서</th>
+                    <th>등록일</th>
+                    <th>설정계약서</th>
+                    <th>동의서</th>
+                    <th>임대차확인서</th>
+                    <th>임감증명</th>
+                    <th>질권설정서</th>
+                    <th>질권동의서</th>
+                    <th>만기일</th>
+                    <th>감정가</th>
+                    <th>선순위</th>
+                    <th>유효가치</th>
+                    <th>설정액</th>
+                    <th>통화</th>
+                    <th>순위</th>
+                    <th>선순위내역</th>
+                    <th>담보금액</th>
+                    <th>취소날짜</th>
+                    <th>대체담보</th>
+                    <th>대체담보상세</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <aura:if isTrue="{!v.mortgageDetailList.length > 0}">
+                    <aura:iteration items="{!v.mortgageDetailList}" var="mortgage">
+                      <tr>
+                        <td>{!mortgage.MORT_TEXT}</td>
+                        <td>{!mortgage.MORTSIZE}</td>
+                        <td class="left">{!mortgage.ADD_DATA}</td>
+
+                        <td><lightning:formattedDateTime value="{!mortgage.EST_DOC_DAT}"  year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.REG_DATE}"     year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.ENG_DATE}"     year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.AGR_DATE}"     year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.LEA_DATE}"     year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.STMP_DATE}"    year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.PLED_DATE}"    year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.PAGR_DATE}"    year="numeric" month="2-digit" day="2-digit" /></td>
+                        <td><lightning:formattedDateTime value="{!mortgage.DUE_DATE}"     year="numeric" month="2-digit" day="2-digit" /></td>
+
+                        <!-- <td>{!mortgage.EST_DOC_DAT}</td>
+                        <td>{!mortgage.REG_DATE}</td>
+                        <td>{!mortgage.ENG_DATE}</td>
+                        <td>{!mortgage.AGR_DATE}</td>
+                        <td>{!mortgage.LEA_DATE}</td>
+                        <td>{!mortgage.STMP_DATE}</td>
+                        <td>{!mortgage.PLED_DATE}</td>
+                        <td>{!mortgage.PAGR_DATE}</td>
+                        <td>{!mortgage.DUE_DATE}</td> -->
+                        <td>
+                          <lightning:formattedNumber value="{!mortgage.EST_AMT}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!mortgage.PRI_AMT}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!mortgage.VAL_AMT}" />
+                        </td>
+                        <td>
+                          <lightning:formattedNumber value="{!mortgage.ESTA_AMT}" />
+                        </td>
+                        <td>{!mortgage.WAERS}</td>
+                        <td>{!mortgage.ESTA_RANK}</td>
+                        <td class="left">{!mortgage.PRI_INFO}</td>
+                        <td><lightning:formattedNumber value="{!mortgage.AMOUNT}" /></td>
+
+                        <td><lightning:formattedDateTime value="{!mortgage.CANC_DATE}"    year="numeric" month="2-digit" day="2-digit" /></td>
+                        <!-- <td>{!mortgage.CANC_DATE}</td> -->
+
+                        <td class="left">{!mortgage.ALT_MNGNO}</td>
+                        <td class="left">{!mortgage.ALT_INFO}</td>
+                      </tr>
+                    </aura:iteration>
+                  </aura:if>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</aura:component>

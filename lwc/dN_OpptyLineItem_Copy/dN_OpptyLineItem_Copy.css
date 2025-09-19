@@ -1,0 +1,45 @@
+.slds-modal__container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+}
+
+.slds-modal__content {
+    max-height: calc(100vh - 16rem);
+    background-color: #f3f3f3;
+}
+
+.card-01 {
+    background: #fff;
+    margin: 1.25rem;
+    margin-bottom: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #c9c9c9;
+}
+
+.card-01 .input-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.card-01 .label {
+    margin-bottom: 0.25rem;
+    padding-left: 0.25rem;
+    font-weight: 500;
+}
+
+.table-wrap {
+    margin: 1.25rem;
+    margin-top: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem;
+}
+
+.slds-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    background-color: #fff;
+}

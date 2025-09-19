@@ -1,0 +1,29 @@
+.THIS .slds-backdrop {
+    width: 200vw;
+    left: -100% !important;
+}
+
+.THIS .slds-modal__container {
+    width: 36rem;
+    max-width: calc(100vw - 8rem);
+}
+
+.THIS .modal-body {
+    padding: 1rem;
+}
+
+.THIS .text-wrap {
+    /* list-style: disc; */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.THIS .text-wrap .row {
+    /* margin-left: 2rem; */
+    /* margin-bottom: 0.5rem; */
+    padding: 0.5rem;
+    color: #444;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.25rem;
+}

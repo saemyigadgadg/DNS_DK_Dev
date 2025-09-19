@@ -1,0 +1,232 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 05-23-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   11-07-2024   youjin.shim@sbtglobal.com   Initial Version
+-->
+<apex:page showHeader="false" controller="DN_PortalManageServiceController" action="{!getAction}" standardStylesheets="false"
+  sidebar="false" renderAs="pdf" applyHtmlTag="false" contentType="text/html;charset=UTF-8">
+
+  <!-- Static Resource -->
+
+  <head>
+    <meta charset="UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet" />
+    <style type="text / css">
+      @page { padding: 32px 140px; margin: 0; @bottom-center { content: counter(page); font-family: Arial Unicode MS, Helvetica,
+      sans-serif; } } .page-break { page-break-after:always; } body { font-family: Arial Unicode MS; font-weight: 600; }
+      h1,h2,h3,h4,h5,h6,a,p,span, div{ font-family: Arial Unicode MS; font-size: 11px; } p, div, span, table, h1, h2, h3,
+      h4{ margin: 0; padding: 0; } table{ width: 100%; margin: 0; padding: 0; border-top: 1px solid #000 !important; border-collapse
+      : collapse;} th, td{ /* border: 1px solid #000; */ border-collapse : collapse; padding: 3px; } html, body{padding-top:
+      0; margin: 0; font-size: 13px;} ul{list-style: none; padding: none; margin: 0;} /* custom css */ .body-wrap { border: 1px solid #000; margin-bottom: 10px; } .header { padding: 12px; text-align: center; border-bottom:
+      1px solid #d1d1d1;} .header span { font-size: 20px; color: #0176d3; border-bottom: 2px solid #0176d3; } /* table */
+      .body table td { padding:3px 10px; } .body table tr .date { text-align: right; }
+
+    </style>
+  </head>
+
+  <body>
+    <!-- <apex:outputPanel rendered="{!ISNULL(dataList) || dataList.size == 0}">
+      <p style="font-size:16px; text-align:center; padding-top:50px;">
+        조회된 전표 데이터가 없습니다.
+      </p>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!NOT(ISNULL(dataList)) && dataList.size > 0}">
+      <apex:repeat var="data" value="{!dataList}">
+        <div class="body-wrap {!IF(data != dataList[dataList.size - 1], 'page-break', '')}">
+          <div class="header">
+            <span>폐품 반납 전표</span>
+          </div>
+          <div class="body">
+            <table>
+              <colgroup>
+                <col width="50%;" />
+                <col width="50%;" />
+              </colgroup>
+              <tr>
+                <td style="padding-top: 10px;">CLAIM 번호 :
+                  <span>{!data.AUFNR}</span>
+                </td>
+                <td style="padding-top: 10px;">CLAIM 접수일 :
+                  <span>{!data.QMDAT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>기종 :
+                  <span>{!data.TYPBZ}</span>
+                </td>
+                <td>호기 :
+                  <span>{!data.SERNR}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>담당지사 :
+                  <span>{!data.KTEXT}</span>
+                </td>
+                <td>서비스담당자 :
+                  <span>{!data.ENAME}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>업체명 :
+                  <span>{!data.NAME1}</span>
+                </td>
+                <td>출하일자 :
+                  <span>{!data.WADAT_IST}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>품번 :
+                  <span>{!data.MATNR}</span>
+                </td>
+                <td>수량 :
+                  <span>{!data.MENGE}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>품명 :
+                  <span>{!data.MAKTX}</span>
+                </td>
+                <td>공급구분 :
+                  <span>{!data.SUPPLY_TYPE}</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">대리점 :
+                  <span>{!data.NAME2}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>하자내용 :
+                  <span>{!data.MATXT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>처리구분 :
+                  <span>{!data.RETURN_TYPE}</span>
+                </td>
+                <td>반납일자 :
+                  <span>{!data.RETURN_DT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">사유 :
+                  <span>{!data.RETURN_TEXT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="date" colspan="2">Print Date : {!data.PRT_DATE}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </apex:repeat>
+    </apex:outputPanel> -->
+
+    <apex:outputPanel rendered="{!ISNULL(wrapList) || wrapList.size == 0}">
+      <p style="font-size:16px; text-align:center; padding-top:50px;">
+        조회된 전표 데이터가 없습니다.
+      </p>
+    </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!NOT(ISNULL(wrapList)) && wrapList.size > 0}">
+      <apex:repeat var="wrap" value="{!wrapList}">
+        <!-- 짝수일 때, 전표가 마지막이 아닐 때 page-break 넣기 -->
+        <div class="body-wrap {!IF(AND(wrap.isEven, wrap.isLast == ''), 'page-break', '')}">
+          <div class="header">
+            <span>폐품 반납 전표</span>
+          </div>
+          <div class="body">
+            <table>
+              <colgroup>
+                <col width="50%;" />
+                <col width="50%;" />
+              </colgroup>
+              <tr>
+                <td style="padding-top: 10px;">CLAIM 번호 :
+                  <span>{!wrap.data.AUFNR}</span>
+                </td>
+                <td style="padding-top: 10px;">CLAIM 접수일 :
+                  <span>{!wrap.data.QMDAT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>기종 :
+                  <span>{!wrap.data.TYPBZ}</span>
+                </td>
+                <td>호기 :
+                  <span>{!wrap.data.SERNR}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>담당지사 :
+                  <span>{!wrap.data.KTEXT}</span>
+                </td>
+                <td>서비스담당자 :
+                  <span>{!wrap.data.ENAME}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>업체명 :
+                  <span>{!wrap.data.NAME1}</span>
+                </td>
+                <td>출하일자 :
+                  <span>{!wrap.data.WADAT_IST}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>품번 :
+                  <span>{!wrap.data.MATNR}</span>
+                </td>
+                <td>수량 :
+                  <span>{!wrap.data.MENGE}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>품명 :
+                  <span>{!wrap.data.MAKTX}</span>
+                </td>
+                <td>공급구분 :
+                  <span>{!wrap.data.SUPPLY_TYPE}</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">대리점 :
+                  <span>{!wrap.data.NAME2}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>하자내용 :
+                  <span>{!wrap.data.MATXT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td>처리구분 :
+                  <span>{!wrap.data.RETURN_TYPE}</span>
+                </td>
+                <td>반납일자 :
+                  <span>{!wrap.data.RETURN_DT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">사유 :
+                  <span>{!wrap.data.RETURN_TEXT}</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="date" colspan="2">Print Date : {!wrap.data.PRT_DATE}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </apex:repeat>
+    </apex:outputPanel>
+
+
+  </body>
+</apex:page>

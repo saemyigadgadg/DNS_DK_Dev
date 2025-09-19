@@ -1,0 +1,199 @@
+/* Common */
+
+.total-wrap {
+    padding-top: 1rem;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.top-card {
+    padding: 1rem 1.25rem;
+    background-color: #fff;
+    border: 1px solid #D9D9D9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 2px 0 rgb(82 82 82 / 10%);
+}
+
+.top-card+.top-card {
+    margin-top: 0.75rem;
+}
+
+.card-01 {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.card-01 .field-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.card-01 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.card-01 .field-wrap p {
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+    font-weight: 500;
+}
+
+.card-01 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.card-01 .button-wrap {
+    padding: 0.25rem 0;
+}
+
+.field-title {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+}
+
+.footer {
+    display: flex;
+    padding: 0 1.25rem;
+    margin: 0;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+/* Tab 01 수신함 */
+
+.tab-01 .card-02 {
+    display: flex;
+    gap: 1rem;
+}
+
+.tab-01 .card-02 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tab-01 .card-02 .field-wrap:first-child {
+    width: 65%;
+}
+
+.tab-01 .card-02 .field-wrap:first-child .table-wrap {
+    flex: auto;
+    border: 1px solid #c9c9c9;
+}
+
+.tab-01 .card-02 .field-wrap:last-child {
+    width: 35%;
+}
+
+.tab-01 .card-02 table td .slds-button_neutral {
+    text-wrap-mode: nowrap;
+}
+
+/* Tab 02 발신함 */
+
+.tab-02 .card-02,
+.tab-02 .card-03 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tab-02 .card-02 .table-wrap {
+    height: 10rem;
+    border: 1px solid #c9c9c9;
+}
+
+/* Tab 03 쪽지전송 */
+
+.tab-03 .card-02,
+.tab-03 .card-03 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tab-03 .table-wrap {
+    height: 10rem;
+    border: 1px solid #c9c9c9;
+}
+
+.tab-03 .card-03 .field-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.tab-03 .card-03 .field-wrap p {
+    width: 5rem;
+    margin-bottom: .25rem;
+    text-wrap: nowrap;
+    font-weight: 500;
+}
+
+.tab-03 .card-03 .field-wrap .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Table Design */
+
+.body table {
+    border: 1px solid #c9c9c9;
+}
+
+.body table tr {
+    border-bottom: 1px solid #c9c9c9;
+}
+
+.body table th {
+    background-color: #f3f3f3;
+    color: #444;
+    font-weight: 700;
+    line-height: normal;
+    text-align: center;
+    text-wrap: nowrap;
+    padding: .25rem 0.75rem;
+    border-top: 1px solid #D9D9D9;
+    border-bottom: 1px solid #D9D9D9;
+    text-wrap: nowrap;
+}
+
+.body table td {
+    background-color: #fff;
+    padding: .25rem 0.75rem;
+    line-height: normal;
+    color: #444;
+    text-wrap: nowrap;
+    border-bottom: 1px solid #D9D9D9;
+}
+
+.body table th+th,
+.body table td+td {
+    border-left: 1px solid #D9D9D9;
+}
+
+/* 
+.body table .slds-form-element .slds-checkbox [type=checkbox]+.slds-checkbox__label .slds-checkbox_faux {
+    margin-right: 0 !important;
+}
+
+.body table .slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: none;
+} */

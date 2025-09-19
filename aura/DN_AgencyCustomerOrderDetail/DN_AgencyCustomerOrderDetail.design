@@ -1,0 +1,3 @@
+<design:component >
+    <design:attribute name="pageType" label="PageType" datasource="DetailPage,Modal" default="DetailPage" />
+</design:component>

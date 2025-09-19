@@ -1,0 +1,99 @@
+<!--
+  @Description       : 
+  @author            : suheon.ha
+  @last modified on  : 03-19-2025
+  @last modified by  : suheon.ha@UserSettingsUnder.SFDoc
+-->
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+      
+    <template if:true={isModalOpen}>
+        <lightning-card>
+            <div class="total-wrap">
+                <h2>{cLabel.DNS_FSL_PleaseEnterInformation}</h2>
+                <div class="container box-01">
+                    <lightning-record-picker
+                        name="고객사" 
+                        label={cLabel.DNS_FSL_Account}
+                        placeholder="Search Accounts..." 
+                        object-api-name="Account" 
+                        matching-info={matchingInfo}
+                        display-info={displayInfo}
+                        onchange={handleRecordPickerChange}>
+                    </lightning-record-picker>
+            
+                    <lightning-record-picker
+                        name="담당자" 
+                        label={cLabel.DNS_FSL_Contact}
+                        placeholder="Search Contacts..." 
+                        object-api-name="Contact" 
+                        matching-info={matchingInfo}
+                        display-info={displayInfo}
+                        onchange={handleRecordPickerChange}>
+                    </lightning-record-picker>
+            
+                    <lightning-record-picker
+                        name="장비" 
+                        label={cLabel.DNS_FSL_Equipment}
+                        placeholder="Search Assets..." 
+                        object-api-name="Asset" 
+                        matching-info={matchingInfo}
+                        display-info={displayInfo}
+                        onchange={handleRecordPickerChange}>
+                    </lightning-record-picker>
+                </div>
+                <div class="container box-04">
+                    <lightning-textarea name="접수내용" label={cLabel.DNS_C_ReceptionDetails} value={receiptDetails} onchange={handleInputChange}></lightning-textarea>
+                </div>
+
+                <!-- <lightning-file-upload
+                    label="File Upload"
+                    name="fileUploader"
+                    accept={acceptedFormats}
+                    onuploadfinished={handleUploadFinished}
+                >
+                </lightning-file-upload> -->
+
+                <!-- 파일 사이즈 6MB 이하 -->
+                <div class="file-upload">
+                    <label for="fileInput">{cLabel.DNS_FSL_UploadFile}:</label>
+                    <!-- <input type="file" id="fileInput" multiple onchange={handleFileChange} accept={acceptedFormats} /> -->
+                    <lightning-input  type="file" id="fileInput" multiple onchange={handleFileChange} accept={acceptedFormats}></lightning-input>
+                </div>
+                <div class="file-names">
+                    <template if:true={fileNames}>
+                        <p>{cLabel.DNS_FSL_SelectedFile}:</p>
+                        <ul>
+                            <template for:each={fileNames} for:item="fileName">
+                                <li key={fileName}>{fileName}</li>
+                            </template>
+                        </ul>
+                    </template>
+                </div>
+                <!-- <template if:true={filesToUpload}>
+                    <ul>
+                        <template for:each={filesToUpload} for:item="file">
+                            <li key={file.name}>{file.name} ({(file.size / 1024).toFixed(2)} KB)</li>
+                        </template>
+                    </ul>
+                </template> -->
+
+                <!-- <c-file-upload-plus 
+                    record-id={recordId} 
+                    custom-field="Custom_Field__c"
+                    custom-field-label="Custom Field"
+                    custom-field-type="text"
+                    custom-field-default-value="Default Value"
+                    onfileuploaded={handleFileUploadSuccess}
+                    oncancelupload={handleCancelUpload}>
+                </c-file-upload-plus> -->
+
+                <div class="button-wrap">
+                    <lightning-button variant="brand" label={cLabel.DNS_FSL_CompleteInput} onclick={handleSubmit} disabled={isSubmitDisabled} class="slds-m-top_medium"></lightning-button>
+                </div>
+            </div>
+        </lightning-card>
+    </template>
+</template>

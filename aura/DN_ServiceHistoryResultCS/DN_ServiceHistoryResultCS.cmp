@@ -1,0 +1,224 @@
+<!--
+  @author            : youjin shim
+  @description       : 
+  @last modified on  : 03-14-2025
+  @last modified by  : Chungwoo Lee
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   2024-06-11   youjin.shim@sbtglobal.com   Initial Version
+-->
+
+<aura:component
+    implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+    controller="DN_PortalServiceController"  access="global"
+    description="장비번호별 점검 이력(CS)">
+
+    <!-- Attribute -->
+    <aura:attribute name="isLoading"        type="Boolean"  default="false" />
+    <aura:attribute name="isSearched"       type="Boolean"  default="false" />
+    <aura:attribute name="historyList"      type="List"     default="[]" />
+    <aura:attribute name="machineName"      type="String"  />
+    <aura:attribute name="assetName"        type="String"  />
+    <aura:attribute name="equipmentObj"     type="Object"  />
+    <aura:attribute name="startDate"        type="Date"    /> <!-- 최종 서비스 검사 시작일 -->
+    <aura:attribute name="endDate"          type="Date"    /> <!-- 최종 서비스 검사 종료일 --> 
+    <aura:attribute name="headExcelData"    type="List"     default="[]" />
+    <aura:attribute name="excelData"        type="List"     default="[]" />
+    <aura:attribute name="excelName"        type="String"   default="Service_History_byAsset" />
+
+    <!-- Handler -->
+    <aura:handler name="cmpEvent" event="c:DN_HandlerEvent" action="{!c.handleCompEvent}" />
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+
+    <div class="total-wrap">
+        <article class="slds-card">
+
+            <!-- 모달 -->
+            <div aura:id="ModelSearchModal" /> <!--기종/장비번호-->
+
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{! v.isLoading}">
+                <lightning:spinner size="large" variant="brand" alternativeText="Loading" />
+            </aura:if>
+
+            <!-- Header -->
+            <div class="header">
+                <div class="title slds-grid">
+                    <lightning:icon iconName="standard:service_request" size="small"
+                        alternativeText="Service History Result" />
+                    <h2 class="slds-truncate">{!$Label.c.service_ttl_equipment_history}</h2>
+                </div>
+
+                <div class="button-wrap">
+                    <!-- 검색 필터 및 기능 추가 필요 -->
+                    <lightning:button name="search" label="{!$Label.c.service_btn_search}" iconName="utility:search" iconPosition="left" onclick="{!c.doSearch}" />
+                    <!-- <c:DN_ExcelUtilButton excelData="{! v.excelData }" excelName="{! v.excelName }" /> -->
+                    <c:DN_DealerPortalExcelUtilButton headerData="{!v.headExcelData}" excelData="{! v.excelData }" excelName="{! v.excelName }" />
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="body">
+                <!-- Card 01 -->
+                <div class="card-01 top-card">
+                    <div class="field-wrap">
+                        <p>{!$Label.c.service_lbl_model}<abbr class="slds-required" title="required">*</abbr></p> <!--기종-->
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="" aura:id="machineName" value="{!v.machineName}" variant="label-hidden" readonly="true"
+                                disabled="true" />
+                                <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine" 
+                                onclick="{!c.clearMachine}" class="clear-btn"/>
+                            <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                onclick="{!c.openModelModal}" />
+                        </div>
+                    </div>
+                    <div class="field-wrap">
+                        <p>{!$Label.c.service_lbl_serial_no}<abbr class="slds-required" title="required">*</abbr></p> <!--장비번호-->
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="" aura:id="assetName" value="{!v.assetName}" variant="label-hidden" readonly="true" disabled="true"/>
+                            <lightning:buttonicon iconName="utility:close" size="medium" alternativeText="Close Machine"  
+                                onclick="{!c.clearAsset}" class="clear-btn"/>
+                            <lightning:buttonicon iconName="utility:search" size="medium" alternativeText="Search"
+                                onclick="{!c.openSerialNumberModal}" />
+                        </div>
+                    </div>
+                    <div class="field-wrap date-wrap">
+                        <p>{!$Label.c.service_lbl_last_service_date}<abbr class="slds-required" title="required">*</abbr></p> <!--최종서비스일-->
+                        <div class="input-wrap">
+                            <lightning:input type="date" name="startDate" aura:id="startDate" value="{!v.startDate}" onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+                            <span>~</span>
+                            <lightning:input type="date" name="endDate" aura:id="endDate" value="{!v.endDate}" onchange="{!c.handleDayCountCheck}" variant="label-hidden" />
+                        </div>
+                    </div>
+                    <!-- <div class="field-wrap">
+                        <p>주문번호</p>
+                        <div class="input-wrap">
+                            <lightning:input type="text" name="" value="" variant="label-hidden" readonly="false" disabled="false" aura:id="" />
+                        </div>
+                    </div> -->
+                </div>
+                
+
+                <!-- Card 02 -->
+                <div class="card-02 top-card">
+                    <div class="table-01">
+
+                        <h2>{!$Label.c.service_ttl_search_results}</h2>
+                        <div class="table-wrap">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <tr>
+                                    <th>{!$Label.c.service_fld_shipping_date}</th> <!--출하일자-->
+                                    <td>{!v.historyList[0].Asset.ShippingDate__c}</td>
+                                    <th>{!$Label.c.service_fld_account}</th><!--고객사-->
+                                    <td>{!v.historyList[0].Account.Name}</td>
+                                    <th>{!$Label.c.service_fld_account_phone_no}</th><!--고객사연락처-->
+                                    <td>{!v.historyList[0].Account.Phone}</td>
+                                </tr>
+                                <tr>
+                                    <th>{!$Label.c.service_fld_representative}</th><!--대표자-->
+                                    <td>{!v.historyList[0].Account.Representative__c}</td>
+                                    <th>{!$Label.c.service_fld_warranty}</th><!--보증-->
+                                    <td>{!v.historyList[0].Asset.FM_EquipmentWarrantyEquipmentParts__c}</td>
+                                    <th></th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th>{!$Label.c.service_fld_warranty_start_date}</th> <!--보증시작일-->
+                                    <td>{!v.historyList[0].Asset.WarrantyStartDate__c}</td>
+                                    <th>{!$Label.c.service_fld_warranty_end_date}</th> <!--보증종료일-->
+                                    <td>{!v.historyList[0].Asset.WarrantyEnd__c}</td>
+                                    <th></th>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Card 03 -->
+                <div class="card-03 top-card">
+                    <div class="table-wrap">
+
+                        <!-- Fixed : Left -->
+                        <div class="table-01 left-table" aura:id="leftTableDiv">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="10%" />
+                                    <col width="20%" />
+                                    <col width="24%" />
+                                    <col width="28%" />
+                                    <col width="16%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>{!$Label.c.service_fld_turn}</th> <!--순번-->
+                                        <th>{!$Label.c.service_fld_last_service_date}</th> <!--최종서비스일-->
+                                        <th>{!$Label.c.service_fld_service_type1}</th> <!--서비스유형1-->
+                                        <th>{!$Label.c.service_fld_service_type2}</th> <!--서비스유형2-->
+                                        <th>{!$Label.c.service_fld_order_no}</th> <!--오더번호-->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.historyList}" var="history" indexVar="index">
+                                        <tr>
+                                            <td class="center">{!index +1}</td>
+                                            <td class="center"><ui:outputDate value="{!history.FM_LastServiceDate__c}"/></td>
+                                            <td class="center">{!history.PMActivityType__c}</td>
+                                            <td>{!history.OrderType__c}</td>
+                                            <td class="center">{!history.ServiceOrderNumber__c}</td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Scrollable : Right -->
+                        <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+                            <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                                <colgroup>
+                                    <col width="4%" />
+                                    <col width="15%" />
+                                    <col width="8%" />
+                                    <col width="8%" />
+                                    <col width="4%" />
+                                    <col width="10%" />
+                                    <col width="16%" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th>{!$Label.c.service_fld_worker}</th> <!--작업자-->
+                                        <th>{!$Label.c.service_fld_work_center}</th> <!--Work center-->
+                                        <th>{!$Label.c.service_fld_break_details}</th> <!--고장부위내역-->
+                                        <th>{!$Label.c.service_fld_break_phenomenon_history}</th> <!--고장현상내역-->
+                                        <th>{!$Label.c.service_fld_break_cause_details}</th> <!--고장원인내역-->
+                                        <th>{!$Label.c.service_fld_action_detail}</th> <!--조치사항내역-->
+                                        <th>{!$Label.c.service_fld_received_desc}</th> <!--접수내역-->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.historyList}" var="history">
+                                        <tr>
+                                            <td class="center">{!history.Worker__r.Name}</td>
+                                            <td class="center">{!history.ServiceTerritory.Name}</td>
+                                            <td>{!empty(history.FailureArea__c) ? '' : history.FailureArea__c+'-'+history.FailureAreaGroup__c}</td>
+                                            <!--<td>{!history.FailureArea__c} - {!history.FailureAreaGroup__c}</td>-->
+                                            <td class="center">{!history.FailurePhenomenon__c}</td>
+                                            <td class="center">{!history.CauseOfFailure__c}</td>
+                                            <td>{!history.RepairAction__c}</td>
+                                            <td>
+                                                <div class="detail" title="{!history.ReceptionDetails__c}">
+                                                    {!history.Case.ReceptionDetails__c}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</aura:component>

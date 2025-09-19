@@ -1,0 +1,351 @@
+<!--
+  @description       : 
+  @author            : youjin.shim@sbtglobal.com
+  @group             : 
+  @last modified on  : 01-10-2025
+  @last modified by  : youjin.shim@sbtglobal.com
+  Modifications Log
+  Ver   Date         Author                      Modification
+  1.0   01-10-2025   youjin.shim@sbtglobal.com   Initial Version
+-->
+<aura:component
+  implements="forceCommunity:availableForAllPageTypes,force:lightningquickactionwithoutheader,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickAction,lightning:isUrlAddressable,lightning:actionOverride,lightning:hasPageReference,lightning:availableForFlowScreens"
+  description="대리점간 거래승인 및 수정"
+  controller="DN_CreateAnotherAgencyPurchase"
+  extends="c:DN_Helper">
+
+  <!--Attribute-->
+  <aura:attribute name="isLoading" type="Boolean" default="false" />
+  <aura:attribute name="dealerPurchaseOrder" type="Object" default="{}" description="주문정보"/>
+  <aura:attribute name="partsList" type="List" description="대리점간 주문 품목" />
+  
+  <aura:attribute name="dealRequestManagement" type="Boolean" default="false" />
+
+  <aura:attribute name="dealerList" type="List" default="[]" />
+  <aura:attribute name="popupList" type="List" default="[]" />
+  <aura:attribute name="deliveryCategory" type="List" default="[
+        {'label':'방문수령', 'value' : '4'},
+        {'label':'택배', 'value' : '1'},
+        {'label':'화물', 'value' : '2'},
+        {'label':'퀵서비스', 'value' : '3'}
+    ]" />
+  <aura:attribute name="bulkShippingOptions" type="List" default="[
+    {'label': 'Yes', 'value': 'Y'},
+    {'label': 'No', 'value': 'N'}
+  ]" />
+  <aura:attribute name="approvalStatus" type="Boolean" default="true" />
+  <aura:attribute name="approvalList" type="List" default="[]" />
+
+  <!-- Navigation -->
+  <lightning:navigation aura:id="navService"/>
+
+  <!--handler-->
+  <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+  <article class="slds-card">
+    <!-- 📌 1. 대리점간 거래 요청 관리 모달 사용 x-->
+    <!-- <aura:if isTrue="{!v.dealRequestManagement}">
+      <div class="card-01 top-card">
+        <div class="slds-scrollable">
+          <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+            <colgroup>
+              <col width="18%" />
+              <col width="18%" />
+              <col width="14%" />
+              <col width="10%" />
+              <col width="10%" />
+              <col width="10%" />
+              <col width="10%" />
+              <col width="10%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>
+                  <div>구매대리점</div>
+                </th>
+                <th>
+                  <div>구매주문번호</div>
+                </th>
+                <th>
+                  <div>주문번호</div>
+                </th>
+                <th>
+                  <div>주문일</div>
+                </th>
+                <th>
+                  <div>주문수량</div>
+                </th>
+                <th>
+                  <div>구매금액</div>
+                </th>
+                <th>
+                  <div>통화</div>
+                </th>
+                <th>
+                  <div>상태</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <aura:if isTrue="{!empty(v.popupList)}">
+                <tr class="slds-hint-parent">
+                  <td scope="row" colspan="9" style="text-align: center;">
+                    조회된 정보가 없습니다
+                  </td>
+                </tr>
+              </aura:if>
+              <aura:iteration items="{!v.popupList}" var="popupList" indexVar="j">
+                <tr>
+                  <td>
+                    <div>{!popupList.NAME1}</div>
+                  </td>
+                  <td>
+                    <div>{!popupList.EBELN}</div>
+                  </td>
+                  <td>
+                    <div>{!popupList.VBELN}</div>
+                  </td>
+                  <td class="center">
+                    <div>{!popupList.AUDAT}</div>
+                  </td>
+                  <td>
+                    <div>{!popupList.MENGE}</div>
+                  </td>
+                  <td>
+                    <div class="right">{!popupList.DMBTR}</div>
+                  </td>
+                  <td>
+                    <div>{!popupList.WAERS}</div>
+                  </td>
+                  <td>
+                    <div>{!popupList.STEXT}</div>
+                  </td>
+                </tr>
+              </aura:iteration>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </aura:if> -->
+  
+    <!-- 📌 2. 대리점간 거래 승인 관리 모달 -->
+    <aura:if isTrue="{!v.approvalStatus}">
+      
+      <header class="header">
+        <div class="title">
+          <lightning:icon iconName='standard:custody_chain_entry' size='small' title='custody_chain_entry'></lightning:icon>
+          <h2 class="">대리점간 거래승인 관리</h2>
+        </div>
+  
+        <div class="button-wrap">
+            <lightning:button iconName="utility:check" label="승인" onclick="{!c.approval}" />
+            <lightning:button iconName="utility:error" label="거절" onclick="{!c.reject}" />
+        </div>
+      </header>
+      
+      <div class="body">
+         <!-- Card 01 -->
+         <div class="card-01 top-card">
+          <div class="field-wrap">
+            <p>고객주문번호</p>
+            <div class="input-wrap">
+              <lightning:input variant="label-hidden" readonly="true" value="{!v.dealerPurchaseOrder.seq}"/>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>주문번호</p>
+            <div class="input-wrap">
+              <lightning:input variant="label-hidden" readonly="true" value="{!v.dealerPurchaseOrder.dealerOrderSeq}"/>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>생성일자</p>
+            <div class="input-wrap">
+              <lightning:input variant="label-hidden" readonly="true" value="{!v.dealerPurchaseOrder.orderDate}"/>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>구매대리점</p>
+            <div class="input-wrap">
+              <lightning:input variant="label-hidden" readonly="true" value="{!v.dealerPurchaseOrder.dealerName}"/>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>일괄배송여부</p>
+            <div class="input-wrap">
+              <lightning:radioGroup variant="label-hidden" aura:id="batchDelivery" options="{! v.bulkShippingOptions }"
+                disabled="true" value="{!v.dealerPurchaseOrder.bulkShipping}"/>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>배송 방법</p>
+            <div class="input-wrap">
+              <lightning:combobox variant="label-hidden" label="배송 방법" readonly="true" options="{!v.deliveryCategory}" value="{!v.dealerPurchaseOrder.shippingType}"/>
+              <!-- <lightning:input variant="label-hidden" readonly="true" value="{!v.dealerPurchaseOrder.shippingType}"/> -->
+            </div>
+          </div>
+          <div class="field-wrap">
+            <p>배송처</p>
+            <div class="input-wrap">
+              <lightning:input variant="label-hidden" readonly="true" value="{!v.dealerPurchaseOrder.customerShipToName}"/>
+            </div>
+          </div>
+        </div>
+  
+        <!-- card-02 -->
+        <div class="card-02 top-card">
+          <div class="table-wrap">
+            <!-- Fixed : Left -->
+            <div class="table-01 left-table" aura:id="leftTableDiv">
+              <table class="slds-table slds-table_cell-buffer slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="1%" />
+                  <col width="25%" />
+                  <col width="75%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th>
+                      <div>
+                        <lightning:input type="checkbox" variant="label-hidden" onchange="{!c.selectAll}" />
+                      </div>
+                    </th>
+                    <th>
+                      <div>항목</div>
+                    </th>
+                    <th>
+                      <div>주문품번</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.partsList}" var="parts" indexVar="k">
+                    <tr class="slds-hint-parent">
+                      <td data-label="checkbox" class="center">
+                        <div title="checkbox">
+                          <lightning:input type="checkbox" checked="{!parts.isSelected}" variant="label-hidden"  />
+                          <!-- disabled="{!parts.isDisabledChange}" -->
+                        </div>
+                      </td>
+                      <td data-label="항목" class="center">
+                        {!parts.itemSeq}
+                      </td>
+                      <td data-label="주문품번" class="center">
+                        {!parts.replacingPartName}
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+            <!-- Scrollable : Right -->
+            <div class="table-02 right-table" aura:id="rightTableDiv" onscroll="{!c.handleScroll}">
+              <table class="slds-table slds-table_cell-buffer   slds-table_col-bordered IP-table">
+                <colgroup>
+                  <col width="6%" />
+                  <col width="6%" />
+                  <col width="8%" />
+                  <col width="8%" />
+                  <col width="5%" />
+                  <col width="6%" />
+                  <col width="8%" />
+                  <col width="15%" />
+                  <col width="15%" />
+                  <col width="15%" />
+                  <col width="8%" />
+                </colgroup>
+                <thead>
+                  <tr class="slds-line-height_reset">
+                    <th>
+                      <div>품명</div>
+                    </th>
+                    <th>
+                      <div>
+                        요청수량
+                        <!-- 수량(A) -->
+                      </div>
+                    </th>
+                    <th>
+                      <div>출고수량</div>
+                    </th>
+                    <th>
+                      <div>미결수량</div>
+                    </th>
+                    <th>
+                      <div>대리점재고</div>
+                    </th>
+                    <th>
+                      <div>단위</div>
+                    </th>
+                    <th>
+                      <div>통화</div>
+                    </th>
+                    <th>
+                      <div>고객판매가</div>
+                    </th>
+                    <th>
+                      <div>할인판매가</div>
+                    </th>
+                    <th>
+                      <div>할인판매금액</div>
+                    </th>
+                    <th>
+                      <div>최종요청수량</div>
+                    </th>
+                    <!-- <th>
+                      <div>상태</div>
+                    </th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <aura:iteration items="{!v.partsList}" var="parts" indexVar="k">
+                    <tr class="slds-hint-parent">
+                      <td data-label="품명">
+                        {!parts.partDetails}
+                      </td>
+                      <td data-label="요청수량" class="center">
+                        <lightning:formattedNumber value="{!parts.quantity}" />
+                      </td>
+                      <td data-label="출고수량" class="right">
+                        <!-- <lightning:input type="number" aura:id="" name="giQuantity" variant="label-hidden" readonly="true" value="{!parts.giQuantity}" /> -->
+                        <lightning:formattedNumber value="{!parts.giQuantity}" />
+                      </td>
+                      <td data-label="미결수량" class="right">
+                        {!IF(parts.giQuantity==0, 0,parts.giQuantity - parts.quantity)}
+                      </td>
+                      <td data-label="대리점재고" class="right">
+                        <!-- 대리점가용재고 -->
+                        <lightning:formattedNumber value="{!parts.avaiableQuantity}" />
+                      </td>
+                      <td data-label="단위" class="center">
+                        {!parts.unit}
+                      </td>
+                      <td data-label="통화" class="center">
+                        {!parts.currencyCode}
+                      </td>
+                      <td data-label="고객판매가" class="right">
+                        <!-- <lightning:input type="number" aura:id="" name="customerPrice" variant="label-hidden" readonly="true" value="{!parts.customerPrice}" /> -->
+                        <lightning:formattedNumber value="{!parts.customerPrice}" />
+                      </td>
+                      <td data-label="할인판매가" class="right">
+                        <!-- <lightning:input type="number" aura:id="" name="discountPrice" variant="label-hidden" readonly="true" value="{!parts.discountPrice}" /> -->
+                        <lightning:formattedNumber value="{!parts.discountPrice}" />
+                      </td>
+                      <td data-label="할인판매금액" class="right">
+                        <!-- <lightning:input type="number" aura:id="" name="discountAmount" variant="label-hidden" readonly="true" value="{!parts.discountAmount}" /> -->
+                        <lightning:formattedNumber value="{!parts.discountAmount}" />
+                      </td>
+                      <td data-label="최종요청수량" class="right">
+                        <lightning:formattedNumber value="{!parts.finalChangeQuantity}" />
+                      </td>
+                    </tr>
+                  </aura:iteration>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div> 
+      </div>
+    </aura:if>
+
+  </article>
+</aura:component>

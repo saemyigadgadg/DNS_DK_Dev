@@ -1,0 +1,66 @@
+<template>
+    <div class="table-wrapper">
+        <div class="table-quarter">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                <th class="vertical-header">구분</th>
+                <th class="vertical-header">1분기</th>
+                <th class="vertical-header">2분기</th>
+                <th class="vertical-header">3분기</th>
+                <th class="vertical-header">4분기</th>
+                <th class="vertical-header">연간합계</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <td class="row-label">목표</td>
+                <template for:each={quarters.목표} for:item="value">
+                    <td key={value}>{value}</td>
+                </template>
+                </tr>
+                <tr>
+                <td class="row-label">수주실적</td>
+                <template for:each={quarters.수주실적} for:item="value">
+                    <td key={value}>{value}</td>
+                </template>
+                </tr>
+                <tr>
+                <td class="row-label">영업기회 합</td>
+                <template for:each={quarters.영업기회합} for:item="value">
+                    <td key={value}>{value}</td>
+                </template>
+                </tr>
+            </tbody>
+        </table>
+        <div class="left-footer-link">
+            <a href="https://dn-solutions.lightning.force.com/lightning/r/Dashboard/01ZTJ000003H4VJ2A0/view?queryScope=userFolders" target="_blank">한국 영업기회/SQ 현황 대시보드 바로가기</a>
+        </div>
+    </div>
+
+    <div class="table-month">
+        <table class="custom-table">
+        <thead>
+            <tr>
+            <th>구분</th>
+            <template for:each={months} for:item="month">
+                <th key={month}>{month}</th>
+            </template>
+            <th>연간합계</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template for:each={rows} for:item="row">
+            <tr key={row.label}>
+                <td>{row.label}</td>
+                <template for:each={row.monthlyValues} for:item="value">
+                <td key={value}>{value}</td>
+                </template>
+                <td>{row.yearTotal}</td>
+            </tr>
+            </template>
+        </tbody>
+        </table>
+    </div>
+  </div>
+</template>
